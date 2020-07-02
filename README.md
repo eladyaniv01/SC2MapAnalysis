@@ -30,7 +30,7 @@ map_data.plot_regions_by_label()
 for label, region in map_data.regions.items():
     region.plot_perimeter()
 
-# or, just plot on
+# or, just plot one
 map_data.regions[4].plot_perimeter()
 
 ```
