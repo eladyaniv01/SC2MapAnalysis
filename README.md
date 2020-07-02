@@ -2,10 +2,10 @@
 
 Early Stage Draft, 
 to get an idea of what the api can do,  check out "run.py" 
-it is meant to be an tool(extension) for https://github.com/BurnySc2/python-sc2/
+it is meant to be a tool(extension) for https://github.com/BurnySc2/python-sc2/
 
+import GameInfo directly from the Api, 
 
-you could also import GameInfo directly from the Api, 
 Example:
 ```python
 from sc2.game_info import GameInfo
