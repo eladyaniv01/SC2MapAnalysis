@@ -21,5 +21,12 @@ game_info = GameInfo(raw_game_info.game_info)
 map_name = "PillarsofGoldLE"
 map_data = MapData(map_name, game_info)
 
+# plot the entire labeled map
+map_data.plot_regions_by_label()
+
+# plot each region in a closeup showing its relative placement on the map and perimeter
+for label, region in map_data.regions.items():
+    region.plot_perimeter()
+
 ```
 
