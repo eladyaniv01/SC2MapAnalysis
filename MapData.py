@@ -7,11 +7,12 @@ from Region import Region
 
 
 class MapData:
-    def __init__(self, map_name, placement_arr, path_arr, terrain_height):
+    def __init__(self, map_name, game_info):
+
         self.map_name = map_name
-        self.placement_arr = placement_arr
-        self.path_arr = path_arr
-        self.terrain_height = terrain_height
+        self.placement_arr = game_info.placement_grid.data_numpy
+        self.path_arr = game_info.pathing_grid.data_numpy
+        # self.terrain_height = terrain_height
         self.region_grid = None
         self.regions = {}
         self.compile_map()
