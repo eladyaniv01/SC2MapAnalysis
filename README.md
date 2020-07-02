@@ -30,5 +30,8 @@ map_data.plot_regions_by_label()
 for label, region in map_data.regions.items():
     region.plot_perimeter()
 
+# or, just plot on
+map_data.regions[4].plot_perimeter()
+
 ```
 <img src="https://user-images.githubusercontent.com/40754127/86403753-f93fd000-bcb6-11ea-9d2c-c929c1a8591b.png" width="90%"></img> 
