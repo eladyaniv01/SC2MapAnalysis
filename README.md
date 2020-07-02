@@ -23,12 +23,12 @@ map_data = MapData(map_name, game_info)
 
 # plot the entire labeled map
 map_data.plot_regions_by_label()
-![Screenshot](labelmap.png)
+```
+<img src="https://user-images.githubusercontent.com/40754127/86403746-f6dd7600-bcb6-11ea-942d-52110ec285f2.png" width="90%"></img> 
+```python
 # plot each region in a closeup showing its relative placement on the map and perimeter
 for label, region in map_data.regions.items():
     region.plot_perimeter()
-    
-![Screenshot](region_perimeter.png)
 
 ```
-
+<img src="https://user-images.githubusercontent.com/40754127/86403753-f93fd000-bcb6-11ea-9d2c-c929c1a8591b.png" width="90%"></img> 
