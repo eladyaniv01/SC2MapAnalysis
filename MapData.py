@@ -2,17 +2,19 @@ import numpy as np
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-
+from sc2.game_info import GameInfo
+from sc2.position import Point2
 from Region import Region
+from typing import List
 
 
 class MapData:
-    def __init__(self, map_name, game_info):
+    def __init__(self, map_name: str, game_info: GameInfo, base_locations: List[Point2]):
 
         self.map_name = map_name
         self.placement_arr = game_info.placement_grid.data_numpy
         self.path_arr = game_info.pathing_grid.data_numpy
-        # self.terrain_height = terrain_height
+        self.base_locations = base_locations
         self.region_grid = None
         self.regions = {}
         self.compile_map()
@@ -31,7 +33,7 @@ class MapData:
         regions_labels = np.unique(labeled_array)
 
         for i in range(len(regions_labels)):
-            region = Region(array=np.where(region_grid == i, 1, 0), label=i)
+            region = Region(array=np.where(region_grid == i, 1, 0), label=i, map_expansions=self.base_locations)
             self.regions[i] = region
         self.region_grid = region_grid
 

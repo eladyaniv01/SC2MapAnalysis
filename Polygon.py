@@ -19,7 +19,6 @@ class Polygon:
         cm = center_of_mass(self.array)
         return np.int(cm[0]), np.int(cm[1])
 
-    @property
     def is_inside(self, point):
         return point[0] in self.indices[1] and point[1] in self.indices[0]
 
