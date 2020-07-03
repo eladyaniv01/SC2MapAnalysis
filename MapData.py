@@ -29,7 +29,7 @@ class MapData:
         labeled_array, num_features = label(compiled_grid, structure=s)
 
         rows, cols = labeled_array.shape
-        region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0).T
+        region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
         regions_labels = np.unique(labeled_array)
 
         for i in range(len(regions_labels)):
@@ -46,7 +46,7 @@ class MapData:
         values = list(self.regions.keys())
 
         plt.figure(figsize=(20, 20))
-        im = plt.imshow(self.region_grid.T, interpolation='none')
+        im = plt.imshow(self.region_grid.T, origin="lower")
         colors = [im.cmap(im.norm(value)) for value in values]
 
         # create a patch (proxy artist) for every color
