@@ -8,8 +8,6 @@ import GameInfo directly from the Api,
 
 Example:
 ```python
-from sc2.game_info import GameInfo
-import lzma, pickle
 import pickle
 import lzma
 from MapData import MapData
@@ -17,7 +15,6 @@ from sc2.game_data import GameData
 from sc2.game_info import GameInfo
 from sc2.game_state import GameState
 from sc2.player import BotAI
-
 
 #if its from BurnySc2 it is compressed
 # https://github.com/BurnySc2/python-sc2/tree/develop/test/pickle_data

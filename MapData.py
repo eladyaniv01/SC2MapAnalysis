@@ -9,14 +9,22 @@ from typing import List
 
 
 class MapData:
-    def __init__(self, map_name: str, game_info: GameInfo, base_locations: List[Point2]):
+    def __init__(self, bot):
 
-        self.map_name = map_name
-        self.placement_arr = game_info.placement_grid.data_numpy
-        self.path_arr = game_info.pathing_grid.data_numpy
-        self.base_locations = base_locations
+        self.bot = bot
+        self.map_name = bot.game_info.map_name
+        self.placement_arr = bot.game_info.placement_grid.data_numpy
+        self.path_arr = bot.game_info.pathing_grid.data_numpy
+        self.base_locations = bot.expansion_locations_list
+        self.map_ramps = bot.game_info.map_ramps
+        self.terrain_height = bot.game_info.terrain_height.data_numpy
+        self.vision_blockers = bot.game_info.vision_blockers
         self.region_grid = None
         self.regions = {}
+        nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
+        self.nonpathable_indices = np.column_stack((nonpathable_indices[0], nonpathable_indices[1]))
+        self.mineral_fields = bot.mineral_field
+        self.normal_geysers = bot.vespene_geyser
         self.compile_map()
 
     def compile_map(self):
@@ -33,11 +41,11 @@ class MapData:
         regions_labels = np.unique(labeled_array)
 
         for i in range(len(regions_labels)):
-            region = Region(array=np.where(region_grid == i, 1, 0), label=i, map_expansions=self.base_locations)
+            region = Region(array=np.where(region_grid == i, 1, 0), label=i, map_data=self, map_expansions=self.base_locations)
             self.regions[i] = region
         self.region_grid = region_grid
 
-    def plot_regions_by_label(self, fontdict=None):
+    def plot_map(self, fontdict=None):
         if not fontdict:
             fontdict = {'family': 'normal',
                         'weight': 'bold',
@@ -54,11 +62,43 @@ class MapData:
             l=str(values[i]) + " Size: " + str(self.regions[i].get_area))) for i in range(len(values))]
 
         # put those patched as legend-handles into the legend
-        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        # plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         for key, value in self.regions.items():
             plt.text(value.polygon.center[0],
                      value.polygon.center[1],
                      value.label,
-                     bbox=dict(fill=False, edgecolor='red', linewidth=2),
+                     bbox=dict(fill=True, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
+        for ramp in self.map_ramps:
+            plt.text(ramp.top_center.rounded[1],
+                     ramp.top_center.rounded[0],
+                     "^",
+                     bbox=dict(fill=False, edgecolor='w', linewidth=1),
+                     fontdict=fontdict)
+            y, x = zip(*ramp.points)
+            plt.fill(x, y, color="w")
+            plt.scatter(x, y, color="w")
+
+        for vb in self.vision_blockers:
+            plt.text(vb[1],
+                     vb[0],
+                     "X")
+        y, x = zip(*self.vision_blockers)
+        plt.scatter(x, y, color="r")
+
+        plt.imshow(self.terrain_height.T, alpha=0.9, origin="lower")
+        x, y = zip(*self.nonpathable_indices)
+        plt.scatter(x, y, color="black")
+
+        for mfield in self.mineral_fields:
+            plt.scatter(mfield.position[1], mfield.position[0], color="blue")
+
+        for gasgeyser in self.normal_geysers:
+            #         plt.text(gasgeyser.position[1],
+            #         gasgeyser.position[0],
+            #          "G", color="orange", fontdict=fontdict, )
+
+            plt.scatter(gasgeyser.position[1], gasgeyser.position[0], color="yellow", marker=r'$\spadesuit$', s=500,
+                        edgecolors="g")
+
         plt.show()
