@@ -51,7 +51,7 @@ map_data = MapData(
 # plot the entire labeled map
 map_data.plot_regions_by_label()
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86403746-f6dd7600-bcb6-11ea-942d-52110ec285f2.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86516033-2068df80-be26-11ea-94d7-5c0be1b497a6.png" width="90%"></img> 
 ```python
 # plot each region in a closeup showing its relative placement on the map and perimeter
 for label, region in map_data.regions.items():
