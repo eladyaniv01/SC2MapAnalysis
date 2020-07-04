@@ -11,10 +11,8 @@ Example:
 import pickle
 import lzma
 from MapData import MapData
-from sc2.game_data import GameData
-from sc2.game_info import GameInfo
-from sc2.game_state import GameState
-from sc2.player import BotAI
+from utils import import_bot_instance
+
 
 #if its from BurnySc2 it is compressed
 # https://github.com/BurnySc2/python-sc2/tree/develop/test/pickle_data
@@ -23,33 +21,15 @@ with lzma.open(YOUR_FILE_PATH, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
 
-bot = BotAI()
-game_data = GameData(raw_game_data.data)
-game_info = GameInfo(raw_game_info.game_info)
-game_state = GameState(raw_observation)
-# noinspection PyProtectedMember
-bot._initialize_variables()
-# noinspection PyProtectedMember
-bot._prepare_start(client=None, player_id=1, game_info=game_info, game_data=game_data)
-# noinspection PyProtectedMember
-bot._prepare_step(state=game_state, proto_game_info=raw_game_info)
-# noinspection PyProtectedMember
-bot._find_expansion_locations()
-game_info = GameInfo(raw_game_info.game_info)
-map_name = game_info.map_name
-
+bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 
 
 # And then you can instantiate a MapData Object like so
-map_data = MapData(
-    map_name=map_name,
-    game_info=game_info,
-    base_locations=bot.expansion_locations_list
-)
+map_data = MapData(bot)
 
 
 # plot the entire labeled map
-map_data.plot_regions_by_label()
+map_data.plot_map()
 
 # red dots or X are vision blockers,
 # ramps are marked with white dots 
