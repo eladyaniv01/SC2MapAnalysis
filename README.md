@@ -50,6 +50,12 @@ map_data = MapData(
 
 # plot the entire labeled map
 map_data.plot_regions_by_label()
+
+# red dots or X are vision blockers,
+# ramps are marked with white dots 
+# ramp top center is marked with '^'
+# gas geysers are yellow spades 
+# height span is with respect to :   yellow = high , green = low
 ```
 <img src="https://user-images.githubusercontent.com/40754127/86516033-2068df80-be26-11ea-94d7-5c0be1b497a6.png" width="90%"></img> 
 ```python
@@ -58,7 +64,7 @@ for label, region in map_data.regions.items():
     region.plot_perimeter()
 
 # or, just plot one
-map_data.regions[4].plot_perimeter()
+map_data.regions[3].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86403753-f93fd000-bcb6-11ea-9d2c-c929c1a8591b.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86516138-db917880-be26-11ea-8474-a1e3ba572a8a.png" width="90%"></img> 
