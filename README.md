@@ -4,7 +4,6 @@ Early Stage Draft,
 to get an idea of what the api can do,  check out "run.py" 
 it is meant to be a tool(extension) for https://github.com/BurnySc2/python-sc2/
 
-import GameInfo directly from the Api, 
 
 Example:
 ```python
@@ -20,6 +19,8 @@ from utils import import_bot_instance
 with lzma.open(YOUR_FILE_PATH, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
+# mocking a bot object to initalize the map,  this is for when you want to do this while not in a game,  
+# if you want to use it in a game just pass in the bot object like shown below 
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 
