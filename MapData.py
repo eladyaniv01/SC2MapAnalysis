@@ -93,20 +93,21 @@ class MapData:
             if value.label == 0:
                 continue
 
-            print(len(value.region_ramps))
             plt.text(value.polygon.center[0],
                      value.polygon.center[1],
                      value.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
-            if value.label:
-                for ramp in value.region_ramps:
-                    ramp = ramp
-                    plt.text(ramp.top_center[0],
-                             ramp.top_center[1],
-                             f"{value.label} : {ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
-                             bbox=dict(fill=True, alpha=0.3, edgecolor='red', linewidth=8),
-                             )
+
+            for ramp in value.region_ramps:
+                plt.text(ramp.top_center[0] + np.random.randint(-5, 5),  # todo  structured offset and not random
+                         ramp.top_center[1] + np.random.randint(-5, 5),
+                         f"R<{value.label}>",
+                         bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
+                         )
+                x, y = zip(*ramp.points)
+                # plt.fill(x, y, color="w")
+                plt.scatter(x, y, color="w")
         # for ramp in self.map_ramps:
         #     plt.text(ramp.top_center.rounded[0],
         #              ramp.top_center.rounded[1],
