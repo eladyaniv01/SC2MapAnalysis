@@ -1,15 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sc2 import BotAI
-from scipy.ndimage import binary_fill_holes, generate_binary_structure, label
+from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
+from scipy.spatial import distance
 
-from constants import MIN_REGION_AREA, BINARY_STRUCTURE
+from constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
 from Region import Region
 
 
+# todo - assert that all ramps are accounted for
 class MapData:
     def __init__(self, bot: BotAI):
         self.min_region_area = MIN_REGION_AREA
+        self.max_region_area = MAX_REGION_AREA
         # store relevant data from bot instance for later use
         self.bot = bot
         self.map_name = bot.game_info.map_name
@@ -27,11 +30,17 @@ class MapData:
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def closest_node_idx(self, node, nodes):
+        closest_index = distance.cdist([node], nodes).argmin()
+        return closest_index
+
+
+
     def compile_map(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
-        labeled_array, num_features = label(grid, structure=s)
+        labeled_array, num_features = ndlabel(grid, structure=s)
 
         # for some operations the array must have same numbers or rows and cols,  adding
         # zeros to fix that
@@ -50,14 +59,25 @@ class MapData:
         # gather the regions that are bigger than 50 cells
         i = 0
         for region in pre_regions.values():
-            if region.get_area > self.min_region_area:
+            if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = i
                 self.regions[i] = region
+                ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
+                perimeter_nodes = region.polygon.perimeter[:, [1, 0]]
+                result_ramp_indexes = []
+                for n in perimeter_nodes:
+                    result_ramp_indexes.append(self.closest_node_idx(n, ramp_nodes))
+                result_ramp_indexes = list(set(result_ramp_indexes))
+                for rn in result_ramp_indexes:
+                    ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]]
+                    region.region_ramps.append(ramp[0])
                 i += 1
 
         self.region_grid = region_grid
 
     def plot_map(self, fontdict: dict = None):
+
+        plt.style.use('ggplot')
         if not fontdict:
             fontdict = {'family': 'normal',
                         'weight': 'bold',
@@ -72,20 +92,30 @@ class MapData:
         for key, value in self.regions.items():
             if value.label == 0:
                 continue
+
+            print(len(value.region_ramps))
             plt.text(value.polygon.center[0],
                      value.polygon.center[1],
                      value.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
-        for ramp in self.map_ramps:
-            plt.text(ramp.top_center.rounded[0],
-                     ramp.top_center.rounded[1],
-                     "^",
-                     bbox=dict(fill=False, edgecolor='w', linewidth=1),
-                     fontdict=fontdict)
-            x, y = zip(*ramp.points)
-            # plt.fill(x, y, color="w")
-            plt.scatter(x, y, color="w")
+            if value.label:
+                for ramp in value.region_ramps:
+                    ramp = ramp
+                    plt.text(ramp.top_center[0],
+                             ramp.top_center[1],
+                             f"{value.label} : {ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
+                             bbox=dict(fill=True, alpha=0.3, edgecolor='red', linewidth=8),
+                             )
+        # for ramp in self.map_ramps:
+        #     plt.text(ramp.top_center.rounded[0],
+        #              ramp.top_center.rounded[1],
+        #              f"{ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
+        #              bbox=dict(fill=False, edgecolor='w', linewidth=1),
+        #              fontdict=fontdict)
+        # x, y = zip(*ramp.points)
+        # # plt.fill(x, y, color="w")
+        # plt.scatter(x, y, color="w")
 
         for vb in self.vision_blockers:
             plt.text(vb[0],
@@ -108,5 +138,15 @@ class MapData:
 
             plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
                         edgecolors="g")
+        fontsize = 14
+        ax = plt.gca()
 
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
+            tick.label1.set_fontweight('bold')
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
+            tick.label1.set_fontweight('bold')
+
+        plt.grid()
         plt.show()
