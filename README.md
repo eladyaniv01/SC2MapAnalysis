@@ -44,11 +44,11 @@ map_data.plot_map()
 # isolate a region,  plot it's polygon
 map_data.regions[8].polygon.plot()
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86603172-5768fd80-bfac-11ea-9104-21426531208e.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86651102-ed704880-bfeb-11ea-8185-27c97092c2f2.png" width="90%"></img> 
 
 ```python
 # you can also inspect the perimeter
 map_data.regions[8].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86603164-5637d080-bfac-11ea-94f5-9ab72cf59bcb.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86651092-eb0dee80-bfeb-11ea-8859-bfec9434def5.png" width="90%"></img> 
