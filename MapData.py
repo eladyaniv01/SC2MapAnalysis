@@ -4,13 +4,15 @@ from sc2 import BotAI
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from constants import MIN_REGION_AREA, BINARY_STRUCTURE
+from constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
 from Region import Region
 
 
+# todo - assert that all ramps are accounted for
 class MapData:
     def __init__(self, bot: BotAI):
         self.min_region_area = MIN_REGION_AREA
+        self.max_region_area = MAX_REGION_AREA
         # store relevant data from bot instance for later use
         self.bot = bot
         self.map_name = bot.game_info.map_name
@@ -28,9 +30,11 @@ class MapData:
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
-    def closest_node(self, node, nodes):
+    def closest_node_idx(self, node, nodes):
         closest_index = distance.cdist([node], nodes).argmin()
-        return nodes[closest_index]
+        return closest_index
+
+
 
     def compile_map(self):
         # cleaning the grid and then searching for 2x2 patterned regions
@@ -55,25 +59,19 @@ class MapData:
         # gather the regions that are bigger than 50 cells
         i = 0
         for region in pre_regions.values():
-            if region.get_area > self.min_region_area:
+            if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = i
                 self.regions[i] = region
-                nodes = [ramp.top_center for ramp in self.map_ramps]
-                node = region.polygon.center
-                result_ramp = self.closest_node(node, nodes)
-                print(f"REGION = {region}  , RESULT RAMP = {result_ramp}")
+                ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
+                perimeter_nodes = region.polygon.perimeter[:, [1, 0]]
+                result_ramp_indexes = []
+                for n in perimeter_nodes:
+                    result_ramp_indexes.append(self.closest_node_idx(n, ramp_nodes))
+                result_ramp_indexes = list(set(result_ramp_indexes))
+                for rn in result_ramp_indexes:
+                    ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]]
+                    region.region_ramps.append(ramp[0])
                 i += 1
-
-        # centers = [region.polygon.center for region in self.regions.values()]
-
-        # for ramp in self.map_ramps:
-        #     distance , region_labels = tree.query([ramp.top_center], k = 2, distance_upper_bound=25)
-        #     for label in region_labels[0]:
-        #         try:
-        #             self.regions[label].ramps.append(ramp)
-        #         except:
-        #             print(label)
-        #             print(region_labels[0])
 
         self.region_grid = region_grid
 
@@ -94,14 +92,16 @@ class MapData:
         for key, value in self.regions.items():
             if value.label == 0:
                 continue
+
+            print(len(value.region_ramps))
             plt.text(value.polygon.center[0],
                      value.polygon.center[1],
                      value.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
-            if value.label == 1:
+            if value.label:
                 for ramp in value.region_ramps:
-                    ramp = ramp[0]
+                    ramp = ramp
                     plt.text(ramp.top_center[0],
                              ramp.top_center[1],
                              f"{value.label} : {ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
