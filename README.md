@@ -36,7 +36,7 @@ map_data.plot_map()
 # ramps are marked with white dots 
 # ramp top center is marked with '^'
 # gas geysers are yellow spades 
-# height span is with respect to :   yellow = high , green = low
+# height span is with respect to :   light = high , dark = low
 ```
 <img src="https://user-images.githubusercontent.com/40754127/86603152-520bb300-bfac-11ea-9334-51c7a5c4ff89.png" width="90%"></img> 
 ```python
