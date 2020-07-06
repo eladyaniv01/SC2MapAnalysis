@@ -49,7 +49,7 @@ map_data = MapData(
 
 
 # plot the entire labeled map
-map_data.plot_regions_by_label()
+map_data.plot_map()
 ```
 <img src="https://user-images.githubusercontent.com/40754127/86403746-f6dd7600-bcb6-11ea-942d-52110ec285f2.png" width="90%"></img> 
 ```python

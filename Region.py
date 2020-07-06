@@ -1,8 +1,10 @@
-from Polygon import Polygon
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 from sc2.position import Point2
-from typing import List
+
+from Polygon import Polygon
 
 
 class Region:
@@ -14,9 +16,11 @@ class Region:
         self.bases = [base for base in map_expansions if self.polygon.is_inside((base.rounded[1], base.rounded[0]))]
 
     def plot_perimeter(self):
-        x, y = zip(*self.polygon.perimeter)
+        # swap axes for aligned plot
+        x, y = zip(*self.polygon.perimeter[:, [1, 0]])
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
+        plt.grid()
         plt.show()
 
     @property
@@ -41,4 +45,3 @@ class Region:
 
     def __repr__(self):
         return "Region " + str(self.label)
-
