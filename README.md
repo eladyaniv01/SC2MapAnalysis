@@ -38,14 +38,16 @@ map_data.plot_map()
 # gas geysers are yellow spades 
 # height span is with respect to :   yellow = high , green = low
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86516033-2068df80-be26-11ea-94d7-5c0be1b497a6.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86603152-520bb300-bfac-11ea-9334-51c7a5c4ff89.png" width="90%"></img> 
 ```python
-# plot each region in a closeup showing its relative placement on the map and perimeter
-for label, region in map_data.regions.items():
-    region.plot_perimeter()
+# isolate a region,  plot it's polygon
+map_data.regions[9].polygon.plot()
+```
+<img src="https://user-images.githubusercontent.com/40754127/86603172-5768fd80-bfac-11ea-9104-21426531208e.png" width="90%"></img> 
 
-# or, just plot one
-map_data.regions[3].plot_perimeter()
+```python
+# you can also inspect the perimeter
+map_data.regions[9].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86516138-db917880-be26-11ea-8474-a1e3ba572a8a.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86603164-5637d080-bfac-11ea-94f5-9ab72cf59bcb.png" width="90%"></img> 
