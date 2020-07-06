@@ -14,6 +14,7 @@ class Region:
         self.label = label
         self.polygon = Polygon(self)
         self.bases = [base for base in map_expansions if self.polygon.is_inside((base.rounded[1], base.rounded[0]))]
+        self.region_ramps = []  # will be set later by mapdata
 
     def plot_perimeter(self):
         # swap axes for aligned plot

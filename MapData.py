@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sc2 import BotAI
-from scipy.ndimage import binary_fill_holes, generate_binary_structure, label
+from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
+from scipy.spatial import distance
 
 from constants import MIN_REGION_AREA, BINARY_STRUCTURE
 from Region import Region
@@ -27,11 +28,15 @@ class MapData:
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def closest_node(self, node, nodes):
+        closest_index = distance.cdist([node], nodes).argmin()
+        return nodes[closest_index]
+
     def compile_map(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
-        labeled_array, num_features = label(grid, structure=s)
+        labeled_array, num_features = ndlabel(grid, structure=s)
 
         # for some operations the array must have same numbers or rows and cols,  adding
         # zeros to fix that
@@ -53,11 +58,28 @@ class MapData:
             if region.get_area > self.min_region_area:
                 region.label = i
                 self.regions[i] = region
+                nodes = [ramp.top_center for ramp in self.map_ramps]
+                node = region.polygon.center
+                result_ramp = self.closest_node(node, nodes)
+                print(f"REGION = {region}  , RESULT RAMP = {result_ramp}")
                 i += 1
+
+        # centers = [region.polygon.center for region in self.regions.values()]
+
+        # for ramp in self.map_ramps:
+        #     distance , region_labels = tree.query([ramp.top_center], k = 2, distance_upper_bound=25)
+        #     for label in region_labels[0]:
+        #         try:
+        #             self.regions[label].ramps.append(ramp)
+        #         except:
+        #             print(label)
+        #             print(region_labels[0])
 
         self.region_grid = region_grid
 
     def plot_map(self, fontdict: dict = None):
+
+        plt.style.use('ggplot')
         if not fontdict:
             fontdict = {'family': 'normal',
                         'weight': 'bold',
@@ -77,15 +99,23 @@ class MapData:
                      value.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
-        for ramp in self.map_ramps:
-            plt.text(ramp.top_center.rounded[0],
-                     ramp.top_center.rounded[1],
-                     "^",
-                     bbox=dict(fill=False, edgecolor='w', linewidth=1),
-                     fontdict=fontdict)
-            x, y = zip(*ramp.points)
-            # plt.fill(x, y, color="w")
-            plt.scatter(x, y, color="w")
+            if value.label == 1:
+                for ramp in value.region_ramps:
+                    ramp = ramp[0]
+                    plt.text(ramp.top_center[0],
+                             ramp.top_center[1],
+                             f"{value.label} : {ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
+                             bbox=dict(fill=True, alpha=0.3, edgecolor='red', linewidth=8),
+                             )
+        # for ramp in self.map_ramps:
+        #     plt.text(ramp.top_center.rounded[0],
+        #              ramp.top_center.rounded[1],
+        #              f"{ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
+        #              bbox=dict(fill=False, edgecolor='w', linewidth=1),
+        #              fontdict=fontdict)
+        # x, y = zip(*ramp.points)
+        # # plt.fill(x, y, color="w")
+        # plt.scatter(x, y, color="w")
 
         for vb in self.vision_blockers:
             plt.text(vb[0],
@@ -108,5 +138,15 @@ class MapData:
 
             plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
                         edgecolors="g")
+        fontsize = 14
+        ax = plt.gca()
 
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
+            tick.label1.set_fontweight('bold')
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label1.set_fontsize(fontsize)
+            tick.label1.set_fontweight('bold')
+
+        plt.grid()
         plt.show()
