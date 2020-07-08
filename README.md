@@ -36,18 +36,19 @@ map_data.plot_map()
 # ramps are marked with white dots 
 # ramp top center is marked with '^'
 # gas geysers are yellow spades 
+# ramps are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86603152-520bb300-bfac-11ea-9334-51c7a5c4ff89.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86649725-af265980-bfea-11ea-86ea-aa95a3afe0a3.png" width="90%"></img> 
 ```python
 # isolate a region,  plot it's polygon
-map_data.regions[9].polygon.plot()
+map_data.regions[8].polygon.plot()
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86603172-5768fd80-bfac-11ea-9104-21426531208e.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86651102-ed704880-bfeb-11ea-8185-27c97092c2f2.png" width="90%"></img> 
 
 ```python
 # you can also inspect the perimeter
-map_data.regions[9].plot_perimeter()
+map_data.regions[8].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86603164-5637d080-bfac-11ea-94f5-9ab72cf59bcb.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86651092-eb0dee80-bfeb-11ea-8859-bfec9434def5.png" width="90%"></img> 
