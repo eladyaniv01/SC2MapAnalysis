@@ -39,7 +39,7 @@ map_data.plot_map()
 # ramps are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86949603-95565500-c157-11ea-8c46-5c4ee4a15c88.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86950115-642a5480-c158-11ea-91c4-fc050b34afcd.png" width="90%"></img> 
 ```python
 # isolate a region,  plot it
 >>>map_data.regions[8].plot()
@@ -51,7 +51,7 @@ map_data.plot_map()
 >>>map_data.regions[8].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86949775-cfbff200-c157-11ea-8693-5a339e553db6.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86950122-65f41800-c158-11ea-9cfb-4801e02d88cc.png" width="90%"></img> 
 
 ```python
 #query a point with respect to region
