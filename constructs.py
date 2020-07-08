@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.ndimage import center_of_mass
 
 class Area:
     def __init__(self):
@@ -7,10 +7,22 @@ class Area:
 
 
 class MDRamp(Area):
-    def __init__(self, ramp):
+    def __init__(self, map_data, ramp):
         self.regions = []
         self.ramp = ramp
+        self.map_data = map_data
         super().__init__()
+
+    @property
+    def array(self):
+        mask = np.zeros(self.map_data.region_grid.shape, dtype='int')
+        mask[self.indices] = 1
+        return mask
+
+    @property
+    def center(self):
+        cm = center_of_mass(self.array)
+        return np.int(cm[1]), np.int(cm[0])
 
     @property
     def top_center(self):
@@ -19,7 +31,7 @@ class MDRamp(Area):
     @property
     def indices(self):
         points = self.ramp.points
-        return np.column_stack(
+        return (
             (np.array(
                 [p[0] for p in points]),
              np.array(

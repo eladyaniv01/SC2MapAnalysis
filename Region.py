@@ -26,7 +26,7 @@ class Region:
 
     def _plot_ramps(self):
         for r in self.region_ramps:
-            x, y = zip(*r.indices)
+            x, y = zip(r.indices)
             plt.scatter(x, y, color="black", marker=r'$\diamondsuit$')
 
     def _plot_vision_blockers(self):

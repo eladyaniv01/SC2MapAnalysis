@@ -15,3 +15,4 @@ if __name__ == "__main__":
         if label in {8}:
             region.plot_perimeter()
             region.polygon.plot()
+            region.plot()

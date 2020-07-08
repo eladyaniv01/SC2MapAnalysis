@@ -20,13 +20,13 @@ class MapData:
         self.placement_arr = bot.game_info.placement_grid.data_numpy
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
-        self.map_ramps = [MDRamp(r) for r in bot.game_info.map_ramps]
+        self.map_ramps = [MDRamp(self, r) for r in bot.game_info.map_ramps]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
         self.vision_blockers = bot.game_info.vision_blockers
         self.region_grid = None
         self.regions = {}
         nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
-        self.nonpathable_indices = np.column_stack((nonpathable_indices[1], nonpathable_indices[0]))
+        self.nonpathable_indices_stacked = np.column_stack((nonpathable_indices[1], nonpathable_indices[0]))
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
@@ -79,13 +79,14 @@ class MapData:
 
         for ramp in region.region_ramps:
             for p in region.polygon.perimeter:
-                if self._distance(p, ramp.top_center) < 7:
+                if self._distance(p, ramp.top_center) < 8:
                     li.append(ramp)
         li = list(set(li))
         for ramp in region.region_ramps:
             if ramp not in li:
                 region.region_ramps.remove(ramp)
-                # ramp.regions.remove(region)
+                ramp.regions.remove(region)
+        region.region_ramps = list(set(region.region_ramps))
 
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
@@ -141,7 +142,7 @@ class MapData:
                      f"R<{[r.label for r in set(ramp.regions)]}>",
                      bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
                      )
-            x, y = zip(*ramp.indices)
+            x, y = zip(ramp.indices)
             # plt.fill(x, y, color="w")
             plt.scatter(x, y, color="w")
 
@@ -153,7 +154,7 @@ class MapData:
         plt.scatter(x, y, color="r")
 
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap='terrain')
-        x, y = zip(*self.nonpathable_indices)
+        x, y = zip(*self.nonpathable_indices_stacked)
         plt.scatter(x, y, color="grey")
 
         for mfield in self.mineral_fields:
