@@ -5,6 +5,7 @@ from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as
 from scipy.spatial import distance
 
 from constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
+from constructs import MDRamp
 from Region import Region
 
 
@@ -19,7 +20,7 @@ class MapData:
         self.placement_arr = bot.game_info.placement_grid.data_numpy
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
-        self.map_ramps = bot.game_info.map_ramps
+        self.map_ramps = [MDRamp(r) for r in bot.game_info.map_ramps]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
         self.vision_blockers = bot.game_info.vision_blockers
         self.region_grid = None
@@ -29,14 +30,24 @@ class MapData:
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
+        plt.style.use('ggplot')
 
-    def closest_node_idx(self, node, nodes):
+    def in_region(self, point):
+        for region in self.regions.values():
+            if region.inside(point):
+                return region
+
+    def _distance(self, p1, p2):
+        """
+        :param other:
+        """
+        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+
+    def _closest_node_idx(self, node, nodes):
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
 
-
-
-    def compile_map(self):
+    def _calc_grid(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
@@ -45,39 +56,67 @@ class MapData:
         # for some operations the array must have same numbers or rows and cols,  adding
         # zeros to fix that
         rows, cols = labeled_array.shape
-        region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
-        regions_labels = np.unique(labeled_array)
+        self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
+        self.regions_labels = np.unique(labeled_array)
 
+    def _calc_ramps(self, region, i):
+        ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
+        perimeter_nodes = region.polygon.perimeter
+
+        result_ramp_indexes = []
+        for n in perimeter_nodes:
+            result_ramp_indexes.append(self._closest_node_idx(n, ramp_nodes))
+        result_ramp_indexes = list(set(result_ramp_indexes))
+        for rn in result_ramp_indexes:
+            # and distance from perimeter is less than ?
+            ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]][0]
+
+            """for ramp in map ramps  if ramp exists,  append the region if not,  create new one"""
+            if region not in ramp.regions:
+                ramp.regions.append(region)
+            region.region_ramps.append(ramp)
+        li = []
+
+        for ramp in region.region_ramps:
+            for p in region.polygon.perimeter:
+                if self._distance(p, ramp.top_center) < 7:
+                    li.append(ramp)
+        li = list(set(li))
+        for ramp in region.region_ramps:
+            if ramp not in li:
+                region.region_ramps.remove(ramp)
+                # ramp.regions.remove(region)
+
+    def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
         pre_regions = {}
-        for i in range(len(regions_labels)):
-            region = Region(array=np.where(region_grid == i, 1, 0), label=i, map_data=self,
+        for i in range(len(self.regions_labels)):
+            region = Region(array=np.where(self.region_grid == i, 1, 0), label=i, map_data=self,
                             map_expansions=self.base_locations)
             pre_regions[i] = region
+            # gather the regions that are bigger than self.min_region_area
+            i = 0
+            for region in pre_regions.values():
+                if self.max_region_area > region.get_area > self.min_region_area:
+                    region.label = i
+                    self.regions[i] = region
+                    self._calc_ramps(region=region, i=i)
 
-        # gather the regions that are bigger than 50 cells
-        i = 0
-        for region in pre_regions.values():
-            if self.max_region_area > region.get_area > self.min_region_area:
-                region.label = i
-                self.regions[i] = region
-                ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
-                perimeter_nodes = region.polygon.perimeter[:, [1, 0]]
-                result_ramp_indexes = []
-                for n in perimeter_nodes:
-                    result_ramp_indexes.append(self.closest_node_idx(n, ramp_nodes))
-                result_ramp_indexes = list(set(result_ramp_indexes))
-                for rn in result_ramp_indexes:
-                    ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]]
-                    region.region_ramps.append(ramp[0])
-                i += 1
+                    i += 1
 
-        self.region_grid = region_grid
+    def compile_map(self):
+        self._calc_grid()
+        self._calc_regions()
+
+
+
+
+
 
     def plot_map(self, fontdict: dict = None):
 
-        plt.style.use('ggplot')
+
         if not fontdict:
             fontdict = {'family': 'normal',
                         'weight': 'bold',
@@ -89,34 +128,22 @@ class MapData:
         im = plt.imshow(self.region_grid, origin="lower")
         colors = [im.cmap(im.norm(value)) for value in values]
 
-        for key, value in self.regions.items():
-            if value.label == 0:
-                continue
-
-            plt.text(value.polygon.center[0],
-                     value.polygon.center[1],
-                     value.label,
+        for lbl, reg in self.regions.items():
+            plt.text(reg.polygon.center[0],
+                     reg.polygon.center[1],
+                     reg.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
 
-            for ramp in value.region_ramps:
-                plt.text(ramp.top_center[0] + np.random.randint(-5, 5),  # todo  structured offset and not random
-                         ramp.top_center[1] + np.random.randint(-5, 5),
-                         f"R<{value.label}>",
-                         bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
-                         )
-                x, y = zip(*ramp.points)
-                # plt.fill(x, y, color="w")
-                plt.scatter(x, y, color="w")
-        # for ramp in self.map_ramps:
-        #     plt.text(ramp.top_center.rounded[0],
-        #              ramp.top_center.rounded[1],
-        #              f"{ramp.top_center.rounded[0]}, {ramp.top_center.rounded[1]}",
-        #              bbox=dict(fill=False, edgecolor='w', linewidth=1),
-        #              fontdict=fontdict)
-        # x, y = zip(*ramp.points)
-        # # plt.fill(x, y, color="w")
-        # plt.scatter(x, y, color="w")
+        for ramp in self.map_ramps:
+            plt.text(ramp.top_center[0],
+                     ramp.top_center[1],
+                     f"R<{[r.label for r in set(ramp.regions)]}>",
+                     bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
+                     )
+            x, y = zip(*ramp.indices)
+            # plt.fill(x, y, color="w")
+            plt.scatter(x, y, color="w")
 
         for vb in self.vision_blockers:
             plt.text(vb[0],

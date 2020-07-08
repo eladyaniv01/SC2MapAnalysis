@@ -12,6 +12,6 @@ if __name__ == "__main__":
     map_data = MapData(bot=bot)
     map_data.plot_map()
     for label, region in map_data.regions.items():
-        if label in {9}:
+        if label in {8}:
             region.plot_perimeter()
             region.polygon.plot()

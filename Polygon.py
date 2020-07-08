@@ -28,7 +28,7 @@ class Polygon:
     def perimeter(self):
         isolated_region = self.region.array
         xx, yy = np.gradient(isolated_region)
-        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)
+        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)[:, [1, 0]]
         return edge_indices
 
     @property
