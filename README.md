@@ -39,16 +39,24 @@ map_data.plot_map()
 # ramps are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86649725-af265980-bfea-11ea-86ea-aa95a3afe0a3.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86949603-95565500-c157-11ea-8c46-5c4ee4a15c88.png" width="90%"></img> 
 ```python
-# isolate a region,  plot it's polygon
-map_data.regions[8].polygon.plot()
+# isolate a region,  plot it
+>>>map_data.regions[8].plot()
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86651102-ed704880-bfeb-11ea-8185-27c97092c2f2.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86949703-b9199b00-c157-11ea-845b-8e8367ba5ee5.png" width="90%"></img> 
 
 ```python
 # you can also inspect the perimeter
-map_data.regions[8].plot_perimeter()
+>>>map_data.regions[8].plot_perimeter()
 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86651092-eb0dee80-bfeb-11ea-8859-bfec9434def5.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/86949775-cfbff200-c157-11ea-8693-5a339e553db6.png" width="90%"></img> 
+
+```python
+#query a point with respect to region
+>>>p = (130,100)
+>>>map_data.in_region(p)
+Region 8
+```
+
