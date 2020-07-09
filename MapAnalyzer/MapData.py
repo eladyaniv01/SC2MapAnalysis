@@ -4,9 +4,9 @@ from sc2 import BotAI
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
-from constructs import MDRamp
-from Region import Region
+from MapAnalyzer.constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
+from MapAnalyzer.constructs import MDRamp
+from MapAnalyzer.Region import Region
 
 
 # todo - assert that all ramps are accounted for

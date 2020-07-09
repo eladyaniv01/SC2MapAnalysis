@@ -1,11 +1,11 @@
 import lzma
 import pickle
 
-from MapData import MapData
-from utils import import_bot_instance
+from MapAnalyzer.MapData import MapData
+from MapAnalyzer.utils import import_bot_instance
 
 if __name__ == "__main__":
-    with lzma.open("pickle_gameinfo/SubmarineLE.xz", "rb") as f:
+    with lzma.open("MapAnalyzer/pickle_gameinfo/WorldofSleepersLE.xz", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
     bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sc2.position import Point2
 
-from Polygon import Polygon
+from MapAnalyzer.Polygon import Polygon
 
 
 class Region:
