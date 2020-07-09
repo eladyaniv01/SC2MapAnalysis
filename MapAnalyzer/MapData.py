@@ -77,7 +77,6 @@ class MapData:
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
             ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]][0]
-
             """for ramp in map ramps  if ramp exists,  append the region if not,  create new one"""
             if region not in ramp.regions:
                 ramp.regions.append(region)
@@ -104,14 +103,13 @@ class MapData:
                             map_expansions=self.base_locations)
             pre_regions[i] = region
             # gather the regions that are bigger than self.min_region_area
-            i = 0
-            for region in pre_regions.values():
-                if self.max_region_area > region.get_area > self.min_region_area:
-                    region.label = i
-                    self.regions[i] = region
-                    self._calc_ramps(region=region, i=i)
-
-                    i += 1
+        j = 0
+        for region in pre_regions.values():
+            if self.max_region_area > region.get_area > self.min_region_area:
+                region.label = j
+                self.regions[j] = region
+                self._calc_ramps(region=region, i=j)
+                j += 1
 
     def compile_map(self):
         self._calc_grid()
