@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -54,7 +54,7 @@ class Region:
         self._plot_vision_blockers()
         self.plot_perimeter()
 
-    def inside(self, point):
+    def inside(self, point: Union[Point2, Tuple]):
         return self.polygon.is_inside(point)
 
     @property

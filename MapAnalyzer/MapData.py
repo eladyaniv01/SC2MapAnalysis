@@ -1,6 +1,9 @@
+from typing import Union, Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
 from sc2 import BotAI
+from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
@@ -32,7 +35,11 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
         plt.style.use('ggplot')
 
-    def in_region(self, point):
+    def in_region(self, point: Union[Point2, Tuple]):
+        if isinstance(point, Point2):
+            point = point.rounded
+        if isinstance(point, Tuple):
+            point = int(point[0]), int(point[1])
         for region in self.regions.values():
             if region.inside(point):
                 return region
@@ -110,16 +117,10 @@ class MapData:
         self._calc_grid()
         self._calc_regions()
 
-
-
-
-
-
     def plot_map(self, fontdict: dict = None):
 
-
         if not fontdict:
-            fontdict = {'family': 'normal',
+            fontdict = {'family': 'serif',
                         'weight': 'bold',
                         'size': 25}
 

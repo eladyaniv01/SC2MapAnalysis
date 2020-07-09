@@ -1,5 +1,13 @@
+from typing import Tuple, List, TYPE_CHECKING
+
 import numpy as np
+from sc2.game_info import Ramp as sc2Ramp
 from scipy.ndimage import center_of_mass
+
+if TYPE_CHECKING:
+    from .MapData import MapData
+    from .Region import Region
+
 
 class Area:
     def __init__(self):
@@ -7,7 +15,7 @@ class Area:
 
 
 class MDRamp(Area):
-    def __init__(self, map_data, ramp):
+    def __init__(self, map_data: "MapData", ramp: sc2Ramp):
         self.regions = []
         self.ramp = ramp
         self.map_data = map_data
@@ -44,9 +52,10 @@ class MDRamp(Area):
 
 
 class VisionBlockerArea(Area):
-    def __init__(self, indices, regions):
+    def __init__(self, indices: Tuple[np.ndarray, np.ndarray], regions: List["Region"]):
         self.regions = regions
         self.indices = indices
+        super().__init__()
 
     @property
     def area(self):
@@ -56,11 +65,12 @@ class VisionBlockerArea(Area):
         return f'<VisionBlockerArea;{self.area}> of {[r for r in self.regions]}'
 
 
-class ChokeArea(MDRamp, VisionBlockerArea):
-    def __init__(self, regions, ramp=None, vision_blocker=None):
+class ChokeArea(Area):
+    def __init__(self, regions: List["Region"], ramp: "MDRamp" = None, vision_blocker: "VisionBlockerArea" = None):
         self.regions = regions
         self.ramp = ramp
         self.vision_blocker = vision_blocker
+        super().__init__()
 
     @property
     def is_ramp(self):
