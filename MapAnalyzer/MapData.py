@@ -45,9 +45,6 @@ class MapData:
                 return region
 
     def _distance(self, p1, p2):
-        """
-        :param other:
-        """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
     def _closest_node_idx(self, node, nodes):
@@ -187,3 +184,4 @@ class MapData:
 
         plt.grid()
         plt.show()
+
