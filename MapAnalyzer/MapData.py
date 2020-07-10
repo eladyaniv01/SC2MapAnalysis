@@ -1,6 +1,5 @@
 from typing import Union, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 from sc2 import BotAI
 from sc2.position import Point2
@@ -33,7 +32,7 @@ class MapData:
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
-        plt.style.use('ggplot')
+
 
     def in_region(self, point: Union[Point2, Tuple]):
         if isinstance(point, Point2):
@@ -122,7 +121,8 @@ class MapData:
         self._calc_regions()
 
     def plot_map(self, fontdict: dict = None):
-
+        import matplotlib.pyplot as plt
+        plt.style.use('ggplot')
         if not fontdict:
             fontdict = {'family': 'serif',
                         'weight': 'bold',

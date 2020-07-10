@@ -1,6 +1,5 @@
 from typing import Tuple, List, Union, TYPE_CHECKING
 
-import matplotlib.pyplot as plt
 import numpy as np
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
@@ -17,6 +16,8 @@ class Polygon:
         self.indices = np.where(self.array == 1)
 
     def plot(self):
+        import matplotlib.pyplot as plt
+        plt.style.use('ggplot')
         plt.imshow(self.array, origin="lower")
         plt.show()
 
