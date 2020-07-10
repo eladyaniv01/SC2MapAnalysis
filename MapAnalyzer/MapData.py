@@ -54,6 +54,14 @@ class MapData:
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
 
+    def _clean_ramps(self, region):
+        to_remove = []
+        for mramp in region.region_ramps:
+            if len(mramp.regions) < 2:
+                to_remove.append(mramp)
+        for mramp in to_remove:
+            region.region_ramps.remove(mramp)
+
     def _calc_grid(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
@@ -85,7 +93,7 @@ class MapData:
 
         for ramp in region.region_ramps:
             for p in region.polygon.perimeter:
-                if self._distance(p, ramp.top_center) < 8:
+                if self._distance(p, ramp.bottom_center) < 8 or self._distance(p, ramp.top_center) < 8:
                     li.append(ramp)
         li = list(set(li))
         for ramp in region.region_ramps:
@@ -93,6 +101,7 @@ class MapData:
                 region.region_ramps.remove(ramp)
                 ramp.regions.remove(region)
         region.region_ramps = list(set(region.region_ramps))
+        self._clean_ramps(region)
 
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,

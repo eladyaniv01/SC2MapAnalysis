@@ -34,7 +34,11 @@ class MDRamp(Area):
 
     @property
     def top_center(self):
-        return self.ramp.top_center
+        return self.ramp.top_center \
+ \
+    @property
+    def bottom_center(self):
+        return self.ramp.bottom_center
 
     @property
     def indices(self):
