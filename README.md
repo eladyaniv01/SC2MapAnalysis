@@ -43,8 +43,9 @@ map_data.plot_map()
 # gas geysers are yellow spades 
 # ramps are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
+# choke area's are marked with green heart suites
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86950247-9a67d400-c158-11ea-9fdb-c63f647b1c6d.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/87227966-db552800-c3a6-11ea-93d6-7d252becbda2.png" width="90%"></img> 
 ```python
 # isolate a region,  plot it
 >>>map_data.regions[8].plot()
