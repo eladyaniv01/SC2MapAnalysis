@@ -4,6 +4,11 @@ Early Stage Draft,
 to get an idea of what the api can do,  check out "run.py" 
 it is meant to be a tool(extension) for https://github.com/BurnySc2/python-sc2/
 
+Thanks A lot to https://github.com/DrInfy for solving one of the biggest challenges,  finding rare choke points,
+check out his sc2 python framework, https://github.com/DrInfy/sharpy-sc2 Sharpy for rapid bot development,   
+check out sc2pathlib,https://github.com/DrInfy/sc2-pathlib  a high performant rust module with python interface for pathfinding 
+
+
 
 Example:
 ```python
@@ -38,8 +43,9 @@ map_data.plot_map()
 # gas geysers are yellow spades 
 # ramps are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
+# choke area's are marked with green heart suites
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86950247-9a67d400-c158-11ea-9fdb-c63f647b1c6d.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/87227966-db552800-c3a6-11ea-93d6-7d252becbda2.png" width="90%"></img> 
 ```python
 # isolate a region,  plot it
 >>>map_data.regions[8].plot()
