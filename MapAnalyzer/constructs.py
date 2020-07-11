@@ -21,7 +21,7 @@ class ChokeArea:
     @property
     def center(self):
         cm = center_of_mass(self.array)
-        return np.int(cm[1]), np.int(cm[0])
+        return np.int(cm[0]), np.int(cm[1])
 
     @property
     def array(self):

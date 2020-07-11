@@ -7,8 +7,9 @@ from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as
 from scipy.spatial import distance
 
 from MapAnalyzer.constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
-from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea, ChokeArea
 from MapAnalyzer.Region import Region
+from .sc2pathlibp import Sc2Map
 
 
 # todo - assert that all ramps are accounted for
@@ -25,6 +26,7 @@ class MapData:
         self.map_ramps = [MDRamp(self, r.points, r) for r in bot.game_info.map_ramps]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
         self._vision_blockers = bot.game_info.vision_blockers
+        self.map_chokes = []  # set later  on compile
         self.map_vision_blockers = []  # set later  on compile
         self.vision_blockers_grid = None  # set later  on compile
         self.region_grid = None
@@ -33,7 +35,17 @@ class MapData:
         self.nonpathable_indices_stacked = np.column_stack((nonpathable_indices[1], nonpathable_indices[0]))
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
+        self.pathlib_map = None
+        self.get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
+
+    def get_pathlib_map(self):
+        self.pathlib_map = Sc2Map(
+            self.path_arr,
+            self.placement_arr,
+            self.terrain_height,
+            self.bot.game_info.playable_area,
+        )
 
     def in_region(self, point: Union[Point2, Tuple]):
         if isinstance(point, Point2):
@@ -46,10 +58,9 @@ class MapData:
 
     @staticmethod
     def indices_to_points(indices):
-        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))]) \
- \
-               @ staticmethod
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
 
+    @staticmethod
     def points_to_indices(points):
         return (
             (np.array(
@@ -132,12 +143,20 @@ class MapData:
             if len(indices[0]):
                 vba = VisionBlockerArea(map_data=self, points=self.indices_to_points(indices))
                 region = self.in_region(vba.center)
-                print(region)
-                print(vba.area)
+
                 if region and 5 < vba.area < 100:
                     vba.regions.append(region)
                     region.region_vision_blockers.append(vba)
                     self.map_vision_blockers.append(vba)
+
+    def _calc_chokes(self):
+        chokes = self.pathlib_map.chokes
+        for choke in chokes:
+            new_choke = ChokeArea(map_data=self, points=choke.pixels)
+            region = self.in_region(new_choke.center)
+            region.region_chokes.append(new_choke)
+            new_choke.regions.append(region)
+            self.map_chokes.append(new_choke)
 
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
@@ -160,6 +179,7 @@ class MapData:
         self._calc_grid()
         self._calc_regions()
         self._calc_vision_blockers()
+        self._calc_chokes()
 
     def plot_map(self, fontdict: dict = None):
         import matplotlib.pyplot as plt
@@ -190,7 +210,7 @@ class MapData:
                      f"R<{[r.label for r in set(ramp.regions)]}>",
                      bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
                      )
-            x, y = zip(ramp.indices)
+            x, y = zip(*ramp.points)
             # plt.fill(x, y, color="w")
             plt.scatter(x, y, color="w")
 
@@ -214,6 +234,10 @@ class MapData:
             #          "G", color="orange", fontdict=fontdict, )
 
             plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
+                        edgecolors="g")
+        for choke in self.map_chokes:
+            x, y = zip(*choke.points)
+            plt.scatter(x, y, marker=r'$\heartsuit$', s=100,
                         edgecolors="g")
         fontsize = 14
         ax = plt.gca()

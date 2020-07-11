@@ -16,6 +16,7 @@ class Region:
         self.region_ramps = []  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
         self.region_vb = []
+        self.region_chokes = []
 
     def plot_perimeter(self, self_only=True):
         import matplotlib.pyplot as plt
@@ -31,7 +32,7 @@ class Region:
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
         for r in self.region_ramps:
-            x, y = zip(r.indices)
+            x, y = zip(*r.points)
             plt.scatter(x, y, color="black", marker=r'$\diamondsuit$')
 
     def _plot_vision_blockers(self):

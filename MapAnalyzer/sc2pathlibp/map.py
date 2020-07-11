@@ -7,7 +7,6 @@ from .sc2pathlib import Map
 
 # from sc2 import Point2
 
-# noinspection PyIncorrectDocstring,PyIncorrectDocstring
 class Sc2Map:
     def __init__(self,
                  pathing_grid: np.ndarray,
@@ -25,7 +24,7 @@ class Sc2Map:
             np.swapaxes(height_map, 0, 1),
             playable_area.x,
             playable_area.y,
-            playable_area.x + playable_area.width,
+            playable_area.x + playable_area.width, 
             playable_area.y + playable_area.height
         )
 
