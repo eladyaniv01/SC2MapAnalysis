@@ -1,6 +1,6 @@
 # SC2MapAnalysis
 
-Early Stage Draft, 
+Early Stage Draft, **Currently needs to be disabled on GoldeWallLe**  fix pending 
 to get an idea of what the api can do,  check out "run.py" 
 **you will need to have 64 bit python installed** 
 it is meant to be a tool(extension) for https://github.com/BurnySc2/python-sc2/
