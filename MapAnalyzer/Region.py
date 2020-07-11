@@ -14,16 +14,18 @@ class Region:
         self.polygon = Polygon(self)
         self.bases = [base for base in map_expansions if self.polygon.is_inside((base.rounded[1], base.rounded[0]))]
         self.region_ramps = []  # will be set later by mapdata
+        self.region_vision_blockers = []  # will be set later by mapdata
         self.region_vb = []
 
-    def plot_perimeter(self):
+    def plot_perimeter(self, self_only=True):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
         x, y = zip(*self.polygon.perimeter)
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
-        plt.grid()
-        plt.show()
+        if self_only:
+            plt.grid()
+            plt.show()
 
     def _plot_ramps(self):
         import matplotlib.pyplot as plt
@@ -56,14 +58,18 @@ class Region:
                 plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
                             edgecolors="g")
 
-    def plot(self):
+    def plot(self, self_only=True):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
         self._plot_geysers()
         self._plot_minerals()
         self._plot_ramps()
         self._plot_vision_blockers()
-        self.plot_perimeter()
+        if self_only:
+            self.plot_perimeter(self_only=True)
+
+        else:
+            self.plot_perimeter(self_only=False)
 
     def inside(self, point: Union[Point2, Tuple]):
         return self.polygon.is_inside(point)

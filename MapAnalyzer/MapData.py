@@ -7,7 +7,7 @@ from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as
 from scipy.spatial import distance
 
 from MapAnalyzer.constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
-from MapAnalyzer.constructs import MDRamp
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 
 
@@ -22,9 +22,11 @@ class MapData:
         self.placement_arr = bot.game_info.placement_grid.data_numpy
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
-        self.map_ramps = [MDRamp(self, r) for r in bot.game_info.map_ramps]
+        self.map_ramps = [MDRamp(self, r.points, r) for r in bot.game_info.map_ramps]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
-        self.vision_blockers = bot.game_info.vision_blockers
+        self._vision_blockers = bot.game_info.vision_blockers
+        self.map_vision_blockers = []  # set later  on compile
+        self.vision_blockers_grid = None  # set later  on compile
         self.region_grid = None
         self.regions = {}
         nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
@@ -32,7 +34,6 @@ class MapData:
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.compile_map()  # this is called on init, but allowed to be called again every step
-
 
     def in_region(self, point: Union[Point2, Tuple]):
         if isinstance(point, Point2):
@@ -43,14 +44,32 @@ class MapData:
             if region.inside(point):
                 return region
 
-    def _distance(self, p1, p2):
+    @staticmethod
+    def indices_to_points(indices):
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))]) \
+ \
+               @ staticmethod
+
+    def points_to_indices(points):
+        return (
+            (np.array(
+                [p[0] for p in points]),
+             np.array(
+                 [p[1] for p in points])
+            )
+        )
+
+    @staticmethod
+    def _distance(p1, p2):
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
-    def _closest_node_idx(self, node, nodes):
+    @staticmethod
+    def _closest_node_idx(node, nodes):
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
 
-    def _clean_ramps(self, region):
+    @staticmethod
+    def _clean_ramps(region):
         to_remove = []
         for mramp in region.region_ramps:
             if len(mramp.regions) < 2:
@@ -69,6 +88,14 @@ class MapData:
         rows, cols = labeled_array.shape
         self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
         self.regions_labels = np.unique(labeled_array)
+        points = self._vision_blockers
+        vision_blockers_indices = ((np.array([p[0] for p in points]),
+                                    np.array([p[1] for p in points])))
+        vision_blockers_array = np.zeros(self.region_grid.shape, dtype='int')
+        vision_blockers_array[vision_blockers_indices] = 1
+        vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
+        self.vision_blockers_grid = vb_labeled_array
+        self.vision_blockers_labels = np.unique(labeled_array)
 
     def _calc_ramps(self, region, i):
         ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
@@ -99,6 +126,19 @@ class MapData:
         region.region_ramps = list(set(region.region_ramps))
         self._clean_ramps(region)
 
+    def _calc_vision_blockers(self):
+        for i in range(len(self.vision_blockers_labels)):
+            indices = np.where(self.vision_blockers_grid == i)
+            if len(indices[0]):
+                vba = VisionBlockerArea(map_data=self, points=self.indices_to_points(indices))
+                region = self.in_region(vba.center)
+                print(region)
+                print(vba.area)
+                if region and 5 < vba.area < 100:
+                    vba.regions.append(region)
+                    region.region_vision_blockers.append(vba)
+                    self.map_vision_blockers.append(vba)
+
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
@@ -119,10 +159,13 @@ class MapData:
     def compile_map(self):
         self._calc_grid()
         self._calc_regions()
+        self._calc_vision_blockers()
 
     def plot_map(self, fontdict: dict = None):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
+        # for region in self.regions.values():
+        #     region.plot(self_only=False)
         if not fontdict:
             fontdict = {'family': 'serif',
                         'weight': 'bold',
@@ -151,11 +194,11 @@ class MapData:
             # plt.fill(x, y, color="w")
             plt.scatter(x, y, color="w")
 
-        for vb in self.vision_blockers:
+        for vb in self._vision_blockers:
             plt.text(vb[0],
                      vb[1],
                      "X")
-        x, y = zip(*self.vision_blockers)
+        x, y = zip(*self._vision_blockers)
         plt.scatter(x, y, color="r")
 
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap='terrain')
@@ -184,4 +227,3 @@ class MapData:
 
         plt.grid()
         plt.show()
-
