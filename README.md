@@ -1,6 +1,8 @@
 # SC2MapAnalysis
 
-Early Stage Draft, **Currently needs to be disabled on GoldeWallLe**  fix pending 
+Early Stage Draft, 
+
+**Currently needs to be disabled on [GoldeWallLE , DeathAuraLE]**  fix pending 
 
 to get an idea of what the api can do,  check out "run.py" 
 
