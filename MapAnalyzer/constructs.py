@@ -9,10 +9,18 @@ if TYPE_CHECKING:
 
 
 class ChokeArea:
-    def __init__(self, map_data: "MapData", points):
+    def __init__(self, map_data: "MapData", points, main_line=None):
         self.map_data = map_data
         self.regions = []  # set by map_data
         self.points = points
+        self.main_line = main_line
+
+    def get_width(self):
+        import math
+        if self.main_line is not None:
+            x1, y1 = self.main_line[0][0], self.main_line[0][1]
+            x2, y2 = self.main_line[1][0], self.main_line[1][1]
+            return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     @property
     def indices(self):

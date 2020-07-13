@@ -38,7 +38,7 @@ class Region:
     def _plot_vision_blockers(self):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
-        for vb in self.map_data.vision_blockers:
+        for vb in self.map_data._vision_blockers:
             if self.inside(point=vb):
                 plt.text(vb[0],
                          vb[1],
@@ -74,10 +74,6 @@ class Region:
 
     def inside(self, point: Union[Point2, Tuple]):
         return self.polygon.is_inside(point)
-
-    @property
-    def choke_points(self):
-        pass
 
     @property
     def base_locations(self):

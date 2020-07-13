@@ -29,6 +29,8 @@ class MapData:
         self.map_chokes = []  # set later  on compile
         self.map_vision_blockers = []  # set later  on compile
         self.vision_blockers_grid = None  # set later  on compile
+        self.vision_blockers_labels = []  # set later  on compile
+        self.vision_blockers_grid = []  # set later  on compile
         self.region_grid = None
         self.regions = {}
         nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
@@ -36,10 +38,10 @@ class MapData:
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.pathlib_map = None
-        self.get_pathlib_map()
+        self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
-    def get_pathlib_map(self):
+    def _get_pathlib_map(self):
         self.pathlib_map = Sc2Map(
             self.path_arr,
             self.placement_arr,
@@ -91,22 +93,34 @@ class MapData:
     def _calc_grid(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
+        for c in self.pathlib_map.chokes:
+            for p in c.pixels:
+                x, y = int(p[0]), int(p[1])
+                grid[x][y] = 0
+                p = Point2((x, y))
+                for new_point in p.neighbors8:
+                    x, y = int(new_point[0]), int(new_point[1])
+                    grid[x][y] = 0
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)
 
         # for some operations the array must have same numbers or rows and cols,  adding
         # zeros to fix that
-        rows, cols = labeled_array.shape
-        self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
-        self.regions_labels = np.unique(labeled_array)
+        # rows, cols = labeled_array.shape
+        # self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
+        self.region_grid = labeled_array.astype(int)
+        self.regions_labels = np.unique(self.region_grid)
         points = self._vision_blockers
-        vision_blockers_indices = ((np.array([p[0] for p in points]),
-                                    np.array([p[1] for p in points])))
-        vision_blockers_array = np.zeros(self.region_grid.shape, dtype='int')
-        vision_blockers_array[vision_blockers_indices] = 1
-        vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
-        self.vision_blockers_grid = vb_labeled_array
-        self.vision_blockers_labels = np.unique(labeled_array)
+
+        if len(points):
+            vision_blockers_indices = ((np.array([p[0] for p in points]),
+                                        np.array([p[1] for p in points])))
+            vision_blockers_array = np.zeros(self.region_grid.shape, dtype='int')
+            vision_blockers_array[vision_blockers_indices] = 1
+            vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
+            self.vision_blockers_grid = vb_labeled_array
+            self.vision_blockers_labels = np.unique(labeled_array)
+
 
     def _calc_ramps(self, region, i):
         ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
@@ -144,7 +158,7 @@ class MapData:
                 vba = VisionBlockerArea(map_data=self, points=self.indices_to_points(indices))
                 region = self.in_region(vba.center)
 
-                if region and 5 < vba.area < 100:
+                if region and 5 < vba.area < 200:
                     vba.regions.append(region)
                     region.region_vision_blockers.append(vba)
                     self.map_vision_blockers.append(vba)
@@ -152,11 +166,14 @@ class MapData:
     def _calc_chokes(self):
         chokes = self.pathlib_map.chokes
         for choke in chokes:
-            new_choke = ChokeArea(map_data=self, points=choke.pixels)
-            region = self.in_region(new_choke.center)
-            region.region_chokes.append(new_choke)
-            new_choke.regions.append(region)
-            self.map_chokes.append(new_choke)
+            points = [p for p in choke.pixels if self.placement_arr[int(p[0])][int(p[1])] == 1]
+            if len(points) > 0:
+                new_choke = ChokeArea(map_data=self, points=points, main_line=choke.main_line)
+                region = self.in_region(new_choke.center)
+                if region:
+                    region.region_chokes.append(new_choke)
+                    new_choke.regions.append(region)
+                    self.map_chokes.append(new_choke)
 
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
@@ -213,13 +230,15 @@ class MapData:
             x, y = zip(*ramp.points)
             # plt.fill(x, y, color="w")
             plt.scatter(x, y, color="w")
+        # some maps has no vision blockers
+        if len(self._vision_blockers) > 0:
+            for vb in self._vision_blockers:
+                plt.text(vb[0],
+                         vb[1],
+                         "X")
 
-        for vb in self._vision_blockers:
-            plt.text(vb[0],
-                     vb[1],
-                     "X")
-        x, y = zip(*self._vision_blockers)
-        plt.scatter(x, y, color="r")
+            x, y = zip(*self._vision_blockers)
+            plt.scatter(x, y, color="r")
 
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap='terrain')
         x, y = zip(*self.nonpathable_indices_stacked)
