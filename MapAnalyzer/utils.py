@@ -5,6 +5,9 @@ from sc2.player import BotAI
 
 
 def import_bot_instance(raw_game_data, raw_game_info, raw_observation):
+    """
+    import_bot_instance DocString
+    """
     bot = BotAI()
     game_data = GameData(raw_game_data.data)
     game_info = GameInfo(raw_game_info.game_info)

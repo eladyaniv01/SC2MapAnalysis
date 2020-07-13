@@ -12,8 +12,10 @@ from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
 
 
-# todo - assert that all ramps are accounted for
 class MapData:
+    """
+    Polygon DocString
+    """
     def __init__(self, bot: BotAI):
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA

@@ -7,6 +7,9 @@ from MapAnalyzer.Polygon import Polygon
 
 
 class Region:
+    """
+    Region DocString
+    """
     def __init__(self, map_data, array: np.ndarray, label: int, map_expansions: List[Point2]):
         self.map_data = map_data
         self.array = array

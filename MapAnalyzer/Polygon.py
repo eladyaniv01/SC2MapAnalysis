@@ -9,7 +9,9 @@ if TYPE_CHECKING:
 
 
 class Polygon:
-
+    """
+    Polygon DocString
+    """
     def __init__(self, map_data, array):
         self.map_data = map_data
         self.array = array
