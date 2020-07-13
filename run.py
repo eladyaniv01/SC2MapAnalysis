@@ -14,7 +14,4 @@ if __name__ == "__main__":
     bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
     map_data = MapData(bot=bot)
     map_data.plot_map()
-    # for label, region in map_data.regions.items():
-    #     region.plot_perimeter()
-    #     region.polygon.plot()
-    #     region.plot()
+    map_data.save_plot()

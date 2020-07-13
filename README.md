@@ -4,7 +4,6 @@ Early Stage development,
 
 **you will need to have 64 bit python installed** 
 
-
 to get an idea of what the api can do,  check out "run.py" 
 
 
