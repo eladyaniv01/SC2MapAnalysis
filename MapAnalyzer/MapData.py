@@ -45,9 +45,20 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     def save_plot(self):
+        """
+        Will save the plot to a file names after the map name
+
+        :return: None
+
+        """
         self.plot_map(save=True)
 
     def _get_pathlib_map(self):
+        """
+        Will initialize the sc2pathlib `SC2Map` object for future use
+        :return: None
+
+        """
         self.pathlib_map = Sc2Map(
             self.path_arr,
             self.placement_arr,
@@ -56,6 +67,13 @@ class MapData:
         )
 
     def in_region(self, point: Union[Point2, Tuple]):
+        """
+
+        :param point:
+        :type point: :class:`sc2.position.Point2` / Tuple
+        :return: :class:`Region` object, or None
+        :rtype:
+        """
         if isinstance(point, Point2):
             point = point.rounded
         if isinstance(point, Tuple):
