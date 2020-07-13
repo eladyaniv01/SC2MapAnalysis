@@ -1,8 +1,13 @@
 # SC2MapAnalysis
 
 Early Stage Draft, 
+
+**Currently needs to be disabled on [GoldeWallLE , DeathAuraLE]**  fix pending 
+
 to get an idea of what the api can do,  check out "run.py" 
+
 **you will need to have 64 bit python installed** 
+
 it is meant to be a tool(extension) for https://github.com/BurnySc2/python-sc2/
 
 Thanks A lot to https://github.com/DrInfy for solving one of the biggest challenges,  finding rare choke points,
