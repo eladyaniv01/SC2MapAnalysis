@@ -11,9 +11,14 @@ to get an idea of what the api can do,  check out "run.py"
 
 it is meant to be a tool(extension) for [BurnySc2](https://github.com/BurnySc2/python-sc2/)
 
-Thanks A lot to [DrInfy](https://github.com/DrInfy) for solving one of the biggest challenges,  finding rare choke points,
-check out his sc2 python framework, [Sharpy](https://github.com/DrInfy/sharpy-sc2) for rapid bot development,   
-check out [sc2pathlib](https://github.com/DrInfy/sc2-pathlib)  a high performant rust module with python interface for pathfinding 
+Thanks A lot to [DrInfy](https://github.com/DrInfy) for solving one of the biggest challenges,  finding rare choke points.
+
+check out his work 
+
+* [Sharpy](https://github.com/DrInfy/sharpy-sc2) for rapid bot development.
+
+* [sc2pathlib](https://github.com/DrInfy/sc2-pathlib)  a high performant rust module with python interface for pathfinding 
+
 
 
 
