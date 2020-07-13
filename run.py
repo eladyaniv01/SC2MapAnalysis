@@ -7,6 +7,7 @@ from MapAnalyzer.utils import import_bot_instance
 if __name__ == "__main__":
     map_file = "GoldenWallLE.xz"
     map_file = "DeathAuraLE.xz"
+    map_file = "SubmarineLE.xz"
     with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
 
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)

@@ -23,7 +23,8 @@ class MapData:
         self.placement_arr = bot.game_info.placement_grid.data_numpy
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
-        self.map_ramps = [MDRamp(self, r.points, r) for r in bot.game_info.map_ramps]
+        self.map_ramps = [MDRamp(map_data=self, ramp=r, array=self.points_to_numpy_array(r.points))
+                          for r in self.bot.game_info.map_ramps]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
         self._vision_blockers = bot.game_info.vision_blockers
         self.map_chokes = []  # set later  on compile
@@ -74,6 +75,13 @@ class MapData:
                  [p[1] for p in points])
             )
         )
+
+    def points_to_numpy_array(self, points):
+        rows, cols = self.path_arr.shape
+        arr = np.zeros((rows, cols), dtype=np.uint8)
+        for p in points:
+            arr[p] = 1
+        return arr
 
     @staticmethod
     def _distance(p1, p2):
@@ -157,8 +165,10 @@ class MapData:
     def _calc_vision_blockers(self):
         for i in range(len(self.vision_blockers_labels)):
             indices = np.where(self.vision_blockers_grid == i)
+            points = self.indices_to_points(indices)
+            vb_arr = self.points_to_numpy_array(points)
             if len(indices[0]):
-                vba = VisionBlockerArea(map_data=self, points=self.indices_to_points(indices))
+                vba = VisionBlockerArea(map_data=self, array=vb_arr)
                 region = self.in_region(vba.center)
 
                 if region and 5 < vba.area < 200:
@@ -171,7 +181,8 @@ class MapData:
         for choke in chokes:
             points = [p for p in choke.pixels if self.placement_arr[int(p[0])][int(p[1])] == 1]
             if len(points) > 0:
-                new_choke = ChokeArea(map_data=self, points=points, main_line=choke.main_line)
+                new_choke_array = self.points_to_numpy_array(points)
+                new_choke = ChokeArea(map_data=self, array=new_choke_array, main_line=choke.main_line)
                 region = self.in_region(new_choke.center)
                 if region:
                     region.region_chokes.append(new_choke)

@@ -11,7 +11,7 @@ class Region:
         self.map_data = map_data
         self.array = array
         self.label = label
-        self.polygon = Polygon(self)
+        self.polygon = Polygon(map_data=self.map_data, array=self.array)
         self.bases = [base for base in map_expansions if self.polygon.is_inside((base.rounded[1], base.rounded[0]))]
         self.region_ramps = []  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
