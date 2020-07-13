@@ -41,6 +41,9 @@ class MapData:
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def save_plot(self):
+        self.plot_map(save=True)
+
     def _get_pathlib_map(self):
         self.pathlib_map = Sc2Map(
             self.path_arr,
@@ -198,7 +201,7 @@ class MapData:
         self._calc_vision_blockers()
         self._calc_chokes()
 
-    def plot_map(self, fontdict: dict = None):
+    def plot_map(self, fontdict: dict = None, save=False):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
         # for region in self.regions.values():
@@ -269,4 +272,9 @@ class MapData:
             tick.label1.set_fontweight('bold')
 
         plt.grid()
-        plt.show()
+        if save:
+            map_name = self.bot.game_info.map_name
+            plt.savefig(f'{map_name}.png')
+            plt.close()
+        else:
+            plt.show()
