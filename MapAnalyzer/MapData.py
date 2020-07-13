@@ -14,7 +14,7 @@ from .sc2pathlibp import Sc2Map
 
 class MapData:
     """
-    Polygon DocString
+    MapData DocString
     """
     def __init__(self, bot: BotAI):
         self.min_region_area = MIN_REGION_AREA
