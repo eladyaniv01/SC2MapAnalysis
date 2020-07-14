@@ -192,17 +192,12 @@ class MapData:
                 new_choke_array = self.points_to_numpy_array(points)
                 new_choke = ChokeArea(map_data=self, array=new_choke_array, main_line=choke.main_line)
                 region = self.in_region(new_choke.center)
-                if not region:
-                    for i in range(len(new_choke.points)):
-                        region = self.in_region(new_choke.points[i])
-                        if region:
-                            break
                 if region:
                     region.region_chokes.append(new_choke)
                     new_choke.regions.append(region)
                 if region is None:
-                    print(new_choke.points[i])
-                    print(f"please report bug no region found for choke area with center {new_choke.center}")
+                    print(
+                        f"<{self.bot.game_info.map_name}>: please report bug no region found for choke area with center {new_choke.center}")
                 self.map_chokes.append(new_choke)
 
     def _calc_regions(self):
