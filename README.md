@@ -54,11 +54,12 @@ map_data.plot_map()
 # ramps are marked with white dots 
 # ramp top center is marked with '^'
 # gas geysers are yellow spades 
-# ramps are marked with R<region_label>
+# MDRampss are marked with R<region_label>
 # height span is with respect to :   light = high , dark = low
-# choke area's are marked with green heart suites
+# ChokeArea is marked with green heart suites
+# Corners are marked with a red 'V' 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/87227966-db552800-c3a6-11ea-93d6-7d252becbda2.png" width="90%"></img> 
+<img src="https://user-images.githubusercontent.com/40754127/87425708-cbc42200-c5e6-11ea-928f-213375371da1.png" width="90%"></img> 
 ```python
 # isolate a region,  plot it
 >>>map_data.regions[8].plot()
