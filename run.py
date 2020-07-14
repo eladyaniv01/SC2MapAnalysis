@@ -17,9 +17,6 @@ if __name__ == "__main__":
     map_data = MapData(bot=bot)
 
     for region in map_data.regions.values():
-        print(region)
-        print(region.polygon.center)
-        print(map_data.in_region(region.polygon.center))
         assert (region == map_data.in_region(region.center)), \
             f"{region.center}  has not been found inside the Region {region}"
 

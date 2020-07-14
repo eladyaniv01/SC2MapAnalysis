@@ -3,6 +3,7 @@ from typing import Tuple, List, Union, TYPE_CHECKING
 import numpy as np
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
+from skimage.feature import corner_harris, corner_peaks
 
 if TYPE_CHECKING:
     pass
@@ -25,6 +26,11 @@ class Polygon:
         plt.style.use('ggplot')
         plt.imshow(self.array, origin="lower")
         plt.show()
+
+    @property
+    def corners(self):
+        coords = corner_peaks(corner_harris(self.array), min_distance=3, threshold_rel=0.01)
+        return coords
 
     @property
     def region(self):

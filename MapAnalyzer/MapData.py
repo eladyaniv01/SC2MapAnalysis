@@ -248,6 +248,12 @@ class MapData:
             c = np.array((1.0, np.random.random_sample(), np.random.random_sample())).reshape(1, -1)
             x, y = zip(*reg.polygon.perimeter)
             plt.scatter(x, y, cmap="accent", marker="1", s=300)
+            for corner in reg.polygon.corners:
+                plt.scatter(corner[1],
+                            corner[0],
+                            marker="v",
+                            c='red',
+                            s=150)
 
         for ramp in self.map_ramps:
             plt.text(ramp.top_center[0],

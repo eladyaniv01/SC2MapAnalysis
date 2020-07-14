@@ -25,6 +25,10 @@ class Region:
     def center(self):
         return self.polygon.center
 
+    @property
+    def corners(self):
+        return self.polygon.corners
+
     def plot_perimeter(self, self_only=True):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
