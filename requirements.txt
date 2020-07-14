@@ -20,4 +20,3 @@ coverage
 codecov
 loguru
 scikit-image
-matplotlib
