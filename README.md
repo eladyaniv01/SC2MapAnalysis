@@ -73,15 +73,11 @@ or,  get a region by quering a point ( for example the position of the enemy )
 region = map_data.in_region(point)
 ```
 
-access corners via 
-```python
-region.corners
-```
-
-get ramps, chokes , vision blockers , bases 
+other handy objects available through our interface
 ```python
 region.region_chokes
 region.region_ramps
 region.region_vision_blockers
 region.bases
+region.corners
 ```
