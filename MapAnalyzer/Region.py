@@ -21,6 +21,10 @@ class Region:
         self.region_vb = []
         self.region_chokes = []
 
+    @property
+    def center(self):
+        return self.polygon.center
+
     def plot_perimeter(self, self_only=True):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')

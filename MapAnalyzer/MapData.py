@@ -124,14 +124,7 @@ class MapData:
     def _calc_grid(self):
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
-        for c in self.pathlib_map.chokes:
-            for p in c.pixels:
-                x, y = int(p[0]), int(p[1])
-                grid[x][y] = 0
-                p = Point2((x, y))
-                for new_point in p.neighbors8:
-                    x, y = int(new_point[0]), int(new_point[1])
-                    grid[x][y] = 0
+
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)
 
@@ -152,18 +145,14 @@ class MapData:
             self.vision_blockers_grid = vb_labeled_array
             self.vision_blockers_labels = np.unique(labeled_array)
 
-
     def _calc_ramps(self, region, i):
-        ramp_nodes = [ramp.top_center for ramp in self.map_ramps]
+        ramp_nodes = [ramp.center for ramp in self.map_ramps]
         perimeter_nodes = region.polygon.perimeter
 
-        result_ramp_indexes = []
-        for n in perimeter_nodes:
-            result_ramp_indexes.append(self._closest_node_idx(n, ramp_nodes))
-        result_ramp_indexes = list(set(result_ramp_indexes))
+        result_ramp_indexes = list(set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
-            ramp = [r for r in self.map_ramps if r.top_center == ramp_nodes[rn]][0]
+            ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
             """for ramp in map ramps  if ramp exists,  append the region if not,  create new one"""
             if region not in ramp.regions:
                 ramp.regions.append(region)
@@ -249,11 +238,16 @@ class MapData:
         colors = [im.cmap(im.norm(value)) for value in values]
 
         for lbl, reg in self.regions.items():
-            plt.text(reg.polygon.center[0],
-                     reg.polygon.center[1],
+            # flipping the axes,  needs debugging
+            plt.text(reg.center[1],
+                     reg.center[0],
                      reg.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
+            # random color for each perimeter
+            c = np.array((1.0, np.random.random_sample(), np.random.random_sample())).reshape(1, -1)
+            x, y = zip(*reg.polygon.perimeter)
+            plt.scatter(x, y, cmap="accent", marker="1", s=300)
 
         for ramp in self.map_ramps:
             plt.text(ramp.top_center[0],

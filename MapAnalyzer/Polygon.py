@@ -49,7 +49,7 @@ class Polygon:
 
     @property
     def area(self):
-        return len(self.indices[0])
+        return len(self.points)
 
     @property
     def get_holes(self) -> List[Tuple]:
