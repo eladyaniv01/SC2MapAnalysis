@@ -33,12 +33,12 @@ class Polygon:
     @property
     def center(self):
         cm = center_of_mass(self.array)
-        return np.int(cm[1]), np.int(cm[0])
+        return np.int(cm[0]), np.int(cm[1])
 
     def is_inside(self, point: Union[Point2, Tuple]) -> bool:
         if isinstance(point, Point2):
             point = point.rounded
-        return point[0] in self.indices[1] and point[1] in self.indices[0]
+        return point[0] in self.indices[0] and point[1] in self.indices[1]
 
     @property
     def perimeter(self) -> Tuple[np.ndarray, np.ndarray]:

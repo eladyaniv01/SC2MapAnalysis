@@ -14,5 +14,10 @@ if __name__ == "__main__":
 
     bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
     map_data = MapData(bot=bot)
+
+    for region in map_data.regions.values():
+        print(region)
+        print(region.polygon.center)
+        print(map_data.in_region(region.polygon.center))
     map_data.plot_map()
     map_data.save_plot()
