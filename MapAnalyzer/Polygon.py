@@ -38,7 +38,7 @@ class Polygon:
     def is_inside(self, point: Union[Point2, Tuple]) -> bool:
         if isinstance(point, Point2):
             point = point.rounded
-        return point[0] in self.indices[0] and point[1] in self.indices[1]
+        return point in self.points
 
     @property
     def perimeter(self) -> Tuple[np.ndarray, np.ndarray]:
