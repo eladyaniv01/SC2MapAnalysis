@@ -70,7 +70,7 @@ access a Region like so(region_label is of type int):
 
 or,  get a region by quering a point ( for example the position of the enemy ) 
 
-**`region = map_data.in_region(point)`
+**`region = map_data.in_region(point)`**
 
 
 other handy objects available through our interface
