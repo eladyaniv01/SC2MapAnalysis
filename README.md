@@ -64,16 +64,16 @@ map_data.plot_map()
 # Corners are marked with a red 'V' 
 ```
 
-access a Region like so(region_label is of type int):
+- access a Region like so(region_label is of type int):
 
 **`region = map_data.regions[region_label]`**
 
-or,  get a region by quering a point ( for example the position of the enemy ) 
+- get a region by quering a point ( for example the position of the enemy ) 
 
 **`region = map_data.in_region(point)`**
 
 
-other handy objects available through our interface
+- other handy objects available through our interface
 
 **`region.region_chokes`**
 
