@@ -16,7 +16,6 @@ class Polygon:
     def __init__(self, map_data, array):
         self.map_data = map_data
         self.array = array
-
         self.indices = np.where(self.array == 1)
         points = map_data.indices_to_points(self.indices)
         self.points = [Point2(p) for p in points]
@@ -47,6 +46,8 @@ class Polygon:
         return np.int(cm[0]), np.int(cm[1])
 
     def is_inside(self, point: Union[Point2, Tuple]) -> bool:
+        if point in self.points:
+            return True
         if isinstance(point, Point2):
             point = point.rounded
         return point in self.points

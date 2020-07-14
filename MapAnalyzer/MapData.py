@@ -148,7 +148,6 @@ class MapData:
     def _calc_ramps(self, region, i):
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
         perimeter_nodes = region.polygon.perimeter
-
         result_ramp_indexes = list(set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
@@ -188,15 +187,23 @@ class MapData:
     def _calc_chokes(self):
         chokes = self.pathlib_map.chokes
         for choke in chokes:
-            points = [p for p in choke.pixels if self.placement_arr[int(p[0])][int(p[1])] == 1]
+            points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
                 new_choke_array = self.points_to_numpy_array(points)
                 new_choke = ChokeArea(map_data=self, array=new_choke_array, main_line=choke.main_line)
                 region = self.in_region(new_choke.center)
+                if not region:
+                    for i in range(len(new_choke.points)):
+                        region = self.in_region(new_choke.points[i])
+                        if region:
+                            break
                 if region:
                     region.region_chokes.append(new_choke)
                     new_choke.regions.append(region)
-                    self.map_chokes.append(new_choke)
+                if region is None:
+                    print(new_choke.points[i])
+                    print(f"please report bug no region found for choke area with center {new_choke.center}")
+                self.map_chokes.append(new_choke)
 
     def _calc_regions(self):
         # some regions are with area of 1, 2 ,5   these are not what we want,
@@ -224,18 +231,14 @@ class MapData:
     def plot_map(self, fontdict: dict = None, save=False):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
-        # for region in self.regions.values():
-        #     region.plot(self_only=False)
         if not fontdict:
             fontdict = {'family': 'serif',
                         'weight': 'bold',
                         'size': 25}
 
-        # colormap for regions
-        values = list(self.regions.keys())
         plt.figure(figsize=(20, 20))
-        im = plt.imshow(self.region_grid, origin="lower")
-        colors = [im.cmap(im.norm(value)) for value in values]
+        plt.imshow(self.region_grid, origin="lower")
+
 
         for lbl, reg in self.regions.items():
             # flipping the axes,  needs debugging
@@ -245,7 +248,6 @@ class MapData:
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
             # random color for each perimeter
-            c = np.array((1.0, np.random.random_sample(), np.random.random_sample())).reshape(1, -1)
             x, y = zip(*reg.polygon.perimeter)
             plt.scatter(x, y, cmap="accent", marker="1", s=300)
             for corner in reg.polygon.corner_points:
@@ -262,7 +264,6 @@ class MapData:
                      bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
                      )
             x, y = zip(*ramp.points)
-            # plt.fill(x, y, color="w")
             plt.scatter(x, y, color="w")
         # some maps has no vision blockers
         if len(self._vision_blockers) > 0:
@@ -282,10 +283,6 @@ class MapData:
             plt.scatter(mfield.position[0], mfield.position[1], color="blue")
 
         for gasgeyser in self.normal_geysers:
-            #         plt.text(gasgeyser.position[1],
-            #         gasgeyser.position[0],
-            #          "G", color="orange", fontdict=fontdict, )
-
             plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
                         edgecolors="g")
         for choke in self.map_chokes:
