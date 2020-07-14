@@ -28,9 +28,14 @@ class Polygon:
         plt.show()
 
     @property
-    def corners(self):
+    def corner_array(self):
         coords = corner_peaks(corner_harris(self.array), min_distance=3, threshold_rel=0.01)
         return coords
+
+    @property
+    def corner_points(self):
+        points = [Point2(p) for p in self.corner_array]
+        return points
 
     @property
     def region(self):

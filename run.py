@@ -20,5 +20,8 @@ if __name__ == "__main__":
         assert (region == map_data.in_region(region.center)), \
             f"{region.center}  has not been found inside the Region {region}"
 
+    print(region.corners)
+    print(type(region.corners[0]))
+
     map_data.plot_map()
     map_data.save_plot()

@@ -27,7 +27,7 @@ class Region:
 
     @property
     def corners(self):
-        return self.polygon.corners
+        return self.polygon.corner_points
 
     def plot_perimeter(self, self_only=True):
         import matplotlib.pyplot as plt
