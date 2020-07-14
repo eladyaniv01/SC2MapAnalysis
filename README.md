@@ -64,6 +64,8 @@ map_data.plot_map()
 # Corners are marked with a red 'V' 
 ```
 <img src="https://user-images.githubusercontent.com/40754127/87425708-cbc42200-c5e6-11ea-928f-213375371da1.png"/>
+
+
 - access a Region like so(region_label is of type int):
 
     **`region = map_data.regions[region_label]`**
