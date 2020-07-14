@@ -63,23 +63,25 @@ map_data.plot_map()
 # ChokeArea is marked with green heart suites
 # Corners are marked with a red 'V' 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/87425708-cbc42200-c5e6-11ea-928f-213375371da1.png" width="90%"></img> 
+
+access a Region like so(region_label is of type int):
 ```python
-# isolate a region,  plot it
->>>map_data.regions[8].plot()
+region = map_data.regions[region_label]   
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86950267-a0f64b80-c158-11ea-968c-773483fd3a7a.png" width="90%"></img> 
-
+or,  get a region by quering a point ( for example the position of the enemy ) 
 ```python
-# you can also inspect the perimeter
->>>map_data.regions[8].plot_perimeter()
-
+region = map_data.in_region(point)
 ```
-<img src="https://user-images.githubusercontent.com/40754127/86950274-a2277880-c158-11ea-9f07-fdeec300abae.png" width="90%"></img> 
 
+access corners via 
 ```python
-#query a point with respect to region
->>>p = (130,100)
->>>map_data.in_region(p)
-Region 8
+region.corners
+```
+
+get ramps, chokes , vision blockers , bases 
+```python
+region.region_chokes
+region.region_ramps
+region.region_vision_blockers
+region.bases
 ```
