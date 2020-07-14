@@ -66,22 +66,22 @@ map_data.plot_map()
 
 - access a Region like so(region_label is of type int):
 
-**`region = map_data.regions[region_label]`**
+    **`region = map_data.regions[region_label]`**
 
 - get a region by quering a point ( for example the position of the enemy ) 
 
-**`region = map_data.in_region(point)`**
+    **`region = map_data.in_region(point)`**
 
 
 - other handy objects available through our interface
 
-**`region.region_chokes`**
+    **`region.region_chokes`**
 
-**`region.region_ramps`**
+    **`region.region_ramps`**
 
-**`region.region_vision_blockers`**
+    **`region.region_vision_blockers`**
 
-**`region.bases`**
+    **`region.bases`**
 
-**`region.corners`**
+    **`region.corners`**
 
