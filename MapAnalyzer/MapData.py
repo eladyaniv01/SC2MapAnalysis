@@ -31,7 +31,6 @@ class MapData:
         self._vision_blockers = bot.game_info.vision_blockers
         self.map_chokes = []  # set later  on compile
         self.map_vision_blockers = []  # set later  on compile
-        self.vision_blockers_grid = None  # set later  on compile
         self.vision_blockers_labels = []  # set later  on compile
         self.vision_blockers_grid = []  # set later  on compile
         self.region_grid = None
@@ -66,9 +65,63 @@ class MapData:
             self.bot.game_info.playable_area,
         )
 
-    def in_region(self, point: Union[Point2, Tuple]):
+    def where_all(self, point: Union[Point2, Tuple]):
         """
+        region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+        choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+        :param point:
+        :type point:
+        :return:
+        :rtype:
+        """
+        results = []
+        if isinstance(point, Point2):
+            point = point.rounded
+        if isinstance(point, Tuple):
+            point = int(point[0]), int(point[1])
 
+        for region in self.regions.values():
+            if region.inside_p(point):
+                results.append(region)
+        for ramp in self.map_ramps:
+            if ramp.is_inside_point(point):
+                results.append(ramp)
+        for vba in self.map_vision_blockers:
+            if vba.is_inside_point(point):
+                results.append(vba)
+        return results
+
+    def where(self, point: Union[Point2, Tuple]):
+        """
+        region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        :param point:
+        :type point:
+        :return:
+        :rtype:
+        """
+        if isinstance(point, Point2):
+            point = point.rounded
+        if isinstance(point, Tuple):
+            point = int(point[0]), int(point[1])
+
+        for region in self.regions.values():
+            if region.inside_p(point):
+                return region
+        for ramp in self.map_ramps:
+            if ramp.is_inside_point(point):
+                return ramp
+        for vba in self.map_vision_blockers:
+
+            if vba.is_inside_point(point):
+                return vba
+
+    def in_region_p(self, point: Union[Point2, Tuple]):
+        """
+        time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        as long as polygon points is of type set, not list
         :param point:
         :type point: :class:`sc2.position.Point2` / Tuple
         :return: :class:`Region` object, or None
@@ -79,7 +132,23 @@ class MapData:
         if isinstance(point, Tuple):
             point = int(point[0]), int(point[1])
         for region in self.regions.values():
-            if region.inside(point):
+            if region.inside_p(point):
+                return region
+
+    def in_region_i(self, point: Union[Point2, Tuple]):
+        """
+        time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        :param point:
+        :type point: :class:`sc2.position.Point2` / Tuple
+        :return: :class:`Region` object, or None
+        :rtype:
+        """
+        if isinstance(point, Point2):
+            point = point.rounded
+        if isinstance(point, Tuple):
+            point = int(point[0]), int(point[1])
+        for region in self.regions.values():
+            if region.inside_i(point):
                 return region
 
     @staticmethod
@@ -143,7 +212,7 @@ class MapData:
             vision_blockers_array[vision_blockers_indices] = 1
             vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
             self.vision_blockers_grid = vb_labeled_array
-            self.vision_blockers_labels = np.unique(labeled_array)
+            self.vision_blockers_labels = np.unique(vb_labeled_array)
 
     def _calc_ramps(self, region, i):
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
@@ -177,12 +246,12 @@ class MapData:
             vb_arr = self.points_to_numpy_array(points)
             if len(indices[0]):
                 vba = VisionBlockerArea(map_data=self, array=vb_arr)
-                region = self.in_region(vba.center)
+                region = self.in_region_p(vba.center)
 
                 if region and 5 < vba.area < 200:
                     vba.regions.append(region)
                     region.region_vision_blockers.append(vba)
-                    self.map_vision_blockers.append(vba)
+                self.map_vision_blockers.append(vba)
 
     def _calc_chokes(self):
         chokes = self.pathlib_map.chokes
@@ -191,11 +260,11 @@ class MapData:
             if len(points) > 0:
                 new_choke_array = self.points_to_numpy_array(points)
                 new_choke = ChokeArea(map_data=self, array=new_choke_array, main_line=choke.main_line)
-                region = self.in_region(new_choke.center)
+                region = self.in_region_p(new_choke.center)
                 if region:
                     region.region_chokes.append(new_choke)
                     new_choke.regions.append(region)
-                if region is None:
+                if region is None and self.where(new_choke.center) is None:
                     print(
                         f"<{self.bot.game_info.map_name}>: please report bug no region found for choke area with center {new_choke.center}")
                 self.map_chokes.append(new_choke)
@@ -205,7 +274,7 @@ class MapData:
         # so we filter those out
         pre_regions = {}
         for i in range(len(self.regions_labels)):
-            region = Region(array=np.where(self.region_grid == i, 1, 0), label=i, map_data=self,
+            region = Region(array=np.where(self.region_grid == i, 1, 0).T, label=i, map_data=self,
                             map_expansions=self.base_locations)
             pre_regions[i] = region
             # gather the regions that are bigger than self.min_region_area
@@ -223,7 +292,7 @@ class MapData:
         self._calc_vision_blockers()
         self._calc_chokes()
 
-    def plot_map(self, fontdict: dict = None, save=False):
+    def plot_map(self, fontdict: dict = None, save=False, figsize=20):
         import matplotlib.pyplot as plt
         plt.style.use('ggplot')
         if not fontdict:
@@ -231,14 +300,14 @@ class MapData:
                         'weight': 'bold',
                         'size': 25}
 
-        plt.figure(figsize=(20, 20))
+        plt.figure(figsize=(figsize, figsize))
         plt.imshow(self.region_grid, origin="lower")
 
 
         for lbl, reg in self.regions.items():
             # flipping the axes,  needs debugging
-            plt.text(reg.center[1],
-                     reg.center[0],
+            plt.text(reg.center[0],
+                     reg.center[1],
                      reg.label,
                      bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
                      fontdict=fontdict)
@@ -246,8 +315,8 @@ class MapData:
             x, y = zip(*reg.polygon.perimeter)
             plt.scatter(x, y, cmap="accent", marker="1", s=300)
             for corner in reg.polygon.corner_points:
-                plt.scatter(corner[1],
-                            corner[0],
+                plt.scatter(corner[0],
+                            corner[1],
                             marker="v",
                             c='red',
                             s=150)
@@ -280,6 +349,7 @@ class MapData:
         for gasgeyser in self.normal_geysers:
             plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
                         edgecolors="g")
+
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             plt.scatter(x, y, marker=r'$\heartsuit$', s=100,
