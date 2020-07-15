@@ -86,7 +86,7 @@ map_data.plot_map()
 
     will a list of area's the point is in ( for example a ramparea and a region could have mutual points )
     
-    **`region = map_data.where(point)`**
+    **`region = map_data.where_all(point)`**
 
 - other handy objects available through our interface
 
