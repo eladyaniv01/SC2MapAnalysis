@@ -22,7 +22,7 @@ check out his work
 
 * [Sharpy](https://github.com/DrInfy/sharpy-sc2) for rapid bot development.
 
-* [sc2pathlib](https://github.com/DrInfy/sc2-pathlib)  a high performant rust module with python interface for pathfinding 
+* [sc2pathlib](https://github.com/DrInfy/sc2-pathlib)  a high performance rust module with python interface for pathfinding 
 
 
 
@@ -37,14 +37,14 @@ from utils import import_bot_instance
 
 #if its from BurnySc2 it is compressed
 # https://github.com/BurnySc2/python-sc2/tree/develop/test/pickle_data
-
+YOUR_FILE_PATH = 'some_directory/map_file'
 with lzma.open(YOUR_FILE_PATH, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
 # mocking a bot object to initalize the map,  this is for when you want to do this while not in a game,  
 # if you want to use it in a game just pass in the bot object like shown below 
 
-bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+bot = (raw_import_bot_instancegame_data, raw_game_info, raw_observation)
 
 
 # And then you can instantiate a MapData Object like so
@@ -70,21 +70,21 @@ map_data.plot_map()
 
     **`region = map_data.regions[region_label]`**
 
-- get a region by quering a point ( for example the position of the enemy ) 
+- get a region by querying a point ( for example the position of the enemy ) 
 
     if the point is not inside a region, will return None
     
     **`region = map_data.in_region_p(point)`**
 
-- get an area by quering a point ( for example the position of the enemy ) 
+- get an area by querying a point ( for example the position of the enemy ) 
 
     will always return Area
     
     **`region = map_data.where(point)`**
 
-- get all constructs by quering a point ( for example the position of the enemy ) 
+- get all constructs by querying a point ( for example the position of the enemy ) 
 
-    will a list of area's the point is in ( for example a ramparea and a region could have mutual points )
+    will a list of area's the point is in ( for example a MDRampArea and a Region could have mutual points )
     
     **`region = map_data.where_all(point)`**
 

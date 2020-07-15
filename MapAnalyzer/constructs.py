@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Tuple
+from functools import lru_cache
+from typing import Tuple, TYPE_CHECKING
 
 import numpy as np
 from sc2.game_info import Ramp as sc2Ramp
@@ -8,12 +9,12 @@ from MapAnalyzer.Polygon import Polygon
 if TYPE_CHECKING:
     from .MapData import MapData
 
-from functools import lru_cache
 
 class ChokeArea(Polygon):
     """
     ChokeArea DocString
     """
+
     def __init__(self, array: np.ndarray, map_data: "MapData", main_line: Tuple = None):
         self.regions = []  # set by map_data
         self.main_line = main_line
@@ -30,10 +31,12 @@ class ChokeArea(Polygon):
     def __repr__(self):
         return f'<ChokeArea;{self.area}> of {[r for r in self.regions]}'
 
+
 class MDRamp(ChokeArea):
     """
     MDRamp DocString
     """
+
     def __init__(self, map_data: "MapData", array: np.ndarray, ramp: sc2Ramp):
         self.ramp = ramp
         super().__init__(map_data=map_data, array=array)
@@ -54,6 +57,7 @@ class VisionBlockerArea(ChokeArea):
     """
     VisionBlockerArea DocString
     """
+
     def __init__(self, map_data: "MapData", array: np.ndarray):
         super().__init__(map_data=map_data, array=array)
 

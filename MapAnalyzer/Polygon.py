@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Tuple, List, Union, TYPE_CHECKING
+from typing import List, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
 from sc2.position import Point2
@@ -60,9 +60,8 @@ class Polygon:
             point = point.rounded
         return point[0] in self.indices[0] and point[1] in self.indices[1]
 
-
     @property
-    def perimeter(self) -> Tuple[np.ndarray, np.ndarray]:
+    def perimeter(self) -> np.ndarray:
         isolated_region = self.array
         xx, yy = np.gradient(isolated_region)
         edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)

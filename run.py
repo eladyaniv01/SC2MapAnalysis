@@ -1,9 +1,11 @@
 import lzma
 import pickle
 
-from MapAnalyzer import Region, ChokeArea, MDRamp, Polygon
+from MapAnalyzer import ChokeArea, MDRamp, Polygon, Region
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
+
+# for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
 
 if __name__ == "__main__":
     maps = ["GoldenWallLE.xz",
