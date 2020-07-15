@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import List, Union, Tuple
 
 import numpy as np
@@ -126,6 +127,7 @@ class Region:
         else:
             self.plot_perimeter(self_only=False)
 
+    @lru_cache(100)
     def inside_p(self, point: Union[Point2, Tuple]):
         """
 
@@ -136,6 +138,7 @@ class Region:
         """
         return self.polygon.is_inside_point(point)
 
+    @lru_cache(100)
     def inside_i(self, point: Union[Point2, Tuple]):
         """
 

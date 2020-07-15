@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Union, Tuple
 
 import numpy as np
@@ -65,6 +66,7 @@ class MapData:
             self.bot.game_info.playable_area,
         )
 
+    @lru_cache(100)
     def where_all(self, point: Union[Point2, Tuple]):
         """
         region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
@@ -92,6 +94,7 @@ class MapData:
                 results.append(vba)
         return results
 
+    @lru_cache(100)
     def where(self, point: Union[Point2, Tuple]):
         """
         region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
@@ -118,6 +121,7 @@ class MapData:
             if vba.is_inside_point(point):
                 return vba
 
+    @lru_cache(100)
     def in_region_p(self, point: Union[Point2, Tuple]):
         """
         time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
@@ -135,6 +139,7 @@ class MapData:
             if region.inside_p(point):
                 return region
 
+    @lru_cache(100)
     def in_region_i(self, point: Union[Point2, Tuple]):
         """
         time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)

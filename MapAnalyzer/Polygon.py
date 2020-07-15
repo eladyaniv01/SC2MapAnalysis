@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Tuple, List, Union, TYPE_CHECKING
 
 import numpy as np
@@ -45,6 +46,7 @@ class Polygon:
         cm = center_of_mass(self.array)
         return np.int(cm[0]), np.int(cm[1])
 
+    @lru_cache(100)
     def is_inside_point(self, point: Union[Point2, Tuple]) -> bool:
         if point in self.points:
             return True
@@ -52,6 +54,7 @@ class Polygon:
             point = point.rounded
         return point in self.points
 
+    @lru_cache(100)
     def is_inside_indices(self, point: Union[Point2, Tuple]) -> bool:
         if isinstance(point, Point2):
             point = point.rounded

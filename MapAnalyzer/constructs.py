@@ -8,6 +8,7 @@ from MapAnalyzer.Polygon import Polygon
 if TYPE_CHECKING:
     from .MapData import MapData
 
+from functools import lru_cache
 
 class ChokeArea(Polygon):
     """
@@ -18,6 +19,7 @@ class ChokeArea(Polygon):
         self.main_line = main_line
         super().__init__(map_data=map_data, array=array)
 
+    @lru_cache(100)
     def get_width(self):
         import math
         if self.main_line is not None:
