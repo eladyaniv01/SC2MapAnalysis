@@ -71,15 +71,21 @@ map_data.plot_map()
     **`region = map_data.regions[region_label]`**
 
 - get a region by quering a point ( for example the position of the enemy ) 
+
     if the point is not inside a region, will return None
+    
     **`region = map_data.in_region_p(point)`**
 
 - get an area by quering a point ( for example the position of the enemy ) 
+
     will always return Area
+    
     **`region = map_data.where(point)`**
 
 - get all constructs by quering a point ( for example the position of the enemy ) 
+
     will a list of area's the point is in ( for example a ramparea and a region could have mutual points )
+    
     **`region = map_data.where(point)`**
 
 - other handy objects available through our interface
