@@ -44,7 +44,7 @@ with lzma.open(YOUR_FILE_PATH, "rb") as f:
 # mocking a bot object to initalize the map,  this is for when you want to do this while not in a game,  
 # if you want to use it in a game just pass in the bot object like shown below 
 
-bot = (raw_import_bot_instancegame_data, raw_game_info, raw_observation)
+bot = import_bot_instance(raw_import_bot_instancegame_data, raw_game_info, raw_observation)
 
 
 # And then you can instantiate a MapData Object like so
