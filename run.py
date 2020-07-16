@@ -9,11 +9,11 @@ from MapAnalyzer.utils import import_bot_instance
 
 if __name__ == "__main__":
     maps = [
-            "GoldenWallLE.xz",
+            # "GoldenWallLE.xz",
             # "DeathAuraLE.xz",
-            "SubmarineLE.xz",
+            # "SubmarineLE.xz",
             "AbyssalReefLE.xz",
-            "IceandChromeLE.xz",
+            # "IceandChromeLE.xz",
     ]
     for map_file in maps:
         with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
@@ -25,19 +25,20 @@ if __name__ == "__main__":
         map_data = MapData(bot=bot)
 
         for region in map_data.regions.values():
-            print(f"{map_file} <Region>   {map_data.where_all(region.center)}")
+            print(region.corners)
+            # print(f"{map_file} <Region>   {map_data.where_all(region.center)}")
             assert isinstance(
                     map_data.where(region.center), Region
             ), f"<Map : {map_file}, Region : {region}, where :  {map_data.where(region.center)} point : {region.center}>"
         for choke in map_data.map_chokes:
-            print(f"{map_file} <Choke>   {map_data.where_all(choke.center)}")
+            # print(f"{map_file} <Choke>   {map_data.where_all(choke.center)}")
             assert isinstance(
                     map_data.where(choke.center), (Region, Polygon, ChokeArea)
             ), f"<Map : {map_file}, Choke : {choke}, where :  {map_data.where(choke.center)} point : {choke.center}>"
         for mdramp in map_data.map_ramps:
-            print(f"{map_file} <MDRamp>   {map_data.where_all(mdramp.center)}")
+            # print(f"{map_file} <MDRamp>   {map_data.where_all(mdramp.center)}")
             assert isinstance(
                     map_data.where(mdramp.center), (Region, Polygon, MDRamp)
             ), f"<Map : {map_file}, MDRamp : {mdramp}, where :  {map_data.where(mdramp.center)} point : {mdramp.center}>"
-        # map_data.plot_map()
+        map_data.plot_map()
         # map_data.save_plot()
