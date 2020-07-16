@@ -1,21 +1,27 @@
+
 from typing import List, Optional, Tuple
 
 import numpy as np
 
+# noinspection PyUnresolvedReferences
 from .sc2pathlib import Map
 
 
 # from sc2 import Point2
 
 class Sc2Map:
-    def __init__(self,
-                 pathing_grid: np.ndarray,
-                 placement_grid: np.ndarray,
-                 height_map: np.ndarray,
-                 playable_area: 'sc2.position.Rect'):
+    def __init__(
+            self,
+            pathing_grid: np.ndarray,
+            placement_grid: np.ndarray,
+            height_map: np.ndarray,
+            playable_area: "sc2.position.Rect",
+    ):
 
         self._overlord_spots: Optional[List[Tuple[float, float]]] = None
-        self._chokes: Optional[List[Tuple[Tuple[int, int], Tuple[int, int]]]] = None
+        self._chokes: Optional[
+            List[Tuple[Tuple[int, int], Tuple[int, int]]]
+        ] = None
 
         self.height_map = height_map
         self._map = Map(
@@ -24,8 +30,8 @@ class Sc2Map:
             np.swapaxes(height_map, 0, 1),
             playable_area.x,
             playable_area.y,
-            playable_area.x + playable_area.width, 
-            playable_area.y + playable_area.height
+                playable_area.x + playable_area.width,
+                playable_area.y + playable_area.height,
         )
 
     @property
@@ -78,6 +84,13 @@ class Sc2Map:
 
     def plot_image(self, image, image_name: str = "map", resize: int = 4):
         import cv2
-        resized = cv2.resize(image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)
+
+        resized = cv2.resize(
+                image,
+                dsize=None,
+                fx=resize,
+                fy=resize,
+                interpolation=cv2.INTER_NEAREST,
+        )
         cv2.imshow(image_name, resized)
         cv2.waitKey(1)

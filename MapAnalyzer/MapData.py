@@ -1,14 +1,23 @@
 from functools import lru_cache
-from typing import Union, Tuple
+from typing import List, Set, Tuple, Union
 
 import numpy as np
+from numpy import float64, int64, ndarray
 from sc2 import BotAI
 from sc2.position import Point2
-from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
+from scipy.ndimage import (
+    binary_fill_holes,
+    generate_binary_structure,
+    label as ndlabel,
+)
 from scipy.spatial import distance
 
-from MapAnalyzer.constants import MIN_REGION_AREA, BINARY_STRUCTURE, MAX_REGION_AREA
-from MapAnalyzer.constructs import MDRamp, VisionBlockerArea, ChokeArea
+from MapAnalyzer.constants import (
+    BINARY_STRUCTURE,
+    MAX_REGION_AREA,
+    MIN_REGION_AREA,
+)
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
 
@@ -17,6 +26,7 @@ class MapData:
     """
     MapData DocString
     """
+
     def __init__(self, bot: BotAI):
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
@@ -26,8 +36,14 @@ class MapData:
         self.placement_arr = bot.game_info.placement_grid.data_numpy
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
-        self.map_ramps = [MDRamp(map_data=self, ramp=r, array=self.points_to_numpy_array(r.points))
-                          for r in self.bot.game_info.map_ramps]
+        self.map_ramps = [
+                MDRamp(
+                        map_data=self,
+                        ramp=r,
+                        array=self.points_to_numpy_array(r.points),
+                )
+                for r in self.bot.game_info.map_ramps
+        ]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
         self._vision_blockers = bot.game_info.vision_blockers
         self.map_chokes = []  # set later  on compile
@@ -36,8 +52,12 @@ class MapData:
         self.vision_blockers_grid = []  # set later  on compile
         self.region_grid = None
         self.regions = {}
-        nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
-        self.nonpathable_indices_stacked = np.column_stack((nonpathable_indices[1], nonpathable_indices[0]))
+        nonpathable_indices = np.where(
+                bot.game_info.pathing_grid.data_numpy == 0
+        )
+        self.nonpathable_indices_stacked = np.column_stack(
+                (nonpathable_indices[1], nonpathable_indices[0])
+        )
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.pathlib_map = None
@@ -54,6 +74,7 @@ class MapData:
         self.plot_map(save=True)
 
     def _get_pathlib_map(self):
+        # type: () -> None
         """
         Will initialize the sc2pathlib `SC2Map` object for future use
         :return: None
@@ -80,7 +101,7 @@ class MapData:
         results = []
         if isinstance(point, Point2):
             point = point.rounded
-        if isinstance(point, Tuple):
+        if isinstance(point, tuple):
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
@@ -107,7 +128,7 @@ class MapData:
         """
         if isinstance(point, Point2):
             point = point.rounded
-        if isinstance(point, Tuple):
+        if isinstance(point, tuple):
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
@@ -133,7 +154,7 @@ class MapData:
         """
         if isinstance(point, Point2):
             point = point.rounded
-        if isinstance(point, Tuple):
+        if isinstance(point, tuple):
             point = int(point[0]), int(point[1])
         for region in self.regions.values():
             if region.inside_p(point):
@@ -150,7 +171,7 @@ class MapData:
         """
         if isinstance(point, Point2):
             point = point.rounded
-        if isinstance(point, Tuple):
+        if isinstance(point, tuple):
             point = int(point[0]), int(point[1])
         for region in self.regions.values():
             if region.inside_i(point):
@@ -158,19 +179,23 @@ class MapData:
 
     @staticmethod
     def indices_to_points(indices):
-        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
+        # type: (Tuple[ndarray, ndarray]) -> Set[Tuple[int64, int64]]
+        return set(
+                [(indices[0][i], indices[1][i]) for i in range(len(indices[0]))]
+        )
 
     @staticmethod
     def points_to_indices(points):
+        # type: (Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]
         return (
-            (np.array(
-                [p[0] for p in points]),
-             np.array(
-                 [p[1] for p in points])
-            )
+                np.array([p[0] for p in points]),
+                np.array([p[1] for p in points]),
         )
 
-    def points_to_numpy_array(self, points):
+    def points_to_numpy_array(self,
+                              points,  # type: Union[List[Point2], Set[Tuple[int64, int64]], Set[Point2]]
+                              ):
+        # type: (...) -> ndarray
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
         for p in points:
@@ -179,15 +204,18 @@ class MapData:
 
     @staticmethod
     def _distance(p1, p2):
+        # type: (ndarray, Point2) -> float64
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
     @staticmethod
     def _closest_node_idx(node, nodes):
+        # type: (ndarray, List[Tuple[int, int]]) -> int64
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
 
     @staticmethod
     def _clean_ramps(region):
+        # type: (Region) -> None
         to_remove = []
         for mramp in region.region_ramps:
             if len(mramp.regions) < 2:
@@ -196,6 +224,7 @@ class MapData:
             region.region_ramps.remove(mramp)
 
     def _calc_grid(self):
+        # type: () -> None
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
 
@@ -211,18 +240,30 @@ class MapData:
         points = self._vision_blockers
 
         if len(points):
-            vision_blockers_indices = ((np.array([p[0] for p in points]),
-                                        np.array([p[1] for p in points])))
-            vision_blockers_array = np.zeros(self.region_grid.shape, dtype='int')
+            vision_blockers_indices = (
+                    np.array([p[0] for p in points]),
+                    np.array([p[1] for p in points]),
+            )
+            vision_blockers_array = np.zeros(
+                    self.region_grid.shape, dtype="int"
+            )
             vision_blockers_array[vision_blockers_indices] = 1
             vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
             self.vision_blockers_grid = vb_labeled_array
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
     def _calc_ramps(self, region, i):
+        # type: (Region, int) -> None
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
         perimeter_nodes = region.polygon.perimeter
-        result_ramp_indexes = list(set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
+        result_ramp_indexes = list(
+                set(
+                        [
+                                self._closest_node_idx(n, ramp_nodes)
+                                for n in perimeter_nodes
+                        ]
+                )
+        )
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
             ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
@@ -234,7 +275,10 @@ class MapData:
 
         for ramp in region.region_ramps:
             for p in region.polygon.perimeter:
-                if self._distance(p, ramp.bottom_center) < 8 or self._distance(p, ramp.top_center) < 8:
+                if (
+                        self._distance(p, ramp.bottom_center) < 8
+                        or self._distance(p, ramp.top_center) < 8
+                ):
                     li.append(ramp)
         li = list(set(li))
         for ramp in region.region_ramps:
@@ -245,6 +289,7 @@ class MapData:
         self._clean_ramps(region)
 
     def _calc_vision_blockers(self):
+        # type: () -> None
         for i in range(len(self.vision_blockers_labels)):
             indices = np.where(self.vision_blockers_grid == i)
             points = self.indices_to_points(indices)
@@ -259,28 +304,39 @@ class MapData:
                 self.map_vision_blockers.append(vba)
 
     def _calc_chokes(self):
+        # type: () -> None
         chokes = self.pathlib_map.chokes
         for choke in chokes:
             points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
                 new_choke_array = self.points_to_numpy_array(points)
-                new_choke = ChokeArea(map_data=self, array=new_choke_array, main_line=choke.main_line)
+                new_choke = ChokeArea(
+                        map_data=self,
+                        array=new_choke_array,
+                        main_line=choke.main_line,
+                )
                 region = self.in_region_p(new_choke.center)
                 if region:
                     region.region_chokes.append(new_choke)
                     new_choke.regions.append(region)
                 if region is None and self.where(new_choke.center) is None:
                     print(
-                        f"<{self.bot.game_info.map_name}>: please report bug no region found for choke area with center {new_choke.center}")
+                            f"<{self.bot.game_info.map_name}>: please report bug no region found for choke area with center {new_choke.center}"
+                    )
                 self.map_chokes.append(new_choke)
 
     def _calc_regions(self):
+        # type: () -> None
         # some regions are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
         pre_regions = {}
         for i in range(len(self.regions_labels)):
-            region = Region(array=np.where(self.region_grid == i, 1, 0).T, label=i, map_data=self,
-                            map_expansions=self.base_locations)
+            region = Region(
+                    array=np.where(self.region_grid == i, 1, 0).T,
+                    label=i,
+                    map_data=self,
+                    map_expansions=self.base_locations,
+            )
             pre_regions[i] = region
             # gather the regions that are bigger than self.min_region_area
         j = 0
@@ -292,6 +348,7 @@ class MapData:
                 j += 1
 
     def compile_map(self):
+        # type: () -> None
         self._calc_grid()
         self._calc_regions()
         self._calc_vision_blockers()
@@ -299,52 +356,48 @@ class MapData:
 
     def plot_map(self, fontdict: dict = None, save=False, figsize=20):
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         if not fontdict:
-            fontdict = {'family': 'serif',
-                        'weight': 'bold',
-                        'size': 25}
+            fontdict = {"family": "serif", "weight": "bold", "size": 25}
 
         plt.figure(figsize=(figsize, figsize))
         plt.imshow(self.region_grid, origin="lower")
 
-
         for lbl, reg in self.regions.items():
-            # flipping the axes,  needs debugging
-            plt.text(reg.center[0],
-                     reg.center[1],
-                     reg.label,
-                     bbox=dict(fill=True, alpha=0.5, edgecolor='red', linewidth=2),
-                     fontdict=fontdict)
+            plt.text(
+                    reg.center[0],
+                    reg.center[1],
+                    reg.label,
+                    bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2),
+                    fontdict=fontdict,
+            )
             # random color for each perimeter
             x, y = zip(*reg.polygon.perimeter)
             plt.scatter(x, y, cmap="accent", marker="1", s=300)
             for corner in reg.polygon.corner_points:
-                plt.scatter(corner[0],
-                            corner[1],
-                            marker="v",
-                            c='red',
-                            s=150)
+                plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
         for ramp in self.map_ramps:
-            plt.text(ramp.top_center[0],
-                     ramp.top_center[1],
-                     f"R<{[r.label for r in set(ramp.regions)]}>",
-                     bbox=dict(fill=True, alpha=0.3, edgecolor='cyan', linewidth=8),
-                     )
+            plt.text(
+                    ramp.top_center[0],
+                    ramp.top_center[1],
+                    f"R<{[r.label for r in set(ramp.regions)]}>",
+                    bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8),
+            )
             x, y = zip(*ramp.points)
             plt.scatter(x, y, color="w")
         # some maps has no vision blockers
         if len(self._vision_blockers) > 0:
             for vb in self._vision_blockers:
-                plt.text(vb[0],
-                         vb[1],
-                         "X")
+                plt.text(vb[0], vb[1], "X")
 
             x, y = zip(*self._vision_blockers)
             plt.scatter(x, y, color="r")
 
-        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap='terrain')
+        plt.imshow(
+                self.terrain_height, alpha=1, origin="lower", cmap="terrain"
+        )
         x, y = zip(*self.nonpathable_indices_stacked)
         plt.scatter(x, y, color="grey")
 
@@ -352,27 +405,32 @@ class MapData:
             plt.scatter(mfield.position[0], mfield.position[1], color="blue")
 
         for gasgeyser in self.normal_geysers:
-            plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
-                        edgecolors="g")
+            plt.scatter(
+                    gasgeyser.position[0],
+                    gasgeyser.position[1],
+                    color="yellow",
+                    marker=r"$\spadesuit$",
+                    s=500,
+                    edgecolors="g",
+            )
 
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
-            plt.scatter(x, y, marker=r'$\heartsuit$', s=100,
-                        edgecolors="g")
-        fontsize = 14
+            plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
+        fontsize = 25
         ax = plt.gca()
 
         for tick in ax.xaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight('bold')
+            tick.label1.set_fontweight("bold")
         for tick in ax.yaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight('bold')
+            tick.label1.set_fontweight("bold")
 
         plt.grid()
         if save:
             map_name = self.bot.game_info.map_name
-            plt.savefig(f'{map_name}.png')
+            plt.savefig(f"{map_name}.png")
             plt.close()
         else:
             plt.show()

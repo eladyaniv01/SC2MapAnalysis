@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import List, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
+from numpy import ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
 
@@ -13,7 +14,9 @@ class Polygon:
     """
     Polygon DocString
     """
+
     def __init__(self, map_data, array):
+        # type: ("MapData", ndarray) -> None
         self.map_data = map_data
         self.array = array
         self.indices = np.where(self.array == 1)
@@ -22,14 +25,18 @@ class Polygon:
 
     def plot(self):
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         plt.imshow(self.array, origin="lower")
         plt.show()
 
     @property
     def corner_array(self):
         from skimage.feature import corner_harris, corner_peaks
-        array = corner_peaks(corner_harris(self.array), min_distance=3, threshold_rel=0.01)
+
+        array = corner_peaks(
+                corner_harris(self.array), min_distance=3, threshold_rel=0.01
+        )
         return array
 
     @property
@@ -43,6 +50,7 @@ class Polygon:
 
     @property
     def center(self):
+        # type: () -> Tuple[int, int]
         cm = center_of_mass(self.array)
         return np.int(cm[0]), np.int(cm[1])
 
@@ -69,6 +77,7 @@ class Polygon:
 
     @property
     def area(self):
+        # type: () -> int
         return len(self.points)
 
     @property
