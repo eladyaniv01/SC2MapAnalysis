@@ -106,7 +106,7 @@ map_data.plot_map()
 
 create a virtual enviroment,  and clone the repo into it
 
-**pip install . ** 
+**pip install .** 
 
 or if you want to contribute, or run tests locally 
 
