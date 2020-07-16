@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 from sc2.position import Point2
@@ -11,13 +11,23 @@ class Region:
     """
     Region DocString
     """
-    def __init__(self, map_data, array: np.ndarray, label: int, map_expansions: List[Point2]):
+
+    def __init__(
+            self,
+            map_data,
+            array: np.ndarray,
+            label: int,
+            map_expansions: List[Point2],
+    ):
         self.map_data = map_data
         self.array = array
         self.label = label
         self.polygon = Polygon(map_data=self.map_data, array=self.array)
-        self.bases = [base for base in map_expansions if
-                      self.polygon.is_inside_point((base.rounded[0], base.rounded[1]))]
+        self.bases = [
+                base
+                for base in map_expansions
+                if self.polygon.is_inside_point((base.rounded[0], base.rounded[1]))
+        ]
         self.region_ramps = []  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
         self.region_vb = []
@@ -25,6 +35,7 @@ class Region:
 
     @property
     def center(self):
+        # type: () -> Tuple[int, int]
         """
 
         :return:
@@ -48,7 +59,8 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         x, y = zip(*self.polygon.perimeter)
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
@@ -63,10 +75,11 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         for r in self.region_ramps:
             x, y = zip(*r.points)
-            plt.scatter(x, y, color="black", marker=r'$\diamondsuit$')
+            plt.scatter(x, y, color="black", marker=r"$\diamondsuit$")
 
     def _plot_vision_blockers(self):
         """
@@ -75,12 +88,11 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         for vb in self.map_data._vision_blockers:
             if self.inside_p(point=vb):
-                plt.text(vb[0],
-                         vb[1],
-                         "X", c='r')
+                plt.text(vb[0], vb[1], "X", c="r")
 
     def _plot_minerals(self):
         """
@@ -89,10 +101,15 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         for mineral_field in self.map_data.mineral_fields:
             if self.inside_p(mineral_field.position.rounded):
-                plt.scatter(mineral_field.position[0], mineral_field.position[1], color="blue")
+                plt.scatter(
+                        mineral_field.position[0],
+                        mineral_field.position[1],
+                        color="blue",
+                )
 
     def _plot_geysers(self):
         """
@@ -101,11 +118,18 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         for gasgeyser in self.map_data.normal_geysers:
             if self.inside_p(gasgeyser.position.rounded):
-                plt.scatter(gasgeyser.position[0], gasgeyser.position[1], color="yellow", marker=r'$\spadesuit$', s=500,
-                            edgecolors="g")
+                plt.scatter(
+                        gasgeyser.position[0],
+                        gasgeyser.position[1],
+                        color="yellow",
+                        marker=r"$\spadesuit$",
+                        s=500,
+                        edgecolors="g",
+                )
 
     def plot(self, self_only=True):
         """
@@ -116,7 +140,8 @@ class Region:
         :rtype:
         """
         import matplotlib.pyplot as plt
-        plt.style.use('ggplot')
+
+        plt.style.use("ggplot")
         self._plot_geysers()
         self._plot_minerals()
         self._plot_ramps()
@@ -159,9 +184,11 @@ class Region:
         return self.bases
 
     @property
-    def is_reachable(self, region):  # is connected to another region directly ?
+    def is_reachable(
+            self, region
+    ):
         """
-
+        is connected to another region directly
         :param region:
         :type region:
         :return:
@@ -180,6 +207,7 @@ class Region:
 
     @property
     def get_area(self):
+        # type: () -> int
         """
 
         :return:
