@@ -4,9 +4,9 @@ A standalone plugin for python SC2 api
 
 Early Stage development,
 
-**you will need to have 64 bit python installed** 
+[Getting Started](#getting-started)
 
-to get an idea of what the api can do,  check out "run.py" 
+
 
 
 This module is inspired by plays like this one [TY map positioning](https://www.youtube.com/watch?v=NUQsAWIBTSk&start=458)
@@ -100,3 +100,16 @@ map_data.plot_map()
 
     **`region.corners`**
 
+# Getting Started
+
+**you will need to have 64 bit python installed** 
+
+create a virtual enviroment,  and clone the repo into it
+
+**pip install . ** 
+
+or if you want to contribute, or run tests locally 
+
+**pip install -e .[dev]**
+
+to get an idea of what the api can do,  check out "run.py" 
