@@ -4,7 +4,7 @@ A standalone plugin for python SC2 api
 
 Early Stage development,
 
-[Getting Started](#getting-started)
+- [Getting Started](#getting-started)
 
 
 
