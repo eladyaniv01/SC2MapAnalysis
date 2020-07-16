@@ -7,7 +7,8 @@ Early Stage development,
 - [Getting Started](#getting-started)
 
 
-
+Why Do we need this ? 
+=====================
 
 This module is inspired by plays like this one [TY map positioning](https://www.youtube.com/watch?v=NUQsAWIBTSk&start=458)
 (notice how the army splits into groups, covering different areas,  tanks are tucked in corners, and so on) 
