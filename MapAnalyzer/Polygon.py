@@ -31,6 +31,12 @@ class Polygon:
         plt.show()
 
     @property
+    @lru_cache()
+    def nodes(self):
+        return [p for p in self.points]
+
+    @property
+    @lru_cache()
     def corner_array(self):
         from skimage.feature import corner_harris, corner_peaks
 
@@ -39,12 +45,15 @@ class Polygon:
         )
         return array
 
+
     @property
+    @lru_cache()
     def corner_points(self):
         points = [Point2(p) for p in self.corner_array]
         return points
 
     @property
+    @lru_cache()
     def region(self):
         return self.map_data.in_region(self.center)
 
@@ -52,7 +61,8 @@ class Polygon:
     def center(self):
         # type: () -> Tuple[int, int]
         cm = center_of_mass(self.array)
-        return np.int(cm[0]), np.int(cm[1])
+        real_center_idx = self.map_data._closest_node_idx(cm, self.nodes)
+        return self.nodes[real_center_idx]
 
     @lru_cache(100)
     def is_inside_point(self, point: Union[Point2, Tuple]) -> bool:

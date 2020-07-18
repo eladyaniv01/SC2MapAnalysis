@@ -48,11 +48,11 @@ class TestSuit:
         Test that every cell in the map is defined by an Area Object
         """
         maps = [
-                "GoldenWallLE.xz",
-                # "DeathAuraLE.xz",
-                "SubmarineLE.xz",
-                "AbyssalReefLE.xz",
-                "IceandChromeLE.xz",
+                # "GoldenWallLE.xz",
+                "DeathAuraLE.xz",
+                # "SubmarineLE.xz",
+                # "AbyssalReefLE.xz",
+                # "IceandChromeLE.xz",
         ]
         for map_file in maps:
             with lzma.open(
