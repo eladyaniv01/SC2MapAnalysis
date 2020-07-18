@@ -1,7 +1,6 @@
 # SC2MapAnalysis
 A standalone plugin for python SC2 api 
 
-
 Early Stage development,
 
 - [Getting Started](#getting-started)
@@ -118,3 +117,22 @@ or if you want to contribute, or run tests locally
 `pip install -e .[dev]`
 
 to get an idea of what the api can do,  check out "run.py" 
+
+Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) ladder map pool) :
+```
+['AbyssalReefLE.xz',
+ 'AutomatonLE.xz',
+ 'DeathAuraLE.xz',
+ 'EphemeronLE.xz',
+ 'EternalEmpireLE.xz',
+ 'EverDreamLE.xz',
+ 'GoldenWallLE.xz',
+ 'IceandChromeLE.xz',
+ 'NightshadeLE.xz',
+ 'PillarsofGoldLE.xz',
+ 'SimulacrumLE.xz',
+ 'SubmarineLE.xz',
+ 'Triton.xz',
+ 'WorldofSleepersLE.xz',
+ 'ZenLE.xz']
+```
