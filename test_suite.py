@@ -1,10 +1,14 @@
+import logging
 import lzma
+import os
 import pickle
 from random import randint
 
 from MapAnalyzer import ChokeArea, MDRamp, Polygon, Region
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
+
+logger = logging.getLogger(__name__)
 
 
 # for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
@@ -16,7 +20,6 @@ class TestSuit:
     """
     Test DocString
     """
-
 
     def test_data_convertion(self):
         """
@@ -47,14 +50,13 @@ class TestSuit:
         """
         Test that every cell in the map is defined by an Area Object
         """
-        maps = [
-                # "GoldenWallLE.xz",
-                "DeathAuraLE.xz",
-                # "SubmarineLE.xz",
-                # "AbyssalReefLE.xz",
-                # "IceandChromeLE.xz",
-        ]
-        for map_file in maps:
+        subfolder = 'MapAnalyzer'
+        subfolder2 = 'pickle_gameinfo'
+        subfolder = os.path.join(subfolder, subfolder2)
+        folder = os.path.abspath('.')
+        map_files_folder = os.path.join(folder, subfolder)
+        map_files = os.listdir(map_files_folder)
+        for map_file in map_files:
             with lzma.open(
                     f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb"
             ) as f:
@@ -64,7 +66,7 @@ class TestSuit:
                     raw_game_data, raw_game_info, raw_observation
             )
             map_data = MapData(bot=bot)
-
+            logger.info(msg=f"Loaded Map : {bot.game_info.map_name}")
             for region in map_data.regions.values():
                 assert isinstance(
                         map_data.where(region.center), Region
@@ -77,3 +79,4 @@ class TestSuit:
                 assert isinstance(
                         map_data.where(mdramp.center), (Region, Polygon, MDRamp)
                 ), f"<Map : {map_file}, MDRamp : {mdramp}, where :  {map_data.where(mdramp.center)} point : {mdramp.center}>"
+            logger.info(msg=f"Finished Map : {bot.game_info.map_name}")

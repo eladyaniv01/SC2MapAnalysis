@@ -81,10 +81,10 @@ class MapData:
 
         """
         self.pathlib_map = Sc2Map(
-            self.path_arr,
-            self.placement_arr,
-            self.terrain_height,
-            self.bot.game_info.playable_area,
+                self.path_arr,
+                self.placement_arr,
+                self.terrain_height,
+                self.bot.game_info.playable_area,
         )
 
     @lru_cache(100)
