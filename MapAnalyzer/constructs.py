@@ -20,6 +20,7 @@ class ChokeArea(Polygon):
             self, array: np.ndarray, map_data: "MapData", main_line: Tuple = None
     ):
         self.regions = []  # set by map_data
+        self.areas = []  # set by map_data
         self.main_line = main_line
         super().__init__(map_data=map_data, array=array)
 
@@ -33,7 +34,7 @@ class ChokeArea(Polygon):
             return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     def __repr__(self):
-        return f"<ChokeArea;{self.area}> of {[r for r in self.regions]}"
+        return f"<ChokeArea;{self.area}> of {[r for r in self.areas]}"
 
 
 class MDRamp(ChokeArea):
@@ -69,5 +70,5 @@ class VisionBlockerArea(ChokeArea):
 
     def __repr__(self):
         return (
-                f"<VisionBlockerArea;{self.area}> of {[r for r in self.regions]}"
+                f"<VisionBlockerArea;{self.area}> of {[r for r in self.areas]}"
         )
