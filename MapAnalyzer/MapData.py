@@ -315,13 +315,15 @@ class MapData:
                         array=new_choke_array,
                         main_line=choke.main_line,
                 )
-                region = self.in_region_p(new_choke.center)
-                if region:
-                    region.region_chokes.append(new_choke)
-                    new_choke.regions.append(region)
-                if region is None and self.where(new_choke.center) is None:
+                areas = self.where_all(new_choke.center)
+                if len(areas) > 0:
+                    for area in areas:
+                        if isinstance(area, Region):
+                            area.region_chokes.append(new_choke)
+                        new_choke.areas.append(area)
+                else:
                     print(
-                            f"<{self.bot.game_info.map_name}>: please report bug no region found for choke area with center {new_choke.center}"
+                            f"<{self.bot.game_info.map_name}>: please report bug no area found for choke area with center {new_choke.center}"
                     )
                 self.map_chokes.append(new_choke)
 
