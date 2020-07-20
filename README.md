@@ -99,6 +99,13 @@ map_data.plot_map()
     **`region.bases`**
 
     **`region.corners`**
+    
+- util methods 
+
+    will return the closest point out of a list/ set of points , towards another point
+    useful for calculating which corner you would want to put static defense on,  or siege 
+    
+    **`MapData.closest_towards_point(self, points: List[Point2], target: Point2) -> Point2`** 
 
 # Getting Started
 
