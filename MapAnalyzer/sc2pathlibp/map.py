@@ -5,6 +5,7 @@ import numpy as np
 
 from .choke import Choke
 from .mappings import MapsType, MapType
+# noinspection PyUnresolvedReferences
 from .sc2pathlib import Map
 
 
@@ -81,7 +82,7 @@ class Sc2Map:
             self._map.remove_block(center, size)
 
     def add_walk_influence(
-            self, points: List["sc.Point2"], influence: float, range: float = 3
+            self, points: List["sc2.Point2"], influence: float, range: float = 3
     ):
         """
         Influence applied fades up until the specified range
