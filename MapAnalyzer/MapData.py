@@ -1,9 +1,9 @@
 from functools import lru_cache
-from typing import List, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 
 import numpy as np
 from numpy import float64, int64, ndarray
-from sc2 import BotAI
+from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
@@ -19,7 +19,7 @@ class MapData:
     MapData DocString
     """
 
-    def __init__(self, bot: BotAI):
+    def __init__(self, bot: BotAI) -> None:
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         # store relevant data from bot instance for later use
@@ -50,21 +50,16 @@ class MapData:
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
-    def save_plot(self):
+    def save_plot(self) -> None:
         """
         Will save the plot to a file names after the map name
-
-        :return: None
-
         """
         self.plot_map(save=True)
 
-    def _get_pathlib_map(self):
-        # type: () -> None
+    def _get_pathlib_map(self) -> None:
+
         """
         Will initialize the sc2pathlib `SC2Map` object for future use
-        :return: None
-
         """
         self.pathlib_map = Sc2Map(
                 self.path_arr,
@@ -74,15 +69,19 @@ class MapData:
         )
 
     @lru_cache(100)
-    def where_all(self, point: Union[Point2, Tuple]):
+    def where_all(
+            self, point: Union[Point2, tuple]
+    ) -> Union[
+        List[Union[MDRamp, VisionBlockerArea]],
+        List[VisionBlockerArea],
+        List[Union[Region, VisionBlockerArea]],
+    ]:
         """
+        Will query a point on the map and will return a list of all Area's that point belong to
+
         region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
         choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
-        :param point:
-        :type point:
-        :return:
-        :rtype:
         """
         results = []
         if isinstance(point, Point2):
@@ -102,15 +101,18 @@ class MapData:
         return results
 
     @lru_cache(100)
-    def where(self, point: Union[Point2, Tuple]):
+    def where(
+            self, point: Union[Point2, tuple]
+    ) -> Union[Region, MDRamp, VisionBlockerArea]:
         """
+        Will query a point on the map and will return the first result in the following order:
+        Region,
+        MDRamp,
+        VisionBlockerArea
+
         region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -124,19 +126,16 @@ class MapData:
             if ramp.is_inside_point(point):
                 return ramp
         for vba in self.map_vision_blockers:
-
             if vba.is_inside_point(point):
                 return vba
 
+
     @lru_cache(100)
-    def in_region_p(self, point: Union[Point2, Tuple]):
+    def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
+        will query a if a point is in, and in which Region using Set of Points <fast>
         time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         as long as polygon points is of type set, not list
-        :param point:
-        :type point: :class:`sc2.position.Point2` / Tuple
-        :return: :class:`Region` object, or None
-        :rtype:
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -147,13 +146,10 @@ class MapData:
                 return region
 
     @lru_cache(100)
-    def in_region_i(self, point: Union[Point2, Tuple]):
+    def in_region_i(self, point: Union[Point2, tuple]) -> Optional[Region]:  # pragma: no cover
         """
+        will query a if a point is in, and in which Region using Indices <slow>
         time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        :param point:
-        :type point: :class:`sc2.position.Point2` / Tuple
-        :return: :class:`Region` object, or None
-        :rtype:
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -164,40 +160,28 @@ class MapData:
                 return region
 
     @staticmethod
-    def indices_to_points(indices):
+    def indices_to_points(
+            indices: Union[ndarray, Tuple[ndarray, ndarray]]
+    ) -> Set[Tuple[int64, int64]]:
+        """
+        convert indices to a set of points
         """
 
-        :param indices:
-        :type indices:
-        :return:
-        :rtype:
-        """
-        # type: (Tuple[ndarray, ndarray]) -> Set[Tuple[int64, int64]]
         return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
 
     @staticmethod
-    def points_to_indices(points):
+    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
         """
-
-        :param points:
-        :type points:
-        :return:
-        :rtype:
+        convert points to a tuple of two 1d arrays
         """
-        # type: (Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]
-        return (np.array([p[0] for p in points]), np.array([p[1] for p in points]))
+        return np.array([p[0] for p in points]), np.array([p[1] for p in points])
 
     def points_to_numpy_array(
-            self, points  # type: Union[List[Point2], Set[Tuple[int64, int64]], Set[Point2]]
-    ):
+            self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
+    ) -> ndarray:
         """
-
-        :param points:
-        :type points:
-        :return:
-        :rtype:
+        convert points to numpy ndarray
         """
-        # type: (...) -> ndarray
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
         for p in points:
@@ -207,45 +191,36 @@ class MapData:
     @staticmethod
     def _distance(p1: Point2, p2: Point2) -> float64:
         """
-
-        :param p1:
-        :type p1:
-        :param p2:
-        :type p2:
-        :return:
-        :rtype:
+        euclidean distance
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
     @staticmethod
-    def _closest_node_idx(node: ndarray, nodes: List[Tuple[int, int]]) -> object:
+    def _closest_node_idx(
+            node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
+    ) -> int:
         """
-
-        :param node:
-        :type node:
-        :param nodes:
-        :type nodes:
-        :return:
-        :rtype:
+        given a list of nodes `Ln`  and a single node `Nb`,
+        will return the index of the closest node in the list to `Nb`
         """
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
 
-    def closest_towards_point(self, points: List[Point2], target: Point2) -> Point2:
+    def closest_towards_point(
+            self, points: List[Point2], target: Union[Point2, tuple]
+    ) -> Point2:
         """
-
-        :param points:
-        :type points:
-        :param target:
-        :type target:
-        :return:
-        :rtype:
+        given a list/set of points, and a target,
+        will return the point that is closest to that target
+        Example usage would be to calculate a position for
+        tanks in direction to the enemy forces
+        passing in the Area's corners as points and enemy army's location as target
         """
         return points[self._closest_node_idx(node=target, nodes=points)]
 
     @staticmethod
-    def _clean_ramps(region):
-        # type: (Region) -> None
+    def _clean_ramps(region: Region) -> None:
+        """ utility function to remove over populated ramps """
         to_remove = []
         for mramp in region.region_ramps:
             if len(mramp.regions) < 2:
@@ -253,8 +228,8 @@ class MapData:
         for mramp in to_remove:
             region.region_ramps.remove(mramp)
 
-    def _calc_grid(self):
-        # type: () -> None
+    def _calc_grid(self) -> None:
+        """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
 
@@ -267,21 +242,20 @@ class MapData:
         # self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)
         self.region_grid = labeled_array.astype(int)
         self.regions_labels = np.unique(self.region_grid)
-        points = self._vision_blockers
+        vb_points = self._vision_blockers
 
-        if len(points):
-            vision_blockers_indices = (
-                    np.array([p[0] for p in points]),
-                    np.array([p[1] for p in points]),
-            )
+        if len(vb_points):
+            vision_blockers_indices = self.points_to_indices(vb_points)
             vision_blockers_array = np.zeros(self.region_grid.shape, dtype="int")
             vision_blockers_array[vision_blockers_indices] = 1
             vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
             self.vision_blockers_grid = vb_labeled_array
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
-    def _calc_ramps(self, region, i):
-        # type: (Region, int) -> None
+    def _calc_ramps(self, region: Region) -> None:
+        """
+        probably the most expensive operation other than plotting ,  need to optimize
+        """
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
         perimeter_nodes = region.polygon.perimeter
         result_ramp_indexes = list(
@@ -311,8 +285,10 @@ class MapData:
         region.region_ramps = list(set(region.region_ramps))
         self._clean_ramps(region)
 
-    def _calc_vision_blockers(self):
-        # type: () -> None
+    def _calc_vision_blockers(self) -> None:
+        """
+        compute VisionBlockerArea
+        """
         for i in range(len(self.vision_blockers_labels)):
             indices = np.where(self.vision_blockers_grid == i)
             points = self.indices_to_points(indices)
@@ -321,13 +297,15 @@ class MapData:
                 vba = VisionBlockerArea(map_data=self, array=vb_arr)
                 region = self.in_region_p(vba.center)
 
-                if region and 5 < vba.area < 200:
+                if region and 5 < vba.area:
                     vba.regions.append(region)
                     region.region_vision_blockers.append(vba)
                 self.map_vision_blockers.append(vba)
 
-    def _calc_chokes(self):
-        # type: () -> None
+    def _calc_chokes(self) -> None:
+        """
+        compute ChokeArea
+        """
         chokes = self.pathlib_map.chokes
         for choke in chokes:
             points = [Point2(p) for p in choke.pixels]
@@ -342,14 +320,18 @@ class MapData:
                         if isinstance(area, Region):
                             area.region_chokes.append(new_choke)
                         new_choke.areas.append(area)
-                else:
+                else:  # pragma: no cover
                     print(
-                            f"<{self.bot.game_info.map_name}>: please report bug no area found for choke area with center {new_choke.center}"
+                            f"<{self.bot.game_info.map_name}>: "
+                            f"please report bug no area found for choke area"
+                            f" with center {new_choke.center}"
                     )
                 self.map_chokes.append(new_choke)
 
-    def _calc_regions(self):
-        # type: () -> None
+    def _calc_regions(self) -> None:
+        """
+        compute Region
+        """
         # some regions are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
         pre_regions = {}
@@ -367,17 +349,19 @@ class MapData:
             if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
-                self._calc_ramps(region=region, i=j)
+                self._calc_ramps(region=region)
                 j += 1
 
-    def compile_map(self):
-        # type: () -> None
+    def compile_map(self) -> None:
+        """user can call this to recompute"""
         self._calc_grid()
         self._calc_regions()
         self._calc_vision_blockers()
         self._calc_chokes()
 
-    def plot_map(self, fontdict: dict = None, save=False, figsize=20):
+    def plot_map(
+            self, fontdict: dict = None, save: bool = False, figsize: int = 20
+    ) -> None:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
@@ -453,5 +437,5 @@ class MapData:
             map_name = self.bot.game_info.map_name
             plt.savefig(f"{map_name}.png")
             plt.close()
-        else:
+        else:  # pragma: no cover
             plt.show()

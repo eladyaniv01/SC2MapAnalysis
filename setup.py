@@ -1,6 +1,6 @@
-from setuptools import setup
+from setuptools import setup  # pragma: no cover
 
-requirements = [
+requirements = [  # pragma: no cover
         "burnysc2==4.11.16",
         "click==7.1.2",
         "matplotlib==3.2.2",
@@ -12,7 +12,7 @@ requirements = [
         "tifffile==2020.7.4",
         "yarl==1.4.2",
 ]
-setup(
+setup(  # pragma: no cover
         name="SC2MapAnalysis",
         version="0.1",
         install_requires=requirements,
