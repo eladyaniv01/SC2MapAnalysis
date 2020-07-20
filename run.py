@@ -19,9 +19,7 @@ if __name__ == "__main__":
         with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
             raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
-        bot = import_bot_instance(
-                raw_game_data, raw_game_info, raw_observation
-        )
+        bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
         map_data = MapData(bot=bot)
 
         for region in map_data.regions.values():

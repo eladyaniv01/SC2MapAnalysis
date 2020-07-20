@@ -5,18 +5,10 @@ import numpy as np
 from numpy import float64, int64, ndarray
 from sc2 import BotAI
 from sc2.position import Point2
-from scipy.ndimage import (
-    binary_fill_holes,
-    generate_binary_structure,
-    label as ndlabel,
-)
+from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constants import (
-    BINARY_STRUCTURE,
-    MAX_REGION_AREA,
-    MIN_REGION_AREA,
-)
+from MapAnalyzer.constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
@@ -37,11 +29,7 @@ class MapData:
         self.path_arr = bot.game_info.pathing_grid.data_numpy
         self.base_locations = bot.expansion_locations_list
         self.map_ramps = [
-                MDRamp(
-                        map_data=self,
-                        ramp=r,
-                        array=self.points_to_numpy_array(r.points),
-                )
+                MDRamp(map_data=self, ramp=r, array=self.points_to_numpy_array(r.points))
                 for r in self.bot.game_info.map_ramps
         ]
         self.terrain_height = bot.game_info.terrain_height.data_numpy
@@ -52,9 +40,7 @@ class MapData:
         self.vision_blockers_grid = []  # set later  on compile
         self.region_grid = None
         self.regions = {}
-        nonpathable_indices = np.where(
-                bot.game_info.pathing_grid.data_numpy == 0
-        )
+        nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
@@ -179,22 +165,38 @@ class MapData:
 
     @staticmethod
     def indices_to_points(indices):
+        """
+
+        :param indices:
+        :type indices:
+        :return:
+        :rtype:
+        """
         # type: (Tuple[ndarray, ndarray]) -> Set[Tuple[int64, int64]]
-        return set(
-                [(indices[0][i], indices[1][i]) for i in range(len(indices[0]))]
-        )
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
 
     @staticmethod
     def points_to_indices(points):
-        # type: (Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]
-        return (
-                np.array([p[0] for p in points]),
-                np.array([p[1] for p in points]),
-        )
+        """
 
-    def points_to_numpy_array(self,
-                              points,  # type: Union[List[Point2], Set[Tuple[int64, int64]], Set[Point2]]
-                              ):
+        :param points:
+        :type points:
+        :return:
+        :rtype:
+        """
+        # type: (Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]
+        return (np.array([p[0] for p in points]), np.array([p[1] for p in points]))
+
+    def points_to_numpy_array(
+            self, points  # type: Union[List[Point2], Set[Tuple[int64, int64]], Set[Point2]]
+    ):
+        """
+
+        :param points:
+        :type points:
+        :return:
+        :rtype:
+        """
         # type: (...) -> ndarray
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
@@ -203,15 +205,43 @@ class MapData:
         return arr
 
     @staticmethod
-    def _distance(p1, p2):
-        # type: (ndarray, Point2) -> float64
+    def _distance(p1: Point2, p2: Point2) -> float64:
+        """
+
+        :param p1:
+        :type p1:
+        :param p2:
+        :type p2:
+        :return:
+        :rtype:
+        """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
     @staticmethod
-    def _closest_node_idx(node, nodes):
-        # type: (ndarray, List[Tuple[int, int]]) -> int64
+    def _closest_node_idx(node: ndarray, nodes: List[Tuple[int, int]]) -> object:
+        """
+
+        :param node:
+        :type node:
+        :param nodes:
+        :type nodes:
+        :return:
+        :rtype:
+        """
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
+
+    def closest_towards_point(self, points: List[Point2], target: Point2) -> Point2:
+        """
+
+        :param points:
+        :type points:
+        :param target:
+        :type target:
+        :return:
+        :rtype:
+        """
+        return points[self._closest_node_idx(node=target, nodes=points)]
 
     @staticmethod
     def _clean_ramps(region):
@@ -244,9 +274,7 @@ class MapData:
                     np.array([p[0] for p in points]),
                     np.array([p[1] for p in points]),
             )
-            vision_blockers_array = np.zeros(
-                    self.region_grid.shape, dtype="int"
-            )
+            vision_blockers_array = np.zeros(self.region_grid.shape, dtype="int")
             vision_blockers_array[vision_blockers_indices] = 1
             vb_labeled_array, vb_num_features = ndlabel(vision_blockers_array)
             self.vision_blockers_grid = vb_labeled_array
@@ -257,12 +285,7 @@ class MapData:
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
         perimeter_nodes = region.polygon.perimeter
         result_ramp_indexes = list(
-                set(
-                        [
-                                self._closest_node_idx(n, ramp_nodes)
-                                for n in perimeter_nodes
-                        ]
-                )
+                set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
         )
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
@@ -311,9 +334,7 @@ class MapData:
             if len(points) > 0:
                 new_choke_array = self.points_to_numpy_array(points)
                 new_choke = ChokeArea(
-                        map_data=self,
-                        array=new_choke_array,
-                        main_line=choke.main_line,
+                        map_data=self, array=new_choke_array, main_line=choke.main_line
                 )
                 areas = self.where_all(new_choke.center)
                 if len(areas) > 0:
@@ -397,9 +418,7 @@ class MapData:
             x, y = zip(*self._vision_blockers)
             plt.scatter(x, y, color="r")
 
-        plt.imshow(
-                self.terrain_height, alpha=1, origin="lower", cmap="terrain"
-        )
+        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
         x, y = zip(*self.nonpathable_indices_stacked)
         plt.scatter(x, y, color="grey")
 

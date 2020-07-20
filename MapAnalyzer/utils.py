@@ -1,8 +1,21 @@
+import lzma
+import pickle
+
 from s2clientprotocol.sc2api_pb2 import Response, ResponseObservation
 from sc2.bot_ai import BotAI
 from sc2.game_data import GameData
 from sc2.game_info import GameInfo
 from sc2.game_state import GameState
+
+from MapAnalyzer.MapData import MapData
+
+
+def mock_map_data(map_file):
+    with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
+        raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+
+    bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+    return MapData(bot=bot)
 
 
 def import_bot_instance(raw_game_data, raw_game_info, raw_observation):

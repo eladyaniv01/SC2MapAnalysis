@@ -19,7 +19,9 @@ class Sc2Map:
 
         self._overlord_spots: Optional[List[Tuple[float, float]]] = None
         self._chokes: Optional[List[Choke]] = None
-        self.heuristic_accuracy = 1  # Octile distance / set to 2 for optimal accuracy but less performance
+        self.heuristic_accuracy = (
+                1
+        )  # Octile distance / set to 2 for optimal accuracy but less performance
 
         self.height_map = height_map
         self._map = Map(
@@ -58,54 +60,102 @@ class Sc2Map:
     def enable_reaper_map(self, enabled: bool):
         self._map.influence_reaper_map = enabled
 
-    def create_block(self, center: Union[Tuple[float, float], List[Tuple[float, float]]], size: Tuple[int, int]):
+    def create_block(
+            self,
+            center: Union[Tuple[float, float], List[Tuple[float, float]]],
+            size: Tuple[int, int],
+    ):
         if isinstance(center, list):
             self._map.create_blocks(center, size)
         else:
             self._map.create_block(center, size)
 
-    def remove_block(self, center: Union[Tuple[float, float], List[Tuple[float, float]]], size: Tuple[int, int]):
+    def remove_block(
+            self,
+            center: Union[Tuple[float, float], List[Tuple[float, float]]],
+            size: Tuple[int, int],
+    ):
         if isinstance(center, list):
             self._map.remove_blocks(center, size)
         else:
             self._map.remove_block(center, size)
 
-    def add_walk_influence(self, points: List["sc.Point2"], influence: float, range: float = 3):
+    def add_walk_influence(
+            self, points: List["sc.Point2"], influence: float, range: float = 3
+    ):
         """
         Influence applied fades up until the specified range
         """
         self._map.add_influence_walk(points, influence, range)
 
     def add_tank_influence(
-            self, points: List["sc.Point2"], influence: float, tank_min_range: float = 3, tank_max_range: float = 14.5
+            self,
+            points: List["sc.Point2"],
+            influence: float,
+            tank_min_range: float = 3,
+            tank_max_range: float = 14.5,
     ):
         """
         :param tank_min_range: Tank minimum range is 2, adding both unit radiuses to that and we'll estimate it to be 3.
         :param tank_max_range: Same for max range, 13, but but with unit radius, let's say it's 14.5 instead to err on the safe side
         """
-        self._map.add_influence_flat_hollow(points, influence, tank_min_range, tank_max_range)
+        self._map.add_influence_flat_hollow(
+                points, influence, tank_min_range, tank_max_range
+        )
 
     def add_pure_ground_influence(
-            self, points: List["sc.Point2"], influence: float, full_range: float, fade_max_range: float
+            self,
+            points: List["sc.Point2"],
+            influence: float,
+            full_range: float,
+            fade_max_range: float,
     ):
         """
         Use this for units that have different ground attack compared to air attack, like Tempests.
         """
-        self._map.add_influence_fading(MapsType.PureGround, points, influence, full_range, fade_max_range)
+        self._map.add_influence_fading(
+                MapsType.PureGround, points, influence, full_range, fade_max_range
+        )
 
     def add_ground_influence(
-            self, points: List["sc.Point2"], influence: float, full_range: float, fade_max_range: float
+            self,
+            points: List["sc.Point2"],
+            influence: float,
+            full_range: float,
+            fade_max_range: float,
     ):
-        self._map.add_influence_fading(MapsType.Ground, points, influence, full_range, fade_max_range)
+        self._map.add_influence_fading(
+                MapsType.Ground, points, influence, full_range, fade_max_range
+        )
 
-    def add_air_influence(self, points: List["sc.Point2"], influence: float, full_range: float, fade_max_range: float):
-        self._map.add_influence_fading(MapsType.Air, points, influence, full_range, fade_max_range)
+    def add_air_influence(
+            self,
+            points: List["sc.Point2"],
+            influence: float,
+            full_range: float,
+            fade_max_range: float,
+    ):
+        self._map.add_influence_fading(
+                MapsType.Air, points, influence, full_range, fade_max_range
+        )
 
-    def add_both_influence(self, points: List["sc.Point2"], influence: float, full_range: float, fade_max_range: float):
-        self._map.add_influence_fading(MapsType.Both, points, influence, full_range, fade_max_range)
+    def add_both_influence(
+            self,
+            points: List["sc.Point2"],
+            influence: float,
+            full_range: float,
+            fade_max_range: float,
+    ):
+        self._map.add_influence_fading(
+                MapsType.Both, points, influence, full_range, fade_max_range
+        )
 
     def find_path(
-            self, map_type: MapType, start: (float, float), end: (float, float), large: bool = False
+            self,
+            map_type: MapType,
+            start: (float, float),
+            end: (float, float),
+            large: bool = False,
     ) -> Tuple[List[Tuple[int, int]], float]:
         """
         Finds a path ignoring influence.
@@ -117,11 +167,17 @@ class Sc2Map:
         """
 
         if large:
-            return self._map.find_path_large(map_type, start, end, self.heuristic_accuracy)
+            return self._map.find_path_large(
+                    map_type, start, end, self.heuristic_accuracy
+            )
         return self._map.find_path(map_type, start, end, self.heuristic_accuracy)
 
     def find_path_influence(
-            self, map_type: MapType, start: (float, float), end: (float, float), large: bool = False
+            self,
+            map_type: MapType,
+            start: (float, float),
+            end: (float, float),
+            large: bool = False,
     ) -> (List[Tuple[int, int]], float):
         """
         Finds a path that takes influence into account
@@ -133,13 +189,22 @@ class Sc2Map:
         """
 
         if large:
-            return self._map.find_path_influence_large(map_type, start, end, self.heuristic_accuracy)
-        return self._map.find_path_influence(map_type, start, end, self.heuristic_accuracy)
+            return self._map.find_path_influence_large(
+                    map_type, start, end, self.heuristic_accuracy
+            )
+        return self._map.find_path_influence(
+                map_type, start, end, self.heuristic_accuracy
+        )
 
     def safest_spot(
-            self, map_type: MapType, destination_center: (float, float), walk_distance: float
+            self,
+            map_type: MapType,
+            destination_center: (float, float),
+            walk_distance: float,
     ) -> (Tuple[int, int], float):
-        return self._map.lowest_influence_walk(map_type, destination_center, walk_distance)
+        return self._map.lowest_influence_walk(
+                map_type, destination_center, walk_distance
+        )
 
     def lowest_influence_in_grid(
             self, map_type: MapType, destination_center: (float, float), radius: int
@@ -147,7 +212,11 @@ class Sc2Map:
         return self._map.lowest_influence(map_type, destination_center, radius)
 
     def find_low_inside_walk(
-            self, map_type: MapType, start: (float, float), target: (float, float), distance: Union[int, float]
+            self,
+            map_type: MapType,
+            start: (float, float),
+            target: (float, float),
+            distance: Union[int, float],
     ) -> (Tuple[float, float], float):
         """
         Finds a compromise where low influence matches with close position to the start position.
@@ -178,28 +247,39 @@ class Sc2Map:
         image = np.multiply(image, 42)
         self.plot_image(image, image_name, resize)
 
-    def plot_ground_map(self, path: List[Tuple[int, int]], image_name: str = "ground_map", resize: int = 4):
+    def plot_ground_map(
+            self,
+            path: List[Tuple[int, int]],
+            image_name: str = "ground_map",
+            resize: int = 4,
+    ):
         image = np.array(self._map.ground_pathing, dtype=np.uint8)
 
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
 
-    def plot_air_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
+    def plot_air_map(
+            self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4
+    ):
         image = np.array(self._map.air_pathing, dtype=np.uint8)
 
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
 
-    def plot_reaper_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
+    def plot_reaper_map(
+            self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4
+    ):
         image = np.array(self._map.reaper_pathing, dtype=np.uint8)
 
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
 
-    def plot_colossus_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
+    def plot_colossus_map(
+            self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4
+    ):
         image = np.array(self._map.colossus_pathing, dtype=np.uint8)
 
         for point in path:
@@ -225,8 +305,11 @@ class Sc2Map:
     @staticmethod
     def plot_image(image, image_name: str = "map", resize: int = 4):
         import cv2
+
         image = np.rot90(image, 1)
 
-        resized = cv2.resize(image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)
+        resized = cv2.resize(
+                image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST
+        )
         cv2.imshow(image_name, resized)
         cv2.waitKey(1)

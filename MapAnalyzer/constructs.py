@@ -16,9 +16,7 @@ class ChokeArea(Polygon):
     ChokeArea DocString
     """
 
-    def __init__(
-            self, array: np.ndarray, map_data: "MapData", main_line: Tuple = None
-    ):
+    def __init__(self, array: np.ndarray, map_data: "MapData", main_line: Tuple = None):
         self.regions = []  # set by map_data
         self.areas = []  # set by map_data
         self.main_line = main_line
@@ -69,6 +67,4 @@ class VisionBlockerArea(ChokeArea):
         super().__init__(map_data=map_data, array=array)
 
     def __repr__(self):
-        return (
-                f"<VisionBlockerArea;{self.area}> of {[r for r in self.areas]}"
-        )
+        return f"<VisionBlockerArea;{self.area}> of {[r for r in self.areas]}"

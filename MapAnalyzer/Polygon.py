@@ -30,6 +30,7 @@ class Polygon:
         :rtype:
         """
         import matplotlib.pyplot as plt
+
         plt.style.use("ggplot")
         plt.imshow(self.array, origin="lower")
         plt.show()
@@ -81,13 +82,15 @@ class Polygon:
     @property
     def center(self):
         """
+        since the center is always going to be a float,
+        and for performance considerations we use integer coordinates
+        we will
         :return:
         :rtype:
         """
         # type: () -> Tuple[int, int]
         cm = center_of_mass(self.array)
-        real_center_idx = self.map_data._closest_node_idx(cm, self.nodes)
-        return self.nodes[real_center_idx]
+        return self.map_data.closest_towards_point(points=self.nodes, target=cm)
 
     @lru_cache(100)
     def is_inside_point(self, point: Union[Point2, Tuple]) -> bool:

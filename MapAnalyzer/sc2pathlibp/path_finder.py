@@ -56,13 +56,21 @@ class PathFinder:
     def set_map(self, data: List[List[int]]):
         self._path_find.map = data
 
-    def create_block(self, center: Union[Tuple[float, float], List[Tuple[float, float]]], size: Tuple[int, int]):
+    def create_block(
+            self,
+            center: Union[Tuple[float, float], List[Tuple[float, float]]],
+            size: Tuple[int, int],
+    ):
         if isinstance(center, list):
             self._path_find.create_blocks(center, size)
         else:
             self._path_find.create_block(center, size)
 
-    def remove_block(self, center: Union[Tuple[float, float], List[Tuple[float, float]]], size: Tuple[int, int]):
+    def remove_block(
+            self,
+            center: Union[Tuple[float, float], List[Tuple[float, float]]],
+            size: Tuple[int, int],
+    ):
         if isinstance(center, list):
             self._path_find.remove_blocks(center, size)
         else:
@@ -82,7 +90,9 @@ class PathFinder:
         start_int = (int(round(start[0])), int(round(start[1])))
         end_int = (int(round(end[0])), int(round(end[1])))
         if large:
-            return self._path_find.find_path_large(start_int, end_int, self.heuristic_accuracy)
+            return self._path_find.find_path_large(
+                    start_int, end_int, self.heuristic_accuracy
+            )
         return self._path_find.find_path(start_int, end_int, self.heuristic_accuracy)
 
     def find_path_influence(
@@ -99,18 +109,32 @@ class PathFinder:
         start_int = (int(round(start[0])), int(round(start[1])))
         end_int = (int(round(end[0])), int(round(end[1])))
         if large:
-            return self._path_find.find_path_influence_large(start_int, end_int, self.heuristic_accuracy)
-        return self._path_find.find_path_influence(start_int, end_int, self.heuristic_accuracy)
+            return self._path_find.find_path_influence_large(
+                    start_int, end_int, self.heuristic_accuracy
+            )
+        return self._path_find.find_path_influence(
+                start_int, end_int, self.heuristic_accuracy
+        )
 
-    def safest_spot(self, destination_center: (float, float), walk_distance: float) -> (Tuple[int, int], float):
+    def safest_spot(
+            self, destination_center: (float, float), walk_distance: float
+    ) -> (Tuple[int, int], float):
         destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence_walk(destination_int, walk_distance)
 
-    def lowest_influence_in_grid(self, destination_center: (float, float), radius: int) -> (Tuple[int, int], float):
+    def lowest_influence_in_grid(
+            self, destination_center: (float, float), radius: int
+    ) -> (Tuple[int, int], float):
         destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence(destination_int, radius)
 
-    def add_influence(self, points: List[Tuple[float, float]], value: float, distance: float, flat: bool = False):
+    def add_influence(
+            self,
+            points: List[Tuple[float, float]],
+            value: float,
+            distance: float,
+            flat: bool = False,
+    ):
         list = []
         for point in points:
             list.append((round(point[0]), round(point[1])))
@@ -120,7 +144,13 @@ class PathFinder:
         else:
             self._path_find.add_influence(list, value, distance)
 
-    def add_influence_walk(self, points: List[Tuple[float, float]], value: float, distance: float, flat: bool = False):
+    def add_influence_walk(
+            self,
+            points: List[Tuple[float, float]],
+            value: float,
+            distance: float,
+            flat: bool = False,
+    ):
         list = []
         for point in points:
             list.append((round(point[0]), round(point[1])))
@@ -146,7 +176,9 @@ class PathFinder:
         # target_int = (round(target[0]), round(target[1]))
         return self._path_find.find_low_inside_walk(start, target, distance)
 
-    def plot(self, path: List[Tuple[int, int]], image_name: str = "map", resize: int = 4):
+    def plot(
+            self, path: List[Tuple[int, int]], image_name: str = "map", resize: int = 4
+    ):
         """
         Uses cv2 to draw current pathing grid.
         

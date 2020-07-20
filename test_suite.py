@@ -30,9 +30,7 @@ class TestSuit:
         with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
             raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
-        bot = import_bot_instance(
-                raw_game_data, raw_game_info, raw_observation
-        )
+        bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
         map_data = MapData(bot=bot)
         N = 1000
         points = [(i, j) for i in range(N) for j in range(N)]
@@ -50,21 +48,17 @@ class TestSuit:
         """
         Test that every cell in the map is defined by an Area Object
         """
-        subfolder = 'MapAnalyzer'
-        subfolder2 = 'pickle_gameinfo'
+        subfolder = "MapAnalyzer"
+        subfolder2 = "pickle_gameinfo"
         subfolder = os.path.join(subfolder, subfolder2)
-        folder = os.path.abspath('.')
+        folder = os.path.abspath(".")
         map_files_folder = os.path.join(folder, subfolder)
         map_files = os.listdir(map_files_folder)
         for map_file in map_files:
-            with lzma.open(
-                    f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb"
-            ) as f:
+            with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
                 raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
-            bot = import_bot_instance(
-                    raw_game_data, raw_game_info, raw_observation
-            )
+            bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
             map_data = MapData(bot=bot)
             logger.info(msg=f"Loaded Map : {bot.game_info.map_name}")
             for region in map_data.regions.values():

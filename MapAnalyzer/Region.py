@@ -13,11 +13,7 @@ class Region:
     """
 
     def __init__(
-            self,
-            map_data,
-            array: np.ndarray,
-            label: int,
-            map_expansions: List[Point2],
+            self, map_data, array: np.ndarray, label: int, map_expansions: List[Point2]
     ):
         self.map_data = map_data
         self.array = array
@@ -106,9 +102,7 @@ class Region:
         for mineral_field in self.map_data.mineral_fields:
             if self.inside_p(mineral_field.position.rounded):
                 plt.scatter(
-                        mineral_field.position[0],
-                        mineral_field.position[1],
-                        color="blue",
+                        mineral_field.position[0], mineral_field.position[1], color="blue"
                 )
 
     def _plot_geysers(self):
@@ -184,9 +178,7 @@ class Region:
         return self.bases
 
     @property
-    def is_reachable(
-            self, region
-    ):
+    def is_reachable(self, region):
         """
         is connected to another region directly
         :param region:
