@@ -25,8 +25,7 @@ class Polygon:
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
-        :return:
-        :rtype:
+        plot
         """
         import matplotlib.pyplot as plt
 
@@ -40,8 +39,7 @@ class Polygon:
     @lru_cache()
     def nodes(self) -> List[Point2]:
         """
-        :return:
-        :rtype:
+        nodes
         """
         return [p for p in self.points]
 
@@ -49,8 +47,7 @@ class Polygon:
     @lru_cache()
     def corner_array(self) -> ndarray:
         """
-        :return:
-        :rtype:
+        corner_array
         """
         from skimage.feature import corner_harris, corner_peaks
 
@@ -63,8 +60,7 @@ class Polygon:
     @lru_cache()
     def corner_points(self) -> List[Point2]:
         """
-        :return:
-        :rtype:
+        corner_points
         """
         points = [Point2(p) for p in self.corner_array]
         return points
@@ -73,8 +69,7 @@ class Polygon:
     @lru_cache()
     def region(self) -> "Region":
         """
-        :return:
-        :rtype:
+        region
         """
         return self.map_data.in_region_p(self.center)
 
@@ -93,10 +88,7 @@ class Polygon:
     @lru_cache(100)
     def is_inside_point(self, point: Union[Point2, tuple]) -> bool:
         """
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        is_inside_point
         """
         if point in self.points:
             return True
@@ -109,10 +101,7 @@ class Polygon:
             self, point: Union[Point2, tuple]
     ) -> bool:  # pragma: no cover
         """
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        is_inside_indices
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -121,8 +110,7 @@ class Polygon:
     @property
     def perimeter(self) -> np.ndarray:
         """
-        :return:
-        :rtype:
+        perimeter
         """
         isolated_region = self.array
         xx, yy = np.gradient(isolated_region)
@@ -132,8 +120,7 @@ class Polygon:
     @property
     def area(self) -> int:
         """
-        :return:
-        :rtype:
+        area
         """
         return len(self.points)
 

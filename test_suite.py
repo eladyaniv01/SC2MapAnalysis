@@ -14,10 +14,11 @@ logger = logging.getLogger(__name__)
 
 # for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
 # pytest -v --disable-warnings
+# mutmut run --paths-to-mutate test_suite.py --runner pytest
 # radon cc . -a -nb  (will dump only complexity score of B and below)
 # monkeytype run monkeytest.py
 # monkeytype list-modules
-
+# mutmut run --paths-to-mutate MapAnalyzer/MapData.py
 
 class TestSuit:
     """
@@ -66,23 +67,33 @@ class TestSuit:
             for region in map_data.regions.values():
                 assert isinstance(
                         map_data.where(region.center), Region
-                ), f"<Map : {map_file}, Region : {region}, where :  {map_data.where(region.center)} point : {region.center}>"
+                ), f"<Map : {map_file}, Region : {region}," \
+                    f" where :  {map_data.where(region.center)} point : {region.center}>"
 
                 # todo  test these,   currently here for cov
 
                 # polygon
                 region.polygon.plot(testing=True)
+                # noinspection PyStatementEffect
                 region.polygon.is_inside_indices
+                # noinspection PyStatementEffect
                 region.polygon.is_inside_point
+                # noinspection PyStatementEffect
                 region.polygon.region
+                # noinspection PyStatementEffect
                 region.polygon.corner_points
+                # noinspection PyStatementEffect
                 region.polygon.corner_array
+                # noinspection PyStatementEffect
                 region.polygon.nodes
+                # noinspection PyStatementEffect
                 region.polygon.perimeter
 
                 # region
                 region.plot(testing=True)
+                # noinspection PyStatementEffect
                 region.corners
+                # noinspection PyStatementEffect
                 region.base_locations
 
             for choke in map_data.map_chokes:

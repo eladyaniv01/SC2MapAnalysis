@@ -30,6 +30,7 @@ setup(  # pragma: no cover
                         "coverage",
                         "codecov",
                         "loguru ",
+                        "mutmut",
                         "radon",
                 ]
         },

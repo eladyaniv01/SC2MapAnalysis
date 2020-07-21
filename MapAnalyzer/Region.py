@@ -39,26 +39,20 @@ class Region:
     @property
     def center(self) -> Point2:
         """
-
-        :return:
-        :rtype:
+        center
         """
         return self.polygon.center
 
     @property
     def corners(self) -> List[Point2]:
         """
-
-        :return:
-        :rtype:
+        corners
         """
         return self.polygon.corner_points
 
     def plot_perimeter(self, self_only: bool = True) -> None:
         """
-
-        :return:
-        :rtype:
+        plot_perimeter
         """
         import matplotlib.pyplot as plt
 
@@ -73,9 +67,7 @@ class Region:
 
     def _plot_ramps(self) -> None:
         """
-
-        :return:
-        :rtype:
+        plot_ramps
         """
         import matplotlib.pyplot as plt
 
@@ -86,9 +78,7 @@ class Region:
 
     def _plot_vision_blockers(self) -> None:
         """
-
-        :return:
-        :rtype:
+        plot_vision_blockers
         """
         import matplotlib.pyplot as plt
 
@@ -99,9 +89,7 @@ class Region:
 
     def _plot_minerals(self) -> None:
         """
-
-        :return:
-        :rtype:
+        plot_minerals
         """
         import matplotlib.pyplot as plt
 
@@ -114,9 +102,7 @@ class Region:
 
     def _plot_geysers(self) -> None:
         """
-
-        :return:
-        :rtype:
+        plot_geysers
         """
         import matplotlib.pyplot as plt
 
@@ -196,16 +182,12 @@ class Region:
     @property
     def get_area(self) -> int:
         """
-
-        :return:
-        :rtype:
+        get_area
         """
         return self.polygon.area
 
     def __repr__(self):  # pragma: no cover
         """
-
-        :return:
-        :rtype:
+        __repr__
         """
         return "Region " + str(self.label)

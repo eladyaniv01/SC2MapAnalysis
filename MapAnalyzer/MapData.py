@@ -50,11 +50,19 @@ class MapData:
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
-    def save_plot(self) -> None:
+    @property
+    def vision_blockers(self):
         """
-        Will save the plot to a file names after the map name
+        compute Region
         """
-        self.plot_map(save=True)
+        return self._vision_blockers
+
+    def compile_map(self) -> None:
+        """user can call this to recompute"""
+        self._calc_grid()
+        self._calc_regions()
+        self._calc_vision_blockers()
+        self._calc_chokes()
 
     def _get_pathlib_map(self) -> None:
 
@@ -353,14 +361,16 @@ class MapData:
                 self._calc_ramps(region=region)
                 j += 1
 
-    def compile_map(self) -> None:
-        """user can call this to recompute"""
-        self._calc_grid()
-        self._calc_regions()
-        self._calc_vision_blockers()
-        self._calc_chokes()
+    def save_plot(self) -> None:
+        """
+        Will save the plot to a file names after the map name
+        """
+        self.plot_map(save=True)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         for lbl, reg in self.regions.items():
@@ -378,6 +388,9 @@ class MapData:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
     def _plot_ramps(self) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         for ramp in self.map_ramps:
@@ -391,6 +404,9 @@ class MapData:
             plt.scatter(x, y, color="w")
 
     def _plot_vision_blockers(self) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         for vb in self._vision_blockers:
@@ -400,6 +416,9 @@ class MapData:
         plt.scatter(x, y, color="r")
 
     def _plot_normal_resources(self) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         for mfield in self.mineral_fields:
@@ -416,6 +435,9 @@ class MapData:
             )
 
     def _plot_chokes(self) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         for choke in self.map_chokes:
@@ -425,6 +447,9 @@ class MapData:
     def plot_map(
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
     ) -> None:
+        """
+        compute Region
+        """
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
@@ -461,7 +486,3 @@ class MapData:
             plt.close()
         else:  # pragma: no cover
             plt.show()
-
-    @property
-    def vision_blockers(self):
-        return self._vision_blockers
