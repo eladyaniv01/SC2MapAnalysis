@@ -7,7 +7,7 @@ from MapAnalyzer.utils import import_bot_instance
 
 # for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     maps = [
             # "GoldenWallLE.xz",
             # "DeathAuraLE.xz",

@@ -1,30 +1,29 @@
 from functools import lru_cache
-from typing import List, Tuple, TYPE_CHECKING, Union
+from typing import List, TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
 
-if TYPE_CHECKING:
-    pass
+if TYPE_CHECKING:  # pragma: no cover
+    from MapAnalyzer.MapData import MapData
+    from MapAnalyzer.Region import Region
 
 
-# noinspection SyntaxError
 class Polygon:
     """
     Polygon DocString
     """
 
-    def __init__(self, map_data, array):
-        # type: ("MapData", ndarray) -> None
+    def __init__(self, map_data: "MapData", array: ndarray) -> None:
         self.map_data = map_data
         self.array = array
         self.indices = np.where(self.array == 1)
         points = map_data.indices_to_points(self.indices)
         self.points = set([Point2(p) for p in points])
 
-    def plot(self):
+    def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
         :return:
         :rtype:
@@ -32,13 +31,14 @@ class Polygon:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
+        if testing:
+            return
         plt.imshow(self.array, origin="lower")
         plt.show()
 
     @property
     @lru_cache()
-    def nodes(self):
-        # type: () -> List[Point2]
+    def nodes(self) -> List[Point2]:
         """
         :return:
         :rtype:
@@ -47,7 +47,7 @@ class Polygon:
 
     @property
     @lru_cache()
-    def corner_array(self):
+    def corner_array(self) -> ndarray:
         """
         :return:
         :rtype:
@@ -61,7 +61,7 @@ class Polygon:
 
     @property
     @lru_cache()
-    def corner_points(self):
+    def corner_points(self) -> List[Point2]:
         """
         :return:
         :rtype:
@@ -71,29 +71,27 @@ class Polygon:
 
     @property
     @lru_cache()
-    def region(self):
+    def region(self) -> "Region":
         """
         :return:
         :rtype:
         """
-        return self.map_data.in_region(self.center)
+        return self.map_data.in_region_p(self.center)
 
-    # noinspection SyntaxError,SyntaxError
     @property
-    def center(self):
+    def center(self) -> Point2:
         """
         since the center is always going to be a float,
         and for performance considerations we use integer coordinates
-        we will
+        we will return the closest point registered
         :return:
         :rtype:
         """
-        # type: () -> Tuple[int, int]
         cm = center_of_mass(self.array)
         return self.map_data.closest_towards_point(points=self.nodes, target=cm)
 
     @lru_cache(100)
-    def is_inside_point(self, point: Union[Point2, Tuple]) -> bool:
+    def is_inside_point(self, point: Union[Point2, tuple]) -> bool:
         """
         :param point:
         :type point:
@@ -107,7 +105,9 @@ class Polygon:
         return point in self.points
 
     @lru_cache(100)
-    def is_inside_indices(self, point: Union[Point2, Tuple]) -> bool:
+    def is_inside_indices(
+            self, point: Union[Point2, tuple]
+    ) -> bool:  # pragma: no cover
         """
         :param point:
         :type point:
@@ -129,21 +129,19 @@ class Polygon:
         edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)
         return edge_indices
 
-    # noinspection SyntaxError,SyntaxError,SyntaxError
     @property
-    def area(self):
+    def area(self) -> int:
         """
         :return:
         :rtype:
         """
-        # type: () -> int
         return len(self.points)
 
-    @property
-    def get_holes(self) -> List[Tuple]:
-        """
-        :return:
-        :rtype:
-        """
-        # fly zones inside the Polygon
-        pass
+    # @property
+    # def get_holes(self) -> List[tuple]:  # pragma: no cover
+    #     """
+    #     :return:
+    #     :rtype:
+    #     """
+    #     # fly zones inside the Polygon
+    #     pass

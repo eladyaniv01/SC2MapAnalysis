@@ -10,16 +10,19 @@ from sc2.game_state import GameState
 from MapAnalyzer.MapData import MapData
 
 
-def mock_map_data(map_file):
-    with lzma.open(f"MapAnalyzer/pickle_gameinfo/{map_file}", "rb") as f:
+def mock_map_data(map_file: str) -> MapData:
+    with lzma.open(f"{map_file}", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
     bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
     return MapData(bot=bot)
 
 
-def import_bot_instance(raw_game_data, raw_game_info, raw_observation):
-    # type: (Response, Response, ResponseObservation) -> BotAI
+def import_bot_instance(
+        raw_game_data: Response,
+        raw_game_info: Response,
+        raw_observation: ResponseObservation,
+) -> BotAI:
     """
     import_bot_instance DocString
     """

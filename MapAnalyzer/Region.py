@@ -1,10 +1,13 @@
 from functools import lru_cache
-from typing import List, Tuple, Union
+from typing import List, TYPE_CHECKING, Union
 
 import numpy as np
 from sc2.position import Point2
 
 from MapAnalyzer.Polygon import Polygon
+
+if TYPE_CHECKING:  # pragma: no cover
+    from MapAnalyzer.MapData import MapData
 
 
 class Region:
@@ -13,8 +16,12 @@ class Region:
     """
 
     def __init__(
-            self, map_data, array: np.ndarray, label: int, map_expansions: List[Point2]
-    ):
+            self,
+            map_data: "MapData",
+            array: np.ndarray,
+            label: int,
+            map_expansions: List[Point2],
+    ) -> None:
         self.map_data = map_data
         self.array = array
         self.label = label
@@ -30,8 +37,7 @@ class Region:
         self.region_chokes = []
 
     @property
-    def center(self):
-        # type: () -> Tuple[int, int]
+    def center(self) -> Point2:
         """
 
         :return:
@@ -40,7 +46,7 @@ class Region:
         return self.polygon.center
 
     @property
-    def corners(self):
+    def corners(self) -> List[Point2]:
         """
 
         :return:
@@ -48,7 +54,7 @@ class Region:
         """
         return self.polygon.corner_points
 
-    def plot_perimeter(self, self_only=True):
+    def plot_perimeter(self, self_only: bool = True) -> None:
         """
 
         :return:
@@ -57,14 +63,15 @@ class Region:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
+
         x, y = zip(*self.polygon.perimeter)
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
-        if self_only:
+        if self_only:  # pragma: no cover
             plt.grid()
             plt.show()
 
-    def _plot_ramps(self):
+    def _plot_ramps(self) -> None:
         """
 
         :return:
@@ -77,7 +84,7 @@ class Region:
             x, y = zip(*r.points)
             plt.scatter(x, y, color="black", marker=r"$\diamondsuit$")
 
-    def _plot_vision_blockers(self):
+    def _plot_vision_blockers(self) -> None:
         """
 
         :return:
@@ -86,11 +93,11 @@ class Region:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
-        for vb in self.map_data._vision_blockers:
+        for vb in self.map_data.vision_blockers:
             if self.inside_p(point=vb):
                 plt.text(vb[0], vb[1], "X", c="r")
 
-    def _plot_minerals(self):
+    def _plot_minerals(self) -> None:
         """
 
         :return:
@@ -105,7 +112,7 @@ class Region:
                         mineral_field.position[0], mineral_field.position[1], color="blue"
                 )
 
-    def _plot_geysers(self):
+    def _plot_geysers(self) -> None:
         """
 
         :return:
@@ -125,81 +132,69 @@ class Region:
                         edgecolors="g",
                 )
 
-    def plot(self, self_only=True):
+    def plot(self, self_only: bool = True, testing: bool = False) -> None:
         """
-
-        :param self_only:
-        :type self_only:
-        :return:
-        :rtype:
+            plot
         """
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
+
         self._plot_geysers()
         self._plot_minerals()
         self._plot_ramps()
         self._plot_vision_blockers()
-        if self_only:
+        if testing:
+            self.plot_perimeter(self_only=False)
+            return
+        if self_only:  # pragma: no cover
             self.plot_perimeter(self_only=True)
-
-        else:
+        else:  # pragma: no cover
             self.plot_perimeter(self_only=False)
 
     @lru_cache(100)
-    def inside_p(self, point: Union[Point2, Tuple]):
+    def inside_p(self, point: Union[Point2, tuple]) -> bool:
         """
-
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        inside_p
         """
         return self.polygon.is_inside_point(point)
 
     @lru_cache(100)
-    def inside_i(self, point: Union[Point2, Tuple]):
+    def inside_i(self, point: Union[Point2, tuple]) -> bool:  # pragma: no cover
         """
-
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        inside_i
         """
         return self.polygon.is_inside_indices(point)
 
     @property
-    def base_locations(self):
+    def base_locations(self) -> List[Point2]:
         """
-
-        :return:
-        :rtype:
+        base_locations
         """
         return self.bases
 
-    @property
-    def is_reachable(self, region):
-        """
-        is connected to another region directly
-        :param region:
-        :type region:
-        :return:
-        :rtype:
-        """
-        pass
+    # @property
+    # def is_reachable(self, region):  # pragma: no cover
+    #     """
+    #     is connected to another region directly
+    #     :param region:
+    #     :type region:
+    #     :return:
+    #     :rtype:
+    #     """
+    #     pass
+
+    # @property
+    # def get_reachable_regions(self):  # pragma: no cover
+    #     """
+    #
+    #     :return:
+    #     :rtype:
+    #     """
+    #     pass
 
     @property
-    def get_reachable_regions(self):
-        """
-
-        :return:
-        :rtype:
-        """
-        pass
-
-    @property
-    def get_area(self):
-        # type: () -> int
+    def get_area(self) -> int:
         """
 
         :return:
@@ -207,7 +202,7 @@ class Region:
         """
         return self.polygon.area
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         """
 
         :return:

@@ -1,7 +1,9 @@
+# flake8: noqa
 from typing import List, Tuple, Union
 
 import numpy as np
 
+# noinspection PyUnresolvedReferences
 from .sc2pathlib import PathFind
 
 
