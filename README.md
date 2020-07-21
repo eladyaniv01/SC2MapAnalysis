@@ -1,6 +1,9 @@
 # SC2MapAnalysis 
 
-Master ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/build/badge.svg?branch=master)
+Builds:
+-------
+
+* [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master)  ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/build/badge.svg?branch=master)
 
 A standalone plugin for python SC2 api 
 
