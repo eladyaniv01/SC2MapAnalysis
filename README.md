@@ -1,4 +1,5 @@
-# SC2MapAnalysis ![](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/.github/workflows/build.yml/badge.svg)
+# SC2MapAnalysis ![](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/build/badge.svg)
+
 A standalone plugin for python SC2 api 
 
 Early Stage development,
