@@ -58,7 +58,7 @@ class TestSuit:
         map_files_folder = os.path.join(folder, subfolder)
         map_files = os.listdir(map_files_folder)
         for map_file in map_files:
-            file_path = map_files_folder + "\\" + map_file
+            file_path = os.path.join(map_files_folder, map_file)
             map_data = mock_map_data(map_file=file_path)
             logger.info(msg=f"Loaded Map : {map_data.bot.game_info.map_name}")
             start = time.time()
