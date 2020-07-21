@@ -54,7 +54,7 @@ class Region:
         """
         return self.polygon.corner_points
 
-    def plot_perimeter(self, self_only=True):
+    def plot_perimeter(self, self_only: bool = True) -> None:
         """
 
         :return:
@@ -93,7 +93,7 @@ class Region:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
-        for vb in self.map_data._vision_blockers:
+        for vb in self.map_data.vision_blockers:
             if self.inside_p(point=vb):
                 plt.text(vb[0], vb[1], "X", c="r")
 
@@ -134,11 +134,7 @@ class Region:
 
     def plot(self, self_only: bool = True, testing: bool = False) -> None:
         """
-
-        :param self_only:
-        :type self_only:
-        :return:
-        :rtype:
+            plot
         """
         import matplotlib.pyplot as plt
 
@@ -159,30 +155,21 @@ class Region:
     @lru_cache(100)
     def inside_p(self, point: Union[Point2, tuple]) -> bool:
         """
-
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        inside_p
         """
         return self.polygon.is_inside_point(point)
 
     @lru_cache(100)
-    def inside_i(self, point: Union[Point2, tuple]):  # pragma: no cover
+    def inside_i(self, point: Union[Point2, tuple]) -> bool:  # pragma: no cover
         """
-
-        :param point:
-        :type point:
-        :return:
-        :rtype:
+        inside_i
         """
         return self.polygon.is_inside_indices(point)
 
     @property
     def base_locations(self) -> List[Point2]:
         """
-        :return:
-        :rtype:
+        base_locations
         """
         return self.bases
 

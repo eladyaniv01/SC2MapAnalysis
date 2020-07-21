@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from numpy import float64, int64, ndarray
@@ -145,7 +145,9 @@ class MapData:
                 return region
 
     @lru_cache(100)
-    def in_region_i(self, point: Union[Point2, tuple]) -> Optional[Region]:  # pragma: no cover
+    def in_region_i(
+            self, point: Union[Point2, tuple]
+    ) -> Optional[Region]:  # pragma: no cover
         """
         will query a if a point is in, and in which Region using Indices <slow>
         time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
@@ -358,8 +360,9 @@ class MapData:
         self._calc_vision_blockers()
         self._calc_chokes()
 
-    def _plot_regions(self, fontdict):
+    def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         import matplotlib.pyplot as plt
+
         for lbl, reg in self.regions.items():
             plt.text(
                     reg.center[0],
@@ -374,8 +377,9 @@ class MapData:
             for corner in reg.polygon.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
-    def _plot_ramps(self):
+    def _plot_ramps(self) -> None:
         import matplotlib.pyplot as plt
+
         for ramp in self.map_ramps:
             plt.text(
                     ramp.top_center[0],
@@ -386,16 +390,18 @@ class MapData:
             x, y = zip(*ramp.points)
             plt.scatter(x, y, color="w")
 
-    def _plot_vision_blockers(self):
+    def _plot_vision_blockers(self) -> None:
         import matplotlib.pyplot as plt
+
         for vb in self._vision_blockers:
             plt.text(vb[0], vb[1], "X")
 
         x, y = zip(*self._vision_blockers)
         plt.scatter(x, y, color="r")
 
-    def _plot_normal_resources(self):
+    def _plot_normal_resources(self) -> None:
         import matplotlib.pyplot as plt
+
         for mfield in self.mineral_fields:
             plt.scatter(mfield.position[0], mfield.position[1], color="blue")
 
@@ -409,8 +415,9 @@ class MapData:
                     edgecolors="g",
             )
 
-    def _plot_chokes(self):
+    def _plot_chokes(self) -> None:
         import matplotlib.pyplot as plt
+
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
@@ -454,3 +461,7 @@ class MapData:
             plt.close()
         else:  # pragma: no cover
             plt.show()
+
+    @property
+    def vision_blockers(self):
+        return self._vision_blockers

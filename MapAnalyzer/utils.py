@@ -10,7 +10,7 @@ from sc2.game_state import GameState
 from MapAnalyzer.MapData import MapData
 
 
-def mock_map_data(map_file):
+def mock_map_data(map_file: str) -> MapData:
     with lzma.open(f"{map_file}", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 

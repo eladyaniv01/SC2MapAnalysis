@@ -23,7 +23,7 @@ class Polygon:
         points = map_data.indices_to_points(self.indices)
         self.points = set([Point2(p) for p in points])
 
-    def plot(self, testing=False):  # pragma: no cover
+    def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
         :return:
         :rtype:
