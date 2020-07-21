@@ -58,7 +58,9 @@ class TestSuit:
         folder = os.path.abspath(".")
         map_files_folder = os.path.join(folder, subfolder)
         map_files = os.listdir(map_files_folder)
+
         for map_file in map_files:
+            count = 0
             file_path = os.path.join(map_files_folder, map_file)
             map_data = mock_map_data(map_file=file_path)
             logger.info(msg=f"Loaded Map : {map_data.bot.game_info.map_name}")
@@ -69,50 +71,63 @@ class TestSuit:
                         map_data.where(region.center), Region
                 ), f"<Map : {map_file}, Region : {region}," \
                     f" where :  {map_data.where(region.center)} point : {region.center}>"
-
+                count += 1
                 # todo  test these,   currently here for cov
 
                 # polygon
                 region.polygon.plot(testing=True)
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.is_inside_indices
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.is_inside_point
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.region
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.corner_points
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.corner_array
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.nodes
+                count += 1
                 # noinspection PyStatementEffect
                 region.polygon.perimeter
+                count += 1
 
                 # region
                 region.plot(testing=True)
+                count += 1
                 # noinspection PyStatementEffect
                 region.corners
+                count += 1
                 # noinspection PyStatementEffect
                 region.base_locations
+                count += 1
 
             for choke in map_data.map_chokes:
                 assert isinstance(
                         map_data.where(choke.center), (Region, Polygon, ChokeArea)
                 ), f"<Map : {map_file}, Choke : {choke}," \
                     f" where :  {map_data.where(choke.center)} point : {choke.center}>"
-
+                count += 1
                 # ChokeArea
                 choke.get_width()
-
+                count += 1
             for mdramp in map_data.map_ramps:
                 assert isinstance(
                         map_data.where(mdramp.center), (Region, Polygon, MDRamp)
                 ), f"<Map : {map_file}, MDRamp : {mdramp}," \
                     f" where :  {map_data.where(mdramp.center)} point : {mdramp.center}>"
+                count += 1
                 # MDRamp
             end = time.time()
 
             logger.info(
-                    msg=f"Finished Testing Map : {map_data.bot.game_info.map_name} [{end - start}]"
+                    msg=f"Finished {map_data.bot.game_info.map_name},  {count} Queries in [{end - start}]"
+                    f"<avg query = {(end - start) / count}>"
             )
