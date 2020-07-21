@@ -25,3 +25,11 @@ jobs:
     - name: Test with pytest + Coverage
       run: |
         pytest --cov=./
+
+    - name: Monitor coverage
+      uses: slavcodev/coverage-monitor-action@1.1.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        clover_file: "logs/clover.xml"
+        threshold_alert: 10
+        threshold_warning: 50
