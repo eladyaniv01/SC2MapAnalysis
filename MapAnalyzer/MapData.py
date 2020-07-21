@@ -129,7 +129,6 @@ class MapData:
             if vba.is_inside_point(point):
                 return vba
 
-
     @lru_cache(100)
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
@@ -359,18 +358,8 @@ class MapData:
         self._calc_vision_blockers()
         self._calc_chokes()
 
-    def plot_map(
-            self, fontdict: dict = None, save: bool = False, figsize: int = 20
-    ) -> None:
+    def _plot_regions(self, fontdict):
         import matplotlib.pyplot as plt
-
-        plt.style.use("ggplot")
-        if not fontdict:
-            fontdict = {"family": "serif", "weight": "bold", "size": 25}
-
-        plt.figure(figsize=(figsize, figsize))
-        plt.imshow(self.region_grid, origin="lower")
-
         for lbl, reg in self.regions.items():
             plt.text(
                     reg.center[0],
@@ -385,6 +374,8 @@ class MapData:
             for corner in reg.polygon.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
+    def _plot_ramps(self):
+        import matplotlib.pyplot as plt
         for ramp in self.map_ramps:
             plt.text(
                     ramp.top_center[0],
@@ -394,18 +385,17 @@ class MapData:
             )
             x, y = zip(*ramp.points)
             plt.scatter(x, y, color="w")
-        # some maps has no vision blockers
-        if len(self._vision_blockers) > 0:
-            for vb in self._vision_blockers:
-                plt.text(vb[0], vb[1], "X")
 
-            x, y = zip(*self._vision_blockers)
-            plt.scatter(x, y, color="r")
+    def _plot_vision_blockers(self):
+        import matplotlib.pyplot as plt
+        for vb in self._vision_blockers:
+            plt.text(vb[0], vb[1], "X")
 
-        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
-        x, y = zip(*self.nonpathable_indices_stacked)
-        plt.scatter(x, y, color="grey")
+        x, y = zip(*self._vision_blockers)
+        plt.scatter(x, y, color="r")
 
+    def _plot_normal_resources(self):
+        import matplotlib.pyplot as plt
         for mfield in self.mineral_fields:
             plt.scatter(mfield.position[0], mfield.position[1], color="blue")
 
@@ -419,19 +409,44 @@ class MapData:
                     edgecolors="g",
             )
 
+    def _plot_chokes(self):
+        import matplotlib.pyplot as plt
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
+
+    def plot_map(
+            self, fontdict: dict = None, save: bool = False, figsize: int = 20
+    ) -> None:
+        import matplotlib.pyplot as plt
+
+        plt.style.use("ggplot")
+        if not fontdict:
+            fontdict = {"family": "serif", "weight": "bold", "size": 25}
+
+        plt.figure(figsize=(figsize, figsize))
+        plt.imshow(self.region_grid, origin="lower")
+        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
+        x, y = zip(*self.nonpathable_indices_stacked)
+        plt.scatter(x, y, color="grey")
+
+        self._plot_regions(fontdict=fontdict)
+        self._plot_ramps()
+        # some maps has no vision blockers
+        if len(self._vision_blockers) > 0:
+            self._plot_vision_blockers()
+
+        self._plot_normal_resources()
+        self._plot_chokes()
+
         fontsize = 25
         ax = plt.gca()
-
         for tick in ax.xaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)
             tick.label1.set_fontweight("bold")
         for tick in ax.yaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)
             tick.label1.set_fontweight("bold")
-
         plt.grid()
         if save:
             map_name = self.bot.game_info.map_name
