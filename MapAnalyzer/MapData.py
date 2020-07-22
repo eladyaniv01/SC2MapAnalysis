@@ -51,7 +51,7 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     @property
-    def vision_blockers(self):
+    def vision_blockers(self) -> Set[Point2]:
         """
         compute Region
         """
@@ -234,8 +234,6 @@ class MapData:
         for mramp in region.region_ramps:
             if len(mramp.regions) < 2:
                 region.region_ramps.remove(mramp)
-
-
 
     def _calc_grid(self) -> None:
         """ converting the placement grid to our own kind of grid"""
@@ -486,3 +484,6 @@ class MapData:
             plt.close()
         else:  # pragma: no cover
             plt.show()
+
+    def __repr__(self):
+        return f"MapData<{self.bot.game_info.map_name}> for bot {self.bot}"
