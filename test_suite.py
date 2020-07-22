@@ -36,12 +36,13 @@ class TestSuit:
 
         bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
         map_data = MapData(bot=bot)
-        n = 1000
-        points = [(i, j) for i in range(n) for j in range(n)]
+        n = randint(0, 999)
+        m = randint(0, 999)
+        points = [(i, j) for i in range(n) for j in range(m)]
         set_points = set(points)
         indices = map_data.points_to_indices(set_points)
-        i = randint(0, 999)
-        j = randint(0, 999)
+        i = randint(0, n)
+        j = randint(0, m)
         assert (i, j) in points
         assert (i, j) in set_points
         assert i in indices[0] and j in indices[1]

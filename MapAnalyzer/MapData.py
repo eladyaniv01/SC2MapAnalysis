@@ -174,6 +174,7 @@ class MapData:
     ) -> Set[Tuple[int64, int64]]:
         """
         convert indices to a set of points
+        Will only work when both dimensions are of same length
         """
 
         return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
@@ -193,8 +194,8 @@ class MapData:
         """
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
-        for p in points:
-            arr[p] = 1
+        indices = self.points_to_indices(points)
+        arr[indices] = 1
         return arr
 
     @staticmethod
@@ -230,12 +231,11 @@ class MapData:
     @staticmethod
     def _clean_ramps(region: Region) -> None:
         """ utility function to remove over populated ramps """
-        to_remove = []
         for mramp in region.region_ramps:
             if len(mramp.regions) < 2:
-                to_remove.append(mramp)
-        for mramp in to_remove:
-            region.region_ramps.remove(mramp)
+                region.region_ramps.remove(mramp)
+
+
 
     def _calc_grid(self) -> None:
         """ converting the placement grid to our own kind of grid"""
@@ -397,7 +397,7 @@ class MapData:
             plt.text(
                     ramp.top_center[0],
                     ramp.top_center[1],
-                    f"R<{[r.label for r in set(ramp.regions)]}>",
+                    f"R<{[r.label for r in ramp.regions]}>",
                     bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8),
             )
             x, y = zip(*ramp.points)
