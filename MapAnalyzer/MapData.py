@@ -271,7 +271,7 @@ class MapData:
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
             ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
-            """for ramp in map ramps  if ramp exists,  append the region if not,  create new one"""
+            """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
             if region not in ramp.regions:
                 ramp.regions.append(region)
             region.region_ramps.append(ramp)
@@ -380,7 +380,7 @@ class MapData:
                     fontdict=fontdict,
             )
             # random color for each perimeter
-            x, y = zip(*reg.polygon.perimeter)
+            y, x = zip(*reg.polygon.perimeter)
             plt.scatter(x, y, cmap="accent", marker="1", s=300)
             for corner in reg.polygon.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)

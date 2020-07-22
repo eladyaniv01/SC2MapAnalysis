@@ -26,6 +26,7 @@ class Region:
         self.array = array
         self.label = label
         self.polygon = Polygon(map_data=self.map_data, array=self.array)
+        self.polygon.regions.append(self)
         self.bases = [
                 base
                 for base in map_expansions
@@ -58,7 +59,7 @@ class Region:
 
         plt.style.use("ggplot")
 
-        x, y = zip(*self.polygon.perimeter)
+        y, x = zip(*self.polygon.perimeter)  # reversing for "lower" origin
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
@@ -160,11 +161,11 @@ class Region:
         return self.bases
 
     # @property
-    # def is_reachable(self, region):  # pragma: no cover
+    # def is_reachable(self, regions):  # pragma: no cover
     #     """
-    #     is connected to another region directly
-    #     :param region:
-    #     :type region:
+    #     is connected to another regions directly
+    #     :param regions:
+    #     :type regions:
     #     :return:
     #     :rtype:
     #     """

@@ -49,8 +49,9 @@ def get_map_datas() -> Iterable[MapData]:
         yield mock_map_data(map_file=os.path.join(map_files_folder, map_file))
 
 
+#
 @given(st.integers(min_value=1, max_value=100), st.integers(min_value=1, max_value=100))
-@settings(max_examples=10, deadline=None, verbosity=3, print_blob=True)
+@settings(max_examples=5, deadline=None, verbosity=3, print_blob=True)
 def test_mapdata(n, m):
     map_files = get_map_file_list()
     map_data = mock_map_data(random.choice(map_files))
@@ -93,7 +94,26 @@ class TestSuit:
         # coverage
         map_data.save_plot()
 
-    def test_region_polygon(self, map_data: MapData) -> None:
+    def test_polygon(self, map_data: MapData) -> None:
+        for region in map_data.regions.values():
+            region.polygon.plot(testing=True)
+
+            for point in region.polygon.points:
+                assert (region.polygon.is_inside_indices(point) is True)
+                assert (region.polygon.is_inside_point(point) is True)
+
+            assert (region in region.polygon.regions)
+
+            for point in region.polygon.corner_points:
+                assert (region in map_data.where_all(point))
+                assert (point in region.polygon.corner_array)
+
+            assert (region.polygon.nodes == list(region.polygon.points))
+
+            for point in region.polygon.perimeter_points:
+                assert (region.polygon.is_inside_point(point) is True), f"point {point}"
+
+    def test_regions(self, map_data: MapData) -> None:
         for region in map_data.regions.values():
             assert isinstance(
                     map_data.where(region.center), Region
@@ -101,37 +121,9 @@ class TestSuit:
                 f" where :  {map_data.where(region.center)} point : {region.center}>"
 
             # todo  test these,   currently here for cov
-            map_data.where_all(region.center)
-            # polygon
-            region.polygon.plot(testing=True)
-
-            # noinspection PyStatementEffect
-            region.polygon.is_inside_indices
-
-            # noinspection PyStatementEffect
-            region.polygon.is_inside_point
-
-            # noinspection PyStatementEffect
-            region.polygon.region
-
-            # noinspection PyStatementEffect
-            region.polygon.corner_points
-
-            # noinspection PyStatementEffect
-            region.polygon.corner_array
-
-            # noinspection PyStatementEffect
-            region.polygon.nodes
-
-            # noinspection PyStatementEffect
-            region.polygon.perimeter
-
-            # region
+            assert (region in map_data.where_all(region.center))
             region.plot(testing=True)
-
-            # noinspection PyStatementEffect
-            region.corners
-
+            assert (region.corners is region.polygon.corner_points)
             # noinspection PyStatementEffect
             region.base_locations
 
@@ -143,7 +135,7 @@ class TestSuit:
                 f" where :  {map_data.where(choke.center)} point : {choke.center}>"
             map_data.where_all(choke.center)
             # ChokeArea
-            choke.get_width()
+            assert (choke.get_width() > 0)
 
     def test_ramps(self, map_data: MapData) -> None:
         for mdramp in map_data.map_ramps:

@@ -8,7 +8,6 @@ from scipy.ndimage import center_of_mass
 
 if TYPE_CHECKING:  # pragma: no cover
     from MapAnalyzer.MapData import MapData
-    from MapAnalyzer.Region import Region
 
 
 class Polygon:
@@ -19,6 +18,7 @@ class Polygon:
     def __init__(self, map_data: "MapData", array: ndarray) -> None:
         self.map_data = map_data
         self.array = array
+        self.regions = []  # set by map_data / Region
         self.indices = np.where(self.array == 1)
         points = map_data.indices_to_points(self.indices)
         self.points = set([Point2(p) for p in points])
@@ -62,16 +62,8 @@ class Polygon:
         """
         corner_points
         """
-        points = [Point2(p) for p in self.corner_array]
+        points = [Point2(p) for p in self.corner_array if self.is_inside_point(Point2(p))]
         return points
-
-    @property
-    @lru_cache()
-    def region(self) -> "Region":
-        """
-        region
-        """
-        return self.map_data.in_region_p(self.center)
 
     @property
     def center(self) -> Point2:
@@ -94,7 +86,9 @@ class Polygon:
             return True
         if isinstance(point, Point2):
             point = point.rounded
-        return point in self.points
+        if point in self.points or point in self.perimeter_points:
+            return True
+        return False
 
     @lru_cache(100)
     def is_inside_indices(
@@ -114,8 +108,16 @@ class Polygon:
         """
         isolated_region = self.array
         xx, yy = np.gradient(isolated_region)
-        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)
+        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)[:, [1, 0]]
         return edge_indices
+
+    @property
+    def perimeter_points(self):
+        """
+        perimeter points
+        """
+        li = [(p[0], p[1]) for p in self.perimeter]
+        return set(li)
 
     @property
     def area(self) -> int:

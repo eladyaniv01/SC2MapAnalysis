@@ -19,7 +19,6 @@ class ChokeArea(Polygon):
     def __init__(
             self, array: np.ndarray, map_data: "MapData", main_line: tuple = None
     ) -> None:
-        self.regions = []  # set by map_data
         self.areas = []  # set by map_data
         self.main_line = main_line
         super().__init__(map_data=map_data, array=array)

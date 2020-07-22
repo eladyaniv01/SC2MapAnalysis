@@ -24,7 +24,7 @@ if __name__ == "__main__":  # pragma: no cover
 
         for region in map_data.regions.values():
             print(region.corners)
-            # print(f"{map_file} <Region>   {map_data.where_all(region.center)}")
+            # print(f"{map_file} <Region>   {map_data.where_all(regions.center)}")
             assert isinstance(
                     map_data.where(region.center), Region
             ), f"<Map : {map_file}, Region : {region}, where :  {map_data.where(region.center)} point : {region.center}>"

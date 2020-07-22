@@ -117,7 +117,7 @@ map_data.plot_map()
 
 **you will need to have 64 bit python installed** 
 
-create a virtual enviroment,  and clone the repo into it
+create a virtual environment,  and clone the repo into it
 
 `pip install .`
 
