@@ -13,8 +13,7 @@ requirements = [  # pragma: no cover
         "yarl==1.4.2",
 ]
 setup(  # pragma: no cover
-        name="SC2MapAnalysis",
-        version="0.1",
+        name="sc2mapanalysis",
         install_requires=requirements,
         extras_require={
                 "dev": [

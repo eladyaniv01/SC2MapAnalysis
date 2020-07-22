@@ -486,3 +486,6 @@ class MapData:
             plt.close()
         else:  # pragma: no cover
             plt.show()
+
+    def __repr__(self):
+        return f"MapData<{self.bot.game_info.map_name}> for bot {self.bot}"
