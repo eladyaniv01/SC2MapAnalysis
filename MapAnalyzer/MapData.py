@@ -1,4 +1,8 @@
+import logging
 from functools import lru_cache
+# from multiprocessing.dummy import Pool
+from multiprocessing import log_to_stderr
+from time import time
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -14,13 +18,18 @@ from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
 
+logger = log_to_stderr(level=logging.INFO)
+
+
 
 class MapData:
     """
     MapData DocString
     """
 
-    def __init__(self, bot: BotAI) -> None:
+    def __init__(self, bot: BotAI, pool: int = 4) -> None:
+        self.i = 0
+        self.pool = pool
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
@@ -32,10 +41,7 @@ class MapData:
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
         self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
         self.base_locations: list = bot.expansion_locations_list
-        self.map_ramps: list = [
-                MDRamp(map_data=self, ramp=r, array=self.points_to_numpy_array(r.points))
-                for r in self.bot.game_info.map_ramps
-        ]
+        self.map_ramps: list = []
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
         self.map_chokes: list = []  # set later  on compile
@@ -54,6 +60,58 @@ class MapData:
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def _clean_polys(self):
+        pols = self.polygons.copy()
+        # print(len(self.polygons))
+        for pol in pols:
+            if pol.area > self.max_region_area:
+                self.polygons.pop(self.polygons.index(pol))
+
+    def compile_map(self) -> None:
+        """user can call this to recompute"""
+        st = time()
+        self._calc_grid()
+        ed = time()
+        print(f"delta _calc_grid() {ed - st}")
+        st = time()
+        self._calc_regions()
+        ed = time()
+        print(f"delta _calc_regions() {ed - st}")
+        st = time()
+        self._calc_vision_blockers()
+        ed = time()
+        print(f"delta _calc_vision_blockers() {ed - st}")
+        st = time()
+        self._calc_chokes()
+        ed = time()
+        print(f"delta _calc_chokes() {ed - st}")
+        st = time()
+        self._clean_polys()
+        ed = time()
+        print(f"delta _clean_polys() {ed - st}")
+        # return
+        st = time()
+        for poly in self.polygons:
+            poly.calc_areas()
+        num_pools = self.pool
+
+        # def _do_calc(job):
+        #     # log_to_stderr(20)
+        #     # logger = get_logger()
+        #     # logger.info(msg="hi")
+        #     job.calc_areas()
+        #
+        # jobs = []
+        # for poly in self.polygons:
+        #     jobs.append(poly)
+        # pool = Pool(processes=num_pools)
+        # for job in jobs:
+        #     pool.apply_async(job.calc_areas())
+        # # pool.map(_do_calc, jobs)
+        ed = time()
+        # print(f"Pools {num_pools}, delta {ed - st}")
+        print(f"no mp, delta {ed - st}")
+
     @property
     def vision_blockers(self) -> Set[Point2]:
         """
@@ -61,12 +119,7 @@ class MapData:
         """
         return self._vision_blockers
 
-    def compile_map(self) -> None:
-        """user can call this to recompute"""
-        self._calc_grid()
-        self._calc_regions()
-        self._calc_vision_blockers()
-        self._calc_chokes()
+
 
     def _get_pathlib_map(self) -> None:
 
@@ -80,7 +133,7 @@ class MapData:
                 self.bot.game_info.playable_area,
         )
 
-    @lru_cache(100)
+    @lru_cache(200)
     def where_all(
             self, point: Union[Point2, tuple]
     ) -> Union[
@@ -203,14 +256,14 @@ class MapData:
         return arr
 
     @staticmethod
-    def _distance(p1: Point2, p2: Point2) -> float64:
+    def distance(p1: Point2, p2: Point2) -> float64:
         """
         euclidean distance
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
     @staticmethod
-    def _closest_node_idx(
+    def closest_node_idx(
             node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
     ) -> int:
         """
@@ -230,7 +283,7 @@ class MapData:
         tanks in direction to the enemy forces
         passing in the Area's corners as points and enemy army's location as target
         """
-        return points[self._closest_node_idx(node=target, nodes=points)]
+        return points[self.closest_node_idx(node=target, nodes=points)]
 
     @staticmethod
     def _clean_ramps(region: Region) -> None:
@@ -255,6 +308,7 @@ class MapData:
         self.regions_labels = np.unique(self.region_grid)
         vb_points = self._vision_blockers
 
+        # some maps has no vision blockers
         if len(vb_points):
             vision_blockers_indices = self.points_to_indices(vb_points)
             vision_blockers_array = np.zeros(self.region_grid.shape, dtype="int")
@@ -263,38 +317,40 @@ class MapData:
             self.vision_blockers_grid = vb_labeled_array
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
-    def _calc_ramps(self, region: Region) -> None:
+    def _calc_ramps(self, region) -> None:
         """
         probably the most expensive operation other than plotting ,  need to optimize
         """
+        if len(self.map_ramps) == 0:
+            self.map_ramps = [MDRamp(map_data=self,
+                                     ramp=r,
+                                     array=self.points_to_numpy_array(r.points))
+                              for r in self.bot.game_info.map_ramps]
+
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
-        # perimeter_nodes = region.polygon.perimeter
-        # result_ramp_indexes = list(
-        #         set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
-        # )
-        # for rn in result_ramp_indexes:
-        #     # and distance from perimeter is less than ?
-        #     ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
-        #     """for ramp in map ramps  if ramp exists,  append the areas if not,  create new one"""
-        #     if region not in ramp.regions:
-        #         ramp.regions.append(region)
-        #         # ramp.areas.append(region)
-        #     region.region_ramps.append(ramp)
-        # li = []
-        #
-        # for ramp in region.region_ramps:
-        #     for p in region.polygon.perimeter:
-        #         if (
-        #                 self._distance(p, ramp.bottom_center) < 8
-        #                 or self._distance(p, ramp.top_center) < 8
-        #         ):
-        #             li.append(ramp)
-        # li = list(set(li))
-        # for ramp in region.region_ramps:
-        #     if ramp not in li:
-        #         region.region_ramps.remove(ramp)
-        #         ramp.regions.remove(region)
-        # region.region_ramps = list(set(region.region_ramps))
+        perimeter_nodes = region.polygon.perimeter[:, [1, 0]]
+        result_ramp_indexes = list(
+                set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
+        )
+        for rn in result_ramp_indexes:
+            # and distance from perimeter is less than ?
+            ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
+            """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
+            if region not in ramp.areas:
+                ramp.areas.append(region)
+            region.region_ramps.append(ramp)
+        ramps = []
+        n = 8
+        for ramp in region.region_ramps:
+            for p in region.polygon.perimeter:
+                if (
+                        self.distance(p, ramp.bottom_center) < n
+                        or self.distance(p, ramp.top_center) < n
+                ):
+                    ramps.append(ramp)
+        ramps = list(set(ramps))
+
+        region.region_ramps = ramps
         # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
@@ -307,27 +363,41 @@ class MapData:
             vb_arr = self.points_to_numpy_array(points)
             if len(indices[0]):
                 vba = VisionBlockerArea(map_data=self, array=vb_arr)
-                region = self.in_region_p(vba.center)
-
-                if region and 5 < vba.area:
-                    vba.areas.append(region)
-                    region.region_vision_blockers.append(vba)
-                self.map_vision_blockers.append(vba)
+                # region = self.in_region_p(vba.center)
+                #
+                # if region and 5 < vba.area:
+                #     vba.areas.append(region)
+                #     region.region_vision_blockers.append(vba)
+                if vba.area <= 200:
+                    self.map_vision_blockers.append(vba)
+                else:
+                    self.polygons.pop(self.polygons.index(vba))
 
     def _calc_chokes(self) -> None:
         """
         compute ChokeArea
         """
         chokes = self.pathlib_map.chokes
+        self.map_chokes = self.map_ramps.copy()
+        self.map_chokes.extend(self.map_vision_blockers.copy())
         for choke in chokes:
             points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
+                for area in self.where_all(choke.center):
+                    if isinstance(area, MDRamp):
+                        return  # exit, do nothing its a ramp or vb
+
                 new_choke_array = self.points_to_numpy_array(points)
+
                 new_choke = ChokeArea(
                         map_data=self, array=new_choke_array, main_line=choke.main_line
                 )
                 areas = self.where_all(new_choke.center)
                 if len(areas) > 0:
+                    for area in areas:
+                        if isinstance(area, MDRamp):  # we already have it so del and move on
+                            self.polygons.pop(self.polygons.index(new_choke))
+                            return
                     for area in areas:
                         if isinstance(area, Region):
                             area.region_chokes.append(new_choke)
@@ -338,6 +408,7 @@ class MapData:
                             f"please report bug no area found for choke area"
                             f" with center {new_choke.center}"
                     )
+
                 self.map_chokes.append(new_choke)
 
     def _calc_regions(self) -> None:
@@ -445,6 +516,8 @@ class MapData:
 
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
+            cm = choke.center
+            plt.text(cm[0], cm[1], f"C <{choke.areas}>")
             plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
 
     def plot_map(

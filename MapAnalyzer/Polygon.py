@@ -1,4 +1,5 @@
 from functools import lru_cache
+from multiprocessing.util import log_to_stderr
 from typing import List, TYPE_CHECKING, Union
 
 import numpy as np
@@ -6,16 +7,24 @@ from numpy import ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
 
+from MapAnalyzer.Region import Region
+
 if TYPE_CHECKING:  # pragma: no cover
     from MapAnalyzer.MapData import MapData
 
+import logging
 
+logger = log_to_stderr(level=logging.INFO)
 class Polygon:
     """
     Polygon DocString
     """
 
     def __init__(self, map_data: "MapData", array: ndarray) -> None:
+        self.is_choke = False
+        self.is_ramp = False
+        self.is_vision_blocker = False
+        self.is_region = False
         self.map_data = map_data
         self.array = array
         self.areas = []  # set by map_data / Region
@@ -24,8 +33,38 @@ class Polygon:
         self.points = set([Point2(p) for p in points])
         self.map_data.polygons.append(self)
 
-    def __repr__(self):
-        return f"<Polygon: [{[a for a in self.areas]}]"
+    @property
+    @lru_cache()
+    def regions(self):
+        if len(self.areas) > 0:
+            return [r for r in self.areas if isinstance(r, Region)]
+        return []
+
+    def calc_areas(self):
+        if self.is_ramp:
+            return
+
+        if self.is_choke and self.main_line:
+            print(f"going deep! {self}")
+            prlist = list(self.perimeter_points)
+            crlist = list(self.corner_points)
+            points = set(prlist + crlist + list(self.points))
+            points = self.main_line
+            print(self)
+            # print(f"len(points) {len(points)}")
+            areas = self.areas
+            # print(f"len areas before {len(self.areas)}")
+            for point in points:
+                new_areas = self.map_data.where_all(point)
+                print(f"point = {point} new_areas = {new_areas}")
+                if self in new_areas:
+                    new_areas.pop(new_areas.index(self))
+                # print(f"len(new_areas) {len(new_areas)}")
+                areas.extend(new_areas)
+
+            self.areas = list(set(areas))
+            # print(f"len areas after {len(self.areas)}")
+            # print(self)
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
@@ -137,3 +176,5 @@ class Polygon:
     #     """
     #     # fly zones inside the Polygon
     #     pass
+    def __repr__(self):
+        return f"<Polygon[size={self.area}]: {self.areas}>"

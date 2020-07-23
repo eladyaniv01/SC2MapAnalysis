@@ -1,13 +1,10 @@
 from functools import lru_cache
-from typing import List, TYPE_CHECKING, Union
+from typing import List, Union
 
 import numpy as np
 from sc2.position import Point2
 
-from MapAnalyzer.Polygon import Polygon
-
-if TYPE_CHECKING:  # pragma: no cover
-    from MapAnalyzer.MapData import MapData
+from . import MapData, Polygon
 
 
 class Region:
@@ -17,7 +14,7 @@ class Region:
 
     def __init__(
             self,
-            map_data: "MapData",
+            map_data: MapData,
             array: np.ndarray,
             label: int,
             map_expansions: List[Point2],
@@ -25,8 +22,10 @@ class Region:
         self.map_data = map_data
         self.array = array
         self.label = label
-        self.polygon = Polygon(map_data=self.map_data, array=self.array)
+
+        self.polygon = Polygon.Polygon(map_data=self.map_data, array=self.array)  # for constructor
         self.polygon.areas.append(self)
+        self.polygon.is_region = True
         self.bases = [
                 base
                 for base in map_expansions
