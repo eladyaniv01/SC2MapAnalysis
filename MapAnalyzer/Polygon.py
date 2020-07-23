@@ -50,12 +50,14 @@ class Polygon:
             crlist = list(self.corner_points)
             points = set(prlist + crlist + list(self.points))
             points = self.main_line
-            print(self)
+            # print(self)
             # print(f"len(points) {len(points)}")
             areas = self.areas
             # print(f"len areas before {len(self.areas)}")
             for point in points:
+                point = int(point[0]), int(point[1])
                 new_areas = self.map_data.where_all(point)
+
                 print(f"point = {point} new_areas = {new_areas}")
                 if self in new_areas:
                     new_areas.pop(new_areas.index(self))

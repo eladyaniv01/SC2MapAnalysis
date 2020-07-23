@@ -10,7 +10,7 @@ from numpy import float64, int64
 from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
-from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
+from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
 from MapAnalyzer.constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
@@ -94,7 +94,8 @@ class MapData:
         for poly in self.polygons:
             poly.calc_areas()
         num_pools = self.pool
-
+        sc = set(self.map_chokes)
+        assert (len(sc) == len(self.map_chokes)), "O.o"
         # def _do_calc(job):
         #     # log_to_stderr(20)
         #     # logger = get_logger()
@@ -370,6 +371,12 @@ class MapData:
                 #     region.region_vision_blockers.append(vba)
                 if vba.area <= 200:
                     self.map_vision_blockers.append(vba)
+                    areas = self.where_all(vba.center)
+                    if len(areas) > 0:
+                        for area in areas:
+                            if area is not vba:
+                                vba.areas.append(area)
+
                 else:
                     self.polygons.pop(self.polygons.index(vba))
 
@@ -383,33 +390,29 @@ class MapData:
         for choke in chokes:
             points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
-                for area in self.where_all(choke.center):
-                    if isinstance(area, MDRamp):
-                        return  # exit, do nothing its a ramp or vb
-
                 new_choke_array = self.points_to_numpy_array(points)
-
-                new_choke = ChokeArea(
-                        map_data=self, array=new_choke_array, main_line=choke.main_line
-                )
-                areas = self.where_all(new_choke.center)
+                cm = center_of_mass(new_choke_array)
+                cm = int(cm[0]), int(cm[1])
+                areas = self.where_all(cm)
                 if len(areas) > 0:
                     for area in areas:
-                        if isinstance(area, MDRamp):  # we already have it so del and move on
-                            self.polygons.pop(self.polygons.index(new_choke))
-                            return
+                        if isinstance(area, (MDRamp, VisionBlockerArea)):  # we already have it so move on
+                            continue
+                    new_choke = ChokeArea(
+                            map_data=self, array=new_choke_array, main_line=choke.main_line
+                    )
                     for area in areas:
                         if isinstance(area, Region):
                             area.region_chokes.append(new_choke)
                         new_choke.areas.append(area)
+                    self.map_chokes.append(new_choke)
                 else:  # pragma: no cover
                     print(
                             f"<{self.bot.game_info.map_name}>: "
                             f"please report bug no area found for choke area"
-                            f" with center {new_choke.center}"
+                            f" with center {cm}"
                     )
 
-                self.map_chokes.append(new_choke)
 
     def _calc_regions(self) -> None:
         """
@@ -517,8 +520,11 @@ class MapData:
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             cm = choke.center
-            plt.text(cm[0], cm[1], f"C <{choke.areas}>")
+            plt.text(cm[0], cm[1], f"C<{choke.areas}>",
+                     bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
+            # plt.text(cm[0], cm[1], f"C <{choke.areas}>")
             plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
+
 
     def plot_map(
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
@@ -539,7 +545,7 @@ class MapData:
         plt.scatter(x, y, color="grey")
 
         self._plot_regions(fontdict=fontdict)
-        self._plot_ramps()
+        # self._plot_ramps()
         # some maps has no vision blockers
         if len(self._vision_blockers) > 0:
             self._plot_vision_blockers()
