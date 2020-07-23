@@ -1,5 +1,4 @@
 from functools import lru_cache
-from multiprocessing.util import log_to_stderr
 from typing import List, TYPE_CHECKING, Union
 
 import numpy as np
@@ -12,9 +11,6 @@ from MapAnalyzer.Region import Region
 if TYPE_CHECKING:  # pragma: no cover
     from MapAnalyzer.MapData import MapData
 
-import logging
-
-logger = log_to_stderr(level=logging.INFO)
 class Polygon:
     """
     Polygon DocString

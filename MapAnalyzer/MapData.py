@@ -1,7 +1,6 @@
 import logging
 from functools import lru_cache
 # from multiprocessing.dummy import Pool
-from multiprocessing import log_to_stderr
 from time import time
 from typing import Dict, List, Optional, Set, Tuple, Union
 
@@ -18,7 +17,7 @@ from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
 
-logger = log_to_stderr(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 
