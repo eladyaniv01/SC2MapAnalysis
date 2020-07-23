@@ -2,7 +2,8 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
-from numpy import float64, int64, ndarray
+from numpy import float64, int64
+from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, generate_binary_structure, label as ndlabel
@@ -22,24 +23,27 @@ class MapData:
     def __init__(self, bot: BotAI) -> None:
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
+        self.regions: dict = {}  # set later
+        self.corners: list = []  # set later
+        self.polygons: list = []  # set later
         # store relevant data from bot instance for later use
         self.bot = bot
-        self.map_name = bot.game_info.map_name
-        self.placement_arr = bot.game_info.placement_grid.data_numpy
-        self.path_arr = bot.game_info.pathing_grid.data_numpy
-        self.base_locations = bot.expansion_locations_list
-        self.map_ramps = [
+        self.map_name: str = bot.game_info.map_name
+        self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
+        self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
+        self.base_locations: list = bot.expansion_locations_list
+        self.map_ramps: list = [
                 MDRamp(map_data=self, ramp=r, array=self.points_to_numpy_array(r.points))
                 for r in self.bot.game_info.map_ramps
         ]
-        self.terrain_height = bot.game_info.terrain_height.data_numpy
-        self._vision_blockers = bot.game_info.vision_blockers
-        self.map_chokes = []  # set later  on compile
-        self.map_vision_blockers = []  # set later  on compile
-        self.vision_blockers_labels = []  # set later  on compile
-        self.vision_blockers_grid = []  # set later  on compile
-        self.region_grid = None
-        self.regions = {}
+        self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
+        self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
+        self.map_chokes: list = []  # set later  on compile
+        self.map_vision_blockers: list = []  # set later  on compile
+        self.vision_blockers_labels: list = []  # set later  on compile
+        self.vision_blockers_grid: list = []  # set later  on compile
+        self.region_grid: Union[ndarray, None] = None
+
         nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
@@ -264,33 +268,34 @@ class MapData:
         probably the most expensive operation other than plotting ,  need to optimize
         """
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
-        perimeter_nodes = region.polygon.perimeter
-        result_ramp_indexes = list(
-                set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
-        )
-        for rn in result_ramp_indexes:
-            # and distance from perimeter is less than ?
-            ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
-            """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
-            if region not in ramp.regions:
-                ramp.regions.append(region)
-            region.region_ramps.append(ramp)
-        li = []
-
-        for ramp in region.region_ramps:
-            for p in region.polygon.perimeter:
-                if (
-                        self._distance(p, ramp.bottom_center) < 8
-                        or self._distance(p, ramp.top_center) < 8
-                ):
-                    li.append(ramp)
-        li = list(set(li))
-        for ramp in region.region_ramps:
-            if ramp not in li:
-                region.region_ramps.remove(ramp)
-                ramp.regions.remove(region)
-        region.region_ramps = list(set(region.region_ramps))
-        self._clean_ramps(region)
+        # perimeter_nodes = region.polygon.perimeter
+        # result_ramp_indexes = list(
+        #         set([self._closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
+        # )
+        # for rn in result_ramp_indexes:
+        #     # and distance from perimeter is less than ?
+        #     ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
+        #     """for ramp in map ramps  if ramp exists,  append the areas if not,  create new one"""
+        #     if region not in ramp.regions:
+        #         ramp.regions.append(region)
+        #         # ramp.areas.append(region)
+        #     region.region_ramps.append(ramp)
+        # li = []
+        #
+        # for ramp in region.region_ramps:
+        #     for p in region.polygon.perimeter:
+        #         if (
+        #                 self._distance(p, ramp.bottom_center) < 8
+        #                 or self._distance(p, ramp.top_center) < 8
+        #         ):
+        #             li.append(ramp)
+        # li = list(set(li))
+        # for ramp in region.region_ramps:
+        #     if ramp not in li:
+        #         region.region_ramps.remove(ramp)
+        #         ramp.regions.remove(region)
+        # region.region_ramps = list(set(region.region_ramps))
+        # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
         """
@@ -305,7 +310,7 @@ class MapData:
                 region = self.in_region_p(vba.center)
 
                 if region and 5 < vba.area:
-                    vba.regions.append(region)
+                    vba.areas.append(region)
                     region.region_vision_blockers.append(vba)
                 self.map_vision_blockers.append(vba)
 
@@ -339,7 +344,7 @@ class MapData:
         """
         compute Region
         """
-        # some regions are with area of 1, 2 ,5   these are not what we want,
+        # some areas are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
         pre_regions = {}
         for i in range(len(self.regions_labels)):

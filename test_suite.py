@@ -120,7 +120,6 @@ class TestSuit:
             ), f"<MD : {map_data}, Region : {region}," \
                 f" where :  {map_data.where(region.center)} point : {region.center}>"
 
-            # todo  test these,   currently here for cov
             assert (region in map_data.where_all(region.center))
             region.plot(testing=True)
             assert (region.corners is region.polygon.corner_points)

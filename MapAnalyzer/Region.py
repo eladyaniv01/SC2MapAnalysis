@@ -26,7 +26,7 @@ class Region:
         self.array = array
         self.label = label
         self.polygon = Polygon(map_data=self.map_data, array=self.array)
-        self.polygon.regions.append(self)
+        self.polygon.areas.append(self)
         self.bases = [
                 base
                 for base in map_expansions
@@ -161,11 +161,11 @@ class Region:
         return self.bases
 
     # @property
-    # def is_reachable(self, regions):  # pragma: no cover
+    # def is_reachable(self, areas):  # pragma: no cover
     #     """
-    #     is connected to another regions directly
-    #     :param regions:
-    #     :type regions:
+    #     is connected to another areas directly
+    #     :param areas:
+    #     :type areas:
     #     :return:
     #     :rtype:
     #     """

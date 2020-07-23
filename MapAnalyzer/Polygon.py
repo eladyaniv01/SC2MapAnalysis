@@ -18,17 +18,20 @@ class Polygon:
     def __init__(self, map_data: "MapData", array: ndarray) -> None:
         self.map_data = map_data
         self.array = array
-        self.regions = []  # set by map_data / Region
+        self.areas = []  # set by map_data / Region
         self.indices = np.where(self.array == 1)
         points = map_data.indices_to_points(self.indices)
         self.points = set([Point2(p) for p in points])
+        self.map_data.polygons.append(self)
+
+    def __repr__(self):
+        return f"<Polygon: [{[a for a in self.areas]}]"
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
         plot
         """
         import matplotlib.pyplot as plt
-
         plt.style.use("ggplot")
         if testing:
             return
