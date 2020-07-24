@@ -25,7 +25,12 @@ class Polygon:
         self.array = array
         self.areas = []  # set by map_data / Region
         self.indices = np.where(self.array == 1)
+        # getting base points, for perimeter and corner creation
         points = map_data.indices_to_points(self.indices)
+        self.points = set([Point2(p) for p in points])
+        points = [p for p in map_data.indices_to_points(self.indices)]
+        points.extend(self.corner_points)
+        points.extend(self.perimeter_points)
         self.points = set([Point2(p) for p in points])
         self.map_data.polygons.append(self)
 
@@ -37,32 +42,7 @@ class Polygon:
         return []
 
     def calc_areas(self):
-        if self.is_ramp:
-            return
-
-        if self.is_choke and self.main_line:
-            print(f"going deep! {self}")
-            prlist = list(self.perimeter_points)
-            crlist = list(self.corner_points)
-            points = set(prlist + crlist + list(self.points))
-            points = self.main_line
-            # print(self)
-            # print(f"len(points) {len(points)}")
-            areas = self.areas
-            # print(f"len areas before {len(self.areas)}")
-            for point in points:
-                point = int(point[0]), int(point[1])
-                new_areas = self.map_data.where_all(point)
-
-                print(f"point = {point} new_areas = {new_areas}")
-                if self in new_areas:
-                    new_areas.pop(new_areas.index(self))
-                # print(f"len(new_areas) {len(new_areas)}")
-                areas.extend(new_areas)
-
-            self.areas = list(set(areas))
-            # print(f"len areas after {len(self.areas)}")
-            # print(self)
+        pass
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
@@ -70,9 +50,10 @@ class Polygon:
         """
         import matplotlib.pyplot as plt
         plt.style.use("ggplot")
+
+        plt.imshow(self.array, origin="lower")
         if testing:
             return
-        plt.imshow(self.array, origin="lower")
         plt.show()
 
     @property
@@ -95,6 +76,16 @@ class Polygon:
                 corner_harris(self.array), min_distance=3, threshold_rel=0.01
         )
         return array
+
+    @property
+    @lru_cache()
+    def width(self):
+        pl = list(self.perimeter_points)
+        s1 = min(pl)
+        s2 = max(pl)
+        x1, y1 = s1[0], s1[1]
+        x2, y2 = s2[0], s2[1]
+        return np.math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     @property
     @lru_cache()
@@ -122,11 +113,9 @@ class Polygon:
         """
         is_inside_point
         """
-        if point in self.points:
-            return True
         if isinstance(point, Point2):
             point = point.rounded
-        if point in self.points or point in self.perimeter_points:
+        if point in self.points:
             return True
         return False
 
@@ -148,7 +137,7 @@ class Polygon:
         """
         isolated_region = self.array
         xx, yy = np.gradient(isolated_region)
-        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)[:, [1, 0]]
+        edge_indices = np.argwhere(xx ** 2 + yy ** 2 > 0.1)
         return edge_indices
 
     @property

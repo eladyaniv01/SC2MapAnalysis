@@ -12,7 +12,7 @@ from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
+from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, MAX_REGION_AREA, MIN_REGION_AREA
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
@@ -27,7 +27,7 @@ class MapData:
     """
 
     def __init__(self, bot: BotAI, pool: int = 4) -> None:
-        self.i = 0
+
         self.pool = pool
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
@@ -62,9 +62,17 @@ class MapData:
     def _clean_polys(self):
         pols = self.polygons.copy()
         # print(len(self.polygons))
-        for pol in pols:
+        for pol in self.polygons:
             if pol.area > self.max_region_area:
                 self.polygons.pop(self.polygons.index(pol))
+            if pol.is_choke:
+                for a in pol.areas:
+                    if isinstance(a, MDRamp):
+                        self.polygons.pop(self.polygons.index(pol))
+                        # print(pol)
+                        # print(a)
+                        # print(a.areas)
+                        # print(pol in a.areas)
 
     def compile_map(self) -> None:
         """user can call this to recompute"""
@@ -328,7 +336,7 @@ class MapData:
                               for r in self.bot.game_info.map_ramps]
 
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
-        perimeter_nodes = region.polygon.perimeter[:, [1, 0]]
+        perimeter_nodes = region.polygon.perimeter_points
         result_ramp_indexes = list(
                 set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
         )
@@ -350,7 +358,7 @@ class MapData:
                     ramps.append(ramp)
         ramps = list(set(ramps))
 
-        region.region_ramps = ramps
+        region.region_ramps.extend(ramps)
         # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
@@ -363,11 +371,6 @@ class MapData:
             vb_arr = self.points_to_numpy_array(points)
             if len(indices[0]):
                 vba = VisionBlockerArea(map_data=self, array=vb_arr)
-                # region = self.in_region_p(vba.center)
-                #
-                # if region and 5 < vba.area:
-                #     vba.areas.append(region)
-                #     region.region_vision_blockers.append(vba)
                 if vba.area <= 200:
                     self.map_vision_blockers.append(vba)
                     areas = self.where_all(vba.center)
@@ -375,7 +378,6 @@ class MapData:
                         for area in areas:
                             if area is not vba:
                                 vba.areas.append(area)
-
                 else:
                     self.polygons.pop(self.polygons.index(vba))
 
@@ -412,7 +414,6 @@ class MapData:
                             f" with center {cm}"
                     )
 
-
     def _calc_regions(self) -> None:
         """
         compute Region
@@ -448,18 +449,18 @@ class MapData:
         compute Region
         """
         import matplotlib.pyplot as plt
-
         for lbl, reg in self.regions.items():
+            c = COLORS[lbl]
             plt.text(
                     reg.center[0],
                     reg.center[1],
                     reg.label,
-                    bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2),
+                    bbox=dict(fill=True, alpha=0.5, edgecolor=c, linewidth=2),
                     fontdict=fontdict,
             )
             # random color for each perimeter
-            y, x = zip(*reg.polygon.perimeter)
-            plt.scatter(x, y, cmap="accent", marker="1", s=300)
+            x, y = zip(*reg.polygon.perimeter_points)
+            plt.scatter(x, y, c=c, marker="1", s=300)
             for corner in reg.polygon.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
@@ -519,9 +520,15 @@ class MapData:
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             cm = choke.center
-            plt.text(cm[0], cm[1], f"C<{choke.areas}>",
-                     bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
-            # plt.text(cm[0], cm[1], f"C <{choke.areas}>")
+            if choke.is_ramp:
+                fontdict = {"family": "serif", "weight": "bold", "size": 15}
+                plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
+            else:
+                fontdict = {"family": "serif", "size": 10}
+                plt.text(cm[0], cm[1], f"C<{[r.label for r in choke.regions]}>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
+
             plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
 
 

@@ -58,23 +58,36 @@ class Region:
 
         plt.style.use("ggplot")
 
-        y, x = zip(*self.polygon.perimeter)  # reversing for "lower" origin
+        x, y = zip(*self.polygon.perimeter)  # reversing for "lower" origin
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
             plt.grid()
             plt.show()
 
+    def _plot_corners(self):
+        import matplotlib.pyplot as plt
+        plt.style.use("ggplot")
+        for corner in self.polygon.corner_points:
+            plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
+
     def _plot_ramps(self) -> None:
         """
         plot_ramps
         """
         import matplotlib.pyplot as plt
-
         plt.style.use("ggplot")
-        for r in self.region_ramps:
-            x, y = zip(*r.points)
-            plt.scatter(x, y, color="black", marker=r"$\diamondsuit$")
+        for ramp in self.region_ramps:
+            plt.text(
+                    # fixme make ramp attr compatible and not reversed
+                    ramp.top_center[0],
+                    ramp.top_center[1],
+                    f"R<{[r.label for r in ramp.regions]}>",
+                    bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8),
+            )
+            # ramp.plot(testing=True)
+            x, y = zip(*ramp.points)
+            plt.scatter(x, y, color="w")
 
     def _plot_vision_blockers(self) -> None:
         """
@@ -125,11 +138,11 @@ class Region:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
-
         self._plot_geysers()
         self._plot_minerals()
         self._plot_ramps()
         self._plot_vision_blockers()
+        self._plot_corners()
         if testing:
             self.plot_perimeter(self_only=False)
             return

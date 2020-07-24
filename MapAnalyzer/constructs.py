@@ -22,6 +22,18 @@ class ChokeArea(Polygon):
         self.main_line = main_line
         self.is_choke = True
 
+    def calc_areas(self):
+        if self.main_line:
+            points = [min(self.points), max(self.points)]
+            areas = self.areas
+            for point in points:
+                point = int(point[0]), int(point[1])
+                new_areas = self.map_data.where_all(point)
+                if self in new_areas:
+                    new_areas.pop(new_areas.index(self))
+                areas.extend(new_areas)
+            self.areas = list(set(areas))
+
     def __repr__(self):  # pragma: no cover
         return f"<ChokeArea[size={self.area}]> of  {self.areas}"
 
@@ -35,6 +47,9 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
+
+    def calc_areas(self):
+        return
 
     @property
     def top_center(self) -> Point2:
