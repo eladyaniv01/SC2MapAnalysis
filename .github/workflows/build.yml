@@ -24,7 +24,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install .[dev]; fi
     - name: Test with pytest + Coverage
       run: |
-        pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ python-version }}.xml
+        pytest --doctest-modules --junitxml=junit/test-results-${{ python-version }}.xml
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
