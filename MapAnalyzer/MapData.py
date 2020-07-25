@@ -13,12 +13,11 @@ from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_str
 from scipy.spatial import distance
 
 from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, MAX_REGION_AREA, MIN_REGION_AREA
-from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
+from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
 
 logger = logging.getLogger(__name__)
-
 
 
 class MapData:
@@ -56,8 +55,43 @@ class MapData:
         self.mineral_fields = bot.mineral_field
         self.normal_geysers = bot.vespene_geyser
         self.pathlib_map = None
+        self.pathlib_to_local_chokes = None
+        self.overlapping_choke_ids = None
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
+
+    def _clean_plib_chokes(self):
+        # needs to be called AFTER MDramps are populated in self.map_ramps
+        raw_chokes = self.pathlib_map.chokes
+        self.pathlib_to_local_chokes = []
+        for i, c in enumerate(raw_chokes):
+            self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
+        areas = self.map_ramps.copy()
+        areas.extend(self.map_vision_blockers)
+        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.pathlib_to_local_chokes,
+                                                                  areas=areas)
+
+    def _get_overlapping_chokes(self, local_chokes, areas):
+        li = []
+        for area in areas:
+            li.append(self._get_sets_with_mutual_elements(list_mdchokes=local_chokes, area=area))
+        result = []
+        for minili in li:
+            result.extend(minili)
+        return set(result)
+
+    def _get_sets_with_mutual_elements(self, list_mdchokes, area=None, base_choke=None) -> List[List]:
+        li = []
+        if area:
+            s1 = area.points
+        else:
+            s1 = base_choke.pixels
+        for c in list_mdchokes:
+            s2 = c.pixels
+            s3 = s1 ^ s2
+            if len(s3) != (len(s1) + len(s2)):
+                li.append(c.id)
+        return li
 
     def _clean_polys(self):
         pols = self.polygons.copy()
@@ -385,9 +419,11 @@ class MapData:
         """
         compute ChokeArea
         """
-        chokes = self.pathlib_map.chokes
+        self._clean_plib_chokes()
+        chokes = [c for c in self.pathlib_to_local_chokes if c.id not in self.overlapping_choke_ids]
         self.map_chokes = self.map_ramps.copy()
-        self.map_chokes.extend(self.map_vision_blockers.copy())
+        self.map_chokes.extend(self.map_vision_blockers)
+
         for choke in chokes:
             points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
@@ -395,24 +431,21 @@ class MapData:
                 cm = center_of_mass(new_choke_array)
                 cm = int(cm[0]), int(cm[1])
                 areas = self.where_all(cm)
-                if len(areas) > 0:
-                    for area in areas:
-                        if isinstance(area, (MDRamp, VisionBlockerArea)):  # we already have it so move on
-                            continue
-                    new_choke = ChokeArea(
-                            map_data=self, array=new_choke_array, main_line=choke.main_line
-                    )
-                    for area in areas:
-                        if isinstance(area, Region):
-                            area.region_chokes.append(new_choke)
-                        new_choke.areas.append(area)
-                    self.map_chokes.append(new_choke)
-                else:  # pragma: no cover
-                    print(
-                            f"<{self.bot.game_info.map_name}>: "
-                            f"please report bug no area found for choke area"
-                            f" with center {cm}"
-                    )
+
+                new_choke = ChokeArea(
+                        map_data=self, array=new_choke_array, pathlibchoke=choke
+                )
+                for area in areas:
+                    if isinstance(area, Region):
+                        area.region_chokes.append(new_choke)
+                    new_choke.areas.append(area)
+                self.map_chokes.append(new_choke)
+            else:  # pragma: no cover
+                print(
+                        f"<{self.bot.game_info.map_name}>: "
+                        f"please report bug no area found for choke area(id = {choke.id}"
+                        f" with center {cm}"
+                )
 
     def _calc_regions(self) -> None:
         """
@@ -523,13 +556,22 @@ class MapData:
             if choke.is_ramp:
                 fontdict = {"family": "serif", "weight": "bold", "size": 15}
                 plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
+                         bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
+                plt.scatter(x, y, color="w")
+            elif choke.is_vision_blocker:
+
+                fontdict = {"family": "serif", "size": 10}
+                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
+
             else:
                 fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"C<{[r.label for r in choke.regions]}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8))
+                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
 
-            plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="g")
+
 
 
     def plot_map(
@@ -570,6 +612,7 @@ class MapData:
         plt.grid()
         if save:
             map_name = self.bot.game_info.map_name
+            print(f"Saving to {map_name}.png")
             plt.savefig(f"{map_name}.png")
             plt.close()
         else:  # pragma: no cover

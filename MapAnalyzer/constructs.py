@@ -10,16 +10,33 @@ if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
 
 
+class PathLibChoke:
+    def __init__(self, pathlib_choke, pk):
+        self.id = pk
+        self.pixels = set(pathlib_choke.pixels)
+        self.main_line = pathlib_choke.pixels
+        self.pathlib_choke = pathlib_choke
+
+    def __repr__(self):
+        return f"[{self.id}]PathLibChoke; {len(self.pixels)}"
+
+
 class ChokeArea(Polygon):
     """
     ChokeArea DocString
     """
 
     def __init__(
-            self, array: np.ndarray, map_data: "MapData", main_line: tuple = None
+            self, array: np.ndarray, map_data: "MapData", pathlibchoke=None
     ) -> None:
         super().__init__(map_data=map_data, array=array)
-        self.main_line = main_line
+        self.main_line = None
+        self.id = None
+        self.md_pl_choke = None
+        if pathlibchoke:
+            self.main_line = pathlibchoke.main_line
+            self.id = pathlibchoke.id
+            self.md_pl_choke = pathlibchoke
         self.is_choke = True
 
     def calc_areas(self):

@@ -46,8 +46,6 @@ f = "EphemeronLE"
 import lzma
 import pickle
 
-import numpy as np
-
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
 
@@ -58,16 +56,4 @@ bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot)
 reg = map_data.regions[11]
 reg.plot()
-map_data.plot_map()
-from scipy.spatial.distance import cdist
-
-d = {}
-r = reg.region_ramps[0]
-array1 = r.array
-for choke in map_data.map_chokes:
-    if not choke.is_ramp:
-        array2 = choke.array
-        score = sum([p for p in np.unique(1 - cdist(array1, array2, 'cosine')) if p > 0])
-        if score > 0:
-            print(f"<choke> Score :{score}")
-            d[score] = choke
+map_data.save_plot()

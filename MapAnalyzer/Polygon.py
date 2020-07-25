@@ -17,6 +17,7 @@ class Polygon:
     """
 
     def __init__(self, map_data: "MapData", array: ndarray) -> None:
+        self.id = None  # TODO
         self.is_choke = False
         self.is_ramp = False
         self.is_vision_blocker = False
@@ -31,7 +32,9 @@ class Polygon:
         points = [p for p in map_data.indices_to_points(self.indices)]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
+
         self.points = set([Point2(p) for p in points])
+        self.indices = self.map_data.points_to_indices(self.points)
         self.map_data.polygons.append(self)
 
     @property
