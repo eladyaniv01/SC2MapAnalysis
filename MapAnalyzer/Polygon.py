@@ -1,15 +1,13 @@
 from functools import lru_cache
-from typing import List, TYPE_CHECKING, Union
+from typing import List, Set, Tuple, Union
 
 import numpy as np
-from numpy import ndarray
+from numpy import int64, ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
 
 from MapAnalyzer.Region import Region
 
-if TYPE_CHECKING:  # pragma: no cover
-    from MapAnalyzer.MapData import MapData
 
 class Polygon:
     """
@@ -27,24 +25,23 @@ class Polygon:
         self.areas = []  # set by map_data / Region
         self.indices = np.where(self.array == 1)
         # getting base points, for perimeter and corner creation
-        points = map_data.indices_to_points(self.indices)
-        self.points = set([Point2(p) for p in points])
+        self._clean_points = map_data.indices_to_points(self.indices)
+        self.points = set([Point2(p) for p in self._clean_points])
         points = [p for p in map_data.indices_to_points(self.indices)]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
-
         self.points = set([Point2(p) for p in points])
         self.indices = self.map_data.points_to_indices(self.points)
         self.map_data.polygons.append(self)
 
     @property
     @lru_cache()
-    def regions(self):
+    def regions(self) -> List[Region]:
         if len(self.areas) > 0:
             return [r for r in self.areas if isinstance(r, Region)]
         return []
 
-    def calc_areas(self):
+    def calc_areas(self) -> None:
         pass
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
@@ -82,7 +79,7 @@ class Polygon:
 
     @property
     @lru_cache()
-    def width(self):
+    def width(self) -> float:
         pl = list(self.perimeter_points)
         s1 = min(pl)
         s2 = max(pl)
@@ -100,16 +97,19 @@ class Polygon:
         return points
 
     @property
+    def clean_points(self):
+        return list(self._clean_points)  # needs to be array like for numpy calcs
+
+    @property
     def center(self) -> Point2:
         """
         since the center is always going to be a float,
         and for performance considerations we use integer coordinates
         we will return the closest point registered
-        :return:
-        :rtype:
         """
-        cm = center_of_mass(self.array)
-        return self.map_data.closest_towards_point(points=self.nodes, target=cm)
+
+        cm = self.map_data.closest_towards_point(points=self.clean_points, target=center_of_mass(self.array))
+        return cm
 
     @lru_cache(100)
     def is_inside_point(self, point: Union[Point2, tuple]) -> bool:
@@ -144,11 +144,11 @@ class Polygon:
         return edge_indices
 
     @property
-    def perimeter_points(self):
+    def perimeter_points(self) -> Set[Tuple[int64, int64]]:
         """
         perimeter points
         """
-        li = [(p[0], p[1]) for p in self.perimeter]
+        li = [Point2((p[0], p[1])) for p in self.perimeter]
         return set(li)
 
     @property
@@ -166,5 +166,5 @@ class Polygon:
     #     """
     #     # fly zones inside the Polygon
     #     pass
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Polygon[size={self.area}]: {self.areas}>"

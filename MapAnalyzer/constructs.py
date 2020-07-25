@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
+from MapAnalyzer import sc2pathlibp
 from MapAnalyzer.Polygon import Polygon
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -11,7 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class PathLibChoke:
-    def __init__(self, pathlib_choke, pk):
+    def __init__(self, pathlib_choke: sc2pathlibp.choke.Choke, pk: int):
         self.id = pk
         self.pixels = set(pathlib_choke.pixels)
         self.main_line = pathlib_choke.pixels
@@ -27,11 +28,11 @@ class ChokeArea(Polygon):
     """
 
     def __init__(
-            self, array: np.ndarray, map_data: "MapData", pathlibchoke=None
+            self, array: np.ndarray, map_data: "MapData", pathlibchoke: Optional[PathLibChoke] = None
     ) -> None:
         super().__init__(map_data=map_data, array=array)
         self.main_line = None
-        self.id = None
+        self.id = 'Unregistered'
         self.md_pl_choke = None
         if pathlibchoke:
             self.main_line = pathlibchoke.main_line
@@ -39,7 +40,7 @@ class ChokeArea(Polygon):
             self.md_pl_choke = pathlibchoke
         self.is_choke = True
 
-    def calc_areas(self):
+    def calc_areas(self) -> None:
         if self.main_line:
             points = [min(self.points), max(self.points)]
             areas = self.areas
@@ -51,8 +52,8 @@ class ChokeArea(Polygon):
                 areas.extend(new_areas)
             self.areas = list(set(areas))
 
-    def __repr__(self):  # pragma: no cover
-        return f"<ChokeArea[size={self.area}]> of  {self.areas}"
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
 
 
 class MDRamp(ChokeArea):
@@ -65,7 +66,7 @@ class MDRamp(ChokeArea):
         self.is_ramp = True
         self.ramp = ramp
 
-    def calc_areas(self):
+    def calc_areas(self) -> None:
         return
 
     @property

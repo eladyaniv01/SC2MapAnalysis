@@ -4,7 +4,7 @@ from typing import List, Union
 import numpy as np
 from sc2.position import Point2
 
-from . import MapData, Polygon
+from . import Polygon
 
 
 class Region:
@@ -14,7 +14,7 @@ class Region:
 
     def __init__(
             self,
-            map_data: MapData,
+            map_data: "MapData",
             array: np.ndarray,
             label: int,
             map_expansions: List[Point2],
@@ -65,7 +65,7 @@ class Region:
             plt.grid()
             plt.show()
 
-    def _plot_corners(self):
+    def _plot_corners(self) -> None:
         import matplotlib.pyplot as plt
         plt.style.use("ggplot")
         for corner in self.polygon.corner_points:
@@ -199,7 +199,7 @@ class Region:
         """
         return self.polygon.area
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         """
         __repr__
         """

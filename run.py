@@ -40,9 +40,9 @@
 #             ), f"<Map : {map_file}, MDRamp : {mdramp}, where :  {map_data.where(mdramp.center)} point : {mdramp.center}>"
 #         map_data.plot_map()
         # map_data.save_plot()
-# "EverDreamLE"
-# "GoldenWallLE"
-f = "EphemeronLE"
+# f = "EverDreamLE"
+f = "GoldenWallLE"
+# f = "EphemeronLE"
 import lzma
 import pickle
 
@@ -54,6 +54,5 @@ with lzma.open(f"MapAnalyzer/pickle_gameinfo/{f}.xz", "rb") as f:
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot)
-reg = map_data.regions[11]
-reg.plot()
+
 map_data.save_plot()
