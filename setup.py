@@ -18,8 +18,8 @@ setup(  # pragma: no cover
         extras_require={
                 "dev": [
                         "pytest==5.4.3",
-                        "pytest-html"
-                        "monkeytype"
+                        "pytest-html",
+                        "monkeytype",
                         "mypy",
                         "pytest-asyncio",
                         "hypothesis",
