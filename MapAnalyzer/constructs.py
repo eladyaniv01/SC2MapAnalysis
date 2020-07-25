@@ -1,14 +1,25 @@
-from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
+from MapAnalyzer import sc2pathlibp
 from MapAnalyzer.Polygon import Polygon
 
 if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
+
+
+class PathLibChoke:
+    def __init__(self, pathlib_choke: sc2pathlibp.choke.Choke, pk: int):
+        self.id = pk
+        self.pixels = set(pathlib_choke.pixels)
+        self.main_line = pathlib_choke.pixels
+        self.pathlib_choke = pathlib_choke
+
+    def __repr__(self):
+        return f"[{self.id}]PathLibChoke; {len(self.pixels)}"
 
 
 class ChokeArea(Polygon):
@@ -17,23 +28,32 @@ class ChokeArea(Polygon):
     """
 
     def __init__(
-            self, array: np.ndarray, map_data: "MapData", main_line: tuple = None
+            self, array: np.ndarray, map_data: "MapData", pathlibchoke: Optional[PathLibChoke] = None
     ) -> None:
-        self.areas = []  # set by map_data
-        self.main_line = main_line
         super().__init__(map_data=map_data, array=array)
+        self.main_line = None
+        self.id = 'Unregistered'
+        self.md_pl_choke = None
+        if pathlibchoke:
+            self.main_line = pathlibchoke.main_line
+            self.id = pathlibchoke.id
+            self.md_pl_choke = pathlibchoke
+        self.is_choke = True
 
-    @lru_cache(100)
-    def get_width(self) -> float:
-        import math
+    def calc_areas(self) -> None:
+        if self.main_line:
+            points = [min(self.points), max(self.points)]
+            areas = self.areas
+            for point in points:
+                point = int(point[0]), int(point[1])
+                new_areas = self.map_data.where_all(point)
+                if self in new_areas:
+                    new_areas.pop(new_areas.index(self))
+                areas.extend(new_areas)
+            self.areas = list(set(areas))
 
-        if self.main_line is not None:
-            x1, y1 = self.main_line[0][0], self.main_line[0][1]
-            x2, y2 = self.main_line[1][0], self.main_line[1][1]
-            return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-    def __repr__(self):  # pragma: no cover
-        return f"<ChokeArea;{self.area}> of {[r for r in self.areas]}"
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
 
 
 class MDRamp(ChokeArea):
@@ -42,8 +62,12 @@ class MDRamp(ChokeArea):
     """
 
     def __init__(self, map_data: "MapData", array: np.ndarray, ramp: sc2Ramp) -> None:
-        self.ramp = ramp
         super().__init__(map_data=map_data, array=array)
+        self.is_ramp = True
+        self.ramp = ramp
+
+    def calc_areas(self) -> None:
+        return
 
     @property
     def top_center(self) -> Point2:
@@ -54,7 +78,7 @@ class MDRamp(ChokeArea):
         return self.ramp.bottom_center
 
     def __repr__(self):  # pragma: no cover
-        return f"<MDRamp{self.ramp} of {self.regions}>"
+        return f"<MDRamp[size={self.area}]: {self.areas}>"
 
 
 class VisionBlockerArea(ChokeArea):
@@ -64,6 +88,7 @@ class VisionBlockerArea(ChokeArea):
 
     def __init__(self, map_data: "MapData", array: np.ndarray) -> None:
         super().__init__(map_data=map_data, array=array)
+        self.is_vision_blocker = True
 
     def __repr__(self):  # pragma: no cover
-        return f"<VisionBlockerArea;{self.area}> of {[r for r in self.areas]}"
+        return f"<VisionBlockerArea[size={self.area}]: {self.areas}>"
