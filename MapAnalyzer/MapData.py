@@ -61,8 +61,12 @@ class MapData:
         self._get_pathlib_map()
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    @staticmethod
+    def log(msg):
+        logger.info(msg=f"[{__name__}] {msg}")
+
     def _clean_plib_chokes(self) -> None:
-        # needs to be called AFTER MDramps are populated in self.map_ramps
+        # needs to be called AFTER MDramp and VisionBlocker are populated
         raw_chokes = self.pathlib_map.chokes
         self.pathlib_to_local_chokes = []
         for i, c in enumerate(raw_chokes):
@@ -82,7 +86,8 @@ class MapData:
             result.extend(minili)
         return set(result)
 
-    def _get_sets_with_mutual_elements(self, list_mdchokes: List[PathLibChoke],
+    @staticmethod
+    def _get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
                                        area: Optional[Union[MDRamp, VisionBlockerArea]] = None,
                                        base_choke: None = None) -> List[List]:
         li = []
@@ -116,47 +121,14 @@ class MapData:
         """user can call this to recompute"""
         st = time()
         self._calc_grid()
-        ed = time()
-        print(f"delta _calc_grid() {ed - st}")
-        st = time()
         self._calc_regions()
-        ed = time()
-        print(f"delta _calc_regions() {ed - st}")
-        st = time()
         self._calc_vision_blockers()
-        ed = time()
-        print(f"delta _calc_vision_blockers() {ed - st}")
-        st = time()
         self._calc_chokes()
-        ed = time()
-        print(f"delta _calc_chokes() {ed - st}")
-        st = time()
         self._clean_polys()
-        ed = time()
-        print(f"delta _clean_polys() {ed - st}")
-        # return
-        st = time()
         for poly in self.polygons:
             poly.calc_areas()
-        num_pools = self.pool
-        sc = set(self.map_chokes)
-        assert (len(sc) == len(self.map_chokes)), "O.o"
-        # def _do_calc(job):
-        #     # log_to_stderr(20)
-        #     # logger = get_logger()
-        #     # logger.info(msg="hi")
-        #     job.calc_areas()
-        #
-        # jobs = []
-        # for poly in self.polygons:
-        #     jobs.append(poly)
-        # pool = Pool(processes=num_pools)
-        # for job in jobs:
-        #     pool.apply_async(job.calc_areas())
-        # # pool.map(_do_calc, jobs)
         ed = time()
-        # print(f"Pools {num_pools}, delta {ed - st}")
-        print(f"no mp, delta {ed - st}")
+        logger.info(msg=f"[{__name__}] {self.map_name} Compiled in {ed - st}")
 
     @property
     def vision_blockers(self) -> Set[Point2]:
@@ -187,7 +159,6 @@ class MapData:
     ]:
         """
         Will query a point on the map and will return a list of all Area's that point belong to
-
         region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
         choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
@@ -218,7 +189,6 @@ class MapData:
         Region,
         MDRamp,
         VisionBlockerArea
-
         region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
@@ -443,11 +413,7 @@ class MapData:
                     new_choke.areas.append(area)
                 self.map_chokes.append(new_choke)
             else:  # pragma: no cover
-                print(
-                        f"<{self.bot.game_info.map_name}>: "
-                        f"please report bug no area found for choke area(id = {choke.id}"
-                        f" with center {cm}"
-                )
+                self.log(f" Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
         """
@@ -477,11 +443,7 @@ class MapData:
         """
         Will save the plot to a file names after the map name
         """
-        if 'test' in str(inspect.stack()[1][1]):
-            logger.debug("SKIPPING SAVE TEST")
-            return True
-        else:
-            self.plot_map(save=True)
+        self.plot_map(save=True)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         """
@@ -503,25 +465,9 @@ class MapData:
             for corner in reg.polygon.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
-    def _plot_ramps(self) -> None:
-        """
-        compute Region
-        """
-        import matplotlib.pyplot as plt
-
-        for ramp in self.map_ramps:
-            plt.text(
-                    ramp.top_center[0],
-                    ramp.top_center[1],
-                    f"R<{[r.label for r in ramp.regions]}>",
-                    bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8),
-            )
-            x, y = zip(*ramp.points)
-            plt.scatter(x, y, color="w")
-
     def _plot_vision_blockers(self) -> None:
         """
-        compute Region
+        compute vbs
         """
         import matplotlib.pyplot as plt
 
@@ -533,13 +479,11 @@ class MapData:
 
     def _plot_normal_resources(self) -> None:
         """
-        compute Region
+        # todo: account for gold minerals and rich gas
         """
         import matplotlib.pyplot as plt
-
         for mfield in self.mineral_fields:
             plt.scatter(mfield.position[0], mfield.position[1], color="blue")
-
         for gasgeyser in self.normal_geysers:
             plt.scatter(
                     gasgeyser.position[0],
@@ -552,10 +496,9 @@ class MapData:
 
     def _plot_chokes(self) -> None:
         """
-        compute Region
+        compute Chokes
         """
         import matplotlib.pyplot as plt
-
         for choke in self.map_chokes:
             x, y = zip(*choke.points)
             cm = choke.center
@@ -581,29 +524,23 @@ class MapData:
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
     ) -> None:
         """
-        compute Region
+        Plot map
         """
         import matplotlib.pyplot as plt
-
         plt.style.use("ggplot")
         if not fontdict:
             fontdict = {"family": "serif", "weight": "bold", "size": 25}
-
         plt.figure(figsize=(figsize, figsize))
         plt.imshow(self.region_grid, origin="lower")
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
         x, y = zip(*self.nonpathable_indices_stacked)
         plt.scatter(x, y, color="grey")
-
         self._plot_regions(fontdict=fontdict)
-        # self._plot_ramps()
         # some maps has no vision blockers
         if len(self._vision_blockers) > 0:
             self._plot_vision_blockers()
-
         self._plot_normal_resources()
-        # self._plot_chokes()
-
+        self._plot_chokes()
         fontsize = 25
         ax = plt.gca()
         for tick in ax.xaxis.get_major_ticks():
@@ -615,11 +552,15 @@ class MapData:
         plt.grid()
         if save:
             map_name = self.bot.game_info.map_name
-            print(f"Saving to {map_name}.png")
-            plt.savefig(f"{map_name}.png")
-            plt.close()
+            if 'test_suite.py' in str(inspect.stack()[2][1]):
+                self.log(msg="Skipping saving map image")
+                return True
+            else:
+                self.log(msg=f"Saving to {map_name}.png")
+                plt.savefig(f"{map_name}.png")
+                plt.close()
         else:  # pragma: no cover
             plt.show()
 
     def __repr__(self) -> str:
-        return f"MapData<{self.bot.game_info.map_name}> for bot {self.bot}"
+        return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"
