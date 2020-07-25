@@ -449,14 +449,19 @@ class MapData:
         """
         compute Region
         """
+
         import matplotlib.pyplot as plt
         for lbl, reg in self.regions.items():
             c = COLORS[lbl]
+            fontdict["color"] = c
+            fontdict["backgroundcolor"] = 'black'
+            if c == 'black':
+                fontdict["backgroundcolor"] = 'white'
             plt.text(
                     reg.center[0],
                     reg.center[1],
                     reg.label,
-                    bbox=dict(fill=True, alpha=0.5, edgecolor=c, linewidth=2),
+                    bbox=dict(fill=True, alpha=0.9, edgecolor=fontdict["backgroundcolor"], linewidth=2),
                     fontdict=fontdict,
             )
             # random color for each perimeter
