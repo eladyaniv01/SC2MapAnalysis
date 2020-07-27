@@ -1,13 +1,10 @@
 from functools import lru_cache
-from typing import List, TYPE_CHECKING, Union
+from typing import List, Union
 
 import numpy as np
 from sc2.position import Point2
 
-from MapAnalyzer.Polygon import Polygon
-
-if TYPE_CHECKING:  # pragma: no cover
-    from MapAnalyzer.MapData import MapData
+from . import Polygon
 
 
 class Region:
@@ -25,8 +22,10 @@ class Region:
         self.map_data = map_data
         self.array = array
         self.label = label
-        self.polygon = Polygon(map_data=self.map_data, array=self.array)
-        self.polygon.regions.append(self)
+
+        self.polygon = Polygon.Polygon(map_data=self.map_data, array=self.array)  # for constructor
+        self.polygon.areas.append(self)
+        self.polygon.is_region = True
         self.bases = [
                 base
                 for base in map_expansions
@@ -59,23 +58,36 @@ class Region:
 
         plt.style.use("ggplot")
 
-        y, x = zip(*self.polygon.perimeter)  # reversing for "lower" origin
+        x, y = zip(*self.polygon.perimeter)  # reversing for "lower" origin
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
             plt.grid()
             plt.show()
 
+    def _plot_corners(self) -> None:
+        import matplotlib.pyplot as plt
+        plt.style.use("ggplot")
+        for corner in self.polygon.corner_points:
+            plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
+
     def _plot_ramps(self) -> None:
         """
         plot_ramps
         """
         import matplotlib.pyplot as plt
-
         plt.style.use("ggplot")
-        for r in self.region_ramps:
-            x, y = zip(*r.points)
-            plt.scatter(x, y, color="black", marker=r"$\diamondsuit$")
+        for ramp in self.region_ramps:
+            plt.text(
+                    # fixme make ramp attr compatible and not reversed
+                    ramp.top_center[0],
+                    ramp.top_center[1],
+                    f"R<{[r.label for r in ramp.regions]}>",
+                    bbox=dict(fill=True, alpha=0.3, edgecolor="cyan", linewidth=8),
+            )
+            # ramp.plot(testing=True)
+            x, y = zip(*ramp.points)
+            plt.scatter(x, y, color="w")
 
     def _plot_vision_blockers(self) -> None:
         """
@@ -126,11 +138,11 @@ class Region:
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
-
         self._plot_geysers()
         self._plot_minerals()
         self._plot_ramps()
         self._plot_vision_blockers()
+        self._plot_corners()
         if testing:
             self.plot_perimeter(self_only=False)
             return
@@ -161,11 +173,11 @@ class Region:
         return self.bases
 
     # @property
-    # def is_reachable(self, regions):  # pragma: no cover
+    # def is_reachable(self, areas):  # pragma: no cover
     #     """
-    #     is connected to another regions directly
-    #     :param regions:
-    #     :type regions:
+    #     is connected to another areas directly
+    #     :param areas:
+    #     :type areas:
     #     :return:
     #     :rtype:
     #     """
@@ -187,7 +199,7 @@ class Region:
         """
         return self.polygon.area
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         """
         __repr__
         """
