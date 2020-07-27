@@ -4,21 +4,21 @@ import numpy as np
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
-from MapAnalyzer import sc2pathlibp
 from MapAnalyzer.Polygon import Polygon
 
 if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
-
+    from MapAnalyzer.sc2pathlibp.choke import Choke
 
 class PathLibChoke:
-    def __init__(self, pathlib_choke: sc2pathlibp.choke.Choke, pk: int):
+    # noinspection PyProtectedMember
+    def __init__(self, pathlib_choke: "Choke", pk: int):
         self.id = pk
         self.pixels = set(pathlib_choke.pixels)
         self.main_line = pathlib_choke.pixels
         self.pathlib_choke = pathlib_choke
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"[{self.id}]PathLibChoke; {len(self.pixels)}"
 
 

@@ -3,7 +3,6 @@ import sys
 import warnings
 from functools import lru_cache
 # from multiprocessing.dummy import Pool
-from time import time
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -14,12 +13,23 @@ from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
-from tqdm import tqdm
 
 from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, MAX_REGION_AREA, MIN_REGION_AREA
 from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from MapAnalyzer.Region import Region
+from .decorators import progress_wrapped
 from .sc2pathlibp import Sc2Map
+
+WHITE = "\u001b[32m"
+
+
+class LogFilter:
+    def __init__(self, level):
+        self.level = level
+
+    def __call__(self, record):
+        levelno = logger.level(self.level).no
+        return record["level"].no >= levelno
 
 
 class MapData:
@@ -27,27 +37,19 @@ class MapData:
     MapData DocString
     """
 
-    def __init__(self, bot: BotAI, pool: int = 4) -> None:
+    def __init__(self, bot: BotAI, loglevel="DEBUG") -> None:
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
         self.logger = logger
+        self.log_filter = LogFilter(loglevel)
         self.logger.remove()
         fmt = "\n<w>{time:YY:MM:DD:HH:mm:ss}</w> |" \
-              " {level: <8} | <green>{name: ^15}</green> |" \
+              " <level>{level: <8} | </level><green>{name: ^15}</green> |" \
               " {function: ^15} |" \
               " {line: >4} |" \
               " <level>{level.icon} {message}</level>"
-        # logger.add(lambda msg: tqdm.write(msg, end=""))
-        self.pbar = tqdm(desc="\u001b[32m Map Compilation Progress \u001b[37m", ncols=70)
-
-        logger.add(sys.stderr, format=fmt)
-        # self.logger.add(sys.stdout, colorize=True, format="[{time:YY:MM:DD:HH:mm:ss}]"
-        #                                                   "<green>[{name}]</green>"
-        #                                                   "[{function}]"
-        #                                                   "<red>{line}</red>"
-        #                                                   " <level>{level.icon} {message}</level>")
-        self.pool = pool
+        logger.add(sys.stderr, format=fmt, filter=self.log_filter)
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
@@ -78,6 +80,7 @@ class MapData:
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
         self._get_pathlib_map()
+        self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     def log(self, msg):
@@ -121,16 +124,14 @@ class MapData:
         return li
 
     def _clean_polys(self) -> None:
-        pols = self.polygons.copy()
-        # print(len(self.polygons))
         for pol in self.polygons:
-            self.pbar.update(1)
+
             if pol.area > self.max_region_area:
                 self.polygons.pop(self.polygons.index(pol))
             if pol.is_choke:
-                self.pbar.update(1)
+
                 for a in pol.areas:
-                    self.pbar.update(1)
+
                     if isinstance(a, MDRamp):
                         self.polygons.pop(self.polygons.index(pol))
                         # print(pol)
@@ -138,26 +139,19 @@ class MapData:
                         # print(a.areas)
                         # print(pol in a.areas)
 
+    """ longest map compile is 1.9 s """
+
+    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
     def compile_map(self) -> None:
         """user can call this to recompute"""
-        st = time()
-        self.pbar.refresh()
+
         self._calc_grid()
-        self.pbar.update(1)
         self._calc_regions()
-        self.pbar.update(1)
         self._calc_vision_blockers()
-        self.pbar.update(1)
         self._calc_chokes()
-        self.pbar.update(1)
         self._clean_polys()
-        self.pbar.update(1)
         for poly in self.polygons:
             poly.calc_areas()
-            self.pbar.update(1)
-        self.pbar.close()
-        ed = time()
-        # self.logger.debug("{} Compiled in {}".format(self.map_name, ed - st))
 
     @property
     def vision_blockers(self) -> Set[Point2]:
@@ -341,7 +335,7 @@ class MapData:
         grid = binary_fill_holes(self.placement_arr).astype(int)
 
         # for our grid,  mineral walls are considered as a barrier between regions
-        # GOLDENWALL FIX
+        # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875
         wall_minerals = [m.position for m in self.mineral_fields if "450" in m.name]
         for loc in wall_minerals:
             p = loc.rounded
@@ -380,13 +374,12 @@ class MapData:
                               for r in self.bot.game_info.map_ramps]
 
         ramp_nodes = [ramp.center for ramp in self.map_ramps]
-        [self.pbar.update(1) for r in ramp_nodes]
         perimeter_nodes = region.polygon.perimeter_points
         result_ramp_indexes = list(
                 set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
         )
         for rn in result_ramp_indexes:
-            self.pbar.update(1)
+
             # and distance from perimeter is less than ?
             ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
             """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
@@ -396,9 +389,9 @@ class MapData:
         ramps = []
         n = 8
         for ramp in region.region_ramps:
-            self.pbar.update(1)
+
             for p in region.polygon.perimeter:
-                self.pbar.update(1)
+
                 if (
                         self.distance(p, ramp.bottom_center) < n
                         or self.distance(p, ramp.top_center) < n
@@ -414,7 +407,7 @@ class MapData:
         compute VisionBlockerArea
         """
         for i in range(len(self.vision_blockers_labels)):
-            self.pbar.update(1)
+
             indices = np.where(self.vision_blockers_grid == i)
             points = self.indices_to_points(indices)
             vb_arr = self.points_to_numpy_array(points)
@@ -440,7 +433,7 @@ class MapData:
         self.map_chokes.extend(self.map_vision_blockers)
 
         for choke in chokes:
-            self.pbar.update(1)
+
             points = [Point2(p) for p in choke.pixels]
             if len(points) > 0:
                 new_choke_array = self.points_to_numpy_array(points)
@@ -452,13 +445,13 @@ class MapData:
                         map_data=self, array=new_choke_array, pathlibchoke=choke
                 )
                 for area in areas:
-                    self.pbar.update(1)
+
                     if isinstance(area, Region):
                         area.region_chokes.append(new_choke)
                     new_choke.areas.append(area)
                 self.map_chokes.append(new_choke)
             else:  # pragma: no cover
-                self.logger.warning(f" Cant add {choke} with 0 points")
+                self.logger.warning(f" [{self.map_name}] Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
         """
@@ -468,7 +461,6 @@ class MapData:
         # so we filter those out
         pre_regions = {}
         for i in range(len(self.regions_labels)):
-            self.pbar.update(1)
             region = Region(
                     array=np.where(self.region_grid == i, 1, 0).T,
                     label=i,
@@ -479,7 +471,7 @@ class MapData:
             # gather the regions that are bigger than self.min_region_area
         j = 0
         for region in pre_regions.values():
-            self.pbar.update(1)
+
             if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
