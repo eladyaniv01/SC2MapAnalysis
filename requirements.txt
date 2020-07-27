@@ -8,3 +8,4 @@ scipy==1.5.1
 six==1.15.0
 tifffile==2020.7.4
 yarl==1.4.2
+loguru

@@ -1,10 +1,13 @@
 from functools import lru_cache
-from typing import List, Set, Tuple, Union
+from typing import List, Set, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import int64, ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
+
+if TYPE_CHECKING:
+    from MapAnalyzer import MapData
 
 from MapAnalyzer.Region import Region
 
@@ -14,7 +17,8 @@ class Polygon:
     Polygon DocString
     """
 
-    def __init__(self, map_data: "MapData", array: ndarray) -> None:
+    # noinspection PyProtectedMember
+    def __init__(self, map_data: "MapData", array: ndarray) -> None:  # pragma: no cover
         self.id = None  # TODO
         self.is_choke = False
         self.is_ramp = False
@@ -97,7 +101,7 @@ class Polygon:
         return points
 
     @property
-    def clean_points(self):
+    def clean_points(self) -> List[Tuple[int64, int64]]:
         return list(self._clean_points)  # needs to be array like for numpy calcs
 
     @property

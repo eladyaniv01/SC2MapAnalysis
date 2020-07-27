@@ -11,13 +11,15 @@ requirements = [  # pragma: no cover
         "six==1.15.0",
         "tifffile==2020.7.4",
         "yarl==1.4.2",
+        "loguru==0.5.1",
+        "tqdm"
 ]
 setup(  # pragma: no cover
         name="sc2mapanalysis",
         install_requires=requirements,
         extras_require={
                 "dev": [
-                        "pytest==5.4.3",
+                        "pytest",
                         "pytest-html",
                         "monkeytype",
                         "mypy",
@@ -29,7 +31,6 @@ setup(  # pragma: no cover
                         "pytest-cov",
                         "coverage",
                         "codecov",
-                        "loguru ",
                         "mutmut",
                         "radon",
                 ]

@@ -4,8 +4,11 @@ import random
 from random import randint
 from typing import Iterable, List
 
+import pytest
+import tqdm
 from _pytest.python import Metafunc
 from hypothesis import given, settings, strategies as st
+from loguru import logger
 
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.MapData import MapData
@@ -20,7 +23,18 @@ from MapAnalyzer.utils import mock_map_data
 # monkeytype run monkeytest.py
 # monkeytype list-modules
 # mutmut run --paths-to-mutate MapAnalyzer/MapData.py
-logger = logging.getLogger(__name__)
+logger = logger
+
+
+@pytest.fixture
+def caplog(_caplog):
+    class PropogateHandler(logging.Handler):
+        def emit(self, record):
+            logging.getLogger(record.name).handle(record)
+
+    handler_id = logger.add(PropogateHandler(), format="{message}")
+    yield _caplog
+    logger.remove(handler_id)
 
 
 def get_map_file_list() -> List[str]:
@@ -47,7 +61,7 @@ def get_map_datas() -> Iterable[MapData]:
     map_files_folder = os.path.join(folder, subfolder)
     map_files = os.listdir(map_files_folder)
     # f = 'GoldenWallLE.xz'
-    # logger.info(msg=f"{os.path.join(map_files_folder, f)}")
+    # logger.info(f"{os.path.join(map_files_folder, f)}")
     # yield mock_map_data(map_file=os.path.join(map_files_folder, f))
     # yield mock_map_data(map_file=os.path.join(map_files_folder, map_files[0]))
 
@@ -60,7 +74,7 @@ def get_map_datas() -> Iterable[MapData]:
 def test_mapdata(n, m):
     map_files = get_map_file_list()
     map_data = mock_map_data(random.choice(map_files))
-    # logger.info(msg=f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
+    # logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
     set_points = set(points)
     indices = map_data.points_to_indices(set_points)
@@ -97,7 +111,8 @@ class TestSuit:
         map_data.save_plot()
 
     def test_polygon(self, map_data: MapData) -> None:
-        for polygon in map_data.polygons:
+        map_data.logger.add(lambda msg: tqdm.tqdm.write(msg, end=""))
+        for polygon in tqdm.tqdm(map_data.polygons):
             polygon.plot(testing=True)
             assert (polygon not in polygon.areas)
             assert (polygon.nodes == list(polygon.points))
@@ -131,11 +146,8 @@ class TestSuit:
             region.plot(testing=True)
 
     def test_chokes(self, map_data: MapData) -> None:
-        # fixme  golden wall needs a new method for region grid
-        if map_data.map_name == "Golden Wall LE":
-            return
         for choke in map_data.map_chokes:
             assert isinstance(
                     map_data.where(choke.center), (Region, Polygon, ChokeArea, MDRamp, VisionBlockerArea)
-            ), logger.error(msg=f"<Map : {map_data}, Choke : {choke},"
-            f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+            ), logger.error(f"<Map : {map_data}, Choke : {choke},"
+                            f" where :  {map_data.where(choke.center)} point : {choke.center}>")
