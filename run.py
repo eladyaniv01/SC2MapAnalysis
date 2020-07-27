@@ -41,6 +41,7 @@
 #         map_data.plot_map()
         # map_data.save_plot()
 # f = "EverDreamLE"
+
 f = "GoldenWallLE"
 # f = "EphemeronLE"
 import lzma
@@ -54,5 +55,4 @@ with lzma.open(f"MapAnalyzer/pickle_gameinfo/{f}.xz", "rb") as f:
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot)
-
-map_data.save_plot()
+map_data.plot_map()

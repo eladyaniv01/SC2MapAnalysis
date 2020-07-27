@@ -39,7 +39,7 @@ class MapData:
               " {line: >4} |" \
               " <level>{level.icon} {message}</level>"
         # logger.add(lambda msg: tqdm.write(msg, end=""))
-        self.pbar = tqdm(total=19000)
+        self.pbar = tqdm(desc="\u001b[32m Map Compilation Progress \u001b[37m", ncols=70)
 
         logger.add(sys.stderr, format=fmt)
         # self.logger.add(sys.stdout, colorize=True, format="[{time:YY:MM:DD:HH:mm:ss}]"
@@ -141,6 +141,7 @@ class MapData:
     def compile_map(self) -> None:
         """user can call this to recompute"""
         st = time()
+        self.pbar.refresh()
         self._calc_grid()
         self.pbar.update(1)
         self._calc_regions()
@@ -154,6 +155,7 @@ class MapData:
         for poly in self.polygons:
             poly.calc_areas()
             self.pbar.update(1)
+        self.pbar.close()
         ed = time()
         # self.logger.debug("{} Compiled in {}".format(self.map_name, ed - st))
 
@@ -337,6 +339,15 @@ class MapData:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
+
+        # for our grid,  mineral walls are considered as a barrier between regions
+        # GOLDENWALL FIX
+        wall_minerals = [m.position for m in self.mineral_fields if "450" in m.name]
+        for loc in wall_minerals:
+            p = loc.rounded
+            for n in p.neighbors4:
+                point = n.rounded
+                grid[point[1]][point[0]] = 0
 
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)
