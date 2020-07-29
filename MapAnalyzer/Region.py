@@ -183,14 +183,16 @@ class Region:
     #     """
     #     pass
 
-    # @property
-    # def get_reachable_regions(self):  # pragma: no cover
-    #     """
-    #
-    #     :return:
-    #     :rtype:
-    #     """
-    #     pass
+    @property
+    def get_reachable_regions(self):
+        """
+        """
+        result = []
+        for r in self.region_ramps:
+            for reg in r.regions:
+                if reg != self:
+                    result.append((str(r), reg))
+        return set(result)
 
     @property
     def get_area(self) -> int:

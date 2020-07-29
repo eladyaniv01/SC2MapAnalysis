@@ -1,6 +1,7 @@
 from setuptools import setup  # pragma: no cover
 
 requirements = [  # pragma: no cover
+        "Cython",
         "burnysc2==4.11.16",
         "click==7.1.2",
         "matplotlib==3.2.2",
@@ -13,6 +14,7 @@ requirements = [  # pragma: no cover
         "yarl==1.4.2",
         "loguru==0.5.1",
         "tqdm"
+
 ]
 setup(  # pragma: no cover
         name="sc2mapanalysis",
