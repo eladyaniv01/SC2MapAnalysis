@@ -1,4 +1,5 @@
 import inspect
+import os
 import sys
 import warnings
 from functools import lru_cache
@@ -14,14 +15,13 @@ from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, MAX_REGION_AREA, MIN_REGION_AREA
+from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
 from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .decorators import progress_wrapped
 from .sc2pathlibp import Sc2Map
 
 WHITE = "\u001b[32m"
-
 
 class LogFilter:
     def __init__(self, level):
@@ -44,12 +44,8 @@ class MapData:
         self.logger = logger
         self.log_filter = LogFilter(loglevel)
         self.logger.remove()
-        fmt = "\n<w>{time:YY:MM:DD:HH:mm:ss}</w> |" \
-              " <level>{level: <8} | </level><green>{name: ^15}</green> |" \
-              " {function: ^15} |" \
-              " {line: >4} |" \
-              " <level>{level.icon} {message}</level>"
-        logger.add(sys.stderr, format=fmt, filter=self.log_filter)
+        self.log_format = LOG_FORMAT
+        logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
@@ -400,6 +396,7 @@ class MapData:
         ramps = list(set(ramps))
 
         region.region_ramps.extend(ramps)
+        region.region_ramps = list(set(region.region_ramps))
         # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
@@ -551,18 +548,18 @@ class MapData:
                 plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
                          bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
                 plt.scatter(x, y, color="w")
-            elif choke.is_vision_blocker:
-
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
-
-            else:
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+            # elif choke.is_vision_blocker:
+            #
+            #     fontdict = {"family": "serif", "size": 10}
+            #     plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
+            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
+            #
+            # else:
+            #     fontdict = {"family": "serif", "size": 10}
+            #     plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
+            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
 
     def plot_map(
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
@@ -600,8 +597,9 @@ class MapData:
                 logger.debug("Skipping saving map image")
                 return True
             else:
-                logger.debug(f"Saving to {map_name}.png")
+                full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
                 plt.savefig(f"{map_name}.png")
+                logger.debug(f"Plot Saved to {full_path}")
                 plt.close()
         else:  # pragma: no cover
             plt.show()

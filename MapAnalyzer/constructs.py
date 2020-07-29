@@ -80,6 +80,9 @@ class MDRamp(ChokeArea):
     def __repr__(self):  # pragma: no cover
         return f"<MDRamp[size={self.area}]: {self.areas}>"
 
+    def __str__(self):
+        return f"R[{self.area}]"
+
 
 class VisionBlockerArea(ChokeArea):
     """
