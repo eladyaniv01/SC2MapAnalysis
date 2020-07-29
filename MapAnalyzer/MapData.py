@@ -7,6 +7,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+import pyastar
 from loguru import logger
 from numpy import float64, int64
 from numpy.core._multiarray_umath import ndarray
@@ -14,6 +15,7 @@ from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
+from skimage import draw as skdraw
 
 from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
 from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
@@ -76,11 +78,30 @@ class MapData:
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
         self._get_pathlib_map()
+        self.pyastar = pyastar
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def get_pyastar_grid(self):
+        grid = np.fmax(self.path_arr, self.placement_arr).T
+        return np.where(grid != 0, 1, np.inf).astype(np.float32)
+
+    def pathfind(self, start, goal, grid=None):
+        if grid is None:
+            grid = self.get_pyastar_grid()
+        return np.flip(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
+
+
     def log(self, msg):
         self.logger.debug(f"{msg}")
+
+    @staticmethod
+    def add_influence(p, r, arr, s=None):
+        if s is None:
+            s = r
+        ri, ci = skdraw.circle(p[0], p[1], radius=r, shape=arr.shape)
+        arr[ri, ci] = s
+        return arr
 
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated

@@ -26,6 +26,9 @@ from MapAnalyzer.utils import mock_map_data
 logger = logger
 
 
+def get_random_point(minr, maxr):
+    return random.randint(minr, maxr), random.randint(minr, maxr)
+
 @pytest.fixture
 def caplog(_caplog):
     class PropogateHandler(logging.Handler):
