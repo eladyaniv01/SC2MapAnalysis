@@ -1,13 +1,10 @@
-# f = "EverDreamLE"
 import os
-import random
-from typing import List
-
-# f = "GoldenWallLE"
-# f = "EphemeronLE"
-fname = "AbyssalReefLE"
 import lzma
 import pickle
+import random
+from typing import List
+fname = "AbyssalReefLE"
+
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
