@@ -3,9 +3,9 @@ import os
 import random
 from typing import List
 
-f = "GoldenWallLE"
+# f = "GoldenWallLE"
 # f = "EphemeronLE"
-f = "AbyssalReefLE"
+fname = "AbyssalReefLE"
 import lzma
 import pickle
 
@@ -30,14 +30,14 @@ def get_map_file_list() -> List[str]:
 
 
 map_files = get_map_file_list()
-for file in map_files:
-    with lzma.open(file, "rb") as f:
-        raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
-    bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-    map_data = MapData(bot)
-    map_data.save_plot()
-    break
+with lzma.open(map_files[0], "rb") as f:
+    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+
+bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+map_data = MapData(bot)
+map_data.save_plot()
+
 
 reg1 = map_data.regions[1]
 reg7 = map_data.regions[7]
@@ -51,11 +51,12 @@ def get_random_point(minr, maxr):
 
 # pts = [(90,100) , (110,40)]
 pts = []
-for i in range(50):
-    pts.append(get_random_point(25, 170))
+r = 10
+for i in range(20):
+    pts.append(get_random_point(50, 175))
 
 arr = map_data.get_pyastar_grid()
-r = 5
+
 for p in pts:
     arr = map_data.add_influence(p, r, arr)
 

@@ -95,11 +95,32 @@ class MapData:
     def log(self, msg):
         self.logger.debug(f"{msg}")
 
+
     @staticmethod
     def add_influence(p, r, arr, s=None):
         if s is None:
-            s = r
-        ri, ci = skdraw.circle(p[0], p[1], radius=r, shape=arr.shape)
+            s = 100
+        ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
+        if len(ri) == 0 or len(ci) == 0:
+            logger.error(f"Point {p} is not inside the grid")
+            return arr
+
+        def in_bounds_ci(x):
+            width = arr.shape[0] - 1
+            if 0 < x < width:
+                return x
+            return 0
+
+        def in_bounds_ri(y):
+            height = arr.shape[1] - 1
+            if 0 < y < height:
+                return y
+            return 0
+
+        ci_vec = np.vectorize(in_bounds_ci)
+        ri_vec = np.vectorize(in_bounds_ri)
+        ci = ci_vec(ci)
+        ri = ri_vec(ri)
         arr[ri, ci] = s
         return arr
 
