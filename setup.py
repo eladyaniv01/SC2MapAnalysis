@@ -1,4 +1,4 @@
-from setuptools import setup  # pragma: no cover
+from setuptools import find_packages, setup  # pragma: no cover
 
 requirements = [  # pragma: no cover
         "Cython",
@@ -19,6 +19,7 @@ requirements = [  # pragma: no cover
 setup(  # pragma: no cover
         name="sc2mapanalysis",
         install_requires=requirements,
+        packages=find_packages(),
         extras_require={
                 "dev": [
                         "pytest",
