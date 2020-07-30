@@ -1,4 +1,9 @@
-from setuptools import setup  # pragma: no cover
+import logging
+
+from setuptools import setup
+
+logger = logging.getLogger(__name__)
+
 
 requirements = [  # pragma: no cover
         "Cython",
@@ -17,10 +22,10 @@ requirements = [  # pragma: no cover
 
 ]
 setup(  # pragma: no cover
-
         name="sc2mapanalysis",
+        version="0.0.1",
         install_requires=requirements,
-        packages=['MapAnalyzer.pyastar'],
+        setup_requires=["wheel", "numpy"],
         extras_require={
                 "dev": [
                         "pytest",
