@@ -21,6 +21,7 @@ from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGI
 from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .decorators import progress_wrapped
+from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 
 WHITE = "\u001b[32m"
@@ -102,7 +103,7 @@ class MapData:
             s = 100
         ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
-            logger.error(f"Point {p} is not inside the grid")
+            logger.warning(OutOfBoundsException(p))
             return arr
 
         def in_bounds_ci(x):
