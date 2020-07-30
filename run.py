@@ -52,8 +52,8 @@ def get_random_point(minr, maxr):
 # pts = [(90,100) , (110,40)]
 pts = []
 r = 10
-for i in range(20):
-    pts.append(get_random_point(50, 175))
+for i in range(50):
+    pts.append(get_random_point(-20, 220))
 
 arr = map_data.get_pyastar_grid()
 
@@ -68,8 +68,13 @@ path = map_data.pathfind(p0, p1, grid=arr)
 plt.text(p0[1], p0[0], f"Start {p0}")
 plt.text(p1[1], p1[0], f"End {p1}")
 x, y = zip(*path)
-plt.imshow(map_data.path_arr.T, alpha=0.8, origin='lower')
-plt.imshow(arr, origin="lower", alpha=0.3)
+plt.imshow(map_data.path_arr.T, alpha=0.8, origin='lower', cmap='summer')
+plt.imshow(map_data.terrain_height.T, alpha=0.8, origin='lower', cmap='Blues')
+# this is just a conversion to plot nicely
+import numpy as np
+
+arr = np.where(arr < np.inf, arr, 0)
+plt.imshow(arr, origin="lower", alpha=0.3, cmap='YlOrRd')
 plt.scatter(x, y)
 plt.grid(False)
 plt.show()
