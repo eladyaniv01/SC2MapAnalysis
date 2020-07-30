@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import pyastar  # NOQA
+from MapAnalyzer import pyastar  # NOQA
 
 
 def test_small():
