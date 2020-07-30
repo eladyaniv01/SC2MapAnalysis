@@ -15,7 +15,7 @@ class build_ext(_build_ext):
 
 
 astar_module = Extension(
-        'pyastar.astar', sources=['mapyastar/cpp/astar.cpp'],
+        'pyastar.astar', sources=['cpp/astar.cpp'],
         extra_compile_args=["-O3", "-Wall", "-shared", "-fpic"],
 )
 
@@ -39,8 +39,8 @@ setuptools.setup(
         cmdclass={"build_ext": build_ext},
         setup_requires=["wheel", "numpy"],
         install_requires=install_requires,
-        packages=setuptools.find_packages(where="mapyastar", exclude=("tests",)),
-        package_dir={"": "mapyastar"},
+        packages=setuptools.find_packages(where=".", exclude=("tests",)),
+        package_dir={"": "."},
         ext_modules=[astar_module],
         classifiers=[
                 "Programming Language :: Python :: 3",
