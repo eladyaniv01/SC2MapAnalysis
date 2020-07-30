@@ -7,7 +7,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
-import pyastar
+import pyastar.astar_wrapper as pyastar
 from loguru import logger
 from numpy import float64, int64
 from numpy.core._multiarray_umath import ndarray
