@@ -1,0 +1,4 @@
+[submodule "pyastar"]
+	path = pyastar
+	url = https://github.com/hjweide/pyastar.git
+
