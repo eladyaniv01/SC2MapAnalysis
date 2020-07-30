@@ -1,25 +1,27 @@
-from setuptools import find_packages, setup  # pragma: no cover
+from setuptools import setup  # pragma: no cover
 
 requirements = [  # pragma: no cover
-        "Cython",
-        "burnysc2==4.11.16",
-        "click==7.1.2",
-        "matplotlib==3.2.2",
-        "mpyq==0.2.5",
-        "numpy==1.19.0",
-        "scikit-image==0.17.2",
-        "scipy==1.5.1",
-        "six==1.15.0",
-        "tifffile==2020.7.4",
-        "yarl==1.4.2",
-        "loguru==0.5.1",
-        "tqdm"
+
+        # "Cython",
+        # "burnysc2==4.11.16",
+        # "click==7.1.2",
+        # "matplotlib==3.2.2",
+        # "mpyq==0.2.5",
+        # "numpy==1.19.0",
+        # "scikit-image==0.17.2",
+        # "scipy==1.5.1",
+        # "six==1.15.0",
+        # "tifffile==2020.7.4",
+        # "yarl==1.4.2",
+        # "loguru==0.5.1",
+        # "tqdm"
 
 ]
 setup(  # pragma: no cover
+
         name="sc2mapanalysis",
         install_requires=requirements,
-        packages=find_packages(),
+        packages=['MapAnalyzer.pyastar'],
         extras_require={
                 "dev": [
                         "pytest",

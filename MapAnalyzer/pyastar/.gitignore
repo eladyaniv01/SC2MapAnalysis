@@ -2,5 +2,5 @@
 *.swo
 *.so
 *.pyc
-*.png
+mazes/maze_small.png
 *.cache
