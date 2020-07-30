@@ -19,7 +19,6 @@ from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlocke
 from MapAnalyzer.Region import Region
 from .decorators import progress_wrapped
 from .sc2pathlibp import Sc2Map
-
 WHITE = "\u001b[32m"
 
 
