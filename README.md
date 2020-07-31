@@ -179,13 +179,15 @@ import os
 import pickle
 import random
 from typing import List
+
+import matplotlib.pyplot as plt
 import numpy as np
+
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
-import matplotlib.pyplot as plt
 
 
-def get_random_point(minx, maxx,miny, maxy):
+def get_random_point(minx, maxx, miny, maxy):
     return (random.randint(minx, maxx), random.randint(miny, maxy))
 
 
@@ -222,9 +224,9 @@ p1 = reg7.center
 for idx in range(5):
     pts = []
     if idx > 0:
-        NUM_POINTS = idx * 5
+        NUM_POINTS = idx * 10
     else:
-        NUM_POINTS = 5
+        NUM_POINTS = 10
 
     # generating random points for added influence
     for i in range(NUM_POINTS):
@@ -233,21 +235,20 @@ for idx in range(5):
     # getting the base grid for pathing
     arr = map_data.get_pyastar_grid()
 
-    r = 7+idx # radius is 10 for all points to make things simple
+    r = 7 + idx  # radius is 10 for all points to make things simple
     plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
         arr = map_data.add_influence(p, r, arr)
-        plt.text(p[0], p[1], "*") # transpose the points to fit the lower origin in our plot
+        # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
     path = map_data.pathfind(p0, p1, grid=arr)
 
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
-    p0_ = p0[1],p0[0]
-    p1_ = p1[1],p1[0]
-    arr = np.where(arr < np.inf, arr, 0) # this is just a conversion to plot nicely
-
+    p0_ = p0[1], p0[0]
+    p1_ = p1[1], p1[0]
+    arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
 
     # in some cases the path is impossible unless we lower the weights
     if path is not None:
@@ -260,7 +261,7 @@ for idx in range(5):
         print("Not Found")
         org = "lower"
         plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
-        x,y = zip(*[p0,p1])
+        x, y = zip(*[p0, p1])
         plt.scatter(x, y)
     plt.text(p0_[0], p0_[1], f"Start {p0}")
     plt.text(p1_[0], p1_[1], f"End {p1}")
@@ -274,8 +275,8 @@ for idx in range(5):
 ```
 Results from 5 runs:
 --------------------
-<img src="https://user-images.githubusercontent.com/40754127/89050410-677dbe00-d35b-11ea-9fae-b200e23dff51.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89050414-68aeeb00-d35b-11ea-8eda-9eb9b6d32a25.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89050422-69e01800-d35b-11ea-8af5-3372f22eb530.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89050428-6c427200-d35b-11ea-8904-6e9b2e142595.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89050433-6d739f00-d35b-11ea-9ea9-69e0c798a1ad.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064773-488b2600-d373-11ea-83ef-c1ca81b4a45f.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064776-4923bc80-d373-11ea-9dc3-cefde61cc8aa.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064778-49bc5300-d373-11ea-9ffb-7a55144b2b0b.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064768-4628cc00-d373-11ea-8928-2090ed5b9c5f.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064772-47f28f80-d373-11ea-85cb-aaed6057e014.png"/>
