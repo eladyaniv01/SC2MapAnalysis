@@ -24,7 +24,6 @@ from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
 from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
-
 WHITE = "\u001b[32m"
 
 
