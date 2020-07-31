@@ -48,9 +48,9 @@ p1 = reg7.center
 for idx in range(5):
     pts = []
     if idx > 0:
-        NUM_POINTS = idx * 5
+        NUM_POINTS = idx * 10
     else:
-        NUM_POINTS = 5
+        NUM_POINTS = 10
 
     # generating random points for added influence
     for i in range(NUM_POINTS):
@@ -64,7 +64,7 @@ for idx in range(5):
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
         arr = map_data.add_influence(p, r, arr)
-        plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
+        # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
     path = map_data.pathfind(p0, p1, grid=arr)
 
@@ -87,8 +87,8 @@ for idx in range(5):
         plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
         x, y = zip(*[p0, p1])
         plt.scatter(x, y)
-    plt.text(p0_[0], p0_[1], f"Start {p0}")
-    plt.text(p1_[0], p1_[1], f"End {p1}")
+    plt.text(p0_[0], p0_[1], f"Start {p0_}")
+    plt.text(p1_[0], p1_[1], f"End {p1_}")
     plt.imshow(map_data.path_arr.T, alpha=0.8, origin=org, cmap='summer')
     plt.imshow(map_data.terrain_height.T, alpha=0.8, origin=org, cmap='Blues')
     plt.imshow(arr, origin=org, alpha=0.3, cmap='YlOrRd')
