@@ -162,9 +162,14 @@ Usage:
 
 `map_data.add_influence(p, r, arr, weight)`
 
-here p is the center point,  r is a radius (for example p could be units position, and r - its attack range)
-weight is the cost to be added to the cell, 
-the optimal cost will be 1,  and the worst cost would be np.inf( for non pathable cells)
+* `p`: center point (for example p could be an enemy units position)
+* `r`: radius (for example  r ->  attack range)
+* `weight`: how much cost to be added 
+
+**the optimal cost will be 1**,  
+
+**and the worst cost would be np.inf( for non pathable cells)**
+
 so you should keep that in mind if you want to create a complex influence map with different weights
 
 * An example you can try out yourself to get a feel for it:
@@ -174,16 +179,16 @@ import os
 import pickle
 import random
 from typing import List
-
-fname = "AbyssalReefLE"
-
-
+import numpy as np
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
+import matplotlib.pyplot as plt
 
-def get_random_point(minr, maxr):
-    return (random.randint(minr, maxr), random.randint(minr, maxr))
-    
+
+def get_random_point(minx, maxx,miny, maxy):
+    return (random.randint(minx, maxx), random.randint(miny, maxy))
+
+
 def get_map_file_list() -> List[str]:
     """
     easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
@@ -199,8 +204,7 @@ def get_map_file_list() -> List[str]:
         li.append(os.path.join(map_files_folder, map_file))
     return li
 
-fname = "AbyssalReefLE"
-map_files = get_map_file_list()
+
 map_files = get_map_file_list()
 
 with lzma.open(map_files[0], "rb") as f:
@@ -209,40 +213,69 @@ with lzma.open(map_files[0], "rb") as f:
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot)
 
+# get corner regions centers for start / end points
 reg1 = map_data.regions[1]
 reg7 = map_data.regions[7]
 p0 = reg1.center
 p1 = reg7.center
-pts = []
-r = 10
-for i in range(50):
-    pts.append(get_random_point(-20, 220))
 
-arr = map_data.get_pyastar_grid()
+for idx in range(5):
+    pts = []
+    if idx > 0:
+        NUM_POINTS = idx * 5
+    else:
+        NUM_POINTS = 5
 
-for p in pts:
-    arr = map_data.add_influence(p, r, arr)
+    # generating random points for added influence
+    for i in range(NUM_POINTS):
+        pts.append(get_random_point(50, 130, 25, 175))
 
-import matplotlib.pyplot as plt
+    # getting the base grid for pathing
+    arr = map_data.get_pyastar_grid()
 
-path = map_data.pathfind(p0, p1, grid=arr)
-print(f"p0 = {p0}  p1 = {p1}")
-plt.text(p0[1], p0[0], f"Start {p0}")
-plt.text(p1[1], p1[0], f"End {p1}")
-x, y = zip(*path)
-plt.imshow(map_data.path_arr.T, alpha=0.8, origin='lower', cmap='summer')
-plt.imshow(map_data.terrain_height.T, alpha=0.8, origin='lower', cmap='Blues')
+    r = 7+idx # radius is 10 for all points to make things simple
+    plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+    # note that we use the default weight of 100,  we could pass custom weights for each point though
+    for p in pts:
+        arr = map_data.add_influence(p, r, arr)
+        plt.text(p[0], p[1], "*") # transpose the points to fit the lower origin in our plot
 
-arr = np.where(arr < np.inf, arr, 0) # this is just a for plotting
-plt.imshow(arr, origin="lower", alpha=0.3, cmap='YlOrRd')
-plt.scatter(x, y)
-plt.grid(False)
-plt.show()
+    path = map_data.pathfind(p0, p1, grid=arr)
+
+    print(f"p0 = {p0}  p1 = {p1}")
+    # transpose the points to fit the lower origin in our plot
+    p0_ = p0[1],p0[0]
+    p1_ = p1[1],p1[0]
+    arr = np.where(arr < np.inf, arr, 0) # this is just a conversion to plot nicely
+
+
+    # in some cases the path is impossible unless we lower the weights
+    if path is not None:
+        print("Found")
+        org = "lower"
+        plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+        x, y = zip(*path)
+        plt.scatter(x, y)
+    else:
+        print("Not Found")
+        org = "lower"
+        plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
+        x,y = zip(*[p0,p1])
+        plt.scatter(x, y)
+    plt.text(p0_[0], p0_[1], f"Start {p0}")
+    plt.text(p1_[0], p1_[1], f"End {p1}")
+    plt.imshow(map_data.path_arr.T, alpha=0.8, origin=org, cmap='summer')
+    plt.imshow(map_data.terrain_height.T, alpha=0.8, origin=org, cmap='Blues')
+    plt.imshow(arr, origin=org, alpha=0.3, cmap='YlOrRd')
+    plt.grid(False)
+    plt.savefig(f"{idx}.png")
+    plt.close()
+
 ```
 Results from 5 runs:
 --------------------
-<img src="https://user-images.githubusercontent.com/40754127/89039068-2204c500-d34a-11ea-9597-0245cdccfc06.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89039072-2335f200-d34a-11ea-868a-0d524bf193f3.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89039076-23ce8880-d34a-11ea-9f4d-826dfb403435.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89039079-25984c00-d34a-11ea-9750-99360cb4cb52.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89039084-2630e280-d34a-11ea-8d63-51106c082b02.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89050410-677dbe00-d35b-11ea-9fae-b200e23dff51.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89050414-68aeeb00-d35b-11ea-8eda-9eb9b6d32a25.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89050422-69e01800-d35b-11ea-8af5-3372f22eb530.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89050428-6c427200-d35b-11ea-8904-6e9b2e142595.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89050433-6d739f00-d35b-11ea-9ea9-69e0c798a1ad.png"/>

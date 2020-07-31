@@ -99,7 +99,7 @@ class MapData:
 
     @staticmethod
     def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
-        ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
+        ri, ci = skdraw.disk(center=(p[1], p[0]), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.warning(OutOfBoundsException(p))
