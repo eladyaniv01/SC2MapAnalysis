@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r reqiorements.txt
+        pip install -r requirements.txt
       #        pip install .[dev]
       #        python install_dev.py
     - name: Test with pytest + Coverage
