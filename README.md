@@ -149,6 +149,7 @@ Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) l
 
 # Pathfinding
 ====================
+
 getting the basic pathing grid :
 
  `map_data.get_pyastar_grid()`
