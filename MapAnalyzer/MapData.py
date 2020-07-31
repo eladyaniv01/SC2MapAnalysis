@@ -121,7 +121,7 @@ class MapData:
         ri_vec = np.vectorize(in_bounds_ri)
         ci = ci_vec(ci)
         ri = ri_vec(ri)
-        arr[ri, ci] = weight
+        arr[ri, ci] += weight
         return arr
 
     def _clean_plib_chokes(self) -> None:
