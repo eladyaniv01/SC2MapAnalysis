@@ -4,11 +4,11 @@ import numpy as np
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
-from MapAnalyzer.Polygon import Polygon
+from .Polygon import Polygon
 
 if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
-    from MapAnalyzer.sc2pathlibp.choke import Choke
+    from .sc2pathlibp.choke import Choke
 
 class PathLibChoke:
     # noinspection PyProtectedMember
