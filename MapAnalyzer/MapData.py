@@ -24,6 +24,7 @@ from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
 from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
+
 WHITE = "\u001b[32m"
 
 
@@ -97,9 +98,7 @@ class MapData:
         self.logger.debug(f"{msg}")
 
     @staticmethod
-    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, s: None = None) -> ndarray:
-        if s is None:
-            s = 100
+    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
         ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
@@ -122,7 +121,7 @@ class MapData:
         ri_vec = np.vectorize(in_bounds_ri)
         ci = ci_vec(ci)
         ri = ri_vec(ri)
-        arr[ri, ci] = s
+        arr[ri, ci] = weight
         return arr
 
     def _clean_plib_chokes(self) -> None:
