@@ -22,8 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install .[dev]; fi
+        python install_dev.py
     - name: Test with pytest + Coverage
       run: |
         pytest --html=html/test-results-${{ matrix.python-version }}.html

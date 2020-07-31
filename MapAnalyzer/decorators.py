@@ -3,6 +3,7 @@ import functools
 import sys
 import threading
 from functools import partial
+from typing import Any, Callable, Dict, Optional, Tuple
 
 # import tqdm
 from loguru import logger
@@ -45,7 +46,9 @@ def std_out_err_redirect_tqdm():
         sys.stdout, sys.stderr = orig_out_err
 
 
-def provide_progress_bar(function, estimated_time, tstep=0.2, tqdm_kwargs=None, args=None, kwargs=None):
+def provide_progress_bar(function: Callable, estimated_time: int, tstep: float = 0.2,
+                         tqdm_kwargs: Optional[Dict[str, str]] = None, args: Optional[Tuple["MapData"]] = None,
+                         kwargs: Optional[Dict[Any, Any]] = None) -> None:
     """Tqdm wrapper for a long-running function
     args:
         function - function to run
@@ -80,7 +83,8 @@ def provide_progress_bar(function, estimated_time, tstep=0.2, tqdm_kwargs=None, 
     return ret[0]
 
 
-def progress_wrapped(estimated_time, desc="Progress", tstep=0.2, tqdm_kwargs=None):
+def progress_wrapped(estimated_time: int, desc: str = "Progress", tstep: float = 0.2,
+                     tqdm_kwargs: None = None) -> Callable:
     """Decorate a function to add a progress bar"""
 
     if tqdm_kwargs is None:

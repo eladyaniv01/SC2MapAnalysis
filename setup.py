@@ -1,6 +1,12 @@
-from setuptools import setup  # pragma: no cover
+import logging
+
+from setuptools import setup
+
+logger = logging.getLogger(__name__)
+
 
 requirements = [  # pragma: no cover
+        "Cython",
         "burnysc2==4.11.16",
         "click==7.1.2",
         "matplotlib==3.2.2",
@@ -13,10 +19,13 @@ requirements = [  # pragma: no cover
         "yarl==1.4.2",
         "loguru==0.5.1",
         "tqdm"
+
 ]
 setup(  # pragma: no cover
         name="sc2mapanalysis",
+        version="0.0.1",
         install_requires=requirements,
+        setup_requires=["wheel", "numpy"],
         extras_require={
                 "dev": [
                         "pytest",

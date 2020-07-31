@@ -1,32 +1,37 @@
 import inspect
+import os
 import sys
 import warnings
 from functools import lru_cache
 # from multiprocessing.dummy import Pool
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+import pyastar.astar_wrapper as pyastar
 from loguru import logger
-from numpy import float64, int64
+from numpy import float64, int64, ndarray
 from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
+from skimage import draw as skdraw
 
-from MapAnalyzer.constants import BINARY_STRUCTURE, COLORS, MAX_REGION_AREA, MIN_REGION_AREA
-from MapAnalyzer.constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
+from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
+from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
+from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 WHITE = "\u001b[32m"
 
 
 class LogFilter:
-    def __init__(self, level):
+    def __init__(self, level: str) -> None:
         self.level = level
 
-    def __call__(self, record):
+    def __call__(self, record: Dict[str, Any]) -> bool:
         levelno = logger.level(self.level).no
         return record["level"].no >= levelno
 
@@ -36,19 +41,15 @@ class MapData:
     MapData DocString
     """
 
-    def __init__(self, bot: BotAI, loglevel="DEBUG") -> None:
+    def __init__(self, bot: BotAI, loglevel: str = "DEBUG") -> None:
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
         self.logger = logger
         self.log_filter = LogFilter(loglevel)
         self.logger.remove()
-        fmt = "\n<w>{time:YY:MM:DD:HH:mm:ss}</w> |" \
-              " <level>{level: <8} | </level><green>{name: ^15}</green> |" \
-              " {function: ^15} |" \
-              " {line: >4} |" \
-              " <level>{level.icon} {message}</level>"
-        logger.add(sys.stderr, format=fmt, filter=self.log_filter)
+        self.log_format = LOG_FORMAT
+        logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
@@ -79,11 +80,50 @@ class MapData:
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
         self._get_pathlib_map()
+        self.pyastar = pyastar
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    def get_pyastar_grid(self) -> ndarray:
+        grid = np.fmax(self.path_arr, self.placement_arr).T
+        return np.where(grid != 0, 1, np.inf).astype(np.float32)
+
+    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None) -> ndarray:
+        if grid is None:
+            grid = self.get_pyastar_grid()
+        return np.flip(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
+
     def log(self, msg):
         self.logger.debug(f"{msg}")
+
+    @staticmethod
+    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, s: None = None) -> ndarray:
+        if s is None:
+            s = 100
+        ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
+        if len(ri) == 0 or len(ci) == 0:
+            # this happens when the center point is near map edge, and the radius added goes beyond the edge
+            logger.warning(OutOfBoundsException(p))
+            return arr
+
+        def in_bounds_ci(x):
+            width = arr.shape[0] - 1
+            if 0 < x < width:
+                return x
+            return 0
+
+        def in_bounds_ri(y):
+            height = arr.shape[1] - 1
+            if 0 < y < height:
+                return y
+            return 0
+
+        ci_vec = np.vectorize(in_bounds_ci)
+        ri_vec = np.vectorize(in_bounds_ri)
+        ci = ci_vec(ci)
+        ri = ri_vec(ri)
+        arr[ri, ci] = s
+        return arr
 
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated
@@ -399,6 +439,7 @@ class MapData:
         ramps = list(set(ramps))
 
         region.region_ramps.extend(ramps)
+        region.region_ramps = list(set(region.region_ramps))
         # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
@@ -550,18 +591,18 @@ class MapData:
                 plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
                          bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
                 plt.scatter(x, y, color="w")
-            elif choke.is_vision_blocker:
-
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
-
-            else:
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+            # elif choke.is_vision_blocker:
+            #
+            #     fontdict = {"family": "serif", "size": 10}
+            #     plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
+            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
+            #
+            # else:
+            #     fontdict = {"family": "serif", "size": 10}
+            #     plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
+            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
 
     def plot_map(
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
@@ -599,8 +640,9 @@ class MapData:
                 logger.debug("Skipping saving map image")
                 return True
             else:
-                logger.debug(f"Saving to {map_name}.png")
+                full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
                 plt.savefig(f"{map_name}.png")
+                logger.debug(f"Plot Saved to {full_path}")
                 plt.close()
         else:  # pragma: no cover
             plt.show()

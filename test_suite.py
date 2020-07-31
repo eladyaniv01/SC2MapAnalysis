@@ -26,6 +26,7 @@ from MapAnalyzer.utils import mock_map_data
 logger = logger
 
 
+
 @pytest.fixture
 def caplog(_caplog):
     class PropogateHandler(logging.Handler):
@@ -63,6 +64,7 @@ def get_map_datas() -> Iterable[MapData]:
     # f = 'GoldenWallLE.xz'
     # logger.info(f"{os.path.join(map_files_folder, f)}")
     # yield mock_map_data(map_file=os.path.join(map_files_folder, f))
+
     # yield mock_map_data(map_file=os.path.join(map_files_folder, map_files[0]))
 
     for map_file in map_files:
@@ -74,7 +76,7 @@ def get_map_datas() -> Iterable[MapData]:
 def test_mapdata(n, m):
     map_files = get_map_file_list()
     map_data = mock_map_data(random.choice(map_files))
-    # logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
+    logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
     set_points = set(points)
     indices = map_data.points_to_indices(set_points)
@@ -105,6 +107,25 @@ class TestSuit:
     Test DocString
     """
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
+
+    def test_pathing(self, map_data: MapData) -> None:
+        if "Abyssal" in map_data.map_name:
+            def get_random_point(minr, maxr):
+                return (random.randint(minr, maxr), random.randint(minr, maxr))
+
+            p0 = (157, 22)
+            p1 = (42, 121)
+            pts = []
+            r = 10
+            for i in range(50):
+                pts.append(get_random_point(-20, 220))
+
+            arr = map_data.get_pyastar_grid()
+
+            for p in pts:
+                arr = map_data.add_influence(p, r, arr)
+            path = map_data.pathfind(p0, p1, grid=arr)
+            assert (path is not None)
 
     def test_mapdata(self, map_data: MapData) -> None:
         # coverage
