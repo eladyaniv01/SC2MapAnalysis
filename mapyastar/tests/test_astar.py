@@ -8,7 +8,7 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from MapAnalyzer import pyastar  # NOQA
 
 
-def test_small():
+def test_small() -> None:
     weights = np.array([[1, 3, 3, 3, 3],
                         [2, 1, 3, 3, 3],
                         [2, 2, 1, 3, 3],
@@ -28,7 +28,7 @@ def test_small():
     assert np.all(path == expected)
 
 
-def test_no_solution():
+def test_no_solution() -> None:
     # Vertical wall.
     weights = np.ones((5, 5), dtype=np.float32)
     weights[:, 2] = np.inf
@@ -44,7 +44,7 @@ def test_no_solution():
     assert not path
 
 
-def test_match_reverse():
+def test_match_reverse() -> None:
     # Might fail if there are multiple paths, but this should be rare.
     h, w = 25, 25
     weights = (1. + 5. * np.random.random((h, w))).astype(np.float32)
@@ -62,7 +62,7 @@ def test_match_reverse():
     assert np.all(fwd[::-1] == rev)
 
 
-def test_narrow():
+def test_narrow() -> None:
     # Column weights.
     weights = np.ones((5, 1), dtype=np.float32)
     path = pyastar.astar_path(weights, (0, 0), (4, 0))
@@ -80,7 +80,7 @@ def test_narrow():
     assert np.all(path == expected)
 
 
-def test_bad_heuristic():
+def test_bad_heuristic() -> None:
     # For valid heuristics, the cost to move must be at least 1.
     weights = (1. + 5. * np.random.random((10, 10))).astype(np.float32)
     # An element smaller than 1 should raise a ValueError.
@@ -92,7 +92,7 @@ def test_bad_heuristic():
         assert '.f' % bad_cost in exc.value.args[0]
 
 
-def test_invalid_start_and_goal():
+def test_invalid_start_and_goal() -> None:
     weights = (1. + 5. * np.random.random((10, 10))).astype(np.float32)
     # Test bad start indices.
     with pytest.raises(ValueError) as exc:

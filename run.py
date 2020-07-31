@@ -1,8 +1,9 @@
-import os
 import lzma
+import os
 import pickle
 import random
 from typing import List
+
 fname = "AbyssalReefLE"
 
 
@@ -62,6 +63,7 @@ for p in pts:
 import matplotlib.pyplot as plt
 
 path = map_data.pathfind(p0, p1, grid=arr)
+print(f"p0 = {p0}  p1 = {p1}")
 plt.text(p0[1], p0[0], f"Start {p0}")
 plt.text(p1[1], p1[0], f"End {p1}")
 x, y = zip(*path)
