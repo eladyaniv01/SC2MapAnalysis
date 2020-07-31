@@ -120,11 +120,15 @@ map_data.plot_map()
 
 create a virtual environment,  and clone the repo into it
 
-`python install.py`
+`pip install .`
 
 or if you want to contribute, or run tests locally 
 
-`python install_dev.py`
+`pip install -e .[dev]`
+
+or just with 
+
+`pip install -r requirements.txt`
 
 to get an idea of what the api can do,  check out "run.py" 
 
