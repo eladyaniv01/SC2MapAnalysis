@@ -86,13 +86,12 @@ class MapData:
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    # dont cache this
     def get_pyastar_grid(self) -> ndarray:
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
         for mf in self.mineral_fields:
-            x = int(mf.position[0])
-            y = int(mf.position[1])
-            grid[x][y] = np.inf
+            grid[int(mf.position[0])][int(mf.position[1])] = np.inf
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None) -> ndarray:
