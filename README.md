@@ -130,7 +130,7 @@ or just with
 
 `pip install -r requirements.txt`
 
-to get an idea of what the api can do,  check out "run.py" 
+to get an idea of what the api can do,  check out "run.py" and "dummybot.py"  both should run to verify the installation and demosntrate some of the capabilites  
 
 Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) ladder map pool) :
 ```
@@ -175,6 +175,14 @@ Usage:
 **and the worst cost would be np.inf( for non pathable cells)**
 
 so you should keep that in mind if you want to create a complex influence map with different weights
+
+`def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,allow_diagonal=False, sensitivity: int = 1) -> ndarray:`
+
+* `start`: start coordinates
+* `goal`: goal coordinates
+* `grid`: the weighted array to path through
+* `allow_diagonal`: diagonal moves -> if set to True will perforce slightly worst
+* `sensitivity`: default is 1,  what gaps between points is desired (in many use cases you will want to get every nth point of the path because its pointless to recompute every single point unless extensive micro is called for)
 
 * An example you can try out yourself to get a feel for it:
 ```python
