@@ -66,8 +66,12 @@ for idx in range(5):
         arr = map_data.add_influence(p, r, arr)
         # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
-    path = map_data.pathfind(p0, p1, grid=arr)
+    path = np.flip(
+        map_data.pathfind(p0, p1, grid=arr))  # flipping the path here to align with plot, dont do this for your bot
+    # path = [(p[0],p[1]) for p in path]
 
+    # path.reverse()
+    print(path)
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
@@ -79,6 +83,7 @@ for idx in range(5):
         map_data.logger.info("Found")
         org = "lower"
         plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+        print(path[0])
         x, y = zip(*path)
         plt.scatter(x, y)
     else:

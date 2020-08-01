@@ -88,9 +88,15 @@ class MapData:
 
     def get_pyastar_grid(self) -> ndarray:
         grid = np.fmax(self.path_arr, self.placement_arr).T
-        return np.where(grid != 0, 1, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
+        for mf in self.mineral_fields:
+            x = int(mf.position[0])
+            y = int(mf.position[1])
+            grid[x][y] = np.inf
+        return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None) -> ndarray:
+        # todo test me
         if not isinstance(start[0], numbers.Integral) or not isinstance(start[1], numbers.Integral):
             logger.debug(f"Non integer start point [{start}] provided,  converting to int")
             start = int(start[0]), int(start[1])
@@ -99,7 +105,7 @@ class MapData:
             goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
-        return np.flip(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
+        return np.flipud(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
 
     def log(self, msg):
         self.logger.debug(f"{msg}")
