@@ -1,5 +1,4 @@
 import inspect
-import numbers
 import os
 import sys
 import warnings
@@ -97,12 +96,8 @@ class MapData:
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal=False) -> ndarray:
         # todo test me
-        if not isinstance(start[0], numbers.Integral) or not isinstance(start[1], numbers.Integral):
-            logger.debug(f"Non integer start point [{start}] provided,  converting to int")
-            start = int(start[0]), int(start[1])
-        if not isinstance(goal[0], numbers.Integral) or not isinstance(goal[1], numbers.Integral):
-            logger.debug(f"Non integer goal point [{goal}] provided,  converting to int")
-            goal = int(goal[0]), int(goal[1])
+        start = int(start[0]), int(start[1])
+        goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
         return pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)

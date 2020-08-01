@@ -42,8 +42,8 @@ map_data = MapData(bot)
 # get corner regions centers for start / end points
 reg1 = map_data.regions[1]
 reg7 = map_data.regions[7]
-p0 = reg1.center
-p1 = reg7.center
+p1 = reg1.center[0] + 0.5, reg1.center[1]
+p0 = reg7.center
 
 for idx in range(5):
     pts = []
@@ -72,7 +72,7 @@ for idx in range(5):
     # path = [(p[0],p[1]) for p in path]
 
     # path.reverse()
-    print(path)
+    # print(path)
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
@@ -84,7 +84,7 @@ for idx in range(5):
         map_data.logger.info("Found")
         org = "lower"
         plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
-        print(path[0])
+        # print(path[0])
         x, y = zip(*path)
         plt.scatter(x, y)
     else:
