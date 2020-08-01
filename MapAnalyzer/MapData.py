@@ -94,14 +94,14 @@ class MapData:
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
-                 allow_diagonal=False) -> ndarray:
+                 allow_diagonal=False, sensitivity: int = 1) -> ndarray:
         # todo test me
         start = int(start[0]), int(start[1])
         goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
-        path = pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
-        return list(map(Point2, path))
+        return list(map(Point2, pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)))[
+               ::sensitivity]
 
     def log(self, msg):
         self.logger.debug(f"{msg}")
