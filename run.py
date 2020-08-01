@@ -76,13 +76,13 @@ for idx in range(5):
 
     # in some cases the path is impossible unless we lower the weights
     if path is not None:
-        print("Found")
+        map_data.logger.info("Found")
         org = "lower"
         plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
         x, y = zip(*path)
         plt.scatter(x, y)
     else:
-        print("Not Found")
+        map_data.logger.info("Not Found")
         org = "lower"
         plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
         x, y = zip(*[p0, p1])
