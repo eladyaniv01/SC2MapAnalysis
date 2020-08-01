@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 requirements = [  # pragma: no cover
-        "wheel",
         "Cython",
         "pyastar @ git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
         "burnysc2==4.11.16",
@@ -28,7 +27,6 @@ setup(  # pragma: no cover
         version="0.0.1",
         install_requires=requirements,
         setup_requires=["wheel", "numpy"],
-        package_dir={"": "MapAnalyzer"},
         extras_require={
                 "dev": [
                         "pytest",
