@@ -10,7 +10,8 @@ A standalone plugin for python SC2 api
 Early Stage development,
 
 - [Getting Started](#getting-started)
-
+- [Pathfinding](#Pathfinding)
+- [How to plug it on your bot](#How-to-plug-it-on-your-bot)
 
 Why Do we need this ? 
 =====================
@@ -121,13 +122,13 @@ create a virtual environment,  and clone the repo into it
 
 `pip install .`
 
-or if you dont want to install it as a package, run
-
-`pip install -r requirements.txt`
-
 or if you want to contribute, or run tests locally 
 
 `pip install -e .[dev]`
+
+or just with 
+
+`pip install -r requirements.txt`
 
 to get an idea of what the api can do,  check out "run.py" 
 
@@ -148,4 +149,222 @@ Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) l
  'Triton.xz',
  'WorldofSleepersLE.xz',
  'ZenLE.xz']
+```
+
+# Pathfinding
+
+
+getting the basic pathing grid :
+
+ `map_data.get_pyastar_grid()`
+
+Adding influence :
+------------------
+`def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:`
+
+Usage:
+
+`map_data.add_influence(p, r, arr, weight)`
+
+* `p`: center point (for example p could be an enemy units position)
+* `r`: radius (for example  r ->  attack range)
+* `weight`: how much cost to be added 
+
+**the optimal cost will be 1**,  
+
+**and the worst cost would be np.inf( for non pathable cells)**
+
+so you should keep that in mind if you want to create a complex influence map with different weights
+
+* An example you can try out yourself to get a feel for it:
+```python
+import lzma
+import os
+import pickle
+import random
+from typing import List
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from MapAnalyzer.MapData import MapData
+from MapAnalyzer.utils import import_bot_instance
+
+
+def get_random_point(minx, maxx, miny, maxy):
+    return (random.randint(minx, maxx), random.randint(miny, maxy))
+
+
+def get_map_file_list() -> List[str]:
+    """
+    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
+    """
+    subfolder = "MapAnalyzer"
+    subfolder2 = "pickle_gameinfo"
+    subfolder = os.path.join(subfolder, subfolder2)
+    folder = os.path.abspath(".")
+    map_files_folder = os.path.join(folder, subfolder)
+    map_files = os.listdir(map_files_folder)
+    li = []
+    for map_file in map_files:
+        li.append(os.path.join(map_files_folder, map_file))
+    return li
+
+
+map_files = get_map_file_list()
+
+with lzma.open(map_files[0], "rb") as f:
+    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+
+bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+map_data = MapData(bot)
+
+# get corner regions centers for start / end points
+reg1 = map_data.regions[1]
+reg7 = map_data.regions[7]
+p0 = reg1.center
+p1 = reg7.center
+
+for idx in range(5):
+    pts = []
+    if idx > 0:
+        NUM_POINTS = idx * 10
+    else:
+        NUM_POINTS = 10
+
+    # generating random points for added influence
+    for i in range(NUM_POINTS):
+        pts.append(get_random_point(50, 130, 25, 175))
+
+    # getting the base grid for pathing
+    arr = map_data.get_pyastar_grid()
+
+    r = 7 + idx  # radius is 10 for all points to make things simple
+    plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+    # note that we use the default weight of 100,  we could pass custom weights for each point though
+    for p in pts:
+        arr = map_data.add_influence(p, r, arr)
+        # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
+
+    path = map_data.pathfind(p0, p1, grid=arr, allow_diagonal=False)
+
+    print(f"p0 = {p0}  p1 = {p1}")
+    # transpose the points to fit the lower origin in our plot
+    p0_ = p0[1], p0[0]
+    p1_ = p1[1], p1[0]
+    arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
+
+    # in some cases the path is impossible unless we lower the weights
+    if path is not None:
+        print("Found")
+        org = "lower"
+        plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+        x, y = zip(*path)
+        plt.scatter(x, y)
+    else:
+        print("Not Found")
+        org = "lower"
+        plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
+        x, y = zip(*[p0, p1])
+        plt.scatter(x, y)
+    plt.text(p0_[0], p0_[1], f"Start {p0}")
+    plt.text(p1_[0], p1_[1], f"End {p1}")
+    plt.imshow(map_data.path_arr.T, alpha=0.8, origin=org, cmap='summer')
+    plt.imshow(map_data.terrain_height.T, alpha=0.8, origin=org, cmap='Blues')
+    plt.imshow(arr, origin=org, alpha=0.3, cmap='YlOrRd')
+    plt.grid(False)
+    plt.savefig(f"{idx}.png")
+    plt.close()
+
+```
+Results from 5 runs:
+--------------------
+<img src="https://user-images.githubusercontent.com/40754127/89064773-488b2600-d373-11ea-83ef-c1ca81b4a45f.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064776-4923bc80-d373-11ea-9dc3-cefde61cc8aa.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064778-49bc5300-d373-11ea-9ffb-7a55144b2b0b.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064768-4628cc00-d373-11ea-8928-2090ed5b9c5f.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89064772-47f28f80-d373-11ea-85cb-aaed6057e014.png"/>
+
+# How to plug it on your bot
+* The example below will get your main base, and enemy main base locations and plot the path between with no influence
+* MapData objects should be called `on_start` and is required only the bot object
+* it is recommended to set it to `None` on init(because its before `on_start`), and then set it on_start as shown below
+    
+```python
+
+
+from typing import List
+
+import sc2
+from sc2.player import Bot, Computer
+from sc2.position import Point3
+
+from MapAnalyzer import MapData, Point2
+
+GREEN = Point3((0, 255, 0))
+RED = Point3((255, 0, 0))
+BLUE = Point3((0, 0, 255))
+BLACK = Point3((0, 0, 0))
+
+
+class MATester(sc2.BotAI):
+
+    def __init__(self):
+        super().__init__()
+        self.map_data = None
+        self.logger = None
+
+    async def on_start(self):
+        self.map_data = MapData(self)
+        self.logger = self.map_data.logger
+
+    async def on_step(self, iteration: int):
+        # enemy_ground_units = enemies.filter(
+        #         lambda unit: unit.distance_to(r) < 5 and not unit.is_flying
+
+        base = self.townhalls[0]
+        reg_start = self.map_data.where(base.position_tuple)
+        # self.logger.info(regstart)
+        reg_end = self.map_data.where(self.enemy_start_locations[0].position)
+        # self.logger.info(regend)
+        p0 = reg_start.center
+        p1 = reg_end.center
+        path = self.map_data.pathfind(start=p0, goal=p1)
+        self.client.debug_text_world(
+                "\n".join([f"start {p0}", ]), Point2(p0), color=RED, size=30,
+        )
+        self.client.debug_text_world(
+                "\n".join([f"end {p1}", ]), Point2(p1), color=RED, size=30,
+        )
+        self._draw_point_list(path, text='*')
+
+    def _draw_point_list(self, point_list: List = None, color=None, text=None, box_r=None) -> bool:
+        if not color:
+            color = GREEN
+        for p in point_list:
+            p = Point2(p)
+            h = self.get_terrain_z_height(p)
+            pos = Point3((p.x, p.y, h))
+            if box_r:
+                p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
+                p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
+                self.client.debug_box_out(p0, p1, color=color)
+            if text:
+                self.client.debug_text_world(
+                        "\n".join([f"{text}", ]), pos, color=color, size=30,
+                )
+
+
+def main():
+    map = "AutomatonLE"
+    sc2.run_game(
+            sc2.maps.get(map),
+            [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],
+            realtime=False
+    )
+
+
+if __name__ == "__main__":
+    main()
+
 ```

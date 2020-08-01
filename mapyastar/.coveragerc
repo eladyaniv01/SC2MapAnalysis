@@ -1,7 +1,0 @@
-[run]
-omit = tests/*
-
-[paths]
-source =
-    pyastar
-    **/site-packages/pyastar

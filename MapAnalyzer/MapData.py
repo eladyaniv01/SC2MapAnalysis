@@ -24,6 +24,7 @@ from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
 from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
+
 WHITE = "\u001b[32m"
 
 
@@ -84,23 +85,30 @@ class MapData:
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    # dont cache this
     def get_pyastar_grid(self) -> ndarray:
         grid = np.fmax(self.path_arr, self.placement_arr).T
-        return np.where(grid != 0, 1, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
+        for mf in self.mineral_fields:
+            grid[int(mf.position[0])][int(mf.position[1])] = np.inf
+        return grid
 
-    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None) -> ndarray:
+    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
+                 allow_diagonal=False) -> ndarray:
+        # todo test me
+        start = int(start[0]), int(start[1])
+        goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
-        return np.flip(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
+        path = pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
+        return list(map(Point2, path))
 
     def log(self, msg):
         self.logger.debug(f"{msg}")
 
     @staticmethod
-    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, s: None = None) -> ndarray:
-        if s is None:
-            s = 100
-        ri, ci = skdraw.disk((p[0], p[1]), radius=r, shape=arr.shape)
+    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
+        ri, ci = skdraw.disk(center=(p[1], p[0]), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.warning(OutOfBoundsException(p))
@@ -122,7 +130,7 @@ class MapData:
         ri_vec = np.vectorize(in_bounds_ri)
         ci = ci_vec(ci)
         ri = ri_vec(ri)
-        arr[ri, ci] = s
+        arr[ri, ci] += weight
         return arr
 
     def _clean_plib_chokes(self) -> None:
@@ -614,7 +622,7 @@ class MapData:
         plt.style.use("ggplot")
         if not fontdict:
             fontdict = {"family": "serif", "weight": "bold", "size": 25}
-        plt.figure(figsize=(figsize, figsize))
+
         plt.imshow(self.region_grid, origin="lower")
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
         x, y = zip(*self.nonpathable_indices_stacked)
@@ -640,11 +648,13 @@ class MapData:
                 logger.debug("Skipping saving map image")
                 return True
             else:
+                plt.figure(figsize=(figsize, figsize))
                 full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
                 plt.savefig(f"{map_name}.png")
                 logger.debug(f"Plot Saved to {full_path}")
                 plt.close()
         else:  # pragma: no cover
+            plt.figure(figsize=(figsize, figsize))
             plt.show()
 
     def __repr__(self) -> str:

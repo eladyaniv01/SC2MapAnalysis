@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "Cython",
+        "pyastar @ git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
         "burnysc2==4.11.16",
         "click==7.1.2",
         "matplotlib==3.2.2",
