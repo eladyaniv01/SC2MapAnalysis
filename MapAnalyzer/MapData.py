@@ -625,7 +625,7 @@ class MapData:
         plt.style.use("ggplot")
         if not fontdict:
             fontdict = {"family": "serif", "weight": "bold", "size": 25}
-        plt.figure(figsize=(figsize, figsize))
+
         plt.imshow(self.region_grid, origin="lower")
         plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
         x, y = zip(*self.nonpathable_indices_stacked)
@@ -651,11 +651,13 @@ class MapData:
                 logger.debug("Skipping saving map image")
                 return True
             else:
+                plt.figure(figsize=(figsize, figsize))
                 full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
                 plt.savefig(f"{map_name}.png")
                 logger.debug(f"Plot Saved to {full_path}")
                 plt.close()
         else:  # pragma: no cover
+            plt.figure(figsize=(figsize, figsize))
             plt.show()
 
     def __repr__(self) -> str:

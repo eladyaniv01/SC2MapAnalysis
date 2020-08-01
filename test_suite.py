@@ -109,23 +109,28 @@ class TestSuit:
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
 
     def test_pathing(self, map_data: MapData) -> None:
-        if "Abyssal" in map_data.map_name:
-            def get_random_point(minr, maxr):
-                return (random.randint(minr, maxr), random.randint(minr, maxr))
+        logger.info(map_data)
 
-            p0 = (157, 22)
-            p1 = (42, 121)
-            pts = []
-            r = 10
-            for i in range(50):
-                pts.append(get_random_point(-20, 220))
+        def get_random_point(minr, maxr):
+            return (random.randint(minr, maxr), random.randint(minr, maxr))
 
-            arr = map_data.get_pyastar_grid()
+        base = map_data.bot.townhalls[0]
+        reg_start = map_data.where(base.position_tuple)
+        # self.logger.info(regstart)
+        reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        # self.logger.info(regend)
+        p0 = reg_start.center
+        p1 = reg_end.center
+        pts = []
+        r = 10
+        for i in range(50):
+            pts.append(get_random_point(-20, 220))
 
-            for p in pts:
-                arr = map_data.add_influence(p, r, arr)
-            path = map_data.pathfind(p0, p1, grid=arr)
-            assert (path is not None)
+        arr = map_data.get_pyastar_grid()
+        for p in pts:
+            arr = map_data.add_influence(p, r, arr)
+        path = map_data.pathfind(p0, p1, grid=arr)
+        assert (path is not None)
 
     def test_mapdata(self, map_data: MapData) -> None:
         # coverage
