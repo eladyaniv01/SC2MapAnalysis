@@ -59,7 +59,7 @@ for idx in range(5):
     # getting the base grid for pathing
     arr = map_data.get_pyastar_grid()
 
-    r = 7 + idx  # radius is 10 for all points to make things simple
+    r = 7 + idx
     plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
@@ -69,10 +69,7 @@ for idx in range(5):
     path = np.flip(
             np.flipud(map_data.pathfind(p0, p1,
                                         grid=arr)))  # flipping the path here to align with plot, dont do this for your bot
-    # path = [(p[0],p[1]) for p in path]
 
-    # path.reverse()
-    # print(path)
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
@@ -84,7 +81,6 @@ for idx in range(5):
         map_data.logger.info("Found")
         org = "lower"
         plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
-        # print(path[0])
         x, y = zip(*path)
         plt.scatter(x, y)
     else:
