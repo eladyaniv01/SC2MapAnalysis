@@ -246,7 +246,7 @@ for idx in range(5):
         arr = map_data.add_influence(p, r, arr)
         # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
-    path = map_data.pathfind(p0, p1, grid=arr)
+    path = map_data.pathfind(p0, p1, grid=arr, allow_diagonal=False)
 
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot

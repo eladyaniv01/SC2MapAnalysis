@@ -94,7 +94,8 @@ class MapData:
             grid[int(mf.position[0])][int(mf.position[1])] = np.inf
         return grid
 
-    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None) -> ndarray:
+    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
+                 allow_diagonal=False) -> ndarray:
         # todo test me
         if not isinstance(start[0], numbers.Integral) or not isinstance(start[1], numbers.Integral):
             logger.debug(f"Non integer start point [{start}] provided,  converting to int")
@@ -104,7 +105,7 @@ class MapData:
             goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
-        return np.flipud(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=False))
+        return np.flipud(pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal))
 
     def log(self, msg):
         self.logger.debug(f"{msg}")
