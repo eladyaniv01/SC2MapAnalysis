@@ -24,14 +24,9 @@ class MATester(sc2.BotAI):
         self.logger = self.map_data.logger
 
     async def on_step(self, iteration: int):
-        # enemy_ground_units = enemies.filter(
-        #         lambda unit: unit.distance_to(r) < 5 and not unit.is_flying
-
         base = self.townhalls[0]
         reg_start = self.map_data.where(base.position_tuple)
-        # self.logger.info(regstart)
         reg_end = self.map_data.where(self.enemy_start_locations[0].position)
-        # self.logger.info(regend)
         p0 = reg_start.center
         p1 = reg_end.center
         path = self.map_data.pathfind(start=p0, goal=p1)
