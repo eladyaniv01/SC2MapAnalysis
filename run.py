@@ -67,7 +67,8 @@ for idx in range(5):
         # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
     path = np.flip(
-        map_data.pathfind(p0, p1, grid=arr))  # flipping the path here to align with plot, dont do this for your bot
+            np.flipud(map_data.pathfind(p0, p1,
+                                        grid=arr)))  # flipping the path here to align with plot, dont do this for your bot
     # path = [(p[0],p[1]) for p in path]
 
     # path.reverse()
