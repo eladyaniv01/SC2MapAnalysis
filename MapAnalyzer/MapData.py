@@ -234,7 +234,6 @@ class MapData:
         ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
         """
         results = []
-        rresults = []
         if isinstance(point, Point2):
             point = point.rounded
         if isinstance(point, tuple):
@@ -243,7 +242,6 @@ class MapData:
         for region in self.regions.values():
             if region.inside_p(point):
                 results.append(region)
-                rresults.append(region)
         for ramp in self.map_ramps:
             if ramp.is_inside_point(point):
                 results.append(ramp)
@@ -252,10 +250,9 @@ class MapData:
                 results.append(vba)
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
-                rresults.append(choke)
-        for i in results:
-            assert (i in rresults), f"results = {results} , rresults = {rresults}, i = {i}"
-        return results
+                results.append(choke)
+
+        return list(set(results))
 
     @lru_cache(100)
     def where(
