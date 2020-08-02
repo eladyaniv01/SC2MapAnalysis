@@ -6,6 +6,7 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
+from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
@@ -66,8 +67,11 @@ for idx in range(5):
     r = 7 + idx
 
     # note that we use the default weight of 100,  we could pass custom weights for each point though
-    for p in pts:
-        arr = map_data.add_influence(p, r, arr)
+    # for p in pts:
+    #     arr = map_data.add_influence(p, r, arr)
+    p = Point2((65, 146))
+    arr = map_data.add_influence(p, r, arr)
+
     # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
     path = map_data.pathfind(p0, p1,
                              grid=arr,
@@ -101,3 +105,5 @@ for idx in range(5):
     plt.grid(False)
     plt.savefig(f"{idx}.png")
     plt.close()
+
+map_data.plot_map()
