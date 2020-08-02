@@ -1,3 +1,4 @@
+import random
 from typing import List
 
 import sc2
@@ -50,7 +51,9 @@ class MATester(sc2.BotAI):
         else:
             self.ramp = ramps[0]
 
-        self.influence_points = [(self.ramp.top_center, 2), (Point2((66, 66)), 18)]
+        # self.influence_points = [(self.ramp.top_center, 2), (Point2((66, 66)), 18)]
+
+        self.influence_points = self._get_random_influence(25, 5)
         for tup in self.influence_points:
             p = tup[0]
             r = tup[1]
@@ -59,13 +62,26 @@ class MATester(sc2.BotAI):
                                            allow_diagonal=True)
         self.hero_tag = self.workers[0].tag
 
-    async def on_step(self, iteration: int):
+    def get_random_point(self, minx, maxx, miny, maxy):
+        return (random.randint(minx, maxx), random.randint(miny, maxy))
+
+    def _get_random_influence(self, n, r):
+        pts = []
+        for i in range(n):
+            pts.append(
+                    (Point2(self.get_random_point(50, 130, 25, 175)), r))
+        return pts
+
+    def _plot_influence(self):
         for tup in self.influence_points:
             p = tup[0]
             r = tup[1]
             h = self.get_terrain_z_height(p)
             pos = Point3((p.x, p.y, h))
             self.client.debug_sphere_out(p=pos, r=r - 1, color=RED)
+
+    async def on_step(self, iteration: int):
+        self._plot_influence()
         hero = self.workers.by_tag(self.hero_tag)
         dist = 1.5 * hero.calculate_speed() * 1.4
         if self.target is None:
@@ -124,11 +140,11 @@ class MATester(sc2.BotAI):
 
 
 def main():
-    map = "AutomatonLE"
+    map = "AbyssalReefLE"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],
-            realtime=True
+            realtime=False
     )
 
 

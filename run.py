@@ -32,8 +32,12 @@ def get_map_file_list() -> List[str]:
 
 
 map_files = get_map_file_list()
+for mf in map_files:
+    if 'Abyssal' in mf:
+        map_file = mf
+        break
 
-with lzma.open(map_files[0], "rb") as f:
+with lzma.open(map_file, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
@@ -60,30 +64,30 @@ for idx in range(5):
     arr = map_data.get_pyastar_grid()
 
     r = 7 + idx
-    plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
         arr = map_data.add_influence(p, r, arr)
-        # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
+    # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
 
-    path = np.flip(
-            np.flipud(map_data.pathfind(p0, p1,
-                                        grid=arr,
-                                        sensitivity=5)))  # flipping the path here to align with plot, dont do this for your bot
+    path = np.flip(np.flipud(map_data.pathfind(p0, p1,
+                                               grid=arr,
+                                               sensitivity=5)))  # flipping the path here to align with plot, dont do this for your bot
 
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
     p1_ = p1[1], p1[0]
-    arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
+    # arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
 
     # in some cases the path is impossible unless we lower the weights
     if path is not None:
         map_data.logger.info("Found")
         org = "lower"
-        plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+        plt.title(
+            f"{map_data.map_name} with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
         x, y = zip(*path)
-        plt.scatter(x, y)
+        plt.scatter(x, y, s=1)
     else:
         map_data.logger.info("Not Found")
         org = "lower"
