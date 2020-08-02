@@ -100,6 +100,7 @@ class MapData:
         goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
+
         path = pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             return list(map(Point2, path))[::sensitivity]
