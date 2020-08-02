@@ -248,7 +248,11 @@ class MapData:
         for vba in self.map_vision_blockers:
             if vba.is_inside_point(point):
                 results.append(vba)
-        return results
+        for choke in self.map_chokes:
+            if choke.is_inside_point(point):
+                results.append(choke)
+
+        return list(set(results))
 
     @lru_cache(100)
     def where(
