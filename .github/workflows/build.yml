@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up {{ matrix.python-version }}
+    - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         architecture: 'x64'
@@ -29,11 +29,11 @@ jobs:
       #        python install_dev.py
     - name: Test with pytest + Coverage
       run: |
-        pytest --html=html/${{runs-on}}-test-results-${{ matrix.python-version }}.html
+        pytest --html=html/${{ matrix.os }}-test-results-${{ matrix.python-version }}.html
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:
-        name: pytest-results-${{ matrix.python-version }}
-        path: html/test-results-${{ matrix.python-version }}.html
+        name: pytest-results-${{ matrix.os }}-${{ matrix.python-version }}
+        path: html/${{ matrix.os }}-test-results-${{ matrix.python-version }}.html
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
