@@ -100,8 +100,12 @@ class MapData:
         goal = int(goal[0]), int(goal[1])
         if grid is None:
             grid = self.get_pyastar_grid()
-        return list(map(Point2, pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)))[
-               ::sensitivity]
+        path = pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
+        if path is not None:
+            return list(map(Point2, path))[::sensitivity]
+        else:
+            self.logger.warning(f"No Path found s{start}, g{goal}")
+            return None
 
     def log(self, msg):
         self.logger.debug(f"{msg}")

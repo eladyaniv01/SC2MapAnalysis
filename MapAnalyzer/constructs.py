@@ -10,6 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
     from .sc2pathlibp.choke import Choke
 
+
 class PathLibChoke:
     # noinspection PyProtectedMember
     def __init__(self, pathlib_choke: "Choke", pk: int):
@@ -75,7 +76,7 @@ class MDRamp(ChokeArea):
         if self.ramp.top_center is not None:
             return self.ramp.top_center
         else:
-            self.map_data.logger.warning(f"No top_center found for {self}")
+            self.map_data.logger.warning(f"No top_center found for {self}, falling back to `center`")
 
     @property
     def bottom_center(self) -> Point2:
@@ -83,7 +84,7 @@ class MDRamp(ChokeArea):
         if self.ramp.bottom_center is not None:
             return self.ramp.bottom_center
         else:
-            self.map_data.logger.warning(f"No bottom_center found for {self}")
+            self.map_data.logger.warning(f"No bottom_center found for {self}, falling back to `center`")
 
     def __repr__(self):  # pragma: no cover
         return f"<MDRamp[size={self.area}]: {self.areas}>"
