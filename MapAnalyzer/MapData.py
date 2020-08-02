@@ -62,7 +62,7 @@ class MapData:
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
         self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
         self.base_locations: list = bot.expansion_locations_list
-        self.map_ramps: list = []
+        self.map_ramps: list = []  # set later  on compile
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
         self.map_chokes: list = []  # set later  on compile
@@ -80,7 +80,7 @@ class MapData:
         self.pathlib_map = None
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
-        self._get_pathlib_map()
+        self._set_pathlib_map()
         self.pyastar = pyastar
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
@@ -106,12 +106,11 @@ class MapData:
     def log(self, msg):
         self.logger.debug(f"{msg}")
 
-    @staticmethod
-    def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
         ri, ci = skdraw.disk(center=(p[1], p[0]), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            logger.warning(OutOfBoundsException(p))
+            self.logger.warning(OutOfBoundsException(p))
             return arr
 
         def in_bounds_ci(x):
@@ -181,10 +180,6 @@ class MapData:
 
                     if isinstance(a, MDRamp):
                         self.polygons.pop(self.polygons.index(pol))
-                        # print(pol)
-                        # print(a)
-                        # print(a.areas)
-                        # print(pol in a.areas)
 
     """ longest map compile is 1.9 s """
 
@@ -203,11 +198,11 @@ class MapData:
     @property
     def vision_blockers(self) -> Set[Point2]:
         """
-        compute Region
+        Return the private method
         """
         return self._vision_blockers
 
-    def _get_pathlib_map(self) -> None:
+    def _set_pathlib_map(self) -> None:
 
         """
         Will initialize the sc2pathlib `SC2Map` object for future use
@@ -234,6 +229,7 @@ class MapData:
         ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
         """
         results = []
+        rresults = []
         if isinstance(point, Point2):
             point = point.rounded
         if isinstance(point, tuple):
@@ -242,12 +238,18 @@ class MapData:
         for region in self.regions.values():
             if region.inside_p(point):
                 results.append(region)
+                rresults.append(region)
         for ramp in self.map_ramps:
             if ramp.is_inside_point(point):
                 results.append(ramp)
         for vba in self.map_vision_blockers:
             if vba.is_inside_point(point):
                 results.append(vba)
+        for choke in self.map_chokes:
+            if choke.is_inside_point(point):
+                rresults.append(choke)
+        for i in results:
+            assert (i in rresults), f"results = {results} , rresults = {rresults}, i = {i}"
         return results
 
     @lru_cache(100)

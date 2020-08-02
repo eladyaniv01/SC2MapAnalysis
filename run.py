@@ -44,7 +44,7 @@ reg1 = map_data.regions[1]
 reg7 = map_data.regions[7]
 p1 = reg1.center[0] + 0.5, reg1.center[1]
 p0 = reg7.center
-
+doh = map_data.where_all(reg7.center)
 for idx in range(5):
     pts = []
     if idx > 0:

@@ -71,13 +71,19 @@ class MDRamp(ChokeArea):
 
     @property
     def top_center(self) -> Point2:
-        # todo  warning when sc2 fails to provide a top_center, and fallback to  .center
-        return self.ramp.top_center
+        # warning when sc2 fails to provide a top_center, and fallback to  .center
+        if self.ramp.top_center is not None:
+            return self.ramp.top_center
+        else:
+            self.map_data.logger.warning(f"No top_center found for {self}")
 
     @property
     def bottom_center(self) -> Point2:
-        # todo  warning when sc2 fails to provide a bottom_center, and fallback to  .center
-        return self.ramp.bottom_center
+        # warning when sc2 fails to provide a bottom_center, and fallback to  .center
+        if self.ramp.bottom_center is not None:
+            return self.ramp.bottom_center
+        else:
+            self.map_data.logger.warning(f"No bottom_center found for {self}")
 
     def __repr__(self):  # pragma: no cover
         return f"<MDRamp[size={self.area}]: {self.areas}>"
