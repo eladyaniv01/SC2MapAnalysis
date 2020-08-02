@@ -42,7 +42,7 @@ class MapData:
     MapData DocString
     """
 
-    def __init__(self, bot: BotAI, loglevel: str = "DEBUG") -> None:
+    def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
@@ -50,7 +50,7 @@ class MapData:
         self.log_filter = LogFilter(loglevel)
         self.logger.remove()
         self.log_format = LOG_FORMAT
-        logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
+        self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
@@ -112,7 +112,7 @@ class MapData:
         self.logger.debug(f"{msg}")
 
     def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
-        ri, ci = skdraw.disk(center=(p[1], p[0]), radius=r, shape=arr.shape)
+        ri, ci = skdraw.disk(center=(int(p[0]), int(p[1])), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             self.logger.warning(OutOfBoundsException(p))
