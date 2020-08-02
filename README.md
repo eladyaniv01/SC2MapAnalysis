@@ -285,13 +285,16 @@ for idx in range(5):
     plt.close()
 
 ```
-Results from 5 runs:
+Results from 8 runs On GoldenWallLE:
 --------------------
-<img src="https://user-images.githubusercontent.com/40754127/89064773-488b2600-d373-11ea-83ef-c1ca81b4a45f.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89064776-4923bc80-d373-11ea-9dc3-cefde61cc8aa.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89064778-49bc5300-d373-11ea-9ffb-7a55144b2b0b.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89064768-4628cc00-d373-11ea-8928-2090ed5b9c5f.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89064772-47f28f80-d373-11ea-85cb-aaed6057e014.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128388-017d6c00-d4fe-11ea-8ab9-03ff16e6c7da.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128386-004c3f00-d4fe-11ea-9d63-8c0a09cabbe0.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128384-ff1b1200-d4fd-11ea-871e-3372257dc753.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128373-f4f91380-d4fd-11ea-9452-831c10642073.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128372-f3c7e680-d4fd-11ea-8271-1bf8d598f118.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128371-f296b980-d4fd-11ea-9c7c-3c9993407687.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128369-ef033280-d4fd-11ea-9dc6-f05f2dbe8c41.png"/>
+<img src="https://user-images.githubusercontent.com/40754127/89128368-ee6a9c00-d4fd-11ea-8d04-6b13f01ca5b1.png"/>
 
 # How to plug it on your bot
 * The example below will get your main base, and enemy main base locations and plot the path between with no influence

@@ -21,7 +21,7 @@ from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
 from MapAnalyzer.Region import Region
 from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
-from .decorators import progress_wrapped
+# from .decorators import progress_wrapped
 from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 
@@ -195,7 +195,8 @@ class MapData:
 
     """ longest map compile is 1.9 s """
 
-    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
+    # disabling until tqdm is available on aiarena
+    # @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
     def compile_map(self) -> None:
         """user can call this to recompute"""
 
