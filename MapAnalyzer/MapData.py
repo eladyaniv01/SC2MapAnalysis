@@ -142,6 +142,7 @@ class MapData:
         ci = ci_vec(ci)
         ri = ri_vec(ri)
         arr[ri, ci] += weight
+        arr = np.where(arr < 1, 1, arr)
         return arr
 
     def _clean_plib_chokes(self) -> None:

@@ -67,7 +67,7 @@ for idx in range(8):
 
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr)
+        arr = map_data.add_influence(p, r, arr, weight=-999)
 
     """Goldenwall missing choke center,  only fails on gh actions,  currently cant reproduce locally"""
     # p = Point2((65, 146))
