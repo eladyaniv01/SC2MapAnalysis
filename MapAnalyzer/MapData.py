@@ -89,8 +89,14 @@ class MapData:
     def get_pyastar_grid(self) -> ndarray:
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
-        for mf in self.mineral_fields:
-            grid[int(mf.position[0])][int(mf.position[1])] = np.inf
+        nonpathables = self.bot.structures
+        nonpathables.extend(self.bot.destructables)
+        nonpathables.extend(self.bot.enemy_structures)
+        nonpathables.extend(self.mineral_fields)
+        for obj in nonpathables:
+            if "plates" not in obj.name.lower():
+                self.add_influence(p=obj.position, r=0.9 * obj.radius, arr=grid, weight=np.inf)
+
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
