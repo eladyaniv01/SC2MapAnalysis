@@ -261,7 +261,7 @@ class MapData:
 
         return list(set(results))
 
-    @lru_cache(100)
+    @lru_cache(200)
     def where(
             self, point: Union[Point2, tuple]
     ) -> Union[Region, MDRamp, VisionBlockerArea]:
@@ -610,18 +610,18 @@ class MapData:
                 plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
                          bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
                 plt.scatter(x, y, color="w")
-            # elif choke.is_vision_blocker:
-            #
-            #     fontdict = {"family": "serif", "size": 10}
-            #     plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
-            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
-            #
-            # else:
-            #     fontdict = {"family": "serif", "size": 10}
-            #     plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
-            #              bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-            #     plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+            elif choke.is_vision_blocker:
+
+                fontdict = {"family": "serif", "size": 10}
+                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
+
+            else:
+                fontdict = {"family": "serif", "size": 10}
+                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
+                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
 
     def plot_map(
             self, fontdict: dict = None, save: bool = False, figsize: int = 20
@@ -629,15 +629,11 @@ class MapData:
         """
         Plot map
         """
-        import matplotlib.pyplot as plt
-        plt.style.use("ggplot")
+
         if not fontdict:
             fontdict = {"family": "serif", "weight": "bold", "size": 25}
-
-        plt.imshow(self.region_grid, origin="lower")
-        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
-        x, y = zip(*self.nonpathable_indices_stacked)
-        plt.scatter(x, y, color="grey")
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(figsize, figsize))
         self._plot_regions(fontdict=fontdict)
         # some maps has no vision blockers
         if len(self._vision_blockers) > 0:
@@ -645,6 +641,12 @@ class MapData:
         self._plot_normal_resources()
         self._plot_chokes()
         fontsize = 25
+
+        plt.style.use("ggplot")
+        plt.imshow(self.region_grid, origin="lower")
+        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
+        x, y = zip(*self.nonpathable_indices_stacked)
+        plt.scatter(x, y, color="grey")
         ax = plt.gca()
         for tick in ax.xaxis.get_major_ticks():
             tick.label1.set_fontsize(fontsize)
@@ -659,13 +661,11 @@ class MapData:
                 logger.debug("Skipping saving map image")
                 return True
             else:
-                plt.figure(figsize=(figsize, figsize))
                 full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
                 plt.savefig(f"{map_name}.png")
                 logger.debug(f"Plot Saved to {full_path}")
                 plt.close()
         else:  # pragma: no cover
-            plt.figure(figsize=(figsize, figsize))
             plt.show()
 
     def __repr__(self) -> str:

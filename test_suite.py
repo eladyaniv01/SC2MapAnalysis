@@ -175,5 +175,5 @@ class TestSuit:
         for choke in map_data.map_chokes:
             assert isinstance(
                     map_data.where(choke.center), (Region, Polygon, ChokeArea, MDRamp, VisionBlockerArea)
-            ), logger.error(f"<Map : {map_data}, Choke : {choke},"
-                            f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+            ), map_data.logger.error(f"<Map : {map_data}, Choke : {choke},"
+                                     f" where :  {map_data.where(choke.center)} point : {choke.center}>")
