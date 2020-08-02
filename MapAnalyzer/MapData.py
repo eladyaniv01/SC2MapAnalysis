@@ -261,7 +261,6 @@ class MapData:
 
         return list(set(results))
 
-    @lru_cache(200)
     def where(
             self, point: Union[Point2, tuple]
     ) -> Union[Region, MDRamp, VisionBlockerArea]:
