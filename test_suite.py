@@ -1,11 +1,13 @@
 import logging
 import os
 import random
+from random import randint
 from typing import Iterable, List
 
 import pytest
 import tqdm
 from _pytest.python import Metafunc
+from hypothesis import given, settings, strategies as st
 from loguru import logger
 
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
@@ -69,22 +71,22 @@ def get_map_datas() -> Iterable[MapData]:
         yield mock_map_data(map_file=os.path.join(map_files_folder, map_file))
 
 
-# @given(st.integers(min_value=1, max_value=100), st.integers(min_value=1, max_value=100))
-# @settings(max_examples=5, deadline=None, verbosity=3, print_blob=True)
-# def test_mapdata(n, m):
-#     map_files = get_map_file_list()
-#     map_data = mock_map_data(random.choice(map_files))
-#     logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
-#     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
-#     set_points = set(points)
-#     indices = map_data.points_to_indices(set_points)
-#     i = randint(0, n)
-#     j = randint(0, m)
-#     assert (i, j) in points
-#     assert (i, j) in set_points
-#     assert i in indices[0] and j in indices[1]
-#     new_points = map_data.indices_to_points(indices)
-#     assert new_points == set_points
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=1, max_value=100))
+@settings(max_examples=5, deadline=None, verbosity=3, print_blob=True)
+def test_mapdata(n, m):
+    map_files = get_map_file_list()
+    map_data = mock_map_data(random.choice(map_files))
+    logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
+    points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
+    set_points = set(points)
+    indices = map_data.points_to_indices(set_points)
+    i = randint(0, n)
+    j = randint(0, m)
+    assert (i, j) in points
+    assert (i, j) in set_points
+    assert i in indices[0] and j in indices[1]
+    new_points = map_data.indices_to_points(indices)
+    assert new_points == set_points
 
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
@@ -125,8 +127,8 @@ class TestSuit:
             pts.append(get_random_point(-20, 220))
 
         arr = map_data.get_pyastar_grid()
-        # for p in pts:
-        #     arr = map_data.add_influence(p, r, arr)
+        for p in pts:
+            arr = map_data.add_influence(p, r, arr)
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None)
 
