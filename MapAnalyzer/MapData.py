@@ -86,10 +86,10 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     # dont cache this
-    def get_pyastar_grid(self) -> ndarray:
+    def get_pyastar_grid(self, default_weight: int = 1) -> ndarray:
         # todo test me
         grid = np.fmax(self.path_arr, self.placement_arr).T
-        grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         nonpathables = self.bot.structures
         nonpathables.extend(self.bot.destructables)
         nonpathables.extend(self.bot.enemy_structures)
