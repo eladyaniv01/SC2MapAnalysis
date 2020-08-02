@@ -87,6 +87,7 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self) -> ndarray:
+        # todo test me
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, 1, np.inf).astype(np.float32)
         nonpathables = self.bot.structures
@@ -95,7 +96,7 @@ class MapData:
         nonpathables.extend(self.mineral_fields)
         for obj in nonpathables:
             if "plates" not in obj.name.lower():
-                self.add_influence(p=obj.position, r=0.9 * obj.radius, arr=grid, weight=np.inf)
+                self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
 
         return grid
 

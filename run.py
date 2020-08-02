@@ -33,7 +33,7 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    if 'Abyssal' in mf:
+    if 'goldenwall' in mf.lower():
         map_file = mf
         break
 
@@ -44,11 +44,11 @@ bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot)
 
 # get corner regions centers for start / end points
-reg1 = map_data.regions[1]
-reg7 = map_data.regions[7]
-p1 = reg1.center[0] + 0.5, reg1.center[1]
-p0 = reg7.center
-doh = map_data.where_all(reg7.center)
+base = map_data.bot.townhalls[0]
+reg_start = map_data.where(base.position_tuple)
+reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+p0 = reg_start.center
+p1 = reg_end.center
 for idx in range(5):
     pts = []
     if idx > 0:
@@ -69,11 +69,9 @@ for idx in range(5):
     for p in pts:
         arr = map_data.add_influence(p, r, arr)
     # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
-
-    path = np.flip(np.flipud(map_data.pathfind(p0, p1,
-                                               grid=arr,
-                                               sensitivity=5)))  # flipping the path here to align with plot, dont do this for your bot
-
+    path = map_data.pathfind(p0, p1,
+                             grid=arr,
+                             sensitivity=5)
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
@@ -82,6 +80,7 @@ for idx in range(5):
 
     # in some cases the path is impossible unless we lower the weights
     if path is not None:
+        path = np.flip(np.flipud(path))  # for plot align
         map_data.logger.info("Found")
         org = "lower"
         plt.title(
