@@ -6,7 +6,6 @@ from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
-from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
@@ -50,7 +49,7 @@ reg_start = map_data.where(base.position_tuple)
 reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
 p0 = reg_start.center
 p1 = reg_end.center
-for idx in range(5):
+for idx in range(8):
     pts = []
     if idx > 0:
         NUM_POINTS = idx * 10
@@ -67,20 +66,20 @@ for idx in range(5):
     r = 7 + idx
 
     # note that we use the default weight of 100,  we could pass custom weights for each point though
-    # for p in pts:
-    #     arr = map_data.add_influence(p, r, arr)
-    p = Point2((65, 146))
-    arr = map_data.add_influence(p, r, arr)
+    for p in pts:
+        arr = map_data.add_influence(p, r, arr)
 
-    # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
+    """Goldenwall missing choke center,  only fails on gh actions,  currently cant reproduce locally"""
+    # p = Point2((65, 146))
+    # arr = map_data.add_influence(p, r, arr)
+    """end"""
     path = map_data.pathfind(p0, p1,
                              grid=arr,
-                             sensitivity=5)
+                             sensitivity=2)
     print(f"p0 = {p0}  p1 = {p1}")
     # transpose the points to fit the lower origin in our plot
     p0_ = p0[1], p0[0]
     p1_ = p1[1], p1[0]
-    # arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
 
     # in some cases the path is impossible unless we lower the weights
     if path is not None:
@@ -90,7 +89,7 @@ for idx in range(5):
         plt.title(
             f"{map_data.map_name} with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
         x, y = zip(*path)
-        plt.scatter(x, y, s=1)
+        plt.scatter(x, y, s=1, c='r')
     else:
         map_data.logger.info("Not Found")
         org = "lower"
