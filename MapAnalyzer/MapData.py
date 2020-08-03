@@ -86,17 +86,20 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     # dont cache this
-    def get_pyastar_grid(self, default_weight: int = 1) -> ndarray:
+    def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True) -> ndarray:
         # todo test me
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         nonpathables = self.bot.structures
-        nonpathables.extend(self.bot.destructables)
+
+        if destructables:
+            destructables_filtered = [d for d in self.bot.destructables if "plates" not in d.name.lower()]
+            nonpathables.extend(destructables_filtered)
+            for rock in destructables_filtered:
+                if "plates" not in rock.name.lower():
+                    self.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
         nonpathables.extend(self.bot.enemy_structures)
         nonpathables.extend(self.mineral_fields)
-        for obj in nonpathables:
-            if "plates" not in obj.name.lower():
-                self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
 
         return grid
 
