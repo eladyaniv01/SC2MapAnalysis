@@ -3,14 +3,14 @@ from random import randint
 from hypothesis import given, settings
 
 from MapAnalyzer.utils import mock_map_data
-from tests.mocksetup import ChokeArea, get_map_datas, get_map_file_list, logger, MapData, MDRamp, Metafunc, Polygon, \
-    random, Region, st, tqdm, VisionBlockerArea
+from tests.mocksetup import get_map_datas, get_map_file_list, logger, MapData, Metafunc, random, Region, st, tqdm
 
 logger = logger
 
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    global argnames
     idlist = []
     argvalues = []
     if metafunc.cls is not None:
@@ -75,7 +75,7 @@ class TestSanity:
         for region in map_data.regions.values():
             for p in region.polygon.points:
                 assert isinstance(
-                        map_data.where(p), Region
+                        map_data.where(p), Region  # using where because the first return will be always Region
                 ), f"<MD : {map_data}, Region : {region}," \
                     f" where :  {map_data.where(region.center)} point : {region.center}>"
 
@@ -87,12 +87,17 @@ class TestSanity:
             region.plot(testing=True)
 
     def test_chokes(self, map_data: MapData) -> None:
-        # todo fix goldenwall choke fail
-        # if 'goldenwall' in map_data.map_name.lower():
-        #     return
         for choke in map_data.map_chokes:
             for p in choke.points:
-                assert isinstance(
-                        map_data.where(p), (Region, Polygon, ChokeArea, MDRamp, VisionBlockerArea)
-                ), map_data.logger.error(f"<Map : {map_data}, Choke : {choke},"
+                assert (choke in map_data.where_all(p)), \
+                    map_data.logger.error(f"<Map : {map_data}, Choke : {choke},"
                                          f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+
+    def test_vision_blockers(self, map_data: MapData) -> None:
+        all_chokes = map_data.map_chokes
+        for vb in map_data.map_vision_blockers:
+            assert (vb in all_chokes)
+            for p in vb.points:
+                assert (vb in map_data.where_all(p)), \
+                    map_data.logger.error(f"<Map : {map_data}, Choke : {vb},"
+                                          f" where :  {map_data.where(vb.center)} point : {vb.center}>")

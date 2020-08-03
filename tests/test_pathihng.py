@@ -1,11 +1,12 @@
 from tests.mocksetup import get_map_datas, get_random_point, logger, MapData, Metafunc
 
-# todo assert no values under 1,
+
 logger = logger
 
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    global argnames
     idlist = []
     argvalues = []
     if metafunc.cls is not None:
@@ -52,9 +53,11 @@ class TestPathing:
         p1 = reg_end.center
         arr = map_data.get_pyastar_grid()
         path_pure = map_data.pathfind(p0, p1, grid=arr)
-        path_sensitive = map_data.pathfind(p0, p1, grid=arr, sensitivity=5)
-        assert (len(path_sensitive) < len(path_pure))  # this should fail !
-        assert (p in path_pure for p in path_sensitive)
+        path_sensitive_5 = map_data.pathfind(p0, p1, grid=arr, sensitivity=5)
+        path_sensitive_1 = map_data.pathfind(p0, p1, grid=arr, sensitivity=1)
+        assert (len(path_sensitive_5) < len(path_pure))
+        assert (p in path_pure for p in path_sensitive_5)
+        assert (path_sensitive_1 == path_pure)
 
     def test_pathing_influence(self, map_data: MapData, caplog) -> None:
         logger.info(map_data)
