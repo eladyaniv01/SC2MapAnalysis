@@ -18,6 +18,7 @@ from scipy.spatial import distance
 from skimage import draw as skdraw
 
 from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.decorators import progress_wrapped
 from MapAnalyzer.Region import Region
 from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
@@ -142,6 +143,7 @@ class MapData:
         ci = ci_vec(ci)
         ri = ri_vec(ri)
         arr[ri, ci] += weight
+        # todo  add check  and warning something like if argmin is below 1, logger warn
         arr = np.where(arr < 1, 1, arr)
         return arr
 
@@ -197,7 +199,7 @@ class MapData:
     """ longest map compile is 1.9 s """
 
     # disabling until tqdm is available on aiarena
-    # @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
+    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
     def compile_map(self) -> None:
         """user can call this to recompute"""
 
