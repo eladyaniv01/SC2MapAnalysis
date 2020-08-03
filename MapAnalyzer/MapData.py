@@ -656,7 +656,7 @@ class MapData:
         plt.grid()
         if save:
             map_name = self.bot.game_info.map_name
-            if 'test_suite.py' in str(inspect.stack()[2][1]):
+            if 'test' in str(inspect.stack()[2][1]):
                 logger.debug("Skipping saving map image")
                 return True
             else:
