@@ -18,11 +18,10 @@ from scipy.spatial import distance
 from skimage import draw as skdraw
 
 from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
-from MapAnalyzer.decorators import progress_wrapped
 from MapAnalyzer.Region import Region
 from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
-# from .decorators import progress_wrapped
+from .decorators import progress_wrapped
 from .exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 
@@ -113,7 +112,7 @@ class MapData:
         if path is not None:
             return list(map(Point2, path))[::sensitivity]
         else:
-            self.logger.warning(f"No Path found s{start}, g{goal}")
+            self.logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
     def log(self, msg):
@@ -123,7 +122,7 @@ class MapData:
         ri, ci = skdraw.disk(center=(int(p[0]), int(p[1])), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.logger.warning(OutOfBoundsException(p))
+            self.logger.debug(OutOfBoundsException(p))
             return arr
 
         def in_bounds_ci(x):
@@ -285,12 +284,9 @@ class MapData:
         for region in self.regions.values():
             if region.inside_p(point):
                 return region
-        for ramp in self.map_ramps:
-            if ramp.is_inside_point(point):
-                return ramp
-        for vba in self.map_vision_blockers:
-            if vba.is_inside_point(point):
-                return vba
+        for choke in self.map_chokes:
+            if choke.is_inside_point(point):
+                return choke
 
     @lru_cache(100)
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
@@ -513,7 +509,7 @@ class MapData:
                     new_choke.areas.append(area)
                 self.map_chokes.append(new_choke)
             else:  # pragma: no cover
-                self.logger.warning(f" [{self.map_name}] Cant add {choke} with 0 points")
+                self.logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
         """
