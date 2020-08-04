@@ -195,53 +195,6 @@ import pickle
 import random
 from typing import List
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-from MapAnalyzer.MapData import MapData
-from MapAnalyzer.utils import import_bot_instance
-
-
-def get_random_point(minx, maxx, miny, maxy):
-    return (random.randint(minx, maxx), random.randint(miny, maxy))
-
-
-def get_map_file_list() -> List[str]:
-    """
-    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
-    """
-    subfolder = "MapAnalyzer"
-    subfolder2 = "pickle_gameinfo"
-    subfolder = os.path.join(subfolder, subfolder2)
-    folder = os.path.abspath(".")
-    map_files_folder = os.path.join(folder, subfolder)
-    map_files = os.listdir(map_files_folder)
-    li = []
-    for map_file in map_files:
-        li.append(os.path.join(map_files_folder, map_file))
-    return li
-
-
-map_files = get_map_file_list()
-
-with lzma.open(map_files[0], "rb") as f:
-    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
-
-bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-map_data = MapData(bot)
-
-# get corner regions centers for start / end points
-reg1 = map_data.regions[1]
-reg7 = map_data.regions[7]
-p0 = reg1.center
-p1 = reg7.center
-
-import lzma
-import os
-import pickle
-import random
-from typing import List
-
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
 
@@ -272,7 +225,7 @@ for mf in map_files:
         map_file = mf
         break
 
-# noinspection PyUnboundLocalVariable
+
 with lzma.open(map_file, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
@@ -355,8 +308,6 @@ class MATester(sc2.BotAI):
         self.logger = self.map_data.logger
 
     async def on_step(self, iteration: int):
-        # enemy_ground_units = enemies.filter(
-        #         lambda unit: unit.distance_to(r) < 5 and not unit.is_flying
 
         base = self.townhalls[0]
         reg_start = self.map_data.where(base.position_tuple)
@@ -398,7 +349,6 @@ def main():
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],
             realtime=False
     )
-
 
 if __name__ == "__main__":
     main()
