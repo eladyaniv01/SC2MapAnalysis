@@ -76,6 +76,7 @@ class MapData:
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
         self.mineral_fields = bot.mineral_field
+        self.wall_minerals = [m.position for m in self.mineral_fields if "450" in m.name]
         self.normal_geysers = bot.vespene_geyser
         self.pathlib_map = None
         self.pathlib_to_local_chokes = None
@@ -93,14 +94,18 @@ class MapData:
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         nonpathables = self.bot.structures
+        nonpathables.extend(self.bot.enemy_structures)
+        # todo need to iterate and add radius + test  for path through mineral fields
+        nonpathables.extend(self.mineral_fields)
+        for obj in nonpathables:
+            self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
+
         if destructables:
             destructables_filtered = [d for d in self.bot.destructables if "plates" not in d.name.lower()]
-            nonpathables.extend(destructables_filtered)
+            # nonpathables.extend(destructables_filtered)
             for rock in destructables_filtered:
                 if "plates" not in rock.name.lower():
                     self.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
-        nonpathables.extend(self.bot.enemy_structures)
-        nonpathables.extend(self.mineral_fields)
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
@@ -120,7 +125,7 @@ class MapData:
     def log(self, msg):
         self.logger.debug(f"{msg}")
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
         ri, ci = skdraw.disk(center=(int(p[0]), int(p[1])), radius=r, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
@@ -144,7 +149,7 @@ class MapData:
         ci = ci_vec(ci)
         ri = ri_vec(ri)
         arr[ri, ci] += weight
-        if np.any(arr < 1):
+        if np.any(arr < 1) and safe:
             self.logger.warning("You are attempting to set weights that are below 1. falling back to the minimum (1)")
             arr = np.where(arr < 1, 1, arr)
         return arr
@@ -396,12 +401,13 @@ class MapData:
 
         # for our grid,  mineral walls are considered as a barrier between regions
         # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875
-        wall_minerals = [m.position for m in self.mineral_fields if "450" in m.name]
-        for loc in wall_minerals:
-            p = loc.rounded
+
+        for mf in self.wall_minerals:
+            p = mf.rounded
             for n in p.neighbors4:
-                point = n.rounded
-                grid[point[1]][point[0]] = 0
+                point = n.rounded[1], n.rounded[0]
+                grid[point[0]][point[1]] = 2
+                self.wall_minerals.append(point)
 
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)

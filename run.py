@@ -30,7 +30,7 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    if 'reef' in mf.lower():
+    if 'goldenwall' in mf.lower():
         map_file = mf
         break
 
@@ -39,7 +39,7 @@ with lzma.open(map_file, "rb") as f:
     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-map_data = MapData(bot)
+map_data = MapData(bot, loglevel="DEBUG")
 
 # get corner regions centers for start / end points
 base = map_data.bot.townhalls[0]
@@ -65,7 +65,7 @@ for idx in range(8):
     r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr, weight=-100)
+        arr = map_data.add_influence(p, r, arr)
 
     """Plot path on weighted grid"""
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
