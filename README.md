@@ -3,7 +3,10 @@
 Builds:
 -------
 
-* [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master)  ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master)
+* [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master)  ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?style=plastic)
+
+
+
 
 A standalone plugin for python SC2 api 
 
