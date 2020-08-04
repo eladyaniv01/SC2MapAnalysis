@@ -87,17 +87,19 @@ class MapData:
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
+    @lru_cache()
+    def _get_base_pathing_grid(self):
+        return np.fmax(self.path_arr, self.placement_arr).T
+
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True, fly: bool = False) -> ndarray:
         if fly:
             return np.ones(shape=self.path_arr.shape)
 
-        grid = np.fmax(self.path_arr, self.placement_arr).T
+        grid = self._get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        nonpathables = self.bot.structures
-        nonpathables.extend(self.bot.enemy_structures)
         # todo need to iterate and add radius + test  for path through mineral fields
-        nonpathables.extend(self.mineral_fields)
+        nonpathables = self.bot.structures.extend(self.bot.enemy_structures).extend(self.mineral_fields)
         for obj in nonpathables:
             self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
 
@@ -264,8 +266,8 @@ class MapData:
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
                 results.append(choke)
-
-        return set(results)
+        # assert (len(list(set(results))) == len(results)), f"results{results},  list(set(results)){list(set(results))}"
+        return results
 
     def where(
             self, point: Union[Point2, tuple]
@@ -452,7 +454,7 @@ class MapData:
 
         ramp_nodes = get_ramp_nodes()
         perimeter_nodes = region.polygon.perimeter_points
-        result_ramp_indexes = set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
+        result_ramp_indexes = list(set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
 
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
@@ -465,7 +467,7 @@ class MapData:
         ramps = []
 
         for ramp in region.region_ramps:
-            for p in region.polygon.perimeter:
+            for p in region.polygon.perimeter_points:
                 if ramp_close_enough(ramp, p, n=8):
                     ramps.append(ramp)
         ramps = list(set(ramps))

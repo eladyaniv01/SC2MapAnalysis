@@ -40,7 +40,7 @@ with lzma.open(map_file, "rb") as f:
 
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot, loglevel="DEBUG")
-
+map_data.plot_map()
 # get corner regions centers for start / end points
 base = map_data.bot.townhalls[0]
 reg_start = map_data.where(base.position_tuple)

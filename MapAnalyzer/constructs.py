@@ -77,6 +77,7 @@ class MDRamp(ChokeArea):
             return self.ramp.top_center
         else:
             self.map_data.logger.debug(f"No top_center found for {self}, falling back to `center`")
+            return self.center
 
     @property
     def bottom_center(self) -> Point2:
@@ -85,6 +86,7 @@ class MDRamp(ChokeArea):
             return self.ramp.bottom_center
         else:
             self.map_data.logger.debug(f"No bottom_center found for {self}, falling back to `center`")
+            return self.center
 
     def __repr__(self):  # pragma: no cover
         return f"<MDRamp[size={self.area}]: {self.areas}>"
