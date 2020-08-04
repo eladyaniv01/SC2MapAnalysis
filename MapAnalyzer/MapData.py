@@ -86,12 +86,13 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     # dont cache this
-    def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True) -> ndarray:
-        # todo test me
+    def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True, fly: bool = False) -> ndarray:
+        if fly:
+            return np.ones(shape=self.path_arr.shape)
+
         grid = np.fmax(self.path_arr, self.placement_arr).T
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         nonpathables = self.bot.structures
-
         if destructables:
             destructables_filtered = [d for d in self.bot.destructables if "plates" not in d.name.lower()]
             nonpathables.extend(destructables_filtered)
@@ -100,12 +101,10 @@ class MapData:
                     self.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
         nonpathables.extend(self.bot.enemy_structures)
         nonpathables.extend(self.mineral_fields)
-
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal=False, sensitivity: int = 1) -> ndarray:
-        # todo test me
         start = int(start[0]), int(start[1])
         goal = int(goal[0]), int(goal[1])
         if grid is None:
@@ -145,8 +144,9 @@ class MapData:
         ci = ci_vec(ci)
         ri = ri_vec(ri)
         arr[ri, ci] += weight
-        # todo  add check  and warning something like if argmin is below 1, logger warn
-        arr = np.where(arr < 1, 1, arr)
+        if np.any(arr < 1):
+            self.logger.warning("You are attempting to set weights that are below 1. falling back to the minimum (1)")
+            arr = np.where(arr < 1, 1, arr)
         return arr
 
     def _clean_plib_chokes(self) -> None:
@@ -687,7 +687,8 @@ class MapData:
                              sensitivity=1)
         p0_ = start[1], start[0]
         p1_ = goal[1], goal[0]
-        fig, ax = plt.subplot(1, 1, 1)
+        # noinspection PyUnboundLocalVariable
+        ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
             path = np.flip(np.flipud(path))  # for plot align
             self.logger.info("Found")

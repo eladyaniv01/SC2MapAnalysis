@@ -65,7 +65,7 @@ for idx in range(8):
     r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr)
+        arr = map_data.add_influence(p, r, arr, weight=-100)
 
     """Plot path on weighted grid"""
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
