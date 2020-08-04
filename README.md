@@ -287,14 +287,14 @@ for idx in range(5):
 ```
 Results from 8 runs On GoldenWallLE:
 --------------------
-<img src="https://user-images.githubusercontent.com/40754127/89128388-017d6c00-d4fe-11ea-8ab9-03ff16e6c7da.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128386-004c3f00-d4fe-11ea-9d63-8c0a09cabbe0.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128384-ff1b1200-d4fd-11ea-871e-3372257dc753.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128373-f4f91380-d4fd-11ea-9452-831c10642073.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128372-f3c7e680-d4fd-11ea-8271-1bf8d598f118.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128371-f296b980-d4fd-11ea-9c7c-3c9993407687.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128369-ef033280-d4fd-11ea-9dc6-f05f2dbe8c41.png"/>
-<img src="https://user-images.githubusercontent.com/40754127/89128368-ee6a9c00-d4fd-11ea-8d04-6b13f01ca5b1.png"/>
+![MA_INF_Added 10 of influence](https://user-images.githubusercontent.com/40754127/89323316-299bd500-d68e-11ea-8f98-24e7d9e78e1e.png)
+![MA_INF_Added 20 of influence](https://user-images.githubusercontent.com/40754127/89323320-299bd500-d68e-11ea-8b89-d59d1387adca.png)
+![MA_INF_Added 30 of influence](https://user-images.githubusercontent.com/40754127/89323322-2a346b80-d68e-11ea-8de6-996565e40c6b.png)
+![MA_INF_Added 35 of influence](https://user-images.githubusercontent.com/40754127/89323304-24d72100-d68e-11ea-9ffc-8e835ea8c505.png)
+![MA_INF_Added 40 of influence](https://user-images.githubusercontent.com/40754127/89323308-26a0e480-d68e-11ea-9e8f-e93e7edb21b3.png)
+![MA_INF_Added 50 of influence](https://user-images.githubusercontent.com/40754127/89323311-27d21180-d68e-11ea-97c4-99d6acd3cfa3.png)
+![MA_INF_Added 60 of influence](https://user-images.githubusercontent.com/40754127/89323312-286aa800-d68e-11ea-854b-cfbb7beb261a.png)
+![MA_INF_Added 70 of influence](https://user-images.githubusercontent.com/40754127/89323315-29033e80-d68e-11ea-97cb-17957ee9675c.png)
 
 # How to plug it on your bot
 * The example below will get your main base, and enemy main base locations and plot the path between with no influence

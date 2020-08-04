@@ -140,11 +140,11 @@ class MATester(sc2.BotAI):
 
 
 def main():
-    map = "AbyssalReefLE"
+    map = "EverDreamLE"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],
-            realtime=False
+            realtime=True
     )
 
 

@@ -670,5 +670,65 @@ class MapData:
         else:  # pragma: no cover
             plt.show()
 
+    def plot_influenced_path(self, start, goal, weight_array, plot=True, save=False, name=None,
+                             fontdict: dict = None):
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        from matplotlib.cm import ScalarMappable
+        if not fontdict:
+            fontdict = {"family": "serif", "weight": "bold", "size": 20}
+        plt.style.use(["ggplot", "bmh"])
+        org = "lower"
+        if name is None:
+            name = self.map_name
+        arr = weight_array.copy()
+        path = self.pathfind(start, goal,
+                             grid=arr,
+                             sensitivity=1)
+        p0_ = start[1], start[0]
+        p1_ = goal[1], goal[0]
+        fig, ax = plt.subplot(1, 1, 1)
+        if path is not None:
+            path = np.flip(np.flipud(path))  # for plot align
+            self.logger.info("Found")
+            x, y = zip(*path)
+            ax.scatter(x, y, s=3, c='green')
+        else:
+            self.logger.info("Not Found")
+
+            x, y = zip(*[start, goal])
+            ax.scatter(x, y)
+
+        influence_cmap = plt.cm.get_cmap("afmhot")
+        ax.text(p0_[0], p0_[1], f"Start {p0_}")
+        ax.text(p1_[0], p1_[1], f"End {p1_}")
+        ax.imshow(self.path_arr.T, alpha=0.5, origin=org)
+        ax.imshow(self.terrain_height.T, alpha=0.5, origin=org, cmap='bone')
+        arr = np.where(arr == np.inf, 0, arr)
+        ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        sc = ScalarMappable(cmap=influence_cmap)
+        sc.set_array(arr)
+        sc.autoscale()
+        cbar = plt.colorbar(sc, cax=cax)
+        cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
+        # pts = self.indices_to_points(np.where(arr == arr.max()))
+        # x, y = zip(*pts)
+        # if len(pts) > 3:
+        #     alpha = 0.0001
+        #     size = 50
+        # else:
+        #     size = 75
+        #     alpha = 0.08
+        # ax.scatter(y, x, c="red",marker="v", s=size, alpha=alpha)
+        plt.title(f"{name}", fontdict=fontdict, loc='right')
+        plt.grid()
+        if plot:
+            plt.show()
+        if save:
+            plt.savefig(f"MA_INF_{name}.png")
+            plt.close()
+
     def __repr__(self) -> str:
         return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"
