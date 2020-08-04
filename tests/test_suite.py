@@ -5,7 +5,7 @@ from hypothesis import given, settings
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import mock_map_data
-from tests.mocksetup import get_map_datas, get_map_file_list, logger, random, Region, st, tqdm
+from tests.mocksetup import get_map_datas, get_map_file_list, logger, random, Region, st
 
 logger = logger
 
@@ -53,8 +53,7 @@ class TestSanity:
         map_data.save_plot()
 
     def test_polygon(self, map_data: MapData) -> None:
-        map_data.logger.add(lambda msg: tqdm.tqdm.write(msg, end=""))
-        for polygon in tqdm.tqdm(map_data.polygons):
+        for polygon in map_data.polygons:
             polygon.plot(testing=True)
             assert (polygon not in polygon.areas)
             assert (polygon.nodes == list(polygon.points))
@@ -63,15 +62,14 @@ class TestSanity:
             assert (polygon.is_inside_point(polygon.center))
             assert (polygon.is_inside_indices(polygon.center))
 
-            for point in polygon.points:
+            extended_pts = polygon.points.union(polygon.perimeter_points)
+
+            for point in extended_pts:
                 assert (polygon.is_inside_indices(point) is True)
                 assert (polygon.is_inside_point(point) is True)
 
             for point in polygon.corner_points:
                 assert (point in polygon.corner_array)
-
-            for point in polygon.perimeter_points:
-                assert (polygon.is_inside_point(point) is True)
 
     def test_regions(self, map_data: MapData) -> None:
         for region in map_data.regions.values():
