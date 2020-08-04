@@ -76,7 +76,8 @@ class MapData:
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
         self.mineral_fields = bot.mineral_field
-        self.wall_minerals = [m.position for m in self.mineral_fields if "450" in m.name]
+        self.resource_blockers = [Point2(m.position) for m in self.mineral_fields if "450" in m.name]
+        # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
         self.normal_geysers = bot.vespene_geyser
         self.pathlib_map = None
         self.pathlib_to_local_chokes = None
@@ -400,14 +401,17 @@ class MapData:
         grid = binary_fill_holes(self.placement_arr).astype(int)
 
         # for our grid,  mineral walls are considered as a barrier between regions
-        # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875
-
-        for mf in self.wall_minerals:
-            p = mf.rounded
-            for n in p.neighbors4:
-                point = n.rounded[1], n.rounded[0]
-                grid[point[0]][point[1]] = 2
-                self.wall_minerals.append(point)
+        # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875r
+        correct_blockers = []
+        for resource_point2 in self.resource_blockers:
+            for n in resource_point2.neighbors4:
+                point = Point2((n.rounded[1], n.rounded[0]))
+                if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
+                    grid[point[0]][point[1]] = 2
+                    if point not in self.resource_blockers:
+                        correct_blockers.append(point)
+        correct_blockers = list(set(correct_blockers))
+        self.resource_blockers.extend(correct_blockers)
 
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)
