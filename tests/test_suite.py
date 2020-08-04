@@ -1,9 +1,11 @@
 from random import randint
 
+from _pytest.python import Metafunc
 from hypothesis import given, settings
 
+from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import mock_map_data
-from tests.mocksetup import get_map_datas, get_map_file_list, logger, MapData, Metafunc, random, Region, st, tqdm
+from tests.mocksetup import get_map_datas, get_map_file_list, logger, random, Region, st, tqdm
 
 logger = logger
 

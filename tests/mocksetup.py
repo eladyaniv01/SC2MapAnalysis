@@ -2,7 +2,7 @@ import logging
 import os
 import random
 from random import randint
-from typing import Iterable, List
+from typing import Tuple, Iterable, List
 
 import pytest
 import tqdm
@@ -17,7 +17,15 @@ from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.utils import mock_map_data
 from _pytest.logging import caplog as _caplog
 
-def get_random_point(minx, maxx, miny, maxy):
+# for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
+# pytest -v --disable-warnings
+# mutmut run --paths-to-mutate test_suite.py --runner pytest
+# radon cc . -a -nb  (will dump only complexity score of B and below)
+# monkeytype run monkeytest.py
+# monkeytype list-modules
+# mutmut run --paths-to-mutate MapAnalyzer/MapData.py
+
+def get_random_point(minx: int, maxx: int, miny: int, maxy: int) -> Tuple[int, int]:
     return (random.randint(minx, maxx), random.randint(miny, maxy))
 
 @pytest.fixture

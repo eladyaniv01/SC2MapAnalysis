@@ -1,5 +1,8 @@
-from tests.mocksetup import get_map_datas, get_random_point, logger, MapData, Metafunc
+from _pytest.logging import LogCaptureFixture
+from _pytest.python import Metafunc
 
+from MapAnalyzer.MapData import MapData
+from tests.mocksetup import get_map_datas, get_random_point, logger
 
 logger = logger
 
@@ -24,7 +27,7 @@ class TestPathing:
     """
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
 
-    def test_handle_illegal_values(self, map_data: MapData):
+    def test_handle_illegal_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where(base.position_tuple)
         reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
@@ -41,11 +44,11 @@ class TestPathing:
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None)
 
-    def test_grid_types(self, map_data: MapData):
+    def test_grid_types(self, map_data: MapData) -> None:
         # new feat - grid without rocks
         pass
 
-    def test_sensitivity(self, map_data: MapData):
+    def test_sensitivity(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where(base.position_tuple)
         reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
@@ -59,7 +62,7 @@ class TestPathing:
         assert (p in path_pure for p in path_sensitive_5)
         assert (path_sensitive_1 == path_pure)
 
-    def test_pathing_influence(self, map_data: MapData, caplog) -> None:
+    def test_pathing_influence(self, map_data: MapData, caplog: LogCaptureFixture) -> None:
         logger.info(map_data)
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where(base.position_tuple)

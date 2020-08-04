@@ -110,7 +110,7 @@ class MapData:
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
-                 allow_diagonal=False, sensitivity: int = 1) -> ndarray:
+                 allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
         start = int(start[0]), int(start[1])
         goal = int(goal[0]), int(goal[1])
         if grid is None:
@@ -261,17 +261,11 @@ class MapData:
         for region in self.regions.values():
             if region.inside_p(point):
                 results.append(region)
-        for ramp in self.map_ramps:
-            if ramp.is_inside_point(point):
-                results.append(ramp)
-        for vba in self.map_vision_blockers:
-            if vba.is_inside_point(point):
-                results.append(vba)
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
                 results.append(choke)
 
-        return list(set(results))
+        return set(results)
 
     def where(
             self, point: Union[Point2, tuple]
@@ -437,35 +431,42 @@ class MapData:
         """
         probably the most expensive operation other than plotting ,  need to optimize
         """
+
+        @lru_cache()
+        def ramp_close_enough(ramp, p, n=8):
+            return self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n
+
+        @lru_cache()
+        def get_ramp_nodes():
+            return [ramp.center for ramp in self.map_ramps]
+
+        @lru_cache(200)
+        def get_ramp(node):
+            return [r for r in self.map_ramps if r.center == node][0]
+
         if len(self.map_ramps) == 0:
             self.map_ramps = [MDRamp(map_data=self,
                                      ramp=r,
                                      array=self.points_to_numpy_array(r.points))
                               for r in self.bot.game_info.map_ramps]
 
-        ramp_nodes = [ramp.center for ramp in self.map_ramps]
+        ramp_nodes = get_ramp_nodes()
         perimeter_nodes = region.polygon.perimeter_points
-        result_ramp_indexes = list(
-                set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
-        )
-        for rn in result_ramp_indexes:
+        result_ramp_indexes = set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes])
 
+        for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
-            ramp = [r for r in self.map_ramps if r.center == ramp_nodes[rn]][0]
+            ramp = get_ramp(node=ramp_nodes[rn])
+
             """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
             if region not in ramp.areas:
                 ramp.areas.append(region)
             region.region_ramps.append(ramp)
         ramps = []
-        n = 8
+
         for ramp in region.region_ramps:
-
             for p in region.polygon.perimeter:
-
-                if (
-                        self.distance(p, ramp.bottom_center) < n
-                        or self.distance(p, ramp.top_center) < n
-                ):
+                if ramp_close_enough(ramp, p, n=8):
                     ramps.append(ramp)
         ramps = list(set(ramps))
 
@@ -680,8 +681,9 @@ class MapData:
         else:  # pragma: no cover
             plt.show()
 
-    def plot_influenced_path(self, start, goal, weight_array, plot=True, save=False, name=None,
-                             fontdict: dict = None):
+    def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
+                             plot: bool = True, save: bool = False, name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         from matplotlib.cm import ScalarMappable
