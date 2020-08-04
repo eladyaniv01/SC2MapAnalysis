@@ -236,59 +236,81 @@ reg7 = map_data.regions[7]
 p0 = reg1.center
 p1 = reg7.center
 
-for idx in range(5):
+import lzma
+import os
+import pickle
+import random
+from typing import List
+
+from MapAnalyzer.MapData import MapData
+from MapAnalyzer.utils import import_bot_instance
+
+
+def get_random_point(minx, maxx, miny, maxy):
+    return (random.randint(minx, maxx), random.randint(miny, maxy))
+
+
+def get_map_file_list() -> List[str]:
+    """
+    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
+    """
+    subfolder = "MapAnalyzer"
+    subfolder2 = "pickle_gameinfo"
+    subfolder = os.path.join(subfolder, subfolder2)
+    folder = os.path.abspath(".")
+    map_files_folder = os.path.join(folder, subfolder)
+    map_files = os.listdir(map_files_folder)
+    li = []
+    for map_file in map_files:
+        li.append(os.path.join(map_files_folder, map_file))
+    return li
+
+
+map_files = get_map_file_list()
+for mf in map_files:
+    if 'reef' in mf.lower():
+        map_file = mf
+        break
+
+# noinspection PyUnboundLocalVariable
+with lzma.open(map_file, "rb") as f:
+    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+
+bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+map_data = MapData(bot)
+
+# get corner regions centers for start / end points
+base = map_data.bot.townhalls[0]
+reg_start = map_data.where(base.position_tuple)
+reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+p0 = reg_start.center
+p1 = reg_end.center
+for idx in range(8):
+    """generate random points for added influence / cost """
     pts = []
     if idx > 0:
         NUM_POINTS = idx * 10
     else:
-        NUM_POINTS = 10
+        NUM_POINTS = 35
 
     # generating random points for added influence
     for i in range(NUM_POINTS):
         pts.append(get_random_point(50, 130, 25, 175))
 
+    """Requesting a grid and adding influence / cost"""
     # getting the base grid for pathing
     arr = map_data.get_pyastar_grid()
-
-    r = 7 + idx  # radius is 10 for all points to make things simple
-    plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
+    r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr)
-        # plt.text(p[0], p[1], "*")  # transpose the points to fit the lower origin in our plot
+        arr = map_data.add_influence(p, r, arr, weight=-100)
 
-    path = map_data.pathfind(p0, p1, grid=arr, allow_diagonal=False)
-
-    print(f"p0 = {p0}  p1 = {p1}")
-    # transpose the points to fit the lower origin in our plot
-    p0_ = p0[1], p0[0]
-    p1_ = p1[1], p1[0]
-    arr = np.where(arr < np.inf, arr, 0)  # this is just a conversion to plot nicely
-
-    # in some cases the path is impossible unless we lower the weights
-    if path is not None:
-        print("Found")
-        org = "lower"
-        plt.title(f"with {NUM_POINTS}  added points of influence with radius {r} and 100 default weight")
-        x, y = zip(*path)
-        plt.scatter(x, y)
-    else:
-        print("Not Found")
-        org = "lower"
-        plt.title(f"**No path found** pts: {NUM_POINTS}  radius: {r} , weight:  100 default")
-        x, y = zip(*[p0, p1])
-        plt.scatter(x, y)
-    plt.text(p0_[0], p0_[1], f"Start {p0}")
-    plt.text(p1_[0], p1_[1], f"End {p1}")
-    plt.imshow(map_data.path_arr.T, alpha=0.8, origin=org, cmap='summer')
-    plt.imshow(map_data.terrain_height.T, alpha=0.8, origin=org, cmap='Blues')
-    plt.imshow(arr, origin=org, alpha=0.3, cmap='YlOrRd')
-    plt.grid(False)
-    plt.savefig(f"{idx}.png")
-    plt.close()
+    """Plot path on weighted grid"""
+    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
+                                  save=True, plot=False)
 
 ```
-Results from 8 runs On GoldenWallLE:
+Results from 8 runs On AbysalReefLE:
 --------------------
 ![MA_INF_Added 10 of influence](https://user-images.githubusercontent.com/40754127/89323316-299bd500-d68e-11ea-8f98-24e7d9e78e1e.png)
 ![MA_INF_Added 20 of influence](https://user-images.githubusercontent.com/40754127/89323320-299bd500-d68e-11ea-8b89-d59d1387adca.png)
