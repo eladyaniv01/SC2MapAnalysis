@@ -88,7 +88,7 @@ class MapData:
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
     @lru_cache()
-    def _get_base_pathing_grid(self):
+    def _get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.path_arr, self.placement_arr).T
 
     # dont cache this
@@ -98,8 +98,10 @@ class MapData:
 
         grid = self._get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        # todo need to iterate and add radius + test  for path through mineral fields
-        nonpathables = self.bot.structures.extend(self.bot.enemy_structures).extend(self.mineral_fields)
+        # todo  test  path through mineral fields
+        nonpathables = self.bot.structures
+        nonpathables.extend(self.bot.enemy_structures)
+        nonpathables.extend(self.mineral_fields)
         for obj in nonpathables:
             self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
 
