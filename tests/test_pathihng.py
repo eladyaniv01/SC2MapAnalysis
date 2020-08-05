@@ -1,7 +1,10 @@
+import os
+
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
 
 from MapAnalyzer.MapData import MapData
+from MapAnalyzer.utils import get_map_files_folder, mock_map_data
 from tests.mocksetup import get_map_datas, get_random_point, logger
 
 logger = logger
@@ -20,6 +23,25 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
             argvalues.append(([x[1] for x in items]))
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
+
+def test_minerals_walls() -> None:
+    # attempting to path through mineral walls in goldenwall should fail
+    path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
+    map_data = mock_map_data(path)
+    start = (110, 95)
+    goal = (110, 40)
+    grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is None)
+
+    # attempting to path through tight pathways near destructables should work
+    path = os.path.join(get_map_files_folder(), 'AbyssalReefLE.xz')
+    map_data = mock_map_data(path)
+    start = (130, 25)
+    goal = (125, 47)
+    grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is not None)
 
 class TestPathing:
     """
@@ -42,7 +64,7 @@ class TestPathing:
         for p in pts:
             arr = map_data.add_influence(p, r, arr)
         path = map_data.pathfind(p0, p1, grid=arr)
-        assert (path is not None)
+        assert (path is not None), f"path = {path}"
 
     def test_grid_types(self, map_data: MapData) -> None:
         # new feat - grid without rocks

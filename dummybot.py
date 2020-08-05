@@ -81,7 +81,7 @@ class MATester(sc2.BotAI):
             self.client.debug_sphere_out(p=pos, r=r - 1, color=RED)
 
     async def on_step(self, iteration: int):
-        self._plot_influence()
+        # self._plot_influence()
         hero = self.workers.by_tag(self.hero_tag)
         dist = 1.5 * hero.calculate_speed() * 1.4
         if self.target is None:
@@ -140,7 +140,9 @@ class MATester(sc2.BotAI):
 
 
 def main():
-    map = "EverDreamLE"
+    map = "GoldenWallLE"
+    map = "GoldenWallLE"
+    map = "AbyssalReefLE"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],

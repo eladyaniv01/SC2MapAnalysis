@@ -16,7 +16,7 @@ class Sc2Map:
             placement_grid: np.ndarray,
             height_map: np.ndarray,
             playable_area: "sc2.position.Rect",
-    ):
+    ) -> None:
 
         self._overlord_spots: Optional[List[Tuple[float, float]]] = None
         self._chokes: Optional[List[Choke]] = None
