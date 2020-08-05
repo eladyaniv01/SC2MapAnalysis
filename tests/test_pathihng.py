@@ -27,6 +27,7 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
 def test_minerals_walls() -> None:
     # attempting to path through mineral walls in goldenwall should fail
     path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
+    logger.info(path)
     map_data = mock_map_data(path)
     start = (110, 95)
     goal = (110, 40)
