@@ -1,14 +1,10 @@
-import inspect
-import os
-import sys
-import warnings
+# from multiprocessing.dummy import Pool
 from functools import lru_cache
 # from multiprocessing.dummy import Pool
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
-from loguru import logger
 from numpy import float64, int64, ndarray
 from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
@@ -18,78 +14,62 @@ from scipy.spatial import distance
 from skimage import draw as skdraw
 
 from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.Debugger import MapAnalyzerDebugger
+from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
-from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
+from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
-from .exceptions import OutOfBoundsException
-from .sc2pathlibp import Sc2Map
+from .exceptions import CustomDeprecationWarning, OutOfBoundsException
 
 WHITE = "\u001b[32m"
-
-
-class LogFilter:
-    def __init__(self, level: str) -> None:
-        self.level = level
-
-    def __call__(self, record: Dict[str, Any]) -> bool:
-        levelno = logger.level(self.level).no
-        return record["level"].no >= levelno
-
 
 class MapData:
     """
     MapData DocString
     """
 
+    # todo goldenwall big region is not found
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
-        self.warnings = warnings
-        self.warnings.filterwarnings('ignore', category=DeprecationWarning)
-        self.warnings.filterwarnings('ignore', category=RuntimeWarning)
-        self.logger = logger
-        self.log_filter = LogFilter(loglevel)
-        self.logger.remove()
-        self.log_format = LOG_FORMAT
-        self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
-        self.min_region_area = MIN_REGION_AREA
-        self.max_region_area = MAX_REGION_AREA
-        self.regions: dict = {}  # set later
-        self.corners: list = []  # set later
-        self.polygons: list = []  # set later
-        # store relevant data from bot instance for later use
+        # store relevant data from api
         self.bot = bot
         self.map_name: str = bot.game_info.map_name
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
         self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
-        self.base_locations: list = bot.expansion_locations_list
-        self.map_ramps: list = []  # set later  on compile
+        self.mineral_fields = bot.mineral_field
+        self.normal_geysers = bot.vespene_geyser
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
+        self.base_locations: list = bot.expansion_locations_list
+
+        # data that will be generated and cached
+        self.min_region_area = MIN_REGION_AREA
+        self.max_region_area = MAX_REGION_AREA
+        self.regions: dict = {}  # set later
+        self.region_grid: Union[ndarray, None] = None
+        self.corners: list = []  # set later
+        self.polygons: list = []  # set later
         self.map_chokes: list = []  # set later  on compile
+        self.map_ramps: list = []  # set later  on compile
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
-        self.region_grid: Union[ndarray, None] = None
-
-        nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
-        self.nonpathable_indices_stacked = np.column_stack(
-                (nonpathable_indices[1], nonpathable_indices[0])
-        )
-        self.mineral_fields = bot.mineral_field
         self.resource_blockers = [Point2(m.position) for m in self.mineral_fields if "450" in m.name]
         # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
-        self.normal_geysers = bot.vespene_geyser
-        self.pathlib_map = None
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
-        self._set_pathlib_map()
-        self.pyastar = pyastar
+
+        # plugins
+        self.log_level = loglevel
+        self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
+        self.logger = self.debugger.logger
+        self.pather = MapAnalyzerPather(self)
+        self.pathlib_map = self.pather.pathlib_map
+        self.pyastar = self.pather.pyastar
+
+        # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
-
-    @lru_cache()
-    def _get_base_pathing_grid(self) -> ndarray:
-        return np.fmax(self.path_arr, self.placement_arr).T
 
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True, fly: bool = False) -> ndarray:
@@ -239,12 +219,6 @@ class MapData:
         """
         Will initialize the sc2pathlib `SC2Map` object for future use
         """
-        self.pathlib_map = Sc2Map(
-                self.path_arr,
-                self.placement_arr,
-                self.terrain_height,
-                self.bot.game_info.playable_area,
-        )
 
     @lru_cache(200)
     def where_all(
@@ -560,188 +534,65 @@ class MapData:
                 self._calc_ramps(region=region)
                 j += 1
 
-    def save_plot(self) -> None:
-        """
-        Will save the plot to a file names after the map name
-        """
-        self.plot_map(save=True)
-
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         """
-        compute Region
+        plot Region
         """
-
-        import matplotlib.pyplot as plt
-        for lbl, reg in self.regions.items():
-            c = COLORS[lbl]
-            fontdict["color"] = c
-            fontdict["backgroundcolor"] = 'black'
-            if c == 'black':
-                fontdict["backgroundcolor"] = 'white'
-            plt.text(
-                    reg.center[0],
-                    reg.center[1],
-                    reg.label,
-                    bbox=dict(fill=True, alpha=0.9, edgecolor=fontdict["backgroundcolor"], linewidth=2),
-                    fontdict=fontdict,
-            )
-            # random color for each perimeter
-            x, y = zip(*reg.polygon.perimeter_points)
-            plt.scatter(x, y, c=c, marker="1", s=300)
-            for corner in reg.polygon.corner_points:
-                plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
+        return self.debugger.plot_regions(fontdict=fontdict)
 
     def _plot_vision_blockers(self) -> None:
         """
-        compute vbs
+        plot vbs
         """
-        import matplotlib.pyplot as plt
-
-        for vb in self._vision_blockers:
-            plt.text(vb[0], vb[1], "X")
-
-        x, y = zip(*self._vision_blockers)
-        plt.scatter(x, y, color="r")
+        self.debugger.plot_vision_blockers()
 
     def _plot_normal_resources(self) -> None:
         """
         # todo: account for gold minerals and rich gas
         """
-        import matplotlib.pyplot as plt
-        for mfield in self.mineral_fields:
-            plt.scatter(mfield.position[0], mfield.position[1], color="blue")
-        for gasgeyser in self.normal_geysers:
-            plt.scatter(
-                    gasgeyser.position[0],
-                    gasgeyser.position[1],
-                    color="yellow",
-                    marker=r"$\spadesuit$",
-                    s=500,
-                    edgecolors="g",
-            )
+        self.debugger.plot_normal_resources()
 
     def _plot_chokes(self) -> None:
         """
         compute Chokes
         """
-        import matplotlib.pyplot as plt
-        for choke in self.map_chokes:
-            x, y = zip(*choke.points)
-            cm = choke.center
-            if choke.is_ramp:
-                fontdict = {"family": "serif", "weight": "bold", "size": 15}
-                plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
-                plt.scatter(x, y, color="w")
-            elif choke.is_vision_blocker:
-
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
-
-            else:
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+        self.debugger.plot_chokes()
 
     def plot_map(
-            self, fontdict: dict = None, save: bool = False, figsize: int = 20
+            self, fontdict: dict = None, save=None, figsize: int = 20
     ) -> None:
         """
         Plot map
         """
-
-        if not fontdict:
-            fontdict = {"family": "serif", "weight": "bold", "size": 25}
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(figsize, figsize))
-        self._plot_regions(fontdict=fontdict)
-        # some maps has no vision blockers
-        if len(self._vision_blockers) > 0:
-            self._plot_vision_blockers()
-        self._plot_normal_resources()
-        self._plot_chokes()
-        fontsize = 25
-
-        plt.style.use("ggplot")
-        plt.imshow(self.region_grid, origin="lower")
-        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
-        x, y = zip(*self.nonpathable_indices_stacked)
-        plt.scatter(x, y, color="grey")
-        ax = plt.gca()
-        for tick in ax.xaxis.get_major_ticks():
-            tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight("bold")
-        for tick in ax.yaxis.get_major_ticks():
-            tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight("bold")
-        plt.grid()
-        if save:
-            map_name = self.bot.game_info.map_name
-            if 'test' in str(inspect.stack()[2][1]):
-                logger.debug("Skipping saving map image")
-                return True
-            else:
-                full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
-                plt.savefig(f"{map_name}.png")
-                logger.debug(f"Plot Saved to {full_path}")
-                plt.close()
-        else:  # pragma: no cover
-            plt.show()
+        if save is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+        self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
-                             plot: bool = True, save: bool = False, name: Optional[str] = None,
+                             plot=None, save=None, name: Optional[str] = None,
                              fontdict: dict = None) -> None:
-        import matplotlib.pyplot as plt
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        from matplotlib.cm import ScalarMappable
-        if not fontdict:
-            fontdict = {"family": "serif", "weight": "bold", "size": 20}
-        plt.style.use(["ggplot", "bmh"])
-        org = "lower"
-        if name is None:
-            name = self.map_name
-        arr = weight_array.copy()
-        path = self.pathfind(start, goal,
-                             grid=arr,
-                             sensitivity=1)
-        ax: plt.Axes = plt.subplot(1, 1, 1)
-        if path is not None:
-            path = np.flipud(path)  # for plot align
-            self.logger.info("Found")
-            x, y = zip(*path)
-            ax.scatter(x, y, s=3, c='green')
-        else:
-            self.logger.info("Not Found")
+        if save is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+        if plot is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
 
-            x, y = zip(*[start, goal])
-            ax.scatter(x, y)
+        self.debugger.plot_influenced_path(start=start, goal=goal, weight_array=weight_array, name=name,
+                                           fontdict=fontdict)
 
-        influence_cmap = plt.cm.get_cmap("afmhot")
-        ax.text(start[0], start[1], f"Start {start}")
-        ax.text(goal[0], goal[1], f"Goal {goal}")
-        ax.imshow(self.path_arr, alpha=0.5, origin=org)
-        ax.imshow(self.terrain_height, alpha=0.5, origin=org, cmap='bone')
-        arr = np.where(arr == np.inf, 0, arr).T
-        ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.05)
-        sc = ScalarMappable(cmap=influence_cmap)
-        sc.set_array(arr)
-        sc.autoscale()
-        cbar = plt.colorbar(sc, cax=cax)
-        cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
-        plt.title(f"{name}", fontdict=fontdict, loc='right')
-        plt.grid()
-        if plot:
-            plt.show()
-        if save:
-            plt.savefig(f"MA_INF_{name}.png")
-            plt.close()
-        if path is not None:
-            print(path)
+    def save(self, filename):
+        """"""
+        self.debugger.save(filename=filename)
+
+    def show(self):
+        """"""
+        self.debugger.show()
+
+    def save_plot(self) -> None:
+        """
+        Will save the plot to a file names after the map name
+        """
+        self.plot_map()
+        self.debugger.save(filename=f"{self.map_name}")
 
     def __repr__(self) -> str:
         return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"
