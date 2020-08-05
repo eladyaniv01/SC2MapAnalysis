@@ -52,16 +52,16 @@ class MapAnalyzerPather:
         nonpathables.extend(self.map_data.mineral_fields)
         for obj in nonpathables:
             if 'mineral' in obj.name.lower():
-                radius = 0.9
+                radius = 1
             else:
                 radius = 0.8
-            self.map_data.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
+            self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
 
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
             for rock in destructables_filtered:
                 if "plates" not in rock.name.lower():
-                    self.map_data.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
+                    self.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
