@@ -57,7 +57,12 @@ for p in pts:
 path = map_data.pathfind(start, goal, grid=arr)
 # assert (path is not None), f"path = {path}"
 map_data.plot_influenced_path(start=start, goal=goal, weight_array=arr)
+map_data.show()
 map_data.plot_influenced_path(start=start, goal=goal, weight_array=map_data.get_pyastar_grid())
+map_data.show()
 start = (110, 95)
 goal = (110, 40)
 map_data.plot_influenced_path(start=start, goal=goal, weight_array=map_data.get_pyastar_grid())
+path = map_data.pathfind(start, goal, map_data.get_pyastar_grid())
+map_data.logger.info(path)
+map_data.show()

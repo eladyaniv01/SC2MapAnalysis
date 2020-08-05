@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Optional, Tuple
 
 import numpy as np
@@ -35,7 +34,6 @@ class MapAnalyzerPather:
                 self.map_data.bot.game_info.playable_area,
         )
 
-    @lru_cache()
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
