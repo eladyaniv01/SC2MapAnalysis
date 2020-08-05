@@ -34,7 +34,6 @@ def get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
 
 def mock_map_data(map_file: str) -> "MapData":
     from MapAnalyzer.MapData import MapData
-    print(map_file)
     with lzma.open(f"{map_file}", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 

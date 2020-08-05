@@ -45,7 +45,7 @@ class MapAnalyzerPather:
         if air_pathing:
             return np.ones(shape=self.map_data.path_arr.shape)
 
-        grid = self.map_data.pather.get_base_pathing_grid()
+        grid = self.map_data.pather.get_base_pathing_grid().copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         nonpathables = self.map_data.bot.structures
         nonpathables.extend(self.map_data.bot.enemy_structures)
