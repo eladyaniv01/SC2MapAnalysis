@@ -442,7 +442,9 @@ class MapData:
 
         @lru_cache()
         def ramp_close_enough(ramp, p, n=8):
-            return self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n
+            if self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n:
+                return True
+            return False
 
         @lru_cache()
         def get_ramp_nodes():
@@ -705,9 +707,6 @@ class MapData:
         path = self.pathfind(start, goal,
                              grid=arr,
                              sensitivity=1)
-        p0_ = start[1], start[0]
-        p1_ = goal[1], goal[0]
-        # noinspection PyUnboundLocalVariable
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
             path = np.flipud(path)  # for plot align
@@ -734,15 +733,6 @@ class MapData:
         sc.autoscale()
         cbar = plt.colorbar(sc, cax=cax)
         cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
-        # pts = self.indices_to_points(np.where(arr == arr.max()))
-        # x, y = zip(*pts)
-        # if len(pts) > 3:
-        #     alpha = 0.0001
-        #     size = 50
-        # else:
-        #     size = 75
-        #     alpha = 0.08
-        # ax.scatter(y, x, c="red",marker="v", s=size, alpha=alpha)
         plt.title(f"{name}", fontdict=fontdict, loc='right')
         plt.grid()
         if plot:

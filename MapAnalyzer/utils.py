@@ -48,7 +48,7 @@ def import_bot_instance(
     return bot
 
 
-def get_map_files_folder():
+def get_map_files_folder() -> str:
     folder = os.path.abspath(".")
     if 'MapAnalyzer' in folder:
         subfolder = "pickle_gameinfo"

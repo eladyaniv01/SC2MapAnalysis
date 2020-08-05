@@ -24,7 +24,7 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
-def test_minerals_walls():
+def test_minerals_walls() -> None:
     # attempting to path through mineral walls in goldenwall should fail
     path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
     map_data = mock_map_data(path)
