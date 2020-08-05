@@ -40,6 +40,11 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         plt.show()
 
+    @staticmethod
+    def close():
+        import matplotlib.pyplot as plt
+        plt.close(fig='all')
+
     def save(self, filename):
         if 'test' in str(inspect.stack()[2][1]):
             self.logger.debug("Skipping saving map image")

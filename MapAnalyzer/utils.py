@@ -1,7 +1,7 @@
 import lzma
 import os
 import pickle
-from typing import List
+from typing import List, Optional, TYPE_CHECKING, Union
 
 from s2clientprotocol.sc2api_pb2 import Response, ResponseObservation
 from sc2.bot_ai import BotAI
@@ -9,10 +9,30 @@ from sc2.game_data import GameData
 from sc2.game_info import GameInfo
 from sc2.game_state import GameState
 
-from MapAnalyzer.MapData import MapData
+from MapAnalyzer.constructs import MDRamp, PathLibChoke, VisionBlockerArea
+
+if TYPE_CHECKING:
+    from MapAnalyzer.MapData import MapData
 
 
-def mock_map_data(map_file: str) -> MapData:
+def get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
+                                  area: Optional[Union[MDRamp, VisionBlockerArea]] = None,
+                                  base_choke: None = None) -> List[List]:
+    li = []
+    if area:
+        s1 = area.points
+    else:
+        s1 = base_choke.pixels
+    for c in list_mdchokes:
+        s2 = c.pixels
+        s3 = s1 ^ s2
+        if len(s3) != (len(s1) + len(s2)):
+            li.append(c.id)
+    return li
+
+
+def mock_map_data(map_file: str) -> "MapData":
+    from MapAnalyzer.MapData import MapData
     print(map_file)
     with lzma.open(f"{map_file}", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)

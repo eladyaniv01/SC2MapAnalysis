@@ -71,3 +71,4 @@ for idx in range(8):
     """Plot path on weighted grid"""
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence")
     map_data.show()
+    map_data.close()
