@@ -10,6 +10,7 @@ from sc2.game_info import GameInfo
 from sc2.game_state import GameState
 
 from MapAnalyzer.constructs import MDRamp, PathLibChoke, VisionBlockerArea
+from .settings import ROOT_DIR
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -69,16 +70,8 @@ def import_bot_instance(
 
 
 def get_map_files_folder() -> str:
-    folder = os.path.abspath(".")
-    if 'tests' in folder:
-        folder = os.path.abspath("..")
-    if 'MapAnalyzer' in folder:
-        subfolder = "pickle_gameinfo"
-    else:
-        subfolder = "MapAnalyzer"
-        subfolder2 = "pickle_gameinfo"
-        subfolder = os.path.join(subfolder, subfolder2)
-
+    folder = ROOT_DIR
+    subfolder = "pickle_gameinfo"
     return os.path.join(folder, subfolder)
 
 
