@@ -103,7 +103,11 @@ class MapData:
         nonpathables.extend(self.bot.enemy_structures)
         nonpathables.extend(self.mineral_fields)
         for obj in nonpathables:
-            self.add_influence(p=obj.position, r=0.8 * obj.radius, arr=grid, weight=np.inf)
+            if 'mineral' in obj.name.lower():
+                radius = 0.9
+            else:
+                radius = 0.8
+            self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
 
         if destructables:
             destructables_filtered = [d for d in self.bot.destructables if "plates" not in d.name.lower()]
@@ -706,7 +710,7 @@ class MapData:
         # noinspection PyUnboundLocalVariable
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
-            path = np.flip(np.flipud(path))  # for plot align
+            path = np.flipud(path)  # for plot align
             self.logger.info("Found")
             x, y = zip(*path)
             ax.scatter(x, y, s=3, c='green')
@@ -717,11 +721,11 @@ class MapData:
             ax.scatter(x, y)
 
         influence_cmap = plt.cm.get_cmap("afmhot")
-        ax.text(p0_[0], p0_[1], f"Start {p0_}")
-        ax.text(p1_[0], p1_[1], f"End {p1_}")
-        ax.imshow(self.path_arr.T, alpha=0.5, origin=org)
-        ax.imshow(self.terrain_height.T, alpha=0.5, origin=org, cmap='bone')
-        arr = np.where(arr == np.inf, 0, arr)
+        ax.text(start[0], start[1], f"Start {start}")
+        ax.text(goal[0], goal[1], f"Goal {goal}")
+        ax.imshow(self.path_arr, alpha=0.5, origin=org)
+        ax.imshow(self.terrain_height, alpha=0.5, origin=org, cmap='bone')
+        arr = np.where(arr == np.inf, 0, arr).T
         ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
@@ -746,6 +750,8 @@ class MapData:
         if save:
             plt.savefig(f"MA_INF_{name}.png")
             plt.close()
+        if path is not None:
+            print(path)
 
     def __repr__(self) -> str:
         return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"

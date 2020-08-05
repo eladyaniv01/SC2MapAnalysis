@@ -1,5 +1,7 @@
 import lzma
+import os
 import pickle
+from typing import List
 
 from s2clientprotocol.sc2api_pb2 import Response, ResponseObservation
 from sc2.bot_ai import BotAI
@@ -11,6 +13,7 @@ from MapAnalyzer.MapData import MapData
 
 
 def mock_map_data(map_file: str) -> MapData:
+    print(map_file)
     with lzma.open(f"{map_file}", "rb") as f:
         raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
@@ -43,3 +46,27 @@ def import_bot_instance(
     # noinspection PyProtectedMember
     bot._find_expansion_locations()
     return bot
+
+
+def get_map_files_folder():
+    folder = os.path.abspath(".")
+    if 'MapAnalyzer' in folder:
+        subfolder = "pickle_gameinfo"
+    else:
+        subfolder = "MapAnalyzer"
+        subfolder2 = "pickle_gameinfo"
+        subfolder = os.path.join(subfolder, subfolder2)
+
+    return os.path.join(folder, subfolder)
+
+
+def get_map_file_list() -> List[str]:
+    """
+    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
+    """
+    map_files_folder = get_map_files_folder()
+    map_files = os.listdir(map_files_folder)
+    li = []
+    for map_file in map_files:
+        li.append(os.path.join(map_files_folder, map_file))
+    return li
