@@ -7,37 +7,44 @@ Builds:
 
 * ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?style=plastic)
 
-<details><summary>Latest Changes</summary>
+# Latest Changes
+
+<details><summary><b><u>View</b></u></summary>
 <p>
+<b>no breaking changes, everything is backwards compatible</b>
 
 
-moved plot functions to outside Debugger class
-reordered the mess in map_data init,  moved set pathlib to Pather
-moved `get_sets_with_mutual_elements` to utils
-reordered mapdata code
-no breaking changes, everything is backwards compatible
 
-Testing both installations (setup.py and requirements.txt)
-fix circular import bug on utils
-
-
-* fixes, test pass locally
-Debugger: now inspects stack and will not save on tests
-debugger will no longer circular call map_data for plotting
-MapData: resource_blockers are now calculated with original coords
-removed usage of neighbores ,  instead  adding influence with radius
+Debugger:
+ * now inspects stack and will not save on tests
+ * will no longer circular call map_data for plotting
+ 
 Pather:
-radius for resource blockers is now 2, this passes all tests
+* radius for resource blockers is now 2, this passes all tests
+
+MapData:
+
+* grouped methods in map_data for better readablitiy
+* moved `get_sets_with_mutual_elements` to utils
+* resource_blockers are now calculated with original coords
+* removed usage of neighbores ,  instead  adding influence with radius
+
 Tests:
-every tests  will now use the MapAnalyzer.util functions when it can
-removed redundant test_map_data from TestSanity,  and put it in its right place,  test_mapdata
+
+* Now testing both installation types (setup.py and requirements.txt)
+* every tests  will now use the MapAnalyzer.util functions when it can
+* removed redundant test_map_data from TestSanity,  and put it in its right place,  test_mapdata
+
+
+
+
 </p>
 </details>
 
 A standalone plugin for python SC2 api 
 
 Early Stage development,
-
+- [Latest Changes](#latest-changes)
 - [Getting Started](#getting-started)
 - [Pathfinding](#Pathfinding)
 - [How to plug it on your bot](#How-to-plug-it-on-your-bot)
