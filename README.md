@@ -15,21 +15,21 @@ Builds:
 
 
 
-Debugger:
+<b>Debugger:</b>
  * now inspects stack and will not save on tests
  * will no longer circular call map_data for plotting
  
-Pather:
+<b>Pather:</b>
 * radius for resource blockers is now 2, this passes all tests
 
-MapData:
+<b>MapData:</b>
 
 * grouped methods in map_data for better readablitiy
 * moved `get_sets_with_mutual_elements` to utils
 * resource_blockers are now calculated with original coords
 * removed usage of neighbores ,  instead  adding influence with radius
 
-Tests:
+<b>Tests:</b>
 
 * Now testing both installation types (setup.py and requirements.txt)
 * every tests  will now use the MapAnalyzer.util functions when it can
