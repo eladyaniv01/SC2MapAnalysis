@@ -5,9 +5,11 @@ Builds:
 
 * [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
 
-* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) ![](https://img.shields.io/github/v/release/eladyaniv01/Sc2MapAnalysis?label=Version&style=plastic)
+* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
 
-# Latest Changes
+
+# Latest Changes ![](https://img.shields.io/github/v/release/eladyaniv01/Sc2MapAnalysis?label=Version&style=plastic)
+
 
 <details><summary><b><u>View</b></u></summary>
 <p>
@@ -16,24 +18,24 @@ Builds:
 
 
 <b>Debugger:</b>
- * now inspects stack and will not save on tests
- * will no longer circular call map_data for plotting
+ * Now inspects stack and will not save on tests
+ * Will no longer circular call map_data for plotting
  
 <b>Pather:</b>
-* radius for resource blockers is now 2, this passes all tests
+* Radius for resource blockers is now 2, this passes all tests
 
 <b>MapData:</b>
 
-* grouped methods in map_data for better readablitiy
-* moved `get_sets_with_mutual_elements` to utils
-* resource_blockers are now calculated with original coords
-* removed usage of neighbores ,  instead  adding influence with radius
+* Grouped methods in map_data for better readablitiy
+* Moved `get_sets_with_mutual_elements` to utils
+* Resource_blockers are now calculated with original coords
+* Removed usage of neighbores ,  instead  adding influence with radius
 
 <b>Tests:</b>
 
 * Now testing both installation types (setup.py and requirements.txt)
-* every tests  will now use the MapAnalyzer.util functions when it can
-* removed redundant test_map_data from TestSanity,  and put it in its right place,  test_mapdata
+* Every test  will now use the MapAnalyzer.util functions when it can
+* Removed redundant test_map_data from TestSanity,  and put it in its right place,  test_mapdata
 
 
 
