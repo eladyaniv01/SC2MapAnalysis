@@ -41,6 +41,8 @@ Tests:
 </p>
 </details>
 
+# Summary
+
 A standalone plugin for python SC2 api 
 
 Early Stage development,
