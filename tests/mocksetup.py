@@ -39,22 +39,6 @@ def caplog(_caplog=_caplog):
     logger.remove(handler_id)
 
 
-def get_map_file_list() -> List[str]:
-    """
-    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
-    """
-    subfolder = "MapAnalyzer"
-    subfolder2 = "pickle_gameinfo"
-    subfolder = os.path.join(subfolder, subfolder2)
-    folder = os.path.abspath(".")
-    map_files_folder = os.path.join(folder, subfolder)
-    map_files = os.listdir(map_files_folder)
-    li = []
-    for map_file in map_files:
-        li.append(os.path.join(map_files_folder, map_file))
-    return li
-
-
 def get_map_datas() -> Iterable[MapData]:
     subfolder = "MapAnalyzer"
     subfolder2 = "pickle_gameinfo"

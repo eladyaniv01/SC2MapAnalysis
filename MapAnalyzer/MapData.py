@@ -51,8 +51,9 @@ class MapData:
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
-        self.resource_blockers = [Point2((m.position[1], m.position[0])) for m in self.bot.all_units if
-                                  any(x in m.name.lower() for x in {"450", "puri"})]
+        self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
+                                  any(x in m.name.lower() for x in {"rich", "450"})]
+        # self.resource_blockers = [Point2((m.position[1], m.position[0])) for m in self.bot.all_units]
         # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
@@ -340,17 +341,21 @@ class MapData:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
-
         # for our grid,  mineral walls are considered as a barrier between regions
         # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875r
         correct_blockers = []
-        for resource_point2 in self.resource_blockers:
-            for n in resource_point2.neighbors4:
-                point = Point2((n.rounded[1], n.rounded[0]))
-                if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
-                    grid[point[0]][point[1]] = 2
-                    if point not in self.resource_blockers:
-                        correct_blockers.append(point)
+        for point in self.resource_blockers:
+            grid[int(point[0])][int(point[1])] = 0
+            if point not in self.resource_blockers:
+                correct_blockers.append(point)
+
+        # for resource_point2 in self.resource_blockers:
+        #     for n in resource_point2.neighbors4:
+        #         point = Point2((n.rounded[0], n.rounded[1]))
+        #         if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
+        #             grid[point[1]][point[0]] = 0
+        #             if point not in self.resource_blockers:
+        #                 correct_blockers.append(point)
         correct_blockers = list(set(correct_blockers))
         self.resource_blockers.extend(correct_blockers)
 

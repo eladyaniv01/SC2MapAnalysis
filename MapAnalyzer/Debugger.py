@@ -46,9 +46,12 @@ class MapAnalyzerDebugger:
         plt.close(fig='all')
 
     def save(self, filename):
-        if 'test' in str(inspect.stack()[2][1]):
-            self.logger.debug("Skipping saving map image")
-            return True
+
+        for i in inspect.stack():
+            if 'test_suite.py' in str(i):
+                self.logger.info(f"Skipping save operation on test runs")
+                self.logger.debug(f"index = {inspect.stack().index(i)}  {i}")
+                return True
         import matplotlib.pyplot as plt
         full_path = os.path.join(os.path.abspath("."), f"{filename}")
         plt.savefig(f"{filename}.png")
@@ -142,16 +145,16 @@ class MapAnalyzerDebugger:
             fontdict = {"family": "serif", "weight": "bold", "size": 25}
         import matplotlib.pyplot as plt
         plt.figure(figsize=(figsize, figsize))
-        self.map_data._plot_regions(fontdict=fontdict)
+        self.plot_regions(fontdict=fontdict)
         # some maps has no vision blockers
         if len(self.map_data._vision_blockers) > 0:
-            self.map_data._plot_vision_blockers()
-        self.map_data._plot_normal_resources()
-        self.map_data._plot_chokes()
+            self.plot_vision_blockers()
+        self.plot_normal_resources()
+        self.plot_chokes()
         fontsize = 25
 
         plt.style.use("ggplot")
-        plt.imshow(self.map_data.region_grid, origin="lower")
+        plt.imshow(self.map_data.region_grid.astype(float), origin="lower")
         plt.imshow(self.map_data.terrain_height, alpha=1, origin="lower", cmap="terrain")
         x, y = zip(*self.map_data.nonpathable_indices_stacked)
         plt.scatter(x, y, color="grey")
