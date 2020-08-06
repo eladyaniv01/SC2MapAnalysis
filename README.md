@@ -15,7 +15,10 @@ Builds:
 <p>
 <b>no breaking changes, everything is backwards compatible</b>
 
-
+<b>BugFixes:</b>
+ * Pather will no longer try to path through mineral walls ( like in goldenwall) 
+ * Fix circular import bug on Debugger
+ * Fixed malformed point orientation in rare cases 
 
 <b>Debugger:</b>
  * Now inspects stack and will not save on tests
