@@ -5,7 +5,7 @@ Builds:
 
 * [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
 
-* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?style=plastic)
+* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) ![](https://img.shields.io/github/v/release/eladyaniv01/Sc2MapAnalysis?label=Version&style=plastic)
 
 # Latest Changes
 
