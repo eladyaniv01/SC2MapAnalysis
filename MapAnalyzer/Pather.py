@@ -49,12 +49,13 @@ class MapAnalyzerPather:
         nonpathables.extend(self.map_data.bot.enemy_structures)
         nonpathables.extend(self.map_data.mineral_fields)
         for obj in nonpathables:
-            if 'mineral' in obj.name.lower():
-                radius = 1
-            else:
-                radius = 0.8
-            self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
-
+            radius = 0.8
+            grid = self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
+        resource_blockers = self.map_data.resource_blockers
+        for pos in resource_blockers:
+            radius = 0.5
+            # self.map_data.log(pos)
+            grid = self.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
             for rock in destructables_filtered:

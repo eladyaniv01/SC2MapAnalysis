@@ -3,7 +3,6 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from numpy import float64, int64, ndarray
-from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
@@ -52,7 +51,8 @@ class MapData:
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
-        self.resource_blockers = [Point2(m.position) for m in self.mineral_fields if "450" in m.name]
+        self.resource_blockers = [Point2((m.position[1], m.position[0])) for m in self.bot.all_units if
+                                  any(x in m.name.lower() for x in {"450", "puri"})]
         # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
