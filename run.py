@@ -41,6 +41,7 @@ with lzma.open(map_file, "rb") as f:
 bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
 map_data = MapData(bot, loglevel="DEBUG")
 map_data.plot_map()
+map_data.show()
 # get corner regions centers for start / end points
 base = map_data.bot.townhalls[0]
 reg_start = map_data.where(base.position_tuple)
@@ -68,5 +69,6 @@ for idx in range(8):
         arr = map_data.add_influence(p, r, arr)
 
     """Plot path on weighted grid"""
-    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
-                                  save=True, plot=False)
+    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence")
+    map_data.show()
+    map_data.close()

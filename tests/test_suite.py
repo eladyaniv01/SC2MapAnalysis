@@ -4,8 +4,8 @@ from _pytest.python import Metafunc
 from hypothesis import given, settings
 
 from MapAnalyzer.MapData import MapData
-from MapAnalyzer.utils import mock_map_data
-from tests.mocksetup import get_map_datas, get_map_file_list, logger, random, Region, st
+from MapAnalyzer.utils import get_map_file_list, mock_map_data
+from tests.mocksetup import get_map_datas, logger, random, Region, st
 
 logger = logger
 
@@ -29,6 +29,7 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
 def test_mapdata(n, m):
     map_files = get_map_file_list()
     map_data = mock_map_data(random.choice(map_files))
+    map_data.save_plot()
     logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
     set_points = set(points)
@@ -47,10 +48,6 @@ class TestSanity:
     Test DocString
     """
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
-
-    def test_mapdata(self, map_data: MapData) -> None:
-        # coverage
-        map_data.save_plot()
 
     def test_polygon(self, map_data: MapData) -> None:
         for polygon in map_data.polygons:

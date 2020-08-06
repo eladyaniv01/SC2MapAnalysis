@@ -1,40 +1,24 @@
-import inspect
-import os
-import sys
-import warnings
 from functools import lru_cache
-# from multiprocessing.dummy import Pool
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
-import pyastar.astar_wrapper as pyastar
-from loguru import logger
 from numpy import float64, int64, ndarray
-from numpy.core._multiarray_umath import ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
-from skimage import draw as skdraw
 
 from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.Debugger import MapAnalyzerDebugger
+from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
-from .constants import BINARY_STRUCTURE, COLORS, LOG_FORMAT, MAX_REGION_AREA, MIN_REGION_AREA
+from MapAnalyzer.utils import get_sets_with_mutual_elements
+from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
-from .exceptions import OutOfBoundsException
-from .sc2pathlibp import Sc2Map
+from .exceptions import CustomDeprecationWarning
 
 WHITE = "\u001b[32m"
-
-
-class LogFilter:
-    def __init__(self, level: str) -> None:
-        self.level = level
-
-    def __call__(self, record: Dict[str, Any]) -> bool:
-        levelno = logger.level(self.level).no
-        return record["level"].no >= levelno
 
 
 class MapData:
@@ -42,190 +26,52 @@ class MapData:
     MapData DocString
     """
 
+    # todo goldenwall big region is not found
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
-        self.warnings = warnings
-        self.warnings.filterwarnings('ignore', category=DeprecationWarning)
-        self.warnings.filterwarnings('ignore', category=RuntimeWarning)
-        self.logger = logger
-        self.log_filter = LogFilter(loglevel)
-        self.logger.remove()
-        self.log_format = LOG_FORMAT
-        self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
-        self.min_region_area = MIN_REGION_AREA
-        self.max_region_area = MAX_REGION_AREA
-        self.regions: dict = {}  # set later
-        self.corners: list = []  # set later
-        self.polygons: list = []  # set later
-        # store relevant data from bot instance for later use
+        # store relevant data from api
         self.bot = bot
         self.map_name: str = bot.game_info.map_name
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
         self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
-        self.base_locations: list = bot.expansion_locations_list
-        self.map_ramps: list = []  # set later  on compile
+        self.mineral_fields = bot.mineral_field
+        self.normal_geysers = bot.vespene_geyser
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
+        self.base_locations: list = bot.expansion_locations_list
+
+        # data that will be generated and cached
+        self.min_region_area = MIN_REGION_AREA
+        self.max_region_area = MAX_REGION_AREA
+        self.regions: dict = {}  # set later
+        self.region_grid: Union[ndarray, None] = None
+        self.corners: list = []  # set later
+        self.polygons: list = []  # set later
         self.map_chokes: list = []  # set later  on compile
+        self.map_ramps: list = []  # set later  on compile
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
-        self.region_grid: Union[ndarray, None] = None
-
-        nonpathable_indices = np.where(bot.game_info.pathing_grid.data_numpy == 0)
-        self.nonpathable_indices_stacked = np.column_stack(
-                (nonpathable_indices[1], nonpathable_indices[0])
-        )
-        self.mineral_fields = bot.mineral_field
-        self.resource_blockers = [Point2(m.position) for m in self.mineral_fields if "450" in m.name]
+        self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
+                                  any(x in m.name.lower() for x in {"rich", "450"})]
+        # self.resource_blockers = [Point2((m.position[1], m.position[0])) for m in self.bot.all_units]
         # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
-        self.normal_geysers = bot.vespene_geyser
-        self.pathlib_map = None
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
-        self._set_pathlib_map()
-        self.pyastar = pyastar
+
+        # plugins
+        self.log_level = loglevel
+        self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
+        self.logger = self.debugger.logger
+        self.pather = MapAnalyzerPather(self)
+        self.pathlib_map = self.pather.pathlib_map
+        self.pyastar = self.pather.pyastar
+        self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
+
+        # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         self.compile_map()  # this is called on init, but allowed to be called again every step
 
-    @lru_cache()
-    def _get_base_pathing_grid(self) -> ndarray:
-        return np.fmax(self.path_arr, self.placement_arr).T
-
-    # dont cache this
-    def get_pyastar_grid(self, default_weight: int = 1, destructables: bool = True, fly: bool = False) -> ndarray:
-        if fly:
-            return np.ones(shape=self.path_arr.shape)
-
-        grid = self._get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        # todo  test  path through mineral fields
-        nonpathables = self.bot.structures
-        nonpathables.extend(self.bot.enemy_structures)
-        nonpathables.extend(self.mineral_fields)
-        for obj in nonpathables:
-            if 'mineral' in obj.name.lower():
-                radius = 0.9
-            else:
-                radius = 0.8
-            self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
-
-        if destructables:
-            destructables_filtered = [d for d in self.bot.destructables if "plates" not in d.name.lower()]
-            # nonpathables.extend(destructables_filtered)
-            for rock in destructables_filtered:
-                if "plates" not in rock.name.lower():
-                    self.add_influence(p=rock.position, r=0.8 * rock.radius, arr=grid, weight=np.inf)
-        return grid
-
-    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
-        start = int(start[0]), int(start[1])
-        goal = int(goal[0]), int(goal[1])
-        if grid is None:
-            grid = self.get_pyastar_grid()
-
-        path = pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
-        if path is not None:
-            return list(map(Point2, path))[::sensitivity]
-        else:
-            self.logger.debug(f"No Path found s{start}, g{goal}")
-            return None
-
-    def log(self, msg):
-        self.logger.debug(f"{msg}")
-
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
-        ri, ci = skdraw.disk(center=(int(p[0]), int(p[1])), radius=r, shape=arr.shape)
-        if len(ri) == 0 or len(ci) == 0:
-            # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.logger.debug(OutOfBoundsException(p))
-            return arr
-
-        def in_bounds_ci(x):
-            width = arr.shape[0] - 1
-            if 0 < x < width:
-                return x
-            return 0
-
-        def in_bounds_ri(y):
-            height = arr.shape[1] - 1
-            if 0 < y < height:
-                return y
-            return 0
-
-        ci_vec = np.vectorize(in_bounds_ci)
-        ri_vec = np.vectorize(in_bounds_ri)
-        ci = ci_vec(ci)
-        ri = ri_vec(ri)
-        arr[ri, ci] += weight
-        if np.any(arr < 1) and safe:
-            self.logger.warning("You are attempting to set weights that are below 1. falling back to the minimum (1)")
-            arr = np.where(arr < 1, 1, arr)
-        return arr
-
-    def _clean_plib_chokes(self) -> None:
-        # needs to be called AFTER MDramp and VisionBlocker are populated
-        raw_chokes = self.pathlib_map.chokes
-        self.pathlib_to_local_chokes = []
-        for i, c in enumerate(raw_chokes):
-            self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
-        areas = self.map_ramps.copy()
-        areas.extend(self.map_vision_blockers)
-        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.pathlib_to_local_chokes,
-                                                                  areas=areas)
-
-    def _get_overlapping_chokes(self, local_chokes: List[PathLibChoke],
-                                areas: Union[List[MDRamp], List[Union[MDRamp, VisionBlockerArea]]]) -> Set[int]:
-        li = []
-        for area in areas:
-            li.append(self._get_sets_with_mutual_elements(list_mdchokes=local_chokes, area=area))
-        result = []
-        for minili in li:
-            result.extend(minili)
-        return set(result)
-
-    @staticmethod
-    def _get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
-                                       area: Optional[Union[MDRamp, VisionBlockerArea]] = None,
-                                       base_choke: None = None) -> List[List]:
-        li = []
-        if area:
-            s1 = area.points
-        else:
-            s1 = base_choke.pixels
-        for c in list_mdchokes:
-            s2 = c.pixels
-            s3 = s1 ^ s2
-            if len(s3) != (len(s1) + len(s2)):
-                li.append(c.id)
-        return li
-
-    def _clean_polys(self) -> None:
-        for pol in self.polygons:
-
-            if pol.area > self.max_region_area:
-                self.polygons.pop(self.polygons.index(pol))
-            if pol.is_choke:
-
-                for a in pol.areas:
-
-                    if isinstance(a, MDRamp):
-                        self.polygons.pop(self.polygons.index(pol))
-
-    """ longest map compile is 1.9 s """
-
-    # disabling until tqdm is available on aiarena
-    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
-    def compile_map(self) -> None:
-        """user can call this to recompute"""
-
-        self._calc_grid()
-        self._calc_regions()
-        self._calc_vision_blockers()
-        self._calc_chokes()
-        self._clean_polys()
-        for poly in self.polygons:
-            poly.calc_areas()
+    """Properties"""
 
     @property
     def vision_blockers(self) -> Set[Point2]:
@@ -234,17 +80,122 @@ class MapData:
         """
         return self._vision_blockers
 
-    def _set_pathlib_map(self) -> None:
+    """ Pathing methods"""
 
+    # dont cache this
+    def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
+                         air_pathing: bool = False) -> ndarray:
+        return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
+                                            air_pathing=air_pathing)
+
+    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
+                 allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
+        return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
+                                    sensitivity=sensitivity)
+
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
+        """when safe is off will not adjust values below 1 which could result in a crash"""
+        return self.pather.add_influence(p=p, r=r, arr=arr, weight=weight, safe=safe)
+
+    """Utility methods"""
+
+    def log(self, msg):
+        self.logger.debug(f"{msg}")
+
+    def save(self, filename):
+        """"""
+        self.debugger.save(filename=filename)
+
+    def show(self):
+        """"""
+        self.debugger.show()
+
+    def close(self):
+        """"""
+        self.debugger.close()
+
+    def save_plot(self) -> None:
         """
-        Will initialize the sc2pathlib `SC2Map` object for future use
+        Will save the plot to a file names after the map name
         """
-        self.pathlib_map = Sc2Map(
-                self.path_arr,
-                self.placement_arr,
-                self.terrain_height,
-                self.bot.game_info.playable_area,
-        )
+        self.plot_map()
+        self.debugger.save(filename=f"{self.map_name}")
+
+    @lru_cache()
+    def ramp_close_enough(self, ramp, p, n=8):
+        if self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n:
+            return True
+        return False
+
+    @lru_cache()
+    def get_ramp_nodes(self):
+        return [ramp.center for ramp in self.map_ramps]
+
+    @lru_cache(200)
+    def get_ramp(self, node):
+        return [r for r in self.map_ramps if r.center == node][0]
+
+    @staticmethod
+    def indices_to_points(
+            indices: Union[ndarray, Tuple[ndarray, ndarray]]
+    ) -> Set[Tuple[int64, int64]]:
+        """
+        convert indices to a set of points
+        Will only work when both dimensions are of same length
+        """
+
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
+
+    @staticmethod
+    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
+        """
+        convert points to a tuple of two 1d arrays
+        """
+        return np.array([p[0] for p in points]), np.array([p[1] for p in points])
+
+    def points_to_numpy_array(
+            self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
+    ) -> ndarray:
+        """
+        convert points to numpy ndarray
+        """
+        rows, cols = self.path_arr.shape
+        arr = np.zeros((rows, cols), dtype=np.uint8)
+        indices = self.points_to_indices(points)
+        arr[indices] = 1
+        return arr
+
+    @staticmethod
+    def distance(p1: Point2, p2: Point2) -> float64:
+        """
+        euclidean distance
+        """
+        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+
+    @staticmethod
+    def closest_node_idx(
+            node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
+    ) -> int:
+        """
+        given a list of nodes `Ln`  and a single node `Nb`,
+        will return the index of the closest node in the list to `Nb`
+        """
+        closest_index = distance.cdist([node], nodes).argmin()
+        return closest_index
+
+    def closest_towards_point(
+            self, points: List[Point2], target: Union[Point2, tuple]
+    ) -> Point2:
+        """
+        given a list/set of points, and a target,
+        will return the point that is closest to that target
+        Example usage would be to calculate a position for
+        tanks in direction to the enemy forces
+        passing in the Area's corners as points and enemy army's location as target
+        """
+        return points[self.closest_node_idx(node=target, nodes=points)]
+
+    """Query methods"""
 
     @lru_cache(200)
     def where_all(
@@ -330,65 +281,54 @@ class MapData:
             if region.inside_i(point):
                 return region
 
-    @staticmethod
-    def indices_to_points(
-            indices: Union[ndarray, Tuple[ndarray, ndarray]]
-    ) -> Set[Tuple[int64, int64]]:
-        """
-        convert indices to a set of points
-        Will only work when both dimensions are of same length
-        """
+    """ longest map compile is 1.9 s """
+    """Compile methods"""
 
-        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
-
-    @staticmethod
-    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
-        """
-        convert points to a tuple of two 1d arrays
-        """
-        return np.array([p[0] for p in points]), np.array([p[1] for p in points])
-
-    def points_to_numpy_array(
-            self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
-    ) -> ndarray:
-        """
-        convert points to numpy ndarray
-        """
-        rows, cols = self.path_arr.shape
-        arr = np.zeros((rows, cols), dtype=np.uint8)
-        indices = self.points_to_indices(points)
-        arr[indices] = 1
-        return arr
+    def _clean_plib_chokes(self) -> None:
+        # needs to be called AFTER MDramp and VisionBlocker are populated
+        raw_chokes = self.pathlib_map.chokes
+        self.pathlib_to_local_chokes = []
+        for i, c in enumerate(raw_chokes):
+            self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
+        areas = self.map_ramps.copy()
+        areas.extend(self.map_vision_blockers)
+        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.pathlib_to_local_chokes,
+                                                                  areas=areas)
 
     @staticmethod
-    def distance(p1: Point2, p2: Point2) -> float64:
-        """
-        euclidean distance
-        """
-        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+    def _get_overlapping_chokes(local_chokes: List[PathLibChoke],
+                                areas: Union[List[MDRamp], List[Union[MDRamp, VisionBlockerArea]]]) -> Set[int]:
+        li = []
+        for area in areas:
+            li.append(get_sets_with_mutual_elements(list_mdchokes=local_chokes, area=area))
+        result = []
+        for minili in li:
+            result.extend(minili)
+        return set(result)
 
-    @staticmethod
-    def closest_node_idx(
-            node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
-    ) -> int:
-        """
-        given a list of nodes `Ln`  and a single node `Nb`,
-        will return the index of the closest node in the list to `Nb`
-        """
-        closest_index = distance.cdist([node], nodes).argmin()
-        return closest_index
+    def _clean_polys(self) -> None:
+        for pol in self.polygons:
 
-    def closest_towards_point(
-            self, points: List[Point2], target: Union[Point2, tuple]
-    ) -> Point2:
-        """
-        given a list/set of points, and a target,
-        will return the point that is closest to that target
-        Example usage would be to calculate a position for
-        tanks in direction to the enemy forces
-        passing in the Area's corners as points and enemy army's location as target
-        """
-        return points[self.closest_node_idx(node=target, nodes=points)]
+            if pol.area > self.max_region_area:
+                self.polygons.pop(self.polygons.index(pol))
+            if pol.is_choke:
+
+                for a in pol.areas:
+
+                    if isinstance(a, MDRamp):
+                        self.polygons.pop(self.polygons.index(pol))
+
+    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
+    def compile_map(self) -> None:
+        """user can call this to recompute"""
+
+        self._calc_grid()
+        self._calc_regions()
+        self._calc_vision_blockers()
+        self._calc_chokes()
+        self._clean_polys()
+        for poly in self.polygons:
+            poly.calc_areas()
 
     @staticmethod
     def _clean_ramps(region: Region) -> None:
@@ -401,17 +341,21 @@ class MapData:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
-
         # for our grid,  mineral walls are considered as a barrier between regions
         # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875r
         correct_blockers = []
-        for resource_point2 in self.resource_blockers:
-            for n in resource_point2.neighbors4:
-                point = Point2((n.rounded[1], n.rounded[0]))
-                if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
-                    grid[point[0]][point[1]] = 2
-                    if point not in self.resource_blockers:
-                        correct_blockers.append(point)
+        for point in self.resource_blockers:
+            grid[int(point[0])][int(point[1])] = 0
+            if point not in self.resource_blockers:
+                correct_blockers.append(point)
+
+        # for resource_point2 in self.resource_blockers:
+        #     for n in resource_point2.neighbors4:
+        #         point = Point2((n.rounded[0], n.rounded[1]))
+        #         if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
+        #             grid[point[1]][point[0]] = 0
+        #             if point not in self.resource_blockers:
+        #                 correct_blockers.append(point)
         correct_blockers = list(set(correct_blockers))
         self.resource_blockers.extend(correct_blockers)
 
@@ -435,38 +379,26 @@ class MapData:
             self.vision_blockers_grid = vb_labeled_array
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
+    def _set_map_ramps(self):
+        self.map_ramps = [MDRamp(map_data=self,
+                                 ramp=r,
+                                 array=self.points_to_numpy_array(r.points))
+                          for r in self.bot.game_info.map_ramps]
+
     def _calc_ramps(self, region: Region) -> None:
         """
         probably the most expensive operation other than plotting ,  need to optimize
         """
-
-        @lru_cache()
-        def ramp_close_enough(ramp, p, n=8):
-            if self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n:
-                return True
-            return False
-
-        @lru_cache()
-        def get_ramp_nodes():
-            return [ramp.center for ramp in self.map_ramps]
-
-        @lru_cache(200)
-        def get_ramp(node):
-            return [r for r in self.map_ramps if r.center == node][0]
-
         if len(self.map_ramps) == 0:
-            self.map_ramps = [MDRamp(map_data=self,
-                                     ramp=r,
-                                     array=self.points_to_numpy_array(r.points))
-                              for r in self.bot.game_info.map_ramps]
+            self._set_map_ramps()
 
-        ramp_nodes = get_ramp_nodes()
+        ramp_nodes = self.get_ramp_nodes()
         perimeter_nodes = region.polygon.perimeter_points
         result_ramp_indexes = list(set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
 
         for rn in result_ramp_indexes:
             # and distance from perimeter is less than ?
-            ramp = get_ramp(node=ramp_nodes[rn])
+            ramp = self.get_ramp(node=ramp_nodes[rn])
 
             """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
             if region not in ramp.areas:
@@ -476,7 +408,7 @@ class MapData:
 
         for ramp in region.region_ramps:
             for p in region.polygon.perimeter_points:
-                if ramp_close_enough(ramp, p, n=8):
+                if self.ramp_close_enough(ramp, p, n=8):
                     ramps.append(ramp)
         ramps = list(set(ramps))
 
@@ -560,188 +492,52 @@ class MapData:
                 self._calc_ramps(region=region)
                 j += 1
 
-    def save_plot(self) -> None:
+    """Plot methods"""
+
+    def plot_map(
+            self, fontdict: dict = None, save=None, figsize: int = 20
+    ) -> None:
         """
-        Will save the plot to a file names after the map name
+        Plot map
         """
-        self.plot_map(save=True)
+        if save is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+        self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
+
+    def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
+                             plot=None, save=None, name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
+        if save is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+        if plot is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
+
+        self.debugger.plot_influenced_path(start=start, goal=goal, weight_array=weight_array, name=name,
+                                           fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         """
-        compute Region
+        plot Region
         """
-
-        import matplotlib.pyplot as plt
-        for lbl, reg in self.regions.items():
-            c = COLORS[lbl]
-            fontdict["color"] = c
-            fontdict["backgroundcolor"] = 'black'
-            if c == 'black':
-                fontdict["backgroundcolor"] = 'white'
-            plt.text(
-                    reg.center[0],
-                    reg.center[1],
-                    reg.label,
-                    bbox=dict(fill=True, alpha=0.9, edgecolor=fontdict["backgroundcolor"], linewidth=2),
-                    fontdict=fontdict,
-            )
-            # random color for each perimeter
-            x, y = zip(*reg.polygon.perimeter_points)
-            plt.scatter(x, y, c=c, marker="1", s=300)
-            for corner in reg.polygon.corner_points:
-                plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
+        return self.debugger.plot_regions(fontdict=fontdict)
 
     def _plot_vision_blockers(self) -> None:
         """
-        compute vbs
+        plot vbs
         """
-        import matplotlib.pyplot as plt
-
-        for vb in self._vision_blockers:
-            plt.text(vb[0], vb[1], "X")
-
-        x, y = zip(*self._vision_blockers)
-        plt.scatter(x, y, color="r")
+        self.debugger.plot_vision_blockers()
 
     def _plot_normal_resources(self) -> None:
         """
         # todo: account for gold minerals and rich gas
         """
-        import matplotlib.pyplot as plt
-        for mfield in self.mineral_fields:
-            plt.scatter(mfield.position[0], mfield.position[1], color="blue")
-        for gasgeyser in self.normal_geysers:
-            plt.scatter(
-                    gasgeyser.position[0],
-                    gasgeyser.position[1],
-                    color="yellow",
-                    marker=r"$\spadesuit$",
-                    s=500,
-                    edgecolors="g",
-            )
+        self.debugger.plot_normal_resources()
 
     def _plot_chokes(self) -> None:
         """
         compute Chokes
         """
-        import matplotlib.pyplot as plt
-        for choke in self.map_chokes:
-            x, y = zip(*choke.points)
-            cm = choke.center
-            if choke.is_ramp:
-                fontdict = {"family": "serif", "weight": "bold", "size": 15}
-                plt.text(cm[0], cm[1], f"R<{[r.label for r in choke.regions]}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.4, edgecolor="cyan", linewidth=8))
-                plt.scatter(x, y, color="w")
-            elif choke.is_vision_blocker:
-
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"VB<>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="b", alpha=0.3)
-
-            else:
-                fontdict = {"family": "serif", "size": 10}
-                plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
-                         bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
-                plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
-
-    def plot_map(
-            self, fontdict: dict = None, save: bool = False, figsize: int = 20
-    ) -> None:
-        """
-        Plot map
-        """
-
-        if not fontdict:
-            fontdict = {"family": "serif", "weight": "bold", "size": 25}
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(figsize, figsize))
-        self._plot_regions(fontdict=fontdict)
-        # some maps has no vision blockers
-        if len(self._vision_blockers) > 0:
-            self._plot_vision_blockers()
-        self._plot_normal_resources()
-        self._plot_chokes()
-        fontsize = 25
-
-        plt.style.use("ggplot")
-        plt.imshow(self.region_grid, origin="lower")
-        plt.imshow(self.terrain_height, alpha=1, origin="lower", cmap="terrain")
-        x, y = zip(*self.nonpathable_indices_stacked)
-        plt.scatter(x, y, color="grey")
-        ax = plt.gca()
-        for tick in ax.xaxis.get_major_ticks():
-            tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight("bold")
-        for tick in ax.yaxis.get_major_ticks():
-            tick.label1.set_fontsize(fontsize)
-            tick.label1.set_fontweight("bold")
-        plt.grid()
-        if save:
-            map_name = self.bot.game_info.map_name
-            if 'test' in str(inspect.stack()[2][1]):
-                logger.debug("Skipping saving map image")
-                return True
-            else:
-                full_path = os.path.join(os.path.abspath("."), f"{self.map_name}.png")
-                plt.savefig(f"{map_name}.png")
-                logger.debug(f"Plot Saved to {full_path}")
-                plt.close()
-        else:  # pragma: no cover
-            plt.show()
-
-    def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
-                             plot: bool = True, save: bool = False, name: Optional[str] = None,
-                             fontdict: dict = None) -> None:
-        import matplotlib.pyplot as plt
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        from matplotlib.cm import ScalarMappable
-        if not fontdict:
-            fontdict = {"family": "serif", "weight": "bold", "size": 20}
-        plt.style.use(["ggplot", "bmh"])
-        org = "lower"
-        if name is None:
-            name = self.map_name
-        arr = weight_array.copy()
-        path = self.pathfind(start, goal,
-                             grid=arr,
-                             sensitivity=1)
-        ax: plt.Axes = plt.subplot(1, 1, 1)
-        if path is not None:
-            path = np.flipud(path)  # for plot align
-            self.logger.info("Found")
-            x, y = zip(*path)
-            ax.scatter(x, y, s=3, c='green')
-        else:
-            self.logger.info("Not Found")
-
-            x, y = zip(*[start, goal])
-            ax.scatter(x, y)
-
-        influence_cmap = plt.cm.get_cmap("afmhot")
-        ax.text(start[0], start[1], f"Start {start}")
-        ax.text(goal[0], goal[1], f"Goal {goal}")
-        ax.imshow(self.path_arr, alpha=0.5, origin=org)
-        ax.imshow(self.terrain_height, alpha=0.5, origin=org, cmap='bone')
-        arr = np.where(arr == np.inf, 0, arr).T
-        ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.05)
-        sc = ScalarMappable(cmap=influence_cmap)
-        sc.set_array(arr)
-        sc.autoscale()
-        cbar = plt.colorbar(sc, cax=cax)
-        cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
-        plt.title(f"{name}", fontdict=fontdict, loc='right')
-        plt.grid()
-        if plot:
-            plt.show()
-        if save:
-            plt.savefig(f"MA_INF_{name}.png")
-            plt.close()
-        if path is not None:
-            print(path)
+        self.debugger.plot_chokes()
 
     def __repr__(self) -> str:
         return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"
