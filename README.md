@@ -13,12 +13,22 @@ Builds:
 
 <details><summary><b><u>View</b></u></summary>
 <p>
+ 
 <b>no breaking changes, everything is backwards compatible</b>
 
 <b>BugFixes:</b>
  * Pather will no longer try to path through mineral walls ( like in goldenwall) 
  * Fix circular import bug on Debugger
  * Fixed malformed point orientation in rare cases 
+
+<b>Issues Closed:</b>
+ * [#46 Feature Request: possibility to enable pathing through rocks when calculating a path](https://github.com/eladyaniv01/SC2MapAnalysis/issues/46)
+ * [#45 Feature Request: Add air grid](https://github.com/eladyaniv01/SC2MapAnalysis/issues/45)
+ * [#44 Feature Request: add a setting for a custom default weight for the pathing grid](https://github.com/eladyaniv01/SC2MapAnalysis/issues/44)
+ * [#39 Feature : add path_sensitivity for returning a sliced path (every nth point )](https://github.com/eladyaniv01/SC2MapAnalysis/issues/39)
+ * [#38 pathfiner should return a list of Point2 and not numpy array](https://github.com/eladyaniv01/SC2MapAnalysis/issues/38)
+ 
+<h2>Code Changes</h2>
 
 <b>Debugger:</b>
  * Now inspects stack and will not save on tests
