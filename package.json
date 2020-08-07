@@ -1,4 +1,7 @@
 {
   "name": "Sc2MapAnalyzer",
-  "version": "0.0.23"
+  "version": "0.0.24",
+  "dependencies": {
+    "standard-version": "^8.0.2"
+  }
 }
