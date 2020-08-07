@@ -8,7 +8,7 @@ Builds:
 * ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
 
 
-# Latest Changes ![](https://img.shields.io/github/v/release/eladyaniv01/Sc2MapAnalysis?label=Version&style=plastic)
+# Latest Changes ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic)
 
 
 <details><summary><b><u>View</b></u></summary>
