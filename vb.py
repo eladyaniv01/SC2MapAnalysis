@@ -30,8 +30,8 @@ def update_setup(new_version):
     import os
     curdir = os.getcwd()
     click.echo(click.style(curdir + '\\standard-version', fg='blue'))
-    subprocess.check_call('standard-version', shell=True)
-
+    subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
+    subprocess.check_call('git push --follow-tags origin', shell=True)
 
 @vb.command(help='print setup.py')
 def printsetup():
