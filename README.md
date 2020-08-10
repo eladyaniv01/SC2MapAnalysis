@@ -16,40 +16,6 @@ Builds:
  
 <b>no breaking changes, everything is backwards compatible</b>
 
-<b>BugFixes:</b>
- * Pather will no longer try to path through mineral walls ( like in goldenwall) 
- * Fix circular import bug on Debugger
- * Fixed malformed point orientation in rare cases 
-
-<b>Issues Closed:</b>
- * [#46 Feature Request: possibility to enable pathing through rocks when calculating a path](https://github.com/eladyaniv01/SC2MapAnalysis/issues/46)
- * [#45 Feature Request: Add air grid](https://github.com/eladyaniv01/SC2MapAnalysis/issues/45)
- * [#44 Feature Request: add a setting for a custom default weight for the pathing grid](https://github.com/eladyaniv01/SC2MapAnalysis/issues/44)
- * [#39 Feature : add path_sensitivity for returning a sliced path (every nth point )](https://github.com/eladyaniv01/SC2MapAnalysis/issues/39)
- * [#38 pathfiner should return a list of Point2 and not numpy array](https://github.com/eladyaniv01/SC2MapAnalysis/issues/38)
- 
-<h2>Code Changes</h2>
-
-<b>Debugger:</b>
- * Now inspects stack and will not save on tests
- * Will no longer circular call map_data for plotting
- 
-<b>Pather:</b>
-* Radius for resource blockers is now 2, this passes all tests
-
-<b>MapData:</b>
-
-* Grouped methods in map_data for better readablitiy
-* Moved `get_sets_with_mutual_elements` to utils
-* Resource_blockers are now calculated with original coords
-* Removed usage of neighbores ,  instead  adding influence with radius
-
-<b>Tests:</b>
-
-* Now testing both installation types (setup.py and requirements.txt)
-* Every test  will now use the MapAnalyzer.util functions when it can
-* Removed redundant test_map_data from TestSanity,  and put it in its right place,  test_mapdata
-
 
 
 
