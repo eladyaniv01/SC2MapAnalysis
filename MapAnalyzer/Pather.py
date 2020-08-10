@@ -18,6 +18,7 @@ class MapAnalyzerPather:
         self.pyastar = pyastar
         self.pathlib_map = None
         self._set_pathlib_map()
+        self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
@@ -36,6 +37,12 @@ class MapAnalyzerPather:
 
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+
+    def get_climber_grid(self, default_weight: int = 1):
+        """Grid for units like reaper / colossus """
+        grid = self._climber_grid.copy()
+        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        return grid
 
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
                          air_pathing: bool = False) -> ndarray:

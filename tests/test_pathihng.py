@@ -24,6 +24,23 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
+def test_climber_grid() -> None:
+    """assert that we can path through climb cells with climber grid,
+    but not with normal grid"""
+    import pathlib
+    li = sorted(pathlib.Path('..').glob('**/*GoldenWallLE.xz'))
+    path = li[0].absolute()
+    map_data = mock_map_data(path)
+    start = (150, 95)
+    goal = (110, 40)
+    grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is None)
+    grid = map_data.get_climber_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is not None)
+
+
 def test_minerals_walls() -> None:
     # attempting to path through mineral walls in goldenwall should fail
     import pathlib
@@ -46,6 +63,7 @@ def test_minerals_walls() -> None:
     grid = map_data.get_pyastar_grid()
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
     assert (path is not None)
+
 
 class TestPathing:
     """
