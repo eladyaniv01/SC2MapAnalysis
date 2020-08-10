@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
@@ -9,11 +9,13 @@ from skimage import draw as skdraw
 from MapAnalyzer.exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 
+if TYPE_CHECKING:
+    from MapAnalyzer.MapData import MapData
 
 class MapAnalyzerPather:
     """"""
 
-    def __init__(self, map_data):
+    def __init__(self, map_data: "MapData") -> None:
         self.map_data = map_data
         self.pyastar = pyastar
         self.pathlib_map = None
@@ -38,7 +40,7 @@ class MapAnalyzerPather:
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
-    def get_climber_grid(self, default_weight: int = 1):
+    def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self._climber_grid.copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)

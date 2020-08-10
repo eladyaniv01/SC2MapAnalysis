@@ -3,13 +3,16 @@ import inspect
 import os
 import sys
 import warnings
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
 from loguru import logger
 from numpy import int64, ndarray
 
 from .constants import COLORS, LOG_FORMAT
+
+if TYPE_CHECKING:
+    from MapAnalyzer.MapData import MapData
 
 
 class LogFilter:
@@ -24,7 +27,7 @@ class LogFilter:
 class MapAnalyzerDebugger:
     """"""
 
-    def __init__(self, map_data, loglevel="ERROR"):
+    def __init__(self, map_data: "MapData", loglevel: str = "ERROR") -> None:
         self.map_data = map_data
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
@@ -45,7 +48,7 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         plt.close(fig='all')
 
-    def save(self, filename):
+    def save(self, filename: str) -> bool:
 
         for i in inspect.stack():
             if 'test_suite.py' in str(i):

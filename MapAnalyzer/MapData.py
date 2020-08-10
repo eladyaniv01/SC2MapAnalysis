@@ -88,7 +88,7 @@ class MapData:
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
                                             air_pathing=air_pathing)
 
-    def get_climber_grid(self, default_weight: int = 1):
+    def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         return self.pather.get_climber_grid(default_weight)
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
@@ -498,7 +498,7 @@ class MapData:
     """Plot methods"""
 
     def plot_map(
-            self, fontdict: dict = None, save=None, figsize: int = 20
+            self, fontdict: dict = None, save: Optional[bool] = None, figsize: int = 20
     ) -> None:
         """
         Plot map
@@ -508,7 +508,7 @@ class MapData:
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
-                             plot=None, save=None, name: Optional[str] = None,
+                             plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         if save is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
