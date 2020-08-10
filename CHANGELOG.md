@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.44](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.43...v0.0.44) (2020-08-10)
 
+### [0.0.44](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.43...v0.0.44) (2020-08-10)
+
 ### [0.0.42](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.40...v0.0.42) (2020-08-07)
 
 * feat Version bump cli (#50) ([b753d34](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b753d3442421dd524d1c0043c4794f46b5a0b082)), closes [#50](https://github.com/eladyaniv01/SC2MapAnalysis/issues/50)
