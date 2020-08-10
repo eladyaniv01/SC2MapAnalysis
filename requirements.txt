@@ -346,7 +346,7 @@ matplotlib== 3.3.0
 numpy== 1.19.1
 
 # SC2MapAnalysis\MapAnalyzer\Pather.py: 4
-pyastar== 0.0.1
+pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\_pytesttester.py: 125
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\conftest.py: 7
@@ -446,7 +446,7 @@ pyastar== 0.0.1
 # SC2MapAnalysis\tests\monkeytest.py: 1
 # SC2MapAnalysis\tests\test_pathihng.py: 3,4
 # SC2MapAnalysis\tests\test_suite.py: 3
-pytest== 6.0.1
+# pytest== 6.0.1
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\lib\_iotools.py: 544
 python_dateutil== 2.8.1
