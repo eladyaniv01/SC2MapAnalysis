@@ -3,31 +3,16 @@
 Builds:
 -------
 
-* [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
-
-* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
+* [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
 
 
-# Latest Changes ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic)
-
-
-<details><summary><b><u>View</b></u></summary>
-<p>
- 
-<b>no breaking changes, everything is backwards compatible</b>
-
-
-
-
-</p>
-</details>
+# [Changelog](https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md) ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic)
 
 # Summary
 
 A standalone plugin for python SC2 api 
 
 Early Stage development,
-- [Latest Changes](#latest-changes)
 - [Getting Started](#getting-started)
 - [Pathfinding](#Pathfinding)
 - [How to plug it on your bot](#How-to-plug-it-on-your-bot)
