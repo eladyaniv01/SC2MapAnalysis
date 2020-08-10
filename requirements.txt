@@ -2,7 +2,7 @@
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\random\_examples\cython\setup.py: 10
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\random\tests\test_extending.py: 28,29
-Cython== 0.29.21
+Cython
 
 # SC2MapAnalysis\.ipynb_checkpoints\ResearchNotbook-checkpoint.ipynb: 142,143
 # SC2MapAnalysis\MapAnalyzer\MapData.py: 6,7
@@ -13,11 +13,11 @@ Cython== 0.29.21
 # SC2MapAnalysis\MapAnalyzer\destructibles.py: 4
 # SC2MapAnalysis\MapAnalyzer\utils.py: 7,8,9,10
 # SC2MapAnalysis\dummybot.py: 5,6
-burnysc2== 5.0.0
+burnysc2
 
 # SC2MapAnalysis\sc2macli.py: 4
 # SC2MapAnalysis\vb.py: 5
-click== 7.1.2
+click
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\conftest.py: 6
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\core\tests\test_arrayprint.py: 4,5
@@ -29,7 +29,7 @@ click== 7.1.2
 # SC2MapAnalysis\MapAnalyzer\Debugger.py: 9
 # SC2MapAnalysis\MapAnalyzer\decorators.py: 11
 # SC2MapAnalysis\tests\mocksetup.py: 11
-loguru== 0.5.1
+loguru
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\core\function_base.py: 31,187,296
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\fft\_pocketfft.py: 99,193,668,764
@@ -42,7 +42,7 @@ loguru== 0.5.1
 # SC2MapAnalysis\MapAnalyzer\Debugger.py: 43,48,58,65,89,101,118,149,176,177,178
 # SC2MapAnalysis\MapAnalyzer\Polygon.py: 55
 # SC2MapAnalysis\MapAnalyzer\Region.py: 57,69,78,96,107,120,138
-matplotlib== 3.3.0
+matplotlib
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\__init__.py: 124,208
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\_pytesttester.py: 38,142,173
@@ -343,7 +343,7 @@ matplotlib== 3.3.0
 # SC2MapAnalysis\MapAnalyzer\constructs.py: 3
 # SC2MapAnalysis\MapAnalyzer\sc2pathlibp\map.py: 4
 # SC2MapAnalysis\MapAnalyzer\sc2pathlibp\path_finder.py: 4
-numpy== 1.19.1
+numpy
 
 # SC2MapAnalysis\MapAnalyzer\Pather.py: 4
 pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar
@@ -456,23 +456,20 @@ python_dateutil== 2.8.1
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\core\tests\test_deprecations.py: 21
 pytz== 2020.1
 
-# SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\testing\_private\utils.py: 165,183
-pywin32== 228
-
 # SC2MapAnalysis\MapAnalyzer\utils.py: 6
-s2clientprotocol== 5.0.1.81009.0
+s2clientprotocol
 
 # SC2MapAnalysis\MapAnalyzer\Pather.py: 7
 # SC2MapAnalysis\MapAnalyzer\Polygon.py: 77
-scikit_image== 0.17.2
+scikit_image
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\lib\function_base.py: 1939
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\testing\_private\nosetester.py: 243
 # SC2MapAnalysis\.ipynb_checkpoints\ResearchNotbook-checkpoint.ipynb: 144,145,366
 # SC2MapAnalysis\MapAnalyzer\MapData.py: 8,9
 # SC2MapAnalysis\MapAnalyzer\Polygon.py: 7
-scipy== 1.5.2
+scipy
 
 # SC2MapAnalysis\MapAnalyzer\decorators.py: 12,13
 # SC2MapAnalysis\tests\mocksetup.py: 8
-tqdm== 4.48.2
+tqdm
