@@ -19,7 +19,7 @@ requirements = [  # pragma: no cover
 ]
 setup(  # pragma: no cover
         name="sc2mapanalysis",
-        version="0.0.44",
+        version="0.0.45",
         install_requires=requirements,
         setup_requires=["wheel", "numpy"],
         extras_require={
