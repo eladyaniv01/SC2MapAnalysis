@@ -24,7 +24,7 @@ click== 7.1.2
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\core\tests\test_numeric.py: 18,19
 # SC2MapAnalysis\tests\mocksetup.py: 10
 # SC2MapAnalysis\tests\test_suite.py: 4
-hypothesis== 5.23.11
+# hypothesis== 5.23.11
 
 # SC2MapAnalysis\MapAnalyzer\Debugger.py: 9
 # SC2MapAnalysis\MapAnalyzer\decorators.py: 11
