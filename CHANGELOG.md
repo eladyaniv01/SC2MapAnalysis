@@ -4,12 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.46](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.45...v0.0.46) (2020-08-10)
 
-
-### Features
-
-* last try ([410aad5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/410aad52bb4ccdebc6dda08b09cb9c5582c673f0))
-
-
 ### Documentation
 
 * moved changelog from readme.md to changelog.md ([0927cba](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0927cbab8bbd2136de3527c314ab2cbd8f304cf5))
