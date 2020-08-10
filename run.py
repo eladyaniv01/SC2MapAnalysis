@@ -54,7 +54,7 @@ for idx in range(8):
     if idx > 0:
         NUM_POINTS = idx * 10
     else:
-        NUM_POINTS = 35
+        NUM_POINTS = 1
 
     # generating random points for added influence
     for i in range(NUM_POINTS):
@@ -62,13 +62,19 @@ for idx in range(8):
 
     """Requesting a grid and adding influence / cost"""
     # getting the base grid for pathing
-    arr = map_data.get_pyastar_grid()
+    if NUM_POINTS / 10 % 2 == 0:
+        arr = map_data.get_climber_grid()
+        grid_name = "ClimberGrid"
+    else:
+        arr = map_data.get_pyastar_grid()
+        grid_name = "NormalGrid"
     r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
         arr = map_data.add_influence(p, r, arr)
 
     """Plot path on weighted grid"""
-    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence")
+    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr,
+                                  name=f"{grid_name}{NUM_POINTS} Points of influence")
     map_data.show()
     map_data.close()

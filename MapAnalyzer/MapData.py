@@ -88,6 +88,9 @@ class MapData:
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
                                             air_pathing=air_pathing)
 
+    def get_climber_grid(self, default_weight: int = 1):
+        return self.pather.get_climber_grid(default_weight)
+
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
