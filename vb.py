@@ -29,8 +29,9 @@ def update_setup(new_version):
     click.echo(click.style(curdir + '\\standard-version', fg='blue'))
     subprocess.check_call('git fetch', shell=True)
     subprocess.check_call('git pull', shell=True)
+    subprocess.check_call('git add setup.py', shell=True)
+    subprocess.check_call('git commit -m "bump setup.py"', shell=True)
     subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
-    click.echo("Don't forget to commit setup.py")
     # subprocess.check_call('git push --follow-tags origin', shell=True)
 
 
