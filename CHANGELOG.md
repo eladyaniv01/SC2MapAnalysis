@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.47](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.46...v0.0.47) (2020-08-11)
+
+
+### Documentation
+
+* fix requirements.txt and requirements.dev.txt ([36e7368](https://github.com/eladyaniv01/SC2MapAnalysis/commit/36e73681691f87798dd4ee59fe9570b0ac612734))
+* fix requirements.txt and requirements.dev.txt ([e88637c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e88637cfc5fbfc75c05dcd29899b894f42242c1f))
+* fix requirements.txt and requirements.dev.txt ([96886d5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/96886d52f27706ba427bcbe3ff2c2b3fba962a0e))
+* fix requirements.txt and requirements.dev.txt ([da935c7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/da935c74ed5065e612b52341f21f0964c4a45be1))
+* fix requirements.txt and requirements.dev.txt ([ae8dfb1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ae8dfb193471b84974788d6e5abca414bf96c9b8))
+
 ### [0.0.46](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.45...v0.0.46) (2020-08-10)
 
 ### Documentation
