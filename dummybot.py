@@ -32,7 +32,7 @@ class MATester(sc2.BotAI):
         self.path = None
 
     async def on_start(self):
-        self.map_data = MapData(self)
+        self.map_data = MapData(self, loglevel="DEBUG")
         self.logger = self.map_data.logger
         base = self.townhalls[0]
         reg_start = self.map_data.where(base.position_tuple)
@@ -54,10 +54,10 @@ class MATester(sc2.BotAI):
         # self.influence_points = [(self.ramp.top_center, 2), (Point2((66, 66)), 18)]
 
         self.influence_points = self._get_random_influence(25, 5)
-        for tup in self.influence_points:
-            p = tup[0]
-            r = tup[1]
-            self.map_data.add_influence(p, r=r, arr=self.influence_grid)
+        # for tup in self.influence_points:
+        #     p = tup[0]
+        #     r = tup[1]
+        #     self.map_data.add_influence(p, r=r, arr=self.influence_grid)
         self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens,
                                            allow_diagonal=True)
         self.hero_tag = self.workers[0].tag
