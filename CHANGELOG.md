@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file. See [standa
 * fix: max_region_size up to 8500 to fix goldenwall
 * added air_pathing deprecation warning for requesting through pyastar
 
+### Issues Closed:
+ * [#53 Feature request: get dead airspace from map analyzer](https://github.com/eladyaniv01/SC2MapAnalysis/issues/53)
+
 ### [0.0.46](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.45...v0.0.46) (2020-08-10)
 
 ### Documentation
