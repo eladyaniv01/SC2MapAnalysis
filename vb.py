@@ -30,7 +30,7 @@ def update_setup(new_version):
     subprocess.check_call('git fetch', shell=True)
     subprocess.check_call('git pull', shell=True)
     subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
-    subprocess.check_call('git push --follow-tags origin', shell=True)
+    # subprocess.check_call('git push --follow-tags origin', shell=True)
 
 
 @vb.command(help='print setup.py')
