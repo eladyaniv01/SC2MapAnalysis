@@ -53,8 +53,6 @@ class MapData:
         self.vision_blockers_grid: list = []  # set later  on compile
         self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
                                   any(x in m.name.lower() for x in {"rich", "450"})]
-        # self.resource_blockers = [Point2((m.position[1], m.position[0])) for m in self.bot.all_units]
-        # self.resource_blockers.extend(self.bot.vespene_geyser) # breaks the label function for some reason on goldenwall
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
 
@@ -84,12 +82,20 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
-                         air_pathing: bool = False) -> ndarray:
+                         air_pathing=None) -> ndarray:
+        if air_pathing is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
-                                            air_pathing=air_pathing)
+                                            )
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         return self.pather.get_climber_grid(default_weight)
+
+    def get_air_vs_ground_grid(self, default_weight: int = 100):
+        return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
+
+    def get_clean_air_grid(self):
+        return self.pather.get_clean_air_grid()
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
@@ -345,22 +351,15 @@ class MapData:
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions
-        # GOLDENWALL FIXED 18e7943cbac300afd686b4ceec40821a93692875r
         correct_blockers = []
         for point in self.resource_blockers:
             grid[int(point[0])][int(point[1])] = 0
             if point not in self.resource_blockers:
                 correct_blockers.append(point)
-
-        # for resource_point2 in self.resource_blockers:
-        #     for n in resource_point2.neighbors4:
-        #         point = Point2((n.rounded[0], n.rounded[1]))
-        #         if point[0] < grid.shape[0] and point[1] < grid.shape[1]:
-        #             grid[point[1]][point[0]] = 0
-        #             if point not in self.resource_blockers:
-        #                 correct_blockers.append(point)
-        correct_blockers = list(set(correct_blockers))
-        self.resource_blockers.extend(correct_blockers)
+            for n in point.neighbors4:
+                point_ = Point2((n.rounded[0], n.rounded[1]))
+                if point_[0] < grid.shape[1] and point_[1] < grid.shape[0]:
+                    grid[int(point_[1])][int(point_[0])] = 0
 
         s = generate_binary_structure(BINARY_STRUCTURE, BINARY_STRUCTURE)
         labeled_array, num_features = ndlabel(grid, structure=s)

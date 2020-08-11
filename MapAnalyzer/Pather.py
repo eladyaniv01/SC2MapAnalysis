@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
@@ -37,20 +38,28 @@ class MapAnalyzerPather:
                 self.map_data.bot.game_info.playable_area,
         )
 
+    @lru_cache()
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
+    @lru_cache()
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self._climber_grid.copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         return grid
 
-    def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
-                         air_pathing: bool = False) -> ndarray:
+    @lru_cache()
+    def get_clean_air_grid(self):
+        return np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
 
-        if air_pathing:
-            return np.ones(shape=self.map_data.path_arr.shape)
+    @lru_cache()
+    def get_air_vs_ground_grid(self, default_weight: int):
+        grid = np.fmin(self.map_data.path_arr, self.map_data.placement_arr)
+        air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
+        return air_vs_ground_grid.T
+
+    def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
 
         grid = self.map_data.pather.get_base_pathing_grid().copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)

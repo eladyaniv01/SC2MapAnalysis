@@ -63,10 +63,11 @@ for idx in range(8):
     """Requesting a grid and adding influence / cost"""
     # getting the base grid for pathing
     if NUM_POINTS / 10 % 2 == 0:
-        arr = map_data.get_climber_grid()
-        grid_name = "ClimberGrid"
+        # arr = map_data.get_air_vs_ground_grid()
+        arr = map_data.get_clean_air_grid()
+        grid_name = "AvG_Grid"
     else:
-        arr = map_data.get_pyastar_grid()
+        arr = map_data.get_pyastar_grid(air_pathing=False)
         grid_name = "NormalGrid"
     r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
@@ -77,4 +78,4 @@ for idx in range(8):
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr,
                                   name=f"{grid_name}{NUM_POINTS} Points of influence")
     map_data.show()
-    map_data.close()
+    # map_data.close()
