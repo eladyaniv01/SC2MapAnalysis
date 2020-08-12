@@ -10,6 +10,18 @@ class CustomDeprecationWarning(BaseException):
         return f"[DeprecationWarning] Passing `{self.old}` argument is deprecated, and will have no effect,\nUse `{self.new}` instead"
 
 
+class PatherNoPointsException(BaseException):
+    def __init__(self, start, goal) -> None:
+        super().__init__()
+        self.start = start
+        self.goal = goal
+
+    def __str__(self) -> str:
+        return f"[PatherNoPointsException]" \
+            f"\nExpected: Start (pointlike), Goal (pointlike)," \
+            f"\nGot: Start {self.start}, Goal {self.goal}."
+
+
 class OutOfBoundsException(BaseException):
     def __init__(self, p: Tuple[int, int]) -> None:
         super().__init__()
