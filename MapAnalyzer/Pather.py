@@ -8,7 +8,7 @@ from sc2.position import Point2
 from skimage import draw as skdraw
 
 from MapAnalyzer.constants import NONPATHABLE_RADIUS, RESOURCE_BLOCKER_RADIUS
-from MapAnalyzer.exceptions import OutOfBoundsException
+from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from .sc2pathlibp import Sc2Map
 
 if TYPE_CHECKING:
@@ -90,8 +90,12 @@ class MapAnalyzerPather:
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
-        start = int(start[0]), int(start[1])
-        goal = int(goal[0]), int(goal[1])
+        if start is not None and goal is not None:
+            start = int(start[0]), int(start[1])
+            goal = int(goal[0]), int(goal[1])
+        else:
+            self.map_data.logger.error(PatherNoPointsException(start=start, goal=goal))
+            return None
         if grid is None:
             grid = self.get_pyastar_grid()
 
