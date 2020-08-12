@@ -29,7 +29,7 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
 def test_mapdata(n, m):
     map_files = get_map_file_list()
     map_data = mock_map_data(random.choice(map_files))
-    map_data.save_plot()
+    map_data.plot_map()
     logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
     set_points = set(points)
