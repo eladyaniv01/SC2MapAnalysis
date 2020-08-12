@@ -54,6 +54,10 @@ def test_minerals_walls() -> None:
     grid = map_data.get_pyastar_grid()
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
     assert (path is None)
+    # also test climber grid for nonpathables
+    grid = map_data.get_climber_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is None)
 
     # attempting to path through tight pathways near destructables should work
     path = os.path.join(get_map_files_folder(), 'AbyssalReefLE.xz')
