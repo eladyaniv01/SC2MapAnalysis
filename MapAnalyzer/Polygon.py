@@ -39,6 +39,7 @@ class Polygon:
     @property
     @lru_cache()
     def regions(self) -> List["Region"]:
+        from MapAnalyzer.Region import Region
         if len(self.areas) > 0:
             return [r for r in self.areas if isinstance(r, Region)]
         return []
