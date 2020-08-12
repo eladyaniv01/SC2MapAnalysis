@@ -10,6 +10,21 @@ if TYPE_CHECKING:
     from MapAnalyzer import MapData, Region
 
 
+class BuildablePoints:
+    def __init__(self, polygon, points):
+        self.polygon = polygon
+        self.points = points
+
+    def update(self):
+        parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
+        buildable_indices = np.where(parr == 1)
+        buildable_points = []
+        _points = list(self.polygon.map_data.indices_to_points(buildable_indices))
+        for p in _points:
+            if self.polygon.map_data.placement_arr[p] == 1:
+                buildable_points.append(p)
+        self.points = buildable_points
+
 class Polygon:
     """
     Polygon DocString
@@ -35,6 +50,12 @@ class Polygon:
         self.points = set([Point2(p) for p in points])
         self.indices = self.map_data.points_to_indices(self.points)
         self.map_data.polygons.append(self)
+        self._buildable_points = BuildablePoints(polygon=self, points=None)
+
+    @property
+    def buildable_points(self):
+        self._buildable_points.update()
+        return self._buildable_points.points
 
     @property
     @lru_cache()
