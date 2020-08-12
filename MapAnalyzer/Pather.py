@@ -50,8 +50,13 @@ class MapAnalyzerPather:
         return grid
 
     @lru_cache()
-    def get_clean_air_grid(self):
-        return np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+    def get_clean_air_grid(self, default_weight: int = 1):
+        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+        if default_weight == 1:
+            return clean_air_grid
+        else:
+            return np.where(clean_air_grid == 1, default_weight, 0)
+
 
     @lru_cache()
     def get_air_vs_ground_grid(self, default_weight: int):
