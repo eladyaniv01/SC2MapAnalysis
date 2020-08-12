@@ -14,6 +14,7 @@ from .sc2pathlibp import Sc2Map
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
+
 class MapAnalyzerPather:
     """"""
 
@@ -39,7 +40,7 @@ class MapAnalyzerPather:
                 self.map_data.bot.game_info.playable_area,
         )
 
-    def _add_non_pathables_ground(self, grid, include_destructables: bool = True):
+    def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
         nonpathables = self.map_data.bot.structures
         nonpathables.extend(self.map_data.bot.enemy_structures)
         nonpathables.extend(self.map_data.mineral_fields)

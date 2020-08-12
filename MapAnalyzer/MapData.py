@@ -26,7 +26,6 @@ class MapData:
     MapData DocString
     """
 
-    # todo goldenwall big region is not found
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
         # store relevant data from api
         self.bot = bot
@@ -82,7 +81,7 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
-                         air_pathing=None) -> ndarray:
+                         air_pathing: Optional[bool] = None) -> ndarray:
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
@@ -202,7 +201,11 @@ class MapData:
         tanks in direction to the enemy forces
         passing in the Area's corners as points and enemy army's location as target
         """
-        return points[self.closest_node_idx(node=target, nodes=points)]
+        if isinstance(points, list):
+            return points[self.closest_node_idx(node=target, nodes=points)]
+        else:
+            self.logger.warning(type(points))
+            return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
 
