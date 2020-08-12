@@ -167,7 +167,7 @@ class MapData:
         """
         convert points to numpy ndarray
         """
-        rows, cols = self.path_arr.shape
+        cols, rows = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
         indices = self.points_to_indices(points)
         arr[indices] = 1
