@@ -1,10 +1,13 @@
 from functools import lru_cache
-from typing import List, Union
+from typing import List, TYPE_CHECKING, Union
 
 import numpy as np
 from sc2.position import Point2
 
-from . import Polygon
+from MapAnalyzer.Polygon import Polygon
+
+if TYPE_CHECKING:
+    from MapAnalyzer import MapData
 
 
 class Region:
@@ -14,7 +17,7 @@ class Region:
 
     def __init__(
             self,
-            map_data: "MapData",
+            map_data: 'MapData',
             array: np.ndarray,
             label: int,
             map_expansions: List[Point2],
@@ -23,7 +26,7 @@ class Region:
         self.array = array
         self.label = label
 
-        self.polygon = Polygon.Polygon(map_data=self.map_data, array=self.array)  # for constructor
+        self.polygon = Polygon(map_data=self.map_data, array=self.array)  # for constructor
         self.polygon.areas.append(self)
         self.polygon.is_region = True
         self.bases = [
@@ -63,7 +66,6 @@ class Region:
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
             plt.grid()
-            plt.show()
 
     def _plot_corners(self) -> None:
         import matplotlib.pyplot as plt

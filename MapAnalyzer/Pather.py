@@ -7,6 +7,7 @@ from numpy import ndarray
 from sc2.position import Point2
 from skimage import draw as skdraw
 
+from MapAnalyzer.constants import NONPATHABLE_RADIUS, RESOURCE_BLOCKER_RADIUS
 from MapAnalyzer.exceptions import OutOfBoundsException
 from .sc2pathlibp import Sc2Map
 
@@ -38,20 +39,42 @@ class MapAnalyzerPather:
                 self.map_data.bot.game_info.playable_area,
         )
 
+    def _add_non_pathables_ground(self, grid, include_destructables: bool = True):
+        nonpathables = self.map_data.bot.structures
+        nonpathables.extend(self.map_data.bot.enemy_structures)
+        nonpathables.extend(self.map_data.mineral_fields)
+        for obj in nonpathables:
+            radius = NONPATHABLE_RADIUS
+            grid = self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
+        for pos in self.map_data.resource_blockers:
+            radius = RESOURCE_BLOCKER_RADIUS
+            grid = self.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
+        if include_destructables:
+            destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
+            for rock in destructables_filtered:
+                if "plates" not in rock.name.lower():
+                    self.add_influence(p=rock.position, r=1 * rock.radius, arr=grid, weight=np.inf)
+        return grid
+
     @lru_cache()
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
     @lru_cache()
-    def get_climber_grid(self, default_weight: int = 1) -> ndarray:
+    def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self._climber_grid.copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
     @lru_cache()
-    def get_clean_air_grid(self):
-        return np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+    def get_clean_air_grid(self, default_weight: int = 1):
+        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+        if default_weight == 1:
+            return clean_air_grid
+        else:
+            return np.where(clean_air_grid == 1, default_weight, 0)
 
     @lru_cache()
     def get_air_vs_ground_grid(self, default_weight: int):
@@ -60,23 +83,9 @@ class MapAnalyzerPather:
         return air_vs_ground_grid.T
 
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
-
         grid = self.map_data.pather.get_base_pathing_grid().copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        nonpathables = self.map_data.bot.structures
-        nonpathables.extend(self.map_data.bot.enemy_structures)
-        nonpathables.extend(self.map_data.mineral_fields)
-        for obj in nonpathables:
-            radius = 0.8
-            grid = self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
-        for pos in self.map_data.resource_blockers:
-            radius = 2
-            grid = self.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
-        if include_destructables:
-            destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
-            for rock in destructables_filtered:
-                if "plates" not in rock.name.lower():
-                    self.add_influence(p=rock.position, r=1 * rock.radius, arr=grid, weight=np.inf)
+        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,

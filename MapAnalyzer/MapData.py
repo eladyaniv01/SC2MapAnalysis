@@ -94,8 +94,8 @@ class MapData:
     def get_air_vs_ground_grid(self, default_weight: int = 100):
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
-    def get_clean_air_grid(self):
-        return self.pather.get_clean_air_grid()
+    def get_clean_air_grid(self, default_weight: int = 1):
+        return self.pather.get_clean_air_grid(default_weight=default_weight)
 
     def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:

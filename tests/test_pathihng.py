@@ -38,7 +38,7 @@ def test_climber_grid() -> None:
     assert (path is None)
     grid = map_data.get_climber_grid()
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
-    assert (path is not None)
+    assert (path is None)
 
 
 def test_minerals_walls() -> None:
@@ -52,6 +52,10 @@ def test_minerals_walls() -> None:
     start = (110, 95)
     goal = (110, 40)
     grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is None)
+    # also test climber grid for nonpathables
+    grid = map_data.get_climber_grid()
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
     assert (path is None)
 

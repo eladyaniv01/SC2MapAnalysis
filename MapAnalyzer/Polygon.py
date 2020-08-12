@@ -7,9 +7,7 @@ from sc2.position import Point2
 from scipy.ndimage import center_of_mass
 
 if TYPE_CHECKING:
-    from MapAnalyzer import MapData
-
-from MapAnalyzer.Region import Region
+    from MapAnalyzer import MapData, Region
 
 
 class Polygon:
@@ -41,6 +39,7 @@ class Polygon:
     @property
     @lru_cache()
     def regions(self) -> List["Region"]:
+        from MapAnalyzer.Region import Region
         if len(self.areas) > 0:
             return [r for r in self.areas if isinstance(r, Region)]
         return []
