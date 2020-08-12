@@ -40,6 +40,10 @@ class Region:
         self.region_chokes = []
 
     @property
+    def buildable_points(self):
+        return self.polygon.buildable_points
+
+    @property
     def center(self) -> Point2:
         """
         center
