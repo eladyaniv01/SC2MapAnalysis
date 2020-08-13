@@ -26,7 +26,6 @@ class MapData:
     MapData DocString
     """
 
-    # todo goldenwall big region is not found
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
         # store relevant data from api
         self.bot = bot
@@ -82,7 +81,7 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
-                         air_pathing=None) -> ndarray:
+                         air_pathing: Optional[bool] = None) -> ndarray:
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
@@ -170,8 +169,27 @@ class MapData:
         """
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
+        if isinstance(points, set):
+            points = list(points)
+
+        def in_bounds_x(x):
+            width = arr.shape[0] - 1
+            if 0 < x < width:
+                return x
+            return 0
+
+        def in_bounds_y(y):
+            height = arr.shape[1] - 1
+            if 0 < y < height:
+                return y
+            return 0
+
+        x_vec = np.vectorize(in_bounds_x)
+        y_vec = np.vectorize(in_bounds_y)
         indices = self.points_to_indices(points)
-        arr[indices] = 1
+        x = x_vec(indices[0])
+        y = y_vec(indices[1])
+        arr[x, y] = 1
         return arr
 
     @staticmethod
@@ -202,7 +220,11 @@ class MapData:
         tanks in direction to the enemy forces
         passing in the Area's corners as points and enemy army's location as target
         """
-        return points[self.closest_node_idx(node=target, nodes=points)]
+        if isinstance(points, list):
+            return points[self.closest_node_idx(node=target, nodes=points)]
+        else:
+            self.logger.warning(type(points))
+            return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
 

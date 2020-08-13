@@ -15,12 +15,14 @@ if TYPE_CHECKING:
 
 
 class LogFilter:
-    def __init__(self, level: str) -> None:
-        self.level = level
+    def __init__(self, module_name: str) -> None:
+        self.module_name = module_name
 
     def __call__(self, record: Dict[str, Any]) -> bool:
-        levelno = logger.level(self.level).no
-        return record["level"].no >= levelno
+        # return True
+        if self.module_name.lower() in record["name"].lower() or 'main' in record["name"].lower():
+            return True
+        return False
 
 
 class MapAnalyzerDebugger:
@@ -32,7 +34,7 @@ class MapAnalyzerDebugger:
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
         self.logger = logger
-        self.log_filter = LogFilter(loglevel)
+        self.log_filter = LogFilter("MapAnalyzer")
         self.logger.remove()
         self.log_format = LOG_FORMAT
         self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
