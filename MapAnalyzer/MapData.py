@@ -249,7 +249,7 @@ class MapData:
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
-            if region.inside_p(point):
+            if region.is_inside_point(point):
                 results.append(region)
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
@@ -275,7 +275,7 @@ class MapData:
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
-            if region.inside_p(point):
+            if region.is_inside_point(point):
                 return region
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
@@ -417,7 +417,7 @@ class MapData:
             self._set_map_ramps()
 
         ramp_nodes = self.get_ramp_nodes()
-        perimeter_nodes = region.polygon.perimeter_points
+        perimeter_nodes = region.perimeter_points
         result_ramp_indexes = list(set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
 
         for rn in result_ramp_indexes:
@@ -431,7 +431,7 @@ class MapData:
         ramps = []
 
         for ramp in region.region_ramps:
-            for p in region.polygon.perimeter_points:
+            for p in region.perimeter_points:
                 if self.ramp_close_enough(ramp, p, n=8):
                     ramps.append(ramp)
         ramps = list(set(ramps))

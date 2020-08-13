@@ -1,5 +1,4 @@
-from functools import lru_cache
-from typing import List, TYPE_CHECKING, Union
+from typing import List, TYPE_CHECKING
 
 import numpy as np
 from sc2.position import Point2
@@ -10,11 +9,7 @@ if TYPE_CHECKING:
     from MapAnalyzer import MapData
 
 
-class Region:
-    """
-    Region DocString
-    """
-
+class Region(Polygon):
     def __init__(
             self,
             map_data: 'MapData',
@@ -22,17 +17,15 @@ class Region:
             label: int,
             map_expansions: List[Point2],
     ) -> None:
+        super().__init__(map_data=map_data, array=array)
         self.map_data = map_data
         self.array = array
         self.label = label
-
-        self.polygon = Polygon(map_data=self.map_data, array=self.array)  # for constructor
-        self.polygon.areas.append(self)
-        self.polygon.is_region = True
+        self.is_region = True
         self.bases = [
                 base
                 for base in map_expansions
-                if self.polygon.is_inside_point((base.rounded[0], base.rounded[1]))
+                if self.is_inside_point((base.rounded[0], base.rounded[1]))
         ]
         self.region_ramps = []  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
@@ -40,22 +33,11 @@ class Region:
         self.region_chokes = []
 
     @property
-    def buildable_points(self):
-        return self.polygon.buildable_points
-
-    @property
-    def center(self) -> Point2:
-        """
-        center
-        """
-        return self.polygon.center
-
-    @property
-    def corners(self) -> List[Point2]:
+    def corners(self):
         """
         corners
         """
-        return self.polygon.corner_points
+        return self.corner_points
 
     def plot_perimeter(self, self_only: bool = True) -> None:
         """
@@ -65,7 +47,7 @@ class Region:
 
         plt.style.use("ggplot")
 
-        x, y = zip(*self.polygon.perimeter)  # reversing for "lower" origin
+        x, y = zip(*self.perimeter)  # reversing for "lower" origin
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
@@ -74,7 +56,7 @@ class Region:
     def _plot_corners(self) -> None:
         import matplotlib.pyplot as plt
         plt.style.use("ggplot")
-        for corner in self.polygon.corner_points:
+        for corner in self.corner_points:
             plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
     def _plot_ramps(self) -> None:
@@ -103,7 +85,7 @@ class Region:
 
         plt.style.use("ggplot")
         for vb in self.map_data.vision_blockers:
-            if self.inside_p(point=vb):
+            if self.is_inside_point(point=vb):
                 plt.text(vb[0], vb[1], "X", c="r")
 
     def _plot_minerals(self) -> None:
@@ -114,7 +96,7 @@ class Region:
 
         plt.style.use("ggplot")
         for mineral_field in self.map_data.mineral_fields:
-            if self.inside_p(mineral_field.position.rounded):
+            if self.is_inside_point(mineral_field.position.rounded):
                 plt.scatter(
                         mineral_field.position[0], mineral_field.position[1], color="blue"
                 )
@@ -127,7 +109,7 @@ class Region:
 
         plt.style.use("ggplot")
         for gasgeyser in self.map_data.normal_geysers:
-            if self.inside_p(gasgeyser.position.rounded):
+            if self.is_inside_point(gasgeyser.position.rounded):
                 plt.scatter(
                         gasgeyser.position[0],
                         gasgeyser.position[1],
@@ -157,20 +139,6 @@ class Region:
         else:  # pragma: no cover
             self.plot_perimeter(self_only=False)
 
-    @lru_cache(100)
-    def inside_p(self, point: Union[Point2, tuple]) -> bool:
-        """
-        inside_p
-        """
-        return self.polygon.is_inside_point(point)
-
-    @lru_cache(100)
-    def inside_i(self, point: Union[Point2, tuple]) -> bool:  # pragma: no cover
-        """
-        inside_i
-        """
-        return self.polygon.is_inside_indices(point)
-
     @property
     def base_locations(self) -> List[Point2]:
         """
@@ -178,37 +146,9 @@ class Region:
         """
         return self.bases
 
-    # @property
-    # def is_reachable(self, areas):  # pragma: no cover
-    #     """
-    #     is connected to another areas directly
-    #     :param areas:
-    #     :type areas:
-    #     :return:
-    #     :rtype:
-    #     """
-    #     pass
-
-    @property
-    def get_reachable_regions(self):
-        """
-        """
-        result = []
-        for r in self.region_ramps:
-            for reg in r.regions:
-                if reg != self:
-                    result.append((str(r), reg))
-        return set(result)
-
     @property
     def get_area(self) -> int:
         """
         get_area
         """
-        return self.polygon.area
-
-    def __repr__(self) -> str:  # pragma: no cover
-        """
-        __repr__
-        """
-        return "Region " + str(self.label)
+        return self.area
