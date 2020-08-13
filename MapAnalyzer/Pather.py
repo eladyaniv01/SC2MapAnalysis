@@ -95,7 +95,7 @@ class MapAnalyzerPather:
             start = int(start[0]), int(start[1])
             goal = int(goal[0]), int(goal[1])
         else:
-            self.map_data.logger.error(PatherNoPointsException(start=start, goal=goal))
+            self.map_data.logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
         if grid is None:
             grid = self.get_pyastar_grid()

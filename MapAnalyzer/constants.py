@@ -26,8 +26,8 @@ COLORS = {
         19: "azure",
         20: "azure"
 }
-LOG_FORMAT = "<w><bold>{time:YY:MM:DD:HH:mm:ss} |" \
-             " <level>{level: <8} </level>| <green>{name: ^15}</green> |" \
-             " {function: ^15} |" \
-             " {line: >4} |" \
-             " <level>{level.icon} {message}</level></bold></w>"
+LOG_FORMAT = "<w><bold>{time:YY:MM:DD:HH:mm:ss}|" \
+             "<level>{level: <8}</level>|<green>{name: ^15}</green>|" \
+             "{function: ^15}|" \
+             "{line: >4}|" \
+             "<level>{level.icon}{message}</level></bold></w>"

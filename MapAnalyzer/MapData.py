@@ -169,8 +169,27 @@ class MapData:
         """
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
+        if isinstance(points, set):
+            points = list(points)
+
+        def in_bounds_x(x):
+            width = arr.shape[0] - 1
+            if 0 < x < width:
+                return x
+            return 0
+
+        def in_bounds_y(y):
+            height = arr.shape[1] - 1
+            if 0 < y < height:
+                return y
+            return 0
+
+        x_vec = np.vectorize(in_bounds_x)
+        y_vec = np.vectorize(in_bounds_y)
         indices = self.points_to_indices(points)
-        arr[indices] = 1
+        x = x_vec(indices[0])
+        y = y_vec(indices[1])
+        arr[x, y] = 1
         return arr
 
     @staticmethod
