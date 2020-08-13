@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.50](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.49...v0.0.50) (2020-08-13)
+
+
+### Features
+
+* Polygon/ Region now has the property 'buildable_points' ([25952f7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/25952f75ed05a762124ae97e8425c946dd4cf058))
+* Polygon/ Region now has the property 'buildable_points' ([7e0291d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7e0291dccf87e9a93877e82d02ef07b2d8e83a19))
+* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([54e84f0](https://github.com/eladyaniv01/SC2MapAnalysis/commit/54e84f0f4e96f8962540f27d86cfae3cc30a0378))
+* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([41282a1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/41282a150595bace594d16f2d2f51d24b9372dc9))
+* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([9a3408a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9a3408a6df4f6d5ce326488db24f95df1aedc3d2))
+* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([9d9477a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9d9477aba9068098c5f39284ee962385216cf7d1))
+* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([09a8728](https://github.com/eladyaniv01/SC2MapAnalysis/commit/09a872864bbec95f1a5e04890afc675627c782b6))
+
+
+### Bug Fixes
+
+* [[#61](https://github.com/eladyaniv01/SC2MapAnalysis/issues/61)](https://github.com/eladyaniv01/SC2MapAnalysis/issues/61) pathfind will not crash the bot when start or goal are not passed properly,  also a logging error will print out ([08466b5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/08466b5e3650a694bf5b0d633b894fdb6bfbd7b8))
+* fix point_to_numpy_array method ([4d56755](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4d567559e3eceede00615c637458cdb8a0870d36))
+* fix point_to_numpy_array method ([24af6b8](https://github.com/eladyaniv01/SC2MapAnalysis/commit/24af6b8c0d9d326235bc4c748887fcb6bf884b45))
+* fix point_to_numpy_array method ([18c4642](https://github.com/eladyaniv01/SC2MapAnalysis/commit/18c464274dee7549bea10352736225f9917bd3c5))
+* mapdata test for plotting ([0ce534b](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0ce534b46839f1b983d5512ebcbbad9644cc37cf))
+* mapdata test for plotting ([3d359b1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/3d359b183806fcb15b67ed64ad816e617278ec19))
+* points_to_numpy_array now filters out outofbounds ([aedf9d2](https://github.com/eladyaniv01/SC2MapAnalysis/commit/aedf9d2ba45f585a279d7a014a7e990cbb9359a9))
+* points_to_numpy_array now filters out outofbounds ([f15a360](https://github.com/eladyaniv01/SC2MapAnalysis/commit/f15a360e7a861dc911a3cc08649be1c9b9e4da13))
+* update according to last fix ([486f0f9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/486f0f9346cec936228492aba77e5e7ced22a259))
+* update according to last fix ([dae199b](https://github.com/eladyaniv01/SC2MapAnalysis/commit/dae199bfed3ce509cc4148864508e3a687718455))
+
 ### [0.0.49](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.48...v0.0.49) (2020-08-12)
 
 
