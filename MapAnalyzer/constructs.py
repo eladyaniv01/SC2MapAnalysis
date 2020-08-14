@@ -66,6 +66,18 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
+        self._set_regions()
+
+    def _set_regions(self):
+        from MapAnalyzer.Region import Region
+        for p in self.perimeter_points:
+            areas = self.map_data.where_all(p)
+            for area in areas:
+                if isinstance(area, Region) and area not in self.areas:
+                    self.areas.append(area)
+                    # add ourselves to the Region Area's
+                    area.areas.append(self)
+
 
     def calc_areas(self) -> None:
         return

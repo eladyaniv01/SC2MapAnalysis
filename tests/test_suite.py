@@ -83,6 +83,10 @@ class TestSanity:
             # coverage
             region.plot(testing=True)
 
+    def test_ramps(self, map_data: MapData):
+        for ramp in map_data.map_ramps:
+            assert (len(ramp.regions) == 2)
+
     def test_chokes(self, map_data: MapData) -> None:
         for choke in map_data.map_chokes:
             for p in choke.points:

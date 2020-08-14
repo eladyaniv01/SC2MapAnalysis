@@ -468,8 +468,8 @@ class MapData:
         """
         # some areas are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
-        if len(self.map_ramps) == 0:
-            self._set_map_ramps()
+        # if len(self.map_ramps) == 0:
+        #     self._set_map_ramps()
         pre_regions = {}
         for i in range(len(self.regions_labels)):
             region = Region(
@@ -486,9 +486,10 @@ class MapData:
             if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
-                region.calc_ramps()
+                # region.calc_ramps()
                 j += 1
-
+        if len(self.map_ramps) == 0:
+            self._set_map_ramps()
     """Plot methods"""
 
     def plot_map(
