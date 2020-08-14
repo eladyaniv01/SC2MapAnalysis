@@ -18,13 +18,13 @@ class BuildablePoints:
         self.points = None
 
     @property
-    def free_pct(self):
+    def free_pct(self) -> float:
         if self.points is None:
             self.polygon.map_data.logger.warning("BuildablePoints needs to update first")
             self.update()
         return len(self.points) / len(self.polygon.points)
 
-    def update(self):
+    def update(self) -> None:
         parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
         [self.polygon.map_data.add_influence(p=(unit.position.x, unit.position.y), r=unit.radius, arr=parr, safe=False)
          for unit in
@@ -66,9 +66,10 @@ class Polygon:
         self.indices = self.map_data.points_to_indices(self.points)
         self.map_data.polygons.append(self)
         self._buildable_points = BuildablePoints(polygon=self)
+        # self.calc_areas()
 
     @property
-    def buildable_points(self):
+    def buildable_points(self) -> BuildablePoints:
         self._buildable_points.update()
         return self._buildable_points
 
@@ -81,7 +82,17 @@ class Polygon:
         return []
 
     def calc_areas(self) -> None:
-        pass
+        # this method uses where_all which means
+        # it should be called at the end of the map compilation when areas are populated
+        points = [min(self.points), max(self.points)]
+        areas = self.areas
+        for point in points:
+            point = int(point[0]), int(point[1])
+            new_areas = self.map_data.where_all(point)
+            if self in new_areas:
+                new_areas.pop(new_areas.index(self))
+            areas.extend(new_areas)
+        self.areas = list(set(areas))
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """

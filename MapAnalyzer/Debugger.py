@@ -66,10 +66,10 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         for lbl, reg in self.map_data.regions.items():
             c = COLORS[lbl]
-            fontdict["color"] = c
+            fontdict["color"] = 'black'
             fontdict["backgroundcolor"] = 'black'
-            if c == 'black':
-                fontdict["backgroundcolor"] = 'white'
+            # if c == 'black':
+            #     fontdict["backgroundcolor"] = 'white'
             plt.text(
                     reg.center[0],
                     reg.center[1],

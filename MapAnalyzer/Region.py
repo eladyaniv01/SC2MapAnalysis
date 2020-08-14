@@ -26,14 +26,17 @@ class Region(Polygon):
                 base
                 for base in map_expansions
                 if self.is_inside_point((base.rounded[0], base.rounded[1]))
-        ]
-        self.region_ramps = []  # will be set later by mapdata
+        ]  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
         self.region_vb = []
         self.region_chokes = []
 
     @property
-    def corners(self):
+    def region_ramps(self):
+        return [r for r in self.areas if r.is_ramp]
+
+    @property
+    def corners(self) -> List[Point2]:
         """
         corners
         """

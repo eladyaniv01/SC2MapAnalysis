@@ -41,18 +41,6 @@ class ChokeArea(Polygon):
             self.md_pl_choke = pathlibchoke
         self.is_choke = True
 
-    def calc_areas(self) -> None:
-        if self.main_line:
-            points = [min(self.points), max(self.points)]
-            areas = self.areas
-            for point in points:
-                point = int(point[0]), int(point[1])
-                new_areas = self.map_data.where_all(point)
-                if self in new_areas:
-                    new_areas.pop(new_areas.index(self))
-                areas.extend(new_areas)
-            self.areas = list(set(areas))
-
     def __repr__(self) -> str:  # pragma: no cover
         return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
 
@@ -66,21 +54,23 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
-        self._set_regions()
 
-    def _set_regions(self):
+    def set_regions(self):
         from MapAnalyzer.Region import Region
         for p in self.perimeter_points:
             areas = self.map_data.where_all(p)
             for area in areas:
+                if isinstance(area, VisionBlockerArea):
+                    for sub_area in area.areas:
+                        if isinstance(sub_area, Region) and sub_area not in self.areas:
+                            self.areas.append(sub_area)
+                        if isinstance(sub_area, Region) and self not in sub_area.areas:
+                            sub_area.areas.append(self)
                 if isinstance(area, Region) and area not in self.areas:
                     self.areas.append(area)
                     # add ourselves to the Region Area's
+                if isinstance(area, Region) and self not in area.areas:
                     area.areas.append(self)
-
-
-    def calc_areas(self) -> None:
-        return
 
     @property
     def top_center(self) -> Point2:
@@ -100,7 +90,7 @@ class MDRamp(ChokeArea):
             self.map_data.logger.debug(f"No bottom_center found for {self}, falling back to `center`")
             return self.center
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         return f"<MDRamp[size={self.area}]: {self.areas}>"
 
     def __str__(self):

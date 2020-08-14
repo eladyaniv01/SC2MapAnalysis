@@ -356,28 +356,22 @@ class MapData:
         self._calc_grid()
         self._calc_regions()
         self._calc_vision_blockers()
+        self._set_map_ramps()
         self._calc_chokes()
         self._clean_polys()
+
         for poly in self.polygons:
             poly.calc_areas()
-
-    @staticmethod
-    def _clean_ramps(region: Region) -> None:
-        """ utility function to remove over populated ramps """
-        for mramp in region.region_ramps:
-            if len(mramp.regions) < 2:
-                region.region_ramps.remove(mramp)
+        for ramp in self.map_ramps:
+            ramp.set_regions()
 
     def _calc_grid(self) -> None:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions
-        correct_blockers = []
         for point in self.resource_blockers:
             grid[int(point[0])][int(point[1])] = 0
-            if point not in self.resource_blockers:
-                correct_blockers.append(point)
             for n in point.neighbors4:
                 point_ = Point2((n.rounded[0], n.rounded[1]))
                 if point_[0] < grid.shape[1] and point_[1] < grid.shape[0]:
@@ -488,8 +482,7 @@ class MapData:
                 self.regions[j] = region
                 # region.calc_ramps()
                 j += 1
-        if len(self.map_ramps) == 0:
-            self._set_map_ramps()
+
     """Plot methods"""
 
     def plot_map(
