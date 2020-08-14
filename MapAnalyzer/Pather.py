@@ -102,6 +102,7 @@ class MapAnalyzerPather:
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
+            path = path.tolist()  # this make the mapping not override the int boolean with numpy boolean
             return list(map(Point2, path))[::sensitivity]
         else:
             self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
