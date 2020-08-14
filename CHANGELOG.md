@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.51](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.50...v0.0.51) (2020-08-14)
+
+
+### Features
+
+* Polygon/ Region now has the property 'buildable_points' ([#63](https://github.com/eladyaniv01/SC2MapAnalysis/issues/63)) ([2100501](https://github.com/eladyaniv01/SC2MapAnalysis/commit/21005016ab9669dfc276aee4a709e0c24435f2d2))
+
+
+### Bug Fixes
+
+* __bool__ compatibility with burnysc2 ([9618799](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9618799a50f2fffcb78aa1f802e3903598c9a8ce))
+
 ### [0.0.50](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.49...v0.0.50) (2020-08-13)
 
 
