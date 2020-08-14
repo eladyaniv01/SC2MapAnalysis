@@ -139,6 +139,33 @@ class Region(Polygon):
         else:  # pragma: no cover
             self.plot_perimeter(self_only=False)
 
+    def calc_ramps(self) -> None:
+        """
+        probably the most expensive operation other than plotting ,  need to optimize
+        """
+        ramp_nodes = self.map_data.get_ramp_nodes()
+        perimeter_nodes = self.perimeter_points
+        result_ramp_indexes = list(set([self.map_data.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
+
+        for rn in result_ramp_indexes:
+            # and distance from perimeter is less than ?
+            ramp = self.map_data.get_ramp(node=ramp_nodes[rn])
+
+            if self not in ramp.areas:
+                ramp.areas.append(self)
+            self.region_ramps.append(ramp)
+        ramps = []
+
+        for ramp in self.region_ramps:
+            for p in self.perimeter_points:
+                if self.map_data.ramp_close_enough(ramp, p, n=8):
+                    ramps.append(ramp)
+        ramps = list(set(ramps))
+
+        self.region_ramps.extend(ramps)
+        self.region_ramps = list(set(self.region_ramps))
+        # self._clean_ramps(region)
+
     @property
     def base_locations(self) -> List[Point2]:
         """
@@ -152,3 +179,9 @@ class Region(Polygon):
         get_area
         """
         return self.area
+
+    def __repr__(self) -> str:  # pragma: no cover
+        """
+        __repr__
+        """
+        return "Region " + str(self.label)
