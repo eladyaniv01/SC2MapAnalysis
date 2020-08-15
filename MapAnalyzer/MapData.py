@@ -249,7 +249,7 @@ class MapData:
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
-            if region.inside_p(point):
+            if region.is_inside_point(point):
                 results.append(region)
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
@@ -275,7 +275,7 @@ class MapData:
             point = int(point[0]), int(point[1])
 
         for region in self.regions.values():
-            if region.inside_p(point):
+            if region.is_inside_point(point):
                 return region
         for choke in self.map_chokes:
             if choke.is_inside_point(point):
@@ -356,28 +356,22 @@ class MapData:
         self._calc_grid()
         self._calc_regions()
         self._calc_vision_blockers()
+        self._set_map_ramps()
         self._calc_chokes()
         self._clean_polys()
+
         for poly in self.polygons:
             poly.calc_areas()
-
-    @staticmethod
-    def _clean_ramps(region: Region) -> None:
-        """ utility function to remove over populated ramps """
-        for mramp in region.region_ramps:
-            if len(mramp.regions) < 2:
-                region.region_ramps.remove(mramp)
+        for ramp in self.map_ramps:
+            ramp.set_regions()
 
     def _calc_grid(self) -> None:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions
-        correct_blockers = []
         for point in self.resource_blockers:
             grid[int(point[0])][int(point[1])] = 0
-            if point not in self.resource_blockers:
-                correct_blockers.append(point)
             for n in point.neighbors4:
                 point_ = Point2((n.rounded[0], n.rounded[1]))
                 if point_[0] < grid.shape[1] and point_[1] < grid.shape[0]:
@@ -409,36 +403,7 @@ class MapData:
                                  array=self.points_to_numpy_array(r.points))
                           for r in self.bot.game_info.map_ramps]
 
-    def _calc_ramps(self, region: Region) -> None:
-        """
-        probably the most expensive operation other than plotting ,  need to optimize
-        """
-        if len(self.map_ramps) == 0:
-            self._set_map_ramps()
 
-        ramp_nodes = self.get_ramp_nodes()
-        perimeter_nodes = region.polygon.perimeter_points
-        result_ramp_indexes = list(set([self.closest_node_idx(n, ramp_nodes) for n in perimeter_nodes]))
-
-        for rn in result_ramp_indexes:
-            # and distance from perimeter is less than ?
-            ramp = self.get_ramp(node=ramp_nodes[rn])
-
-            """for ramp in map ramps  if ramp exists,  append the regions if not,  create new one"""
-            if region not in ramp.areas:
-                ramp.areas.append(region)
-            region.region_ramps.append(ramp)
-        ramps = []
-
-        for ramp in region.region_ramps:
-            for p in region.polygon.perimeter_points:
-                if self.ramp_close_enough(ramp, p, n=8):
-                    ramps.append(ramp)
-        ramps = list(set(ramps))
-
-        region.region_ramps.extend(ramps)
-        region.region_ramps = list(set(region.region_ramps))
-        # self._clean_ramps(region)
 
     def _calc_vision_blockers(self) -> None:
         """
@@ -497,6 +462,8 @@ class MapData:
         """
         # some areas are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
+        # if len(self.map_ramps) == 0:
+        #     self._set_map_ramps()
         pre_regions = {}
         for i in range(len(self.regions_labels)):
             region = Region(
@@ -513,7 +480,7 @@ class MapData:
             if self.max_region_area > region.get_area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
-                self._calc_ramps(region=region)
+                # region.calc_ramps()
                 j += 1
 
     """Plot methods"""

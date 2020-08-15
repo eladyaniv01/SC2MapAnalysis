@@ -3,6 +3,7 @@ MAX_REGION_AREA = 8500
 BINARY_STRUCTURE = 2
 RESOURCE_BLOCKER_RADIUS = 2
 NONPATHABLE_RADIUS = 0.8
+LOG_MODULE = "MapAnalyzer"
 COLORS = {
         0 : "azure",
         1 : 'black',
@@ -30,4 +31,4 @@ LOG_FORMAT = "<w><bold>{time:YY:MM:DD:HH:mm:ss}|" \
              "<level>{level: <8}</level>|<green>{name: ^15}</green>|" \
              "{function: ^15}|" \
              "{line: >4}|" \
-             "<level>{level.icon}{message}</level></bold></w>"
+             "<level> {level.icon} {message}</level></bold></w>"

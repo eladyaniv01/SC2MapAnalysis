@@ -8,25 +8,28 @@ import numpy as np
 from loguru import logger
 from numpy import int64, ndarray
 
-from .constants import COLORS, LOG_FORMAT
+from .constants import COLORS, LOG_FORMAT, LOG_MODULE
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
 
 class LogFilter:
-    def __init__(self, module_name: str) -> None:
+    def __init__(self, module_name: str, level="ERROR") -> None:
         self.module_name = module_name
+        self.level = level
 
     def __call__(self, record: Dict[str, Any]) -> bool:
-        # return True
+        levelno = logger.level(self.level).no
         if self.module_name.lower() in record["name"].lower() or 'main' in record["name"].lower():
-            return True
+            return record["level"].no >= levelno
         return False
 
 
 class MapAnalyzerDebugger:
-    """"""
+    """
+    MapAnalyzerDebugger
+    """
 
     def __init__(self, map_data: "MapData", loglevel: str = "ERROR") -> None:
         self.map_data = map_data
@@ -34,7 +37,7 @@ class MapAnalyzerDebugger:
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
         self.logger = logger
-        self.log_filter = LogFilter("MapAnalyzer")
+        self.log_filter = LogFilter(module_name=LOG_MODULE, level=loglevel)
         self.logger.remove()
         self.log_format = LOG_FORMAT
         self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
@@ -66,10 +69,10 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         for lbl, reg in self.map_data.regions.items():
             c = COLORS[lbl]
-            fontdict["color"] = c
+            fontdict["color"] = 'black'
             fontdict["backgroundcolor"] = 'black'
-            if c == 'black':
-                fontdict["backgroundcolor"] = 'white'
+            # if c == 'black':
+            #     fontdict["backgroundcolor"] = 'white'
             plt.text(
                     reg.center[0],
                     reg.center[1],
@@ -78,9 +81,9 @@ class MapAnalyzerDebugger:
                     fontdict=fontdict,
             )
             # random color for each perimeter
-            x, y = zip(*reg.polygon.perimeter_points)
+            x, y = zip(*reg.perimeter_points)
             plt.scatter(x, y, c=c, marker="1", s=300)
-            for corner in reg.polygon.corner_points:
+            for corner in reg.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
     def plot_vision_blockers(self) -> None:
