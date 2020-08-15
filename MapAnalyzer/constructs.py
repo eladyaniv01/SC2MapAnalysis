@@ -55,6 +55,10 @@ class MDRamp(ChokeArea):
         self.is_ramp = True
         self.ramp = ramp
 
+    def closest_region(self, region_list):
+        return min(region_list,
+                   key=lambda area: min(self.map_data.distance(area.center, point) for point in self.perimeter_points))
+
     def set_regions(self):
         from MapAnalyzer.Region import Region
         for p in self.perimeter_points:
@@ -71,6 +75,14 @@ class MDRamp(ChokeArea):
                     # add ourselves to the Region Area's
                 if isinstance(area, Region) and self not in area.areas:
                     area.areas.append(self)
+        if len(self.regions) < 2:
+            #  destructables blocking the ramp ?
+            # mineral walls ?
+            region_list = list(self.map_data.regions.values())
+            region_list.remove(self.regions[0])
+            closest_region = self.closest_region(region_list=region_list)
+            assert (closest_region not in self.regions)
+            self.areas.append(closest_region)
 
     @property
     def top_center(self) -> Point2:

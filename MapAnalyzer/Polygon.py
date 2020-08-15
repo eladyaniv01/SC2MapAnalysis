@@ -74,7 +74,6 @@ class Polygon:
         return self._buildable_points
 
     @property
-    @lru_cache()
     def regions(self) -> List["Region"]:
         from MapAnalyzer.Region import Region
         if len(self.areas) > 0:
@@ -161,7 +160,7 @@ class Polygon:
         cm = self.map_data.closest_towards_point(points=self.clean_points, target=center_of_mass(self.array))
         return cm
 
-    @lru_cache(100)
+    @lru_cache()
     def is_inside_point(self, point: Union[Point2, tuple]) -> bool:
         """
         is_inside_point
@@ -172,7 +171,7 @@ class Polygon:
             return True
         return False
 
-    @lru_cache(100)
+    @lru_cache()
     def is_inside_indices(
             self, point: Union[Point2, tuple]
     ) -> bool:  # pragma: no cover
