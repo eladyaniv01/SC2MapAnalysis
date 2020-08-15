@@ -71,7 +71,7 @@ class TestSanity:
 
     def test_regions(self, map_data: MapData) -> None:
         for region in map_data.regions.values():
-            for p in region.polygon.points:
+            for p in region.points:
                 assert isinstance(
                         map_data.where(p), Region  # using where because the first return will be always Region
                 ), f"<MD : {map_data}, Region : {region}," \
@@ -79,10 +79,13 @@ class TestSanity:
 
             assert (region in map_data.where_all(region.center))
             assert (region == map_data.where(region.center))
-            assert (region.corners is region.polygon.corner_points)
 
             # coverage
             region.plot(testing=True)
+
+    def test_ramps(self, map_data: MapData) -> None:
+        for ramp in map_data.map_ramps:
+            assert (len(ramp.regions) == 2), f"ramp = {ramp}"
 
     def test_chokes(self, map_data: MapData) -> None:
         for choke in map_data.map_chokes:
