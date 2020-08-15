@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
@@ -46,7 +45,9 @@ class MapAnalyzerPather:
         nonpathables.extend(self.map_data.mineral_fields)
         for obj in nonpathables:
             radius = NONPATHABLE_RADIUS
-            grid = self.add_influence(p=obj.position, r=radius * obj.radius, arr=grid, weight=np.inf)
+            if 'mineral' in obj.name.lower():
+                radius = NONPATHABLE_RADIUS * 1.5
+            grid = self.add_influence(p=obj.position.rounded, r=radius * obj.radius, arr=grid, weight=np.inf)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS
             grid = self.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
@@ -57,11 +58,9 @@ class MapAnalyzerPather:
                     self.add_influence(p=rock.position, r=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
-    @lru_cache()
     def get_base_pathing_grid(self) -> ndarray:
         return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
-    @lru_cache()
     def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self._climber_grid.copy()
@@ -69,7 +68,6 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
-    @lru_cache()
     def get_clean_air_grid(self, default_weight: int = 1):
         clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
         if default_weight == 1:
@@ -77,7 +75,6 @@ class MapAnalyzerPather:
         else:
             return np.where(clean_air_grid == 1, default_weight, 0)
 
-    @lru_cache()
     def get_air_vs_ground_grid(self, default_weight: int):
         grid = np.fmin(self.map_data.path_arr, self.map_data.placement_arr)
         air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
@@ -113,6 +110,7 @@ class MapAnalyzerPather:
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             self.map_data.logger.debug(OutOfBoundsException(p))
+            # self.map_data.logger.trace()
             return arr
 
         def in_bounds_ci(x):

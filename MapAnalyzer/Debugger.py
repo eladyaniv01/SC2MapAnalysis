@@ -66,10 +66,10 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         for lbl, reg in self.map_data.regions.items():
             c = COLORS[lbl]
-            fontdict["color"] = c
+            fontdict["color"] = 'black'
             fontdict["backgroundcolor"] = 'black'
-            if c == 'black':
-                fontdict["backgroundcolor"] = 'white'
+            # if c == 'black':
+            #     fontdict["backgroundcolor"] = 'white'
             plt.text(
                     reg.center[0],
                     reg.center[1],
@@ -78,9 +78,9 @@ class MapAnalyzerDebugger:
                     fontdict=fontdict,
             )
             # random color for each perimeter
-            x, y = zip(*reg.polygon.perimeter_points)
+            x, y = zip(*reg.perimeter_points)
             plt.scatter(x, y, c=c, marker="1", s=300)
-            for corner in reg.polygon.corner_points:
+            for corner in reg.corner_points:
                 plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
     def plot_vision_blockers(self) -> None:
