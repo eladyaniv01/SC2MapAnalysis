@@ -4,6 +4,7 @@ import numpy as np
 from sc2.position import Point2
 
 from MapAnalyzer.Polygon import Polygon
+from MapAnalyzer.constructs import MDRamp
 
 if TYPE_CHECKING:
     from MapAnalyzer import MapData
@@ -32,7 +33,7 @@ class Region(Polygon):
         self.region_chokes = []
 
     @property
-    def region_ramps(self):
+    def region_ramps(self) -> List[MDRamp]:
         return [r for r in self.areas if r.is_ramp]
 
     @property
@@ -50,7 +51,7 @@ class Region(Polygon):
 
         plt.style.use("ggplot")
 
-        x, y = zip(*self.perimeter)  # reversing for "lower" origin
+        x, y = zip(*self.perimeter)
         plt.scatter(x, y)
         plt.title(f"Region {self.label}")
         if self_only:  # pragma: no cover
