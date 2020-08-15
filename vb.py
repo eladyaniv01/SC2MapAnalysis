@@ -48,6 +48,8 @@ def gv():
     old_version_regex = r"(\d*[.]\d*[.]\d*)"
     old_version = re.findall(old_version_regex, setup_parsed)[0]
     click.echo(click.style(old_version, fg='green'))
+    click.echo("Running git describe")
+    subprocess.check_call('git describe')
 
 
 @vb.command(help='Bump Minor')
@@ -65,6 +67,15 @@ def bumpminor():
     click.echo(f"Updated Version: " + click.style(new_version, fg='red'))
     update_setup(new_version)
 
+
+@vb.command(help='Custom git log command for last N days')
+@click.argument('days')
+def gh(days):
+    click.echo(
+            click.style("Showing last ", fg='blue') + click.style(days, fg='green') + click.style(" days summary",
+                                                                                                  fg='blue'))
+    subprocess.check_call('git fetch', shell=True)
+    subprocess.check_call(f'git log --oneline --decorate --graph --all -{days}', shell=True)
 
 if __name__ == '__main__':
     vb(prog_name='python -m vb')
