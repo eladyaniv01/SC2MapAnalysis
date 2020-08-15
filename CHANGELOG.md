@@ -4,26 +4,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.52](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.51...v0.0.52) (2020-08-15)
 
-
 ### ⚠ BREAKING CHANGES
 
 * Region is now a Child of Polygon
 
-### Features
-
-* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([8f45843](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8f45843178b88d4a725d90a63813aecbf8b89c2b))
-* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([8f24440](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8f2444068e71180b8f0e1198d20ec5228504dc46))
-* Polygon/ Region now has the property 'buildable_points' with some usage ideas ([628b380](https://github.com/eladyaniv01/SC2MapAnalysis/commit/628b380c94079589f339506447f8d7c5b932aff4))
-
-
 ### Bug Fixes
 
-* fix point_to_numpy_array method ([ff6d104](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ff6d104e3b7e125c93e916d24703aa4496764062))
-* fix point_to_numpy_array method ([5c1b486](https://github.com/eladyaniv01/SC2MapAnalysis/commit/5c1b4867b2cc19353d0bdad7d0e1c99d26259072))
-* fix point_to_numpy_array method ([86a8fc3](https://github.com/eladyaniv01/SC2MapAnalysis/commit/86a8fc35cc5eb0de10a775a031c63703c3eed866))
-* mapdata test for plotting ([132056d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/132056d37a34db0ef185dc76a22c01ca553a0fd2))
 * mapdata test for plotting ([b987fb6](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b987fb6c29863cf57b30abfa5dad3b152456bcab))
-
 
 * Base (#65) ([209d6d1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/209d6d1c065893f98ce6bbfaeb34ab38b74e41a9)), closes [#65](https://github.com/eladyaniv01/SC2MapAnalysis/issues/65) [#64](https://github.com/eladyaniv01/SC2MapAnalysis/issues/64)
 
