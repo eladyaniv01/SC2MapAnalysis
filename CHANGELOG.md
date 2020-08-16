@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.53](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.48...v0.0.53) (2020-08-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* Region is now a Child of Polygon
+
+### Features
+
+* Polygon/ Region now has the property 'buildable_points' ([#63](https://github.com/eladyaniv01/SC2MapAnalysis/issues/63)) ([2100501](https://github.com/eladyaniv01/SC2MapAnalysis/commit/21005016ab9669dfc276aee4a709e0c24435f2d2))
+
+
+### Bug Fixes
+
+* versionbump cli now commits setup.py before calling standard-version ([50eb667](https://github.com/eladyaniv01/SC2MapAnalysis/commit/50eb667c48949a0847742ed5aec8957f07cd8ff9))
+
+
+### Documentation
+
+* added cli reminder to commit setup.py on versionbump ([28a65a3](https://github.com/eladyaniv01/SC2MapAnalysis/commit/28a65a303a14ae08bf4b00253cb2ace13b8b5cff))
+
+
+*  Base (#65) -> dev -> master (#66) ([60e2d2d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/60e2d2de8cb89d6649a09e8e66e379483d0a7a0f)), closes [#65](https://github.com/eladyaniv01/SC2MapAnalysis/issues/65) [#66](https://github.com/eladyaniv01/SC2MapAnalysis/issues/66) [#64](https://github.com/eladyaniv01/SC2MapAnalysis/issues/64)
+
 ### [0.0.52](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.51...v0.0.52) (2020-08-15)
 
 ### ⚠ BREAKING CHANGES
