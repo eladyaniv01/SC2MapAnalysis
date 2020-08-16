@@ -380,6 +380,7 @@ class MapData:
             poly.calc_areas()
         for ramp in self.map_ramps:
             ramp.set_regions()
+
         self.pather.set_connectivity_graph()
         self.connectivity_graph = self.pather.connectivity_graph
 

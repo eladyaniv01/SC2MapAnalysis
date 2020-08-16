@@ -1,4 +1,5 @@
 from functools import lru_cache
+
 from typing import List, TYPE_CHECKING
 
 import numpy as np
