@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
@@ -9,6 +9,7 @@ from skimage import draw as skdraw
 from MapAnalyzer.constants import NONPATHABLE_RADIUS, RESOURCE_BLOCKER_RADIUS
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from .sc2pathlibp import Sc2Map
+from MapAnalyzer.Region import Region
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -27,6 +28,34 @@ class MapAnalyzerPather:
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
+        self.connectivity_graph = None
+
+    def set_connectivity_graph(self):
+        connectivity_graph = {}
+        for region in self.map_data.regions.values():
+            if connectivity_graph.get(region) is None:
+                connectivity_graph[region] = []
+            for connected_region in region.connected_regions:
+                if connected_region not in connectivity_graph.get(region):
+                    connectivity_graph[region].append(connected_region)
+        self.connectivity_graph = connectivity_graph
+
+    def find_all_paths(self, start: Region, goal: Region, path: Optional[List[Region]] = None) -> List[List[Region]]:
+        if path is None:
+            path = []
+        graph = self.connectivity_graph
+        path = path + [start]
+        if start == goal:
+            return [path]
+        if start not in graph:
+            return []
+        paths = []
+        for node in graph[start]:
+            if node not in path:
+                newpaths = self.find_all_paths(node, goal, path)
+                for newpath in newpaths:
+                    paths.append(newpath)
+        return paths
 
     def _set_pathlib_map(self) -> None:
         """

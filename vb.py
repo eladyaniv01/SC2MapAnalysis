@@ -41,6 +41,22 @@ def printsetup():
     click.echo(click.style(setup_parsed, fg='blue'))
 
 
+@vb.command(help='MonkeyType apply on list-modules')
+@click.option('--apply/--no-apply', default=False)
+def mt(apply):
+    click.echo(click.style("This could take a few seconds", fg='blue'))
+    encoded_modules = subprocess.check_output("monkeytype list-modules", shell=True)
+    list_modules = encoded_modules.decode().split('\r\n')
+    to_exclude = {'mocksetup', 'sc2pathlibp'}
+    if apply:
+        for m in list_modules:
+            if [x for x in to_exclude if x in m] == []:
+                click.echo(click.style(f"Applying on {m}", fg='green'))
+                subprocess.check_call(f'monkeytype apply {m}', shell=True)
+
+
+
+
 @vb.command(help='Get current version')
 def gv():
     import re

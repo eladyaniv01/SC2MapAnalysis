@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import List, TYPE_CHECKING
 
 import numpy as np
@@ -35,6 +36,16 @@ class Region(Polygon):
     @property
     def region_ramps(self) -> List[MDRamp]:
         return [r for r in self.areas if r.is_ramp]
+
+    @property
+    @lru_cache()
+    def connected_regions(self):
+        connected_regions = []
+        for ramp in self.region_ramps:
+            for region in ramp.regions:
+                if region is not self and region not in connected_regions:
+                    connected_regions.append(region)
+        return connected_regions
 
     @property
     def corners(self) -> List[Point2]:
