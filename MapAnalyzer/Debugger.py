@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class LogFilter:
-    def __init__(self, module_name: str, level="ERROR") -> None:
+    def __init__(self, module_name: str, level: str = "ERROR") -> None:
         self.module_name = module_name
         self.level = level
 
@@ -154,7 +154,7 @@ class MapAnalyzerDebugger:
         plt.figure(figsize=(figsize, figsize))
         self.plot_regions(fontdict=fontdict)
         # some maps has no vision blockers
-        if len(self.map_data._vision_blockers) > 0:
+        if len(self.map_data.vision_blockers) > 0:
             self.plot_vision_blockers()
         self.plot_normal_resources()
         self.plot_chokes()

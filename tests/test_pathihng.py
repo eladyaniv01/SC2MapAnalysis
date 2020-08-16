@@ -1,4 +1,5 @@
 import os
+import random
 
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
@@ -74,6 +75,19 @@ class TestPathing:
     Test DocString
     """
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
+
+    def test_region_connectivity(self, map_data: MapData) -> None:
+        region = random.choice(list(map_data.regions.values()))
+        destination = random.choice(map_data.connectivity_graph[region])
+        all_possible_paths = map_data.region_connectivity_all_paths(start_region=region,
+                                                                    goal_region=destination)
+        for p in all_possible_paths:
+            assert (destination in p), f"destination = {destination}"
+
+        bad_request = map_data.region_connectivity_all_paths(start_region=region,
+                                                             goal_region=destination,
+                                                             not_through=[destination])
+        assert (bad_request == [])
 
     def test_handle_illegal_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
