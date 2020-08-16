@@ -1,5 +1,4 @@
 from typing import List, Optional, Tuple, TYPE_CHECKING
-
 import numpy as np
 import pyastar.astar_wrapper as pyastar
 from numpy import ndarray
