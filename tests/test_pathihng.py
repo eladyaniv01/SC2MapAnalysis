@@ -75,6 +75,20 @@ class TestPathing:
     """
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
 
+    def test_region_connectivity(self, map_data: MapData) -> None:
+        base = map_data.bot.townhalls[0]
+        region = map_data.where(base.position_tuple)
+        destination = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        all_possible_paths = map_data.region_connectivity_all_paths(start_region=region,
+                                                                    goal_region=destination)
+        for p in all_possible_paths:
+            assert (destination in p), f"destination = {destination}"
+
+        bad_request = map_data.region_connectivity_all_paths(start_region=region,
+                                                             goal_region=destination,
+                                                             not_through=[destination])
+        assert (bad_request == [])
+
     def test_handle_illegal_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where(base.position_tuple)

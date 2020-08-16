@@ -119,4 +119,4 @@ class VisionBlockerArea(ChokeArea):
         self.is_vision_blocker = True
 
     def __repr__(self):  # pragma: no cover
-        return f"<VisionBlockerArea[size={self.area}]: {self.areas}>"
+        return f"<VisionBlockerArea[size={self.area}]: {self.regions}>"

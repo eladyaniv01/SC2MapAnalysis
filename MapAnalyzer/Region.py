@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from typing import List, TYPE_CHECKING
 
 import numpy as np
@@ -30,11 +32,25 @@ class Region(Polygon):
         ]  # will be set later by mapdata
         self.region_vision_blockers = []  # will be set later by mapdata
         self.region_vb = []
-        self.region_chokes = []
+
 
     @property
     def region_ramps(self) -> List[MDRamp]:
         return [r for r in self.areas if r.is_ramp]
+
+    @property
+    def region_chokes(self) -> List[MDRamp]:
+        return [r for r in self.areas if r.is_choke]
+
+    @property
+    @lru_cache()
+    def connected_regions(self):
+        connected_regions = []
+        for choke in self.region_chokes:
+            for region in choke.regions:
+                if region is not self and region not in connected_regions:
+                    connected_regions.append(region)
+        return connected_regions
 
     @property
     def corners(self) -> List[Point2]:
@@ -149,13 +165,6 @@ class Region(Polygon):
         base_locations
         """
         return self.bases
-
-    @property
-    def get_area(self) -> int:
-        """
-        get_area
-        """
-        return self.area
 
     def __repr__(self) -> str:  # pragma: no cover
         """

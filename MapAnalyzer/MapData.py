@@ -60,6 +60,7 @@ class MapData:
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
         self.logger = self.debugger.logger
         self.pather = MapAnalyzerPather(self)
+        self.connectivity_graph = None  # set by pather
         self.pathlib_map = self.pather.pathlib_map
         self.pyastar = self.pather.pyastar
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
@@ -228,6 +229,21 @@ class MapData:
 
     """Query methods"""
 
+    def region_connectivity_all_paths(self, start_region: Region, goal_region: Region,
+                                      not_through: Optional[List[Region]] = None) -> List[List[Region]]:
+        """
+        returns all possible paths through regions (ramps),
+        can exclude a region by passing it in a not_through list
+        """
+        all_paths = self.pather.find_all_paths(start=start_region, goal=goal_region)
+        filtered_paths = all_paths.copy()
+        if not_through is not None:
+            for path in all_paths:
+                if any([x in not_through for x in path]):
+                    filtered_paths.remove(path)
+            all_paths = filtered_paths
+        return all_paths
+
     @lru_cache(200)
     def where_all(
             self, point: Union[Point2, tuple]
@@ -365,6 +381,9 @@ class MapData:
         for ramp in self.map_ramps:
             ramp.set_regions()
 
+        self.pather.set_connectivity_graph()
+        self.connectivity_graph = self.pather.connectivity_graph
+
     def _calc_grid(self) -> None:
         """ converting the placement grid to our own kind of grid"""
         # cleaning the grid and then searching for 2x2 patterned regions
@@ -402,8 +421,6 @@ class MapData:
                                  ramp=r,
                                  array=self.points_to_numpy_array(r.points))
                           for r in self.bot.game_info.map_ramps]
-
-
 
     def _calc_vision_blockers(self) -> None:
         """
@@ -477,7 +494,7 @@ class MapData:
         j = 0
         for region in pre_regions.values():
 
-            if self.max_region_area > region.get_area > self.min_region_area:
+            if self.max_region_area > region.area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
                 # region.calc_ramps()

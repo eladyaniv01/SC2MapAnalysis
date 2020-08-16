@@ -83,7 +83,7 @@ class Polygon:
     def calc_areas(self) -> None:
         # this method uses where_all which means
         # it should be called at the end of the map compilation when areas are populated
-        points = [min(self.points), max(self.points)]
+        points = self.perimeter_points
         areas = self.areas
         for point in points:
             point = int(point[0]), int(point[1])
