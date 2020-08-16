@@ -1,5 +1,4 @@
 import os
-import random
 
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
@@ -77,8 +76,9 @@ class TestPathing:
     scenarios = [(f"Testing {md.bot.game_info.map_name}", {"map_data": md}) for md in get_map_datas()]
 
     def test_region_connectivity(self, map_data: MapData) -> None:
-        region = random.choice(list(map_data.regions.values()))
-        destination = random.choice(map_data.connectivity_graph[region])
+        base = map_data.bot.townhalls[0]
+        region = map_data.where(base.position_tuple)
+        destination = map_data.where(map_data.bot.enemy_start_locations[0].position)
         all_possible_paths = map_data.region_connectivity_all_paths(start_region=region,
                                                                     goal_region=destination)
         for p in all_possible_paths:

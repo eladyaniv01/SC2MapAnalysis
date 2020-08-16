@@ -493,7 +493,7 @@ class MapData:
         j = 0
         for region in pre_regions.values():
 
-            if self.max_region_area > region.get_area > self.min_region_area:
+            if self.max_region_area > region.area > self.min_region_area:
                 region.label = j
                 self.regions[j] = region
                 # region.calc_ramps()
