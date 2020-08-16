@@ -1,7 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Example user template template
 ### Example user template
-
+notes.md
 *.png
 # IntelliJ project files
 .idea
@@ -18,6 +18,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+node_modules/
 .Python
 build/
 develop-eggs/
@@ -60,6 +61,7 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+.benchmarks/
 
 # Translations
 *.mo
@@ -69,6 +71,8 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
+*.sqlite3
+
 
 # Flask stuff:
 instance/
@@ -79,12 +83,13 @@ instance/
 
 # Sphinx documentation
 docs/_build/
-
+*.html
 # PyBuilder
 target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
 
 # IPython
 profile_default/
