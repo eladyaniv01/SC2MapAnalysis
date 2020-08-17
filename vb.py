@@ -11,7 +11,10 @@ def vb():
 
 def update_readme_to_sphinx():
     import re
-
+    with open(".nojekyll", "w") as f:
+        f.close()
+    with open("docs/.nojekyll", "w") as f:
+        f.close()
     regex = r"([#]\s)([A-Z]\w+)(\s?\n)"
     subst = "\\2\\n---------------\\n"
     with open("README.md", 'r') as f:
