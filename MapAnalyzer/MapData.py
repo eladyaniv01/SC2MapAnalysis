@@ -101,6 +101,7 @@ class MapData:
 
         This grid can be reused in the duration of the frame,
         and should be regenerated on each frame
+
         """
         return self.pather.get_climber_grid(default_weight)
 
@@ -116,7 +117,10 @@ class MapData:
                                     sensitivity=sensitivity)
 
     def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
-        """when safe is off will not adjust values below 1 which could result in a crash"""
+        """
+        Warning:
+            when safe is off will not adjust values below 1 which could result in a crash`
+        """
         return self.pather.add_influence(p=p, r=r, arr=arr, weight=weight, safe=safe)
 
     """Utility methods"""
