@@ -88,11 +88,6 @@ class MapData:
         Request a new grid
         This grid can be reused in the duration of the frame,
         and should be regenerated on each frame
-
-        :param default_weight: General cost to be applied to all pathable cells
-        :param include_destructables:
-        :param air_pathing:
-        :return: numpy array with applied infulence(weight)  / cost
         """
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
@@ -106,8 +101,6 @@ class MapData:
 
         This grid can be reused in the duration of the frame,
         and should be regenerated on each frame
-        :param default_weight: General cost to be applied to all pathable cells
-        :return: numpy array with applied infulence(weight)  / cost
         """
         return self.pather.get_climber_grid(default_weight)
 
