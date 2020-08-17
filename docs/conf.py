@@ -62,7 +62,7 @@ shutil.copy(jscopybutton_path, '_static')
 todo_include_todos=True
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.txt': 'markdown',
+    '.txt': 'restructuredtext',
     '.md': 'markdown',
 }
 # Add any paths that contain templates here, relative to this directory.
@@ -81,7 +81,35 @@ viewcode_follow_imported_members = True
 #
 # html_theme = 'agogo'
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    'canonical_url': '',
+  #  Provided by Google in your dashboard
+    'logo_only': False,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': True,
+    'style_nav_header_background': 'grey',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_logo = 'https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&logo-EladYaniv01&style-plastic'
+autosummary_generate = True
+texinfo_show_urls = 'footnote'
+rst_epilog = """
+.. _Changelog: https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md
+.. |MasterBuildIMG| image:: https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master
+.. |VersionBuildIMG| image:: https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&logo-EladYaniv01&style-plastic
+
+.. raw:: html
+
+    <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://user-images.githubusercontent.com/40754127/90429090-b488c080-e0cd-11ea-90dd-7a751848e828.png" width="34" height="34" /> <a href="https://github.com/eladyaniv01/SC2MapAnalysis/tree/master" target="_"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master" /></a> <img style="display: block; margin-left: auto; margin-right: auto;" src="https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&amp;logo-EladYaniv01&amp;style-plastic" width="109" height="21" /></p>
+
+"""

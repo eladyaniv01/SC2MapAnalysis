@@ -47,7 +47,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: grey" >
           
 
           
@@ -114,7 +114,7 @@
 
       <div class="wy-nav-content">
         
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
         
           
 
@@ -161,90 +161,615 @@
 <h1>MapAnalyzer package<a class="headerlink" href="#mapanalyzer-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<p>.. toctree::
-:maxdepth: 4</p>
-<p>MapAnalyzer.sc2pathlibp</p>
+<div class="toctree-wrapper compound">
+</div>
 </div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="mapanalyzer-debugger-module">
-<h2>MapAnalyzer.Debugger module<a class="headerlink" href="#mapanalyzer-debugger-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.Debugger
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.Debugger">
+<span id="mapanalyzer-debugger-module"></span><h2>MapAnalyzer.Debugger module<a class="headerlink" href="#module-MapAnalyzer.Debugger" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.Debugger.LogFilter">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Debugger.</code><code class="sig-name descname">LogFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'ERROR'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#LogFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.LogFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Debugger.</code><code class="sig-name descname">MapAnalyzerDebugger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">loglevel</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'ERROR'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.close">
+<em class="property">static </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_chokes">
+<code class="sig-name descname">plot_chokes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_chokes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_chokes" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute Chokes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_influenced_path">
+<code class="sig-name descname">plot_influenced_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">goal</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">weight_array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fontdict</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_influenced_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_influenced_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_map">
+<code class="sig-name descname">plot_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fontdict</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">20</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot map</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_normal_resources">
+<code class="sig-name descname">plot_normal_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_normal_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_normal_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p># todo: account for gold minerals and rich gas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_regions">
+<code class="sig-name descname">plot_regions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fontdict</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>Union<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_vision_blockers">
+<code class="sig-name descname">plot_vision_blockers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.plot_vision_blockers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_vision_blockers" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot vbs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Debugger.MapAnalyzerDebugger.show">
+<em class="property">static </em><code class="sig-name descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Debugger.html#MapAnalyzerDebugger.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Debugger.MapAnalyzerDebugger.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-mapdata-module">
-<h2>MapAnalyzer.MapData module<a class="headerlink" href="#mapanalyzer-mapdata-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.MapData
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.MapData">
+<span id="mapanalyzer-mapdata-module"></span><h2>MapAnalyzer.MapData module<a class="headerlink" href="#module-MapAnalyzer.MapData" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.MapData.MapData">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.MapData.</code><code class="sig-name descname">MapData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bot</span><span class="p">:</span> <span class="n">sc2.bot_ai.BotAI</span></em>, <em class="sig-param"><span class="n">loglevel</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'ERROR'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>MapData DocString</p>
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.add_influence">
+<code class="sig-name descname">add_influence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">r</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">arr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">safe</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.add_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.add_influence" title="Permalink to this definition">¶</a></dt>
+<dd><p>when safe is off will not adjust values below 1 which could result in a crash</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.closest_node_idx">
+<em class="property">static </em><code class="sig-name descname">closest_node_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">nodes</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.closest_node_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.closest_node_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a list of nodes <cite>Ln</cite>  and a single node <cite>Nb</cite>,
+will return the index of the closest node in the list to <cite>Nb</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.closest_towards_point">
+<code class="sig-name descname">closest_towards_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">List<span class="p">[</span>sc2.position.Point2<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; sc2.position.Point2<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.closest_towards_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.closest_towards_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a list/set of points, and a target,
+will return the point that is closest to that target
+Example usage would be to calculate a position for
+tanks in direction to the enemy forces
+passing in the Area’s corners as points and enemy army’s location as target</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.compile_map">
+<code class="sig-name descname">compile_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.compile_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.compile_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>user can call this to recompute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.distance">
+<em class="property">static </em><code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p1</span><span class="p">:</span> <span class="n">sc2.position.Point2</span></em>, <em class="sig-param"><span class="n">p2</span><span class="p">:</span> <span class="n">sc2.position.Point2</span></em><span class="sig-paren">)</span> &#x2192; numpy.float64<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>euclidean distance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">
+<code class="sig-name descname">get_air_vs_ground_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_air_vs_ground_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_clean_air_grid">
+<code class="sig-name descname">get_clean_air_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_clean_air_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_climber_grid">
+<code class="sig-name descname">get_climber_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_climber_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_climber_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_pyastar_grid">
+<code class="sig-name descname">get_pyastar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">air_pathing</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_pyastar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_pyastar_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_ramp">
+<code class="sig-name descname">get_ramp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_ramp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_ramp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.get_ramp_nodes">
+<code class="sig-name descname">get_ramp_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.get_ramp_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_ramp_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.in_region_i">
+<code class="sig-name descname">in_region_i</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.in_region_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.in_region_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>will query a if a point is in, and in which Region using Indices &lt;slow&gt;
+time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.in_region_p">
+<code class="sig-name descname">in_region_p</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.in_region_p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.in_region_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>will query a if a point is in, and in which Region using Set of Points &lt;fast&gt;
+time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+as long as polygon points is of type set, not list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.indices_to_points">
+<em class="property">static </em><code class="sig-name descname">indices_to_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>numpy.ndarray<span class="p">, </span>Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Set<span class="p">[</span>Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.indices_to_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.indices_to_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert indices to a set of points
+Will only work when both dimensions are of same length</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.pathfind">
+<code class="sig-name descname">pathfind</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">goal</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_diagonal</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sensitivity</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.pathfind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.pathfind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.plot_influenced_path">
+<code class="sig-name descname">plot_influenced_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">goal</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">weight_array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">plot</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fontdict</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.plot_influenced_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.plot_influenced_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.plot_map">
+<code class="sig-name descname">plot_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fontdict</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">20</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.plot_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot map</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.points_to_indices">
+<em class="property">static </em><code class="sig-name descname">points_to_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">Set<span class="p">[</span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.points_to_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.points_to_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert points to a tuple of two 1d arrays</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.points_to_numpy_array">
+<code class="sig-name descname">points_to_numpy_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Set<span class="p">[</span>Tuple<span class="p">[</span>numpy.int64<span class="p">, </span>numpy.int64<span class="p">]</span><span class="p">]</span><span class="p">, </span>List<span class="p">[</span>sc2.position.Point2<span class="p">]</span><span class="p">, </span>Set<span class="p">[</span>sc2.position.Point2<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.points_to_numpy_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.points_to_numpy_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert points to numpy ndarray</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.ramp_close_enough">
+<code class="sig-name descname">ramp_close_enough</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ramp</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.ramp_close_enough"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.ramp_close_enough" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.region_connectivity_all_paths">
+<code class="sig-name descname">region_connectivity_all_paths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_region</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a></span></em>, <em class="sig-param"><span class="n">goal_region</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a></span></em>, <em class="sig-param"><span class="n">not_through</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.region_connectivity_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.region_connectivity_all_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns all possible paths through regions (ramps),
+can exclude a region by passing it in a not_through list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.save_plot">
+<code class="sig-name descname">save_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.save_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.save_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will save the plot to a file names after the map name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.show">
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.vision_blockers">
+<em class="property">property </em><code class="sig-name descname">vision_blockers</code><a class="headerlink" href="#MapAnalyzer.MapData.MapData.vision_blockers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the private method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.where">
+<code class="sig-name descname">where</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">, </span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp">MapAnalyzer.constructs.MDRamp</a><span class="p">, </span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea">MapAnalyzer.constructs.VisionBlockerArea</a><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.where"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.where" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will query a point on the map and will return the first result in the following order:
+Region,
+MDRamp,
+VisionBlockerArea
+region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.MapData.MapData.where_all">
+<code class="sig-name descname">where_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>List<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp">MapAnalyzer.constructs.MDRamp</a><span class="p">, </span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea">MapAnalyzer.constructs.VisionBlockerArea</a><span class="p">]</span><span class="p">]</span><span class="p">, </span>List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea">MapAnalyzer.constructs.VisionBlockerArea</a><span class="p">]</span><span class="p">, </span>List<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">, </span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea">MapAnalyzer.constructs.VisionBlockerArea</a><span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/MapData.html#MapData.where_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.where_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will query a point on the map and will return a list of all Area’s that point belong to
+region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-pather-module">
-<h2>MapAnalyzer.Pather module<a class="headerlink" href="#mapanalyzer-pather-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.Pather
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.Pather">
+<span id="mapanalyzer-pather-module"></span><h2>MapAnalyzer.Pather module<a class="headerlink" href="#module-MapAnalyzer.Pather" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Pather.</code><code class="sig-name descname">MapAnalyzerPather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.add_influence">
+<code class="sig-name descname">add_influence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">r</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">arr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">safe</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.add_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.add_influence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.find_all_paths">
+<code class="sig-name descname">find_all_paths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a></span></em>, <em class="sig-param"><span class="n">goal</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a></span></em>, <em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.find_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.find_all_paths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_air_vs_ground_grid">
+<code class="sig-name descname">get_air_vs_ground_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_air_vs_ground_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_air_vs_ground_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid">
+<code class="sig-name descname">get_base_pathing_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_base_pathing_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_clean_air_grid">
+<code class="sig-name descname">get_clean_air_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_clean_air_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_clean_air_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_climber_grid">
+<code class="sig-name descname">get_climber_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_climber_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_climber_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid for units like reaper / colossus</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_pyastar_grid">
+<code class="sig-name descname">get_pyastar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_pyastar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_pyastar_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.pathfind">
+<code class="sig-name descname">pathfind</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">goal</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_diagonal</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sensitivity</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.pathfind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.pathfind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Pather.MapAnalyzerPather.set_connectivity_graph">
+<code class="sig-name descname">set_connectivity_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.set_connectivity_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.set_connectivity_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-polygon-module">
-<h2>MapAnalyzer.Polygon module<a class="headerlink" href="#mapanalyzer-polygon-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.Polygon
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.Polygon">
+<span id="mapanalyzer-polygon-module"></span><h2>MapAnalyzer.Polygon module<a class="headerlink" href="#module-MapAnalyzer.Polygon" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.Polygon.BuildablePoints">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Polygon.</code><code class="sig-name descname">BuildablePoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">polygon</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#BuildablePoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ChokeArea BuildablePoints are always the edges, this is useful for walling off</p>
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.BuildablePoints.free_pct">
+<em class="property">property </em><code class="sig-name descname">free_pct</code><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints.free_pct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.BuildablePoints.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#BuildablePoints.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="MapAnalyzer.Polygon.Polygon">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Polygon.</code><code class="sig-name descname">Polygon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#Polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Polygon DocString</p>
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.area">
+<em class="property">property </em><code class="sig-name descname">area</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.area" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.buildable_points">
+<em class="property">property </em><code class="sig-name descname">buildable_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.buildable_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.calc_areas">
+<code class="sig-name descname">calc_areas</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#Polygon.calc_areas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.calc_areas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.center">
+<em class="property">property </em><code class="sig-name descname">center</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>since the center is always going to be a float,
+and for performance considerations we use integer coordinates
+we will return the closest point registered</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.clean_points">
+<em class="property">property </em><code class="sig-name descname">clean_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.clean_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.corner_array">
+<em class="property">property </em><code class="sig-name descname">corner_array</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.corner_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.corner_points">
+<em class="property">property </em><code class="sig-name descname">corner_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.corner_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.is_inside_indices">
+<code class="sig-name descname">is_inside_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#Polygon.is_inside_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.is_inside_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.is_inside_point">
+<code class="sig-name descname">is_inside_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>sc2.position.Point2<span class="p">, </span>tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#Polygon.is_inside_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.is_inside_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.nodes">
+<em class="property">property </em><code class="sig-name descname">nodes</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.perimeter">
+<em class="property">property </em><code class="sig-name descname">perimeter</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.perimeter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.perimeter_points">
+<em class="property">property </em><code class="sig-name descname">perimeter_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.perimeter_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>perimeter points</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">testing</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Polygon.html#Polygon.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.regions">
+<em class="property">property </em><code class="sig-name descname">regions</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Polygon.Polygon.width">
+<em class="property">property </em><code class="sig-name descname">width</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-region-module">
-<h2>MapAnalyzer.Region module<a class="headerlink" href="#mapanalyzer-region-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.Region
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.Region">
+<span id="mapanalyzer-region-module"></span><h2>MapAnalyzer.Region module<a class="headerlink" href="#module-MapAnalyzer.Region" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.Region.Region">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Region.</code><code class="sig-name descname">Region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">map_expansions</span><span class="p">:</span> <span class="n">List<span class="p">[</span>sc2.position.Point2<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/Region.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.base_locations">
+<em class="property">property </em><code class="sig-name descname">base_locations</code><a class="headerlink" href="#MapAnalyzer.Region.Region.base_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.connected_regions">
+<em class="property">property </em><code class="sig-name descname">connected_regions</code><a class="headerlink" href="#MapAnalyzer.Region.Region.connected_regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.corners">
+<em class="property">property </em><code class="sig-name descname">corners</code><a class="headerlink" href="#MapAnalyzer.Region.Region.corners" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">testing</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Region.html#Region.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.plot_perimeter">
+<code class="sig-name descname">plot_perimeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/Region.html#Region.plot_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot_perimeter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.region_chokes">
+<em class="property">property </em><code class="sig-name descname">region_chokes</code><a class="headerlink" href="#MapAnalyzer.Region.Region.region_chokes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.region_ramps">
+<em class="property">property </em><code class="sig-name descname">region_ramps</code><a class="headerlink" href="#MapAnalyzer.Region.Region.region_ramps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-constants-module">
-<h2>MapAnalyzer.constants module<a class="headerlink" href="#mapanalyzer-constants-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.constants
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.constants">
+<span id="mapanalyzer-constants-module"></span><h2>MapAnalyzer.constants module<a class="headerlink" href="#module-MapAnalyzer.constants" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="mapanalyzer-constructs-module">
-<h2>MapAnalyzer.constructs module<a class="headerlink" href="#mapanalyzer-constructs-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.constructs
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.constructs">
+<span id="mapanalyzer-constructs-module"></span><h2>MapAnalyzer.constructs module<a class="headerlink" href="#module-MapAnalyzer.constructs" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="MapAnalyzer.constructs.ChokeArea">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">ChokeArea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">pathlibchoke</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.PathLibChoke" title="MapAnalyzer.constructs.PathLibChoke">MapAnalyzer.constructs.PathLibChoke</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#ChokeArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.ChokeArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
+<p>ChokeArea DocString</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="MapAnalyzer.constructs.MDRamp">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">MDRamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ramp</span><span class="p">:</span> <span class="n">sc2.game_info.Ramp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#MDRamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.constructs.ChokeArea</span></code></a></p>
+<p>MDRamp DocString</p>
+<dl class="py method">
+<dt id="MapAnalyzer.constructs.MDRamp.bottom_center">
+<em class="property">property </em><code class="sig-name descname">bottom_center</code><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.bottom_center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.constructs.MDRamp.closest_region">
+<code class="sig-name descname">closest_region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#MDRamp.closest_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.closest_region" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.constructs.MDRamp.set_regions">
+<code class="sig-name descname">set_regions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#MDRamp.set_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.set_regions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.constructs.MDRamp.top_center">
+<em class="property">property </em><code class="sig-name descname">top_center</code><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.top_center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="MapAnalyzer.constructs.PathLibChoke">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">PathLibChoke</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pathlib_choke</span><span class="p">:</span> <span class="n">Choke</span></em>, <em class="sig-param"><span class="n">pk</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#PathLibChoke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.PathLibChoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="MapAnalyzer.constructs.VisionBlockerArea">
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">VisionBlockerArea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/constructs.html#VisionBlockerArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.VisionBlockerArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.constructs.ChokeArea</span></code></a></p>
+<p>VisionBlockerArea DocString</p>
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-decorators-module">
-<h2>MapAnalyzer.decorators module<a class="headerlink" href="#mapanalyzer-decorators-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.decorators
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.decorators">
+<span id="mapanalyzer-decorators-module"></span><h2>MapAnalyzer.decorators module<a class="headerlink" href="#module-MapAnalyzer.decorators" title="Permalink to this headline">¶</a></h2>
+<p>DISABLED UNTIL AIARENA SUPPORTS TQDM</p>
+<dl class="py function">
+<dt id="MapAnalyzer.decorators.logger_wraps">
+<code class="sig-prename descclassname">MapAnalyzer.decorators.</code><code class="sig-name descname">logger_wraps</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">entry</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">exit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'INFO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/decorators.html#logger_wraps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.decorators.logger_wraps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.decorators.progress_wrapped">
+<code class="sig-prename descclassname">MapAnalyzer.decorators.</code><code class="sig-name descname">progress_wrapped</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">estimated_time</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">desc</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'Progress'</span></em>, <em class="sig-param"><span class="n">tstep</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="n">None</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Callable<a class="reference internal" href="../../_modules/MapAnalyzer/decorators.html#progress_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.decorators.progress_wrapped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate a function to add a progress bar</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.decorators.provide_progress_bar">
+<code class="sig-prename descclassname">MapAnalyzer.decorators.</code><code class="sig-name descname">provide_progress_bar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span></em>, <em class="sig-param"><span class="n">estimated_time</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">tstep</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Tuple<span class="p">[</span>MapData<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>Any<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/MapAnalyzer/decorators.html#provide_progress_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.decorators.provide_progress_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tqdm wrapper for a long-running function
+:param function - function to run:
+:param estimated_time - how long you expect the function to take:
+:param tstep - time delta:
+:type tstep - time delta: seconds
+:param tqdm_kwargs - kwargs to construct the progress bar:
+:param args - args to pass to the function:
+:param kwargs - keyword args to pass to the function:</p>
+<dl class="simple">
+<dt>ret:</dt><dd><p>function(<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.decorators.std_out_err_redirect_tqdm">
+<code class="sig-prename descclassname">MapAnalyzer.decorators.</code><code class="sig-name descname">std_out_err_redirect_tqdm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/decorators.html#std_out_err_redirect_tqdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.decorators.std_out_err_redirect_tqdm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-exceptions-module">
-<h2>MapAnalyzer.exceptions module<a class="headerlink" href="#mapanalyzer-exceptions-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.exceptions
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.exceptions">
+<span id="mapanalyzer-exceptions-module"></span><h2>MapAnalyzer.exceptions module<a class="headerlink" href="#module-MapAnalyzer.exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="py exception">
+<dt id="MapAnalyzer.exceptions.CustomDeprecationWarning">
+<em class="property">exception </em><code class="sig-prename descclassname">MapAnalyzer.exceptions.</code><code class="sig-name descname">CustomDeprecationWarning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oldarg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">newarg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/exceptions.html#CustomDeprecationWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.exceptions.CustomDeprecationWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="MapAnalyzer.exceptions.OutOfBoundsException">
+<em class="property">exception </em><code class="sig-prename descclassname">MapAnalyzer.exceptions.</code><code class="sig-name descname">OutOfBoundsException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/exceptions.html#OutOfBoundsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.exceptions.OutOfBoundsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="MapAnalyzer.exceptions.PatherNoPointsException">
+<em class="property">exception </em><code class="sig-prename descclassname">MapAnalyzer.exceptions.</code><code class="sig-name descname">PatherNoPointsException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">goal</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/MapAnalyzer/exceptions.html#PatherNoPointsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.exceptions.PatherNoPointsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></p>
+</dd></dl>
+
 </div>
-<div class="section" id="mapanalyzer-utils-module">
-<h2>MapAnalyzer.utils module<a class="headerlink" href="#mapanalyzer-utils-module" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer.utils
-:members:
-:undoc-members:
-:show-inheritance:</p>
+<div class="section" id="module-MapAnalyzer.utils">
+<span id="mapanalyzer-utils-module"></span><h2>MapAnalyzer.utils module<a class="headerlink" href="#module-MapAnalyzer.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="MapAnalyzer.utils.get_map_file_list">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">get_map_file_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/utils.html#get_map_file_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.get_map_file_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.utils.get_map_files_folder">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">get_map_files_folder</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../../_modules/MapAnalyzer/utils.html#get_map_files_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.get_map_files_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.utils.get_sets_with_mutual_elements">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">get_sets_with_mutual_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_mdchokes</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.PathLibChoke" title="MapAnalyzer.constructs.PathLibChoke">MapAnalyzer.constructs.PathLibChoke</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">area</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp">MapAnalyzer.constructs.MDRamp</a><span class="p">, </span><a class="reference internal" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea">MapAnalyzer.constructs.VisionBlockerArea</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">base_choke</span><span class="p">:</span> <span class="n">None</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">]</span><a class="reference internal" href="../../_modules/MapAnalyzer/utils.html#get_sets_with_mutual_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.get_sets_with_mutual_elements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.utils.import_bot_instance">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">import_bot_instance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_game_data</span><span class="p">:</span> <span class="n">s2clientprotocol.sc2api_pb2.Response</span></em>, <em class="sig-param"><span class="n">raw_game_info</span><span class="p">:</span> <span class="n">s2clientprotocol.sc2api_pb2.Response</span></em>, <em class="sig-param"><span class="n">raw_observation</span><span class="p">:</span> <span class="n">s2clientprotocol.sc2api_pb2.ResponseObservation</span></em><span class="sig-paren">)</span> &#x2192; sc2.bot_ai.BotAI<a class="reference internal" href="../../_modules/MapAnalyzer/utils.html#import_bot_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.import_bot_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>import_bot_instance DocString</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.utils.mock_map_data">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">mock_map_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_file</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; MapData<a class="reference internal" href="../../_modules/MapAnalyzer/utils.html#mock_map_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.mock_map_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<p>.. automodule:: MapAnalyzer
-:members:
-:undoc-members:
-:show-inheritance:</p>
-</div>
+<div class="section" id="module-MapAnalyzer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-MapAnalyzer" title="Permalink to this headline">¶</a></h2>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://user-images.githubusercontent.com/40754127/90429090-b488c080-e0cd-11ea-90dd-7a751848e828.png" width="34" height="34" /> <a href="https://github.com/eladyaniv01/SC2MapAnalysis/tree/master" target="_"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master" /></a> <img style="display: block; margin-left: auto; margin-right: auto;" src="https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&amp;logo-EladYaniv01&amp;style-plastic" width="109" height="21" /></p></div>
 </div>
 
 
