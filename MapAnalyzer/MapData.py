@@ -23,7 +23,8 @@ WHITE = "\u001b[32m"
 
 class MapData:
     """
-    MapData DocString
+    Entry point for the user
+
     """
 
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
@@ -74,7 +75,7 @@ class MapData:
     @property
     def vision_blockers(self) -> Set[Point2]:
         """
-        Return the private method
+        Exposing the computed method
         """
         return self._vision_blockers
 
@@ -83,12 +84,31 @@ class MapData:
     # dont cache this
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
                          air_pathing: Optional[bool] = None) -> ndarray:
+        """
+        Request a new grid
+        This grid can be reused in the duration of the frame,
+        and should be regenerated on each frame
+
+        :param default_weight: General cost to be applied to all pathable cells
+        :param include_destructables:
+        :param air_pathing:
+        :return: numpy array with applied infulence(weight)  / cost
+        """
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
                                             )
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
+        """
+        Climber grid is a grid modified by sc2pathlib, and is used for
+        units that can climb, such as Reaper, Colossus
+
+        This grid can be reused in the duration of the frame,
+        and should be regenerated on each frame
+        :param default_weight: General cost to be applied to all pathable cells
+        :return: numpy array with applied infulence(weight)  / cost
+        """
         return self.pather.get_climber_grid(default_weight)
 
     def get_air_vs_ground_grid(self, default_weight: int = 100):
