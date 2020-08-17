@@ -1,15 +1,16 @@
-# SC2MapAnalysis 
+README.MD
+------------ 
 
 Builds:
 -------
 
-* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
+* ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master) 
  [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
 
-* ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic) [Changelog](https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md)  
+* ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&logo-EladYaniv01&style-plastic) [Changelog](https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md)  
 
-# Summary
-
+Summary
+---------------
 A standalone plugin for python SC2 api 
 
 Early Stage development,
@@ -18,9 +19,9 @@ Early Stage development,
 - [How to plug it on your bot](#How-to-plug-it-on-your-bot)
 
 Why Do we need this ? 
-=====================
+---------------------
 
-This module is inspired by plays like this one [TY map positioning](https://www.youtube.com/watch?v=NUQsAWIBTSk&start=458)
+This module is inspired by plays like this one [TY map positioning](https://www.youtube.com/watch?v-NUQsAWIBTSk&start-458)
 (notice how the army splits into groups, covering different areas,  tanks are tucked in corners, and so on) 
 
 Hopefully with the interface provided here, you will be able to build plays like that one!
@@ -48,18 +49,18 @@ from utils import import_bot_instance
 
 #if its from BurnySc2 it is compressed
 # https://github.com/BurnySc2/python-sc2/tree/develop/test/pickle_data
-YOUR_FILE_PATH = 'some_directory/map_file'
+YOUR_FILE_PATH - 'some_directory/map_file'
 with lzma.open(YOUR_FILE_PATH, "rb") as f:
-    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+    raw_game_data, raw_game_info, raw_observation - pickle.load(f)
 
 # mocking a bot object to initalize the map,  this is for when you want to do this while not in a game,  
 # if you want to use it in a game just pass in the bot object like shown below 
 
-bot = import_bot_instance(raw_import_bot_instancegame_data, raw_game_info, raw_observation)
+bot - import_bot_instance(raw_import_bot_instancegame_data, raw_game_info, raw_observation)
 
 
 # And then you can instantiate a MapData Object like so
-map_data = MapData(bot)
+map_data - MapData(bot)
 
 
 # plot the entire labeled map
@@ -70,34 +71,34 @@ map_data.plot_map()
 # ramp top center is marked with '^'
 # gas geysers are yellow spades 
 # MDRampss are marked with R<region_label>
-# height span is with respect to :   light = high , dark = low
+# height span is with respect to :   light - high , dark - low
 # ChokeArea is marked with green heart suites
 # Corners are marked with a red 'V' 
 ```
-<img src="https://user-images.githubusercontent.com/40754127/88463402-3fa1dc80-cebb-11ea-9da9-f80a219f1083.png"/>
+<img src-"https://user-images.githubusercontent.com/40754127/88463402-3fa1dc80-cebb-11ea-9da9-f80a219f1083.png"/>
 
 
 - access a Region like so(region_label is of type int):
 
-    **`region = map_data.regions[region_label]`**
+    **`region - map_data.regions[region_label]`**
 
 - get a region by querying a point ( for example the position of the enemy ) 
 
     if the point is not inside a region, will return None
     
-    **`region = map_data.in_region_p(point)`**
+    **`region - map_data.in_region_p(point)`**
 
 - get an area by querying a point ( for example the position of the enemy ) 
 
     will always return Area
     
-    **`region = map_data.where(point)`**
+    **`region - map_data.where(point)`**
 
 - get all constructs by querying a point ( for example the position of the enemy ) 
 
     will a list of area's the point is in ( for example a MDRampArea and a Region could have mutual points )
     
-    **`region = map_data.where_all(point)`**
+    **`region - map_data.where_all(point)`**
 
 - other handy objects available through our interface
 
@@ -155,8 +156,8 @@ Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) l
  'ZenLE.xz']
 ```
 
-# Pathfinding
-
+Pathfinding
+---------------
 
 getting the basic pathing grid :
 
@@ -164,7 +165,7 @@ getting the basic pathing grid :
 
 Adding influence :
 ------------------
-`def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:`
+`def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int - 100) -> ndarray:`
 
 Usage:
 
@@ -180,7 +181,7 @@ Usage:
 
 so you should keep that in mind if you want to create a complex influence map with different weights
 
-`def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,allow_diagonal=False, sensitivity: int = 1) -> ndarray:`
+`def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] - None,allow_diagonal-False, sensitivity: int - 1) -> ndarray:`
 
 * `start`: start coordinates
 * `goal`: goal coordinates
@@ -208,44 +209,44 @@ def get_map_file_list() -> List[str]:
     """
     easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
     """
-    subfolder = "MapAnalyzer"
-    subfolder2 = "pickle_gameinfo"
-    subfolder = os.path.join(subfolder, subfolder2)
-    folder = os.path.abspath(".")
-    map_files_folder = os.path.join(folder, subfolder)
-    map_files = os.listdir(map_files_folder)
-    li = []
+    subfolder - "MapAnalyzer"
+    subfolder2 - "pickle_gameinfo"
+    subfolder - os.path.join(subfolder, subfolder2)
+    folder - os.path.abspath(".")
+    map_files_folder - os.path.join(folder, subfolder)
+    map_files - os.listdir(map_files_folder)
+    li - []
     for map_file in map_files:
         li.append(os.path.join(map_files_folder, map_file))
     return li
 
 
-map_files = get_map_file_list()
+map_files - get_map_file_list()
 for mf in map_files:
     if 'reef' in mf.lower():
-        map_file = mf
+        map_file - mf
         break
 
 
 with lzma.open(map_file, "rb") as f:
-    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+    raw_game_data, raw_game_info, raw_observation - pickle.load(f)
 
-bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-map_data = MapData(bot)
+bot - import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+map_data - MapData(bot)
 
 # get corner regions centers for start / end points
-base = map_data.bot.townhalls[0]
-reg_start = map_data.where(base.position_tuple)
-reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
-p0 = reg_start.center
-p1 = reg_end.center
+base - map_data.bot.townhalls[0]
+reg_start - map_data.where(base.position_tuple)
+reg_end - map_data.where(map_data.bot.enemy_start_locations[0].position)
+p0 - reg_start.center
+p1 - reg_end.center
 for idx in range(8):
     """generate random points for added influence / cost """
-    pts = []
+    pts - []
     if idx > 0:
-        NUM_POINTS = idx * 10
+        NUM_POINTS - idx * 10
     else:
-        NUM_POINTS = 35
+        NUM_POINTS - 35
 
     # generating random points for added influence
     for i in range(NUM_POINTS):
@@ -253,15 +254,15 @@ for idx in range(8):
 
     """Requesting a grid and adding influence / cost"""
     # getting the base grid for pathing
-    arr = map_data.get_pyastar_grid()
-    r = 7 + idx
+    arr - map_data.get_pyastar_grid()
+    r - 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr, weight=-100)
+        arr - map_data.add_influence(p, r, arr, weight--100)
 
     """Plot path on weighted grid"""
-    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
-                                  save=True, plot=False)
+    map_data.plot_influenced_path(start-p0, goal-p1, weight_array-arr, name-f"Added {NUM_POINTS} of influence",
+                                  save-True, plot-False)
 
 ```
 Results from 8 runs On AbysalReefLE:
@@ -291,67 +292,67 @@ from sc2.position import Point3
 
 from MapAnalyzer import MapData, Point2
 
-GREEN = Point3((0, 255, 0))
-RED = Point3((255, 0, 0))
-BLUE = Point3((0, 0, 255))
-BLACK = Point3((0, 0, 0))
+GREEN - Point3((0, 255, 0))
+RED - Point3((255, 0, 0))
+BLUE - Point3((0, 0, 255))
+BLACK - Point3((0, 0, 0))
 
 
 class MATester(sc2.BotAI):
 
     def __init__(self):
         super().__init__()
-        self.map_data = None
-        self.logger = None
+        self.map_data - None
+        self.logger - None
 
     async def on_start(self):
-        self.map_data = MapData(self)
-        self.logger = self.map_data.logger
+        self.map_data - MapData(self)
+        self.logger - self.map_data.logger
 
     async def on_step(self, iteration: int):
 
-        base = self.townhalls[0]
-        reg_start = self.map_data.where(base.position_tuple)
+        base - self.townhalls[0]
+        reg_start - self.map_data.where(base.position_tuple)
         # self.logger.info(regstart)
-        reg_end = self.map_data.where(self.enemy_start_locations[0].position)
+        reg_end - self.map_data.where(self.enemy_start_locations[0].position)
         # self.logger.info(regend)
-        p0 = reg_start.center
-        p1 = reg_end.center
-        path = self.map_data.pathfind(start=p0, goal=p1)
+        p0 - reg_start.center
+        p1 - reg_end.center
+        path - self.map_data.pathfind(start-p0, goal-p1)
         self.client.debug_text_world(
-                "\n".join([f"start {p0}", ]), Point2(p0), color=RED, size=30,
+                "\n".join([f"start {p0}", ]), Point2(p0), color-RED, size-30,
         )
         self.client.debug_text_world(
-                "\n".join([f"end {p1}", ]), Point2(p1), color=RED, size=30,
+                "\n".join([f"end {p1}", ]), Point2(p1), color-RED, size-30,
         )
-        self._draw_point_list(path, text='*')
+        self._draw_point_list(path, text-'*')
 
-    def _draw_point_list(self, point_list: List = None, color=None, text=None, box_r=None) -> bool:
+    def _draw_point_list(self, point_list: List - None, color-None, text-None, box_r-None) -> bool:
         if not color:
-            color = GREEN
+            color - GREEN
         for p in point_list:
-            p = Point2(p)
-            h = self.get_terrain_z_height(p)
-            pos = Point3((p.x, p.y, h))
+            p - Point2(p)
+            h - self.get_terrain_z_height(p)
+            pos - Point3((p.x, p.y, h))
             if box_r:
-                p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
-                p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
-                self.client.debug_box_out(p0, p1, color=color)
+                p0 - Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
+                p1 - Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
+                self.client.debug_box_out(p0, p1, color-color)
             if text:
                 self.client.debug_text_world(
-                        "\n".join([f"{text}", ]), pos, color=color, size=30,
+                        "\n".join([f"{text}", ]), pos, color-color, size-30,
                 )
 
 
 def main():
-    map = "AutomatonLE"
+    map - "AutomatonLE"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],
-            realtime=False
+            realtime-False
     )
 
-if __name__ == "__main__":
+if __name__ -- "__main__":
     main()
 
 ```

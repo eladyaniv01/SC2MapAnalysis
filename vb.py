@@ -1,6 +1,6 @@
 import re
 import subprocess
-
+from pathlib import Path
 __author__ = "Elad Yaniv"
 import click
 
@@ -9,6 +9,19 @@ import click
 def vb():
     pass
 
+def update_readme_to_sphinx():
+    import re
+
+    regex = r"([#]\s)([A-Z]\w+)(\s?\n)"
+    subst = "\\2\\n---------------\\n"
+    with open("README.md", 'r') as f:
+        r_parsed = f.read()
+    title = "# QuickWalkThrough\n============"
+    r_parsed = r_parsed.replace("# SC2MapAnalysis", title)
+    r_parsed = r_parsed.replace('=', '-')
+    r_result = re.sub(regex, subst, r_parsed, 0, re.MULTILINE)
+    with open("README.md", 'w') as f:
+        f.write(r_result)
 
 def parse_setup():
     with open("setup.py", 'r') as f:
@@ -33,6 +46,16 @@ def update_setup(new_version):
     subprocess.check_call('git commit -m "bump setup.py"', shell=True)
     subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
     # subprocess.check_call('git push --follow-tags origin', shell=True)
+
+
+@vb.command(help='sphinx make for gh pages')
+def makedocs():
+    click.echo(click.style("Updating README.MD", fg='blue'))
+    update_readme_to_sphinx()
+    p = Path()
+    path = p.joinpath('docs').absolute()
+    click.echo(click.style(f"calling {path}//make github", fg='green'))
+    subprocess.check_call(f'{path}//make github', shell=True)
 
 
 @vb.command(help='print setup.py')
