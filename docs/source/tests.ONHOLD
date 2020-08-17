@@ -1,0 +1,52 @@
+tests package
+=============
+
+Submodules
+----------
+
+tests.mocksetup module
+----------------------
+
+.. automodule:: tests.mocksetup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.monkeytest module
+-----------------------
+
+Auto generates type annotations
+
+.. automodule:: tests.monkeytest
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_pathihng module
+---------------------------
+
+Test Pather
+
+.. automodule:: tests.test_pathihng
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_suite module
+------------------------
+
+Test Sanity
+
+.. automodule:: tests.test_suite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

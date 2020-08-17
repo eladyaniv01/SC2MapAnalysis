@@ -1,0 +1,758 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.53 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Sc2MapAnalyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Sc2MapAnalyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>MapAnalyzer.MapData</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for MapAnalyzer.MapData</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">sc2.bot_ai</span> <span class="kn">import</span> <span class="n">BotAI</span>
+<span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_fill_holes</span><span class="p">,</span> <span class="n">center_of_mass</span><span class="p">,</span> <span class="n">generate_binary_structure</span><span class="p">,</span> <span class="n">label</span> <span class="k">as</span> <span class="n">ndlabel</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
+
+<span class="kn">from</span> <span class="nn">MapAnalyzer.constructs</span> <span class="kn">import</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
+<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m&quot;</span>
+
+
+<div class="viewcode-block" id="MapData"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData">[docs]</a><span class="k">class</span> <span class="nc">MapData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MapData DocString</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># store relevant data from api</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">placement_grid</span><span class="o">.</span><span class="n">data_numpy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">pathing_grid</span><span class="o">.</span><span class="n">data_numpy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mineral_fields</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">mineral_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normal_geysers</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">vespene_geyser</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">terrain_height</span><span class="o">.</span><span class="n">data_numpy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_locations</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">expansion_locations_list</span>
+
+        <span class="c1"># data that will be generated and cached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_region_area</span> <span class="o">=</span> <span class="n">MIN_REGION_AREA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_region_area</span> <span class="o">=</span> <span class="n">MAX_REGION_AREA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># set later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corners</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_grid</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_blockers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">all_units</span> <span class="k">if</span>
+                                  <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;rich&quot;</span><span class="p">,</span> <span class="s2">&quot;450&quot;</span><span class="p">})]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">loglevel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span> <span class="o">=</span> <span class="n">MapAnalyzerDebugger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pather</span> <span class="o">=</span> <span class="n">MapAnalyzerPather</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_graph</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by pather</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathlib_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pyastar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pyastar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span>
+
+        <span class="c1"># compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compiling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">WHITE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_map</span><span class="p">()</span>  <span class="c1"># this is called on init, but allowed to be called again every step</span>
+
+    <span class="sd">&quot;&quot;&quot;Properties&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the private method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span>
+
+    <span class="sd">&quot;&quot;&quot; Pathing methods&quot;&quot;&quot;</span>
+
+    <span class="c1"># dont cache this</span>
+<div class="viewcode-block" id="MapData.get_pyastar_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_pyastar_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pyastar_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                         <span class="n">air_pathing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">air_pathing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;air_pathing&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.get_clean_air_grid()&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_pyastar_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">,</span> <span class="n">include_destructables</span><span class="o">=</span><span class="n">include_destructables</span><span class="p">,</span>
+                                            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_climber_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_air_vs_ground_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_clean_air_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.pathfind"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.pathfind">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">,</span>
+                                    <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.add_influence"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.add_influence">[docs]</a>    <span class="k">def</span> <span class="nf">add_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;when safe is off will not adjust values below 1 which could result in a crash&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span></div>
+
+    <span class="sd">&quot;&quot;&quot;Utility methods&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MapData.log"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.save"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.show"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MapData.close"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MapData.save_plot"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.save_plot">[docs]</a>    <span class="k">def</span> <span class="nf">save_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Will save the plot to a file names after the map name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.ramp_close_enough"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.ramp_close_enough">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">ramp_close_enough</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ramp</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MapData.get_ramp_nodes"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_ramp_nodes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_ramp_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ramp</span><span class="o">.</span><span class="n">center</span> <span class="k">for</span> <span class="n">ramp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MapData.get_ramp"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_ramp">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">center</span> <span class="o">==</span> <span class="n">node</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MapData.indices_to_points"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.indices_to_points">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">indices_to_points</span><span class="p">(</span>
+            <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert indices to a set of points</span>
+<span class="sd">        Will only work when both dimensions are of same length</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">set</span><span class="p">([(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]))])</span></div>
+
+<div class="viewcode-block" id="MapData.points_to_indices"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.points_to_indices">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">points_to_indices</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert points to a tuple of two 1d arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="MapData.points_to_numpy_array"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.points_to_numpy_array">[docs]</a>    <span class="k">def</span> <span class="nf">points_to_numpy_array</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert points to numpy ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">in_bounds_x</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">x</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">in_bounds_y</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">y</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">x_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">in_bounds_x</span><span class="p">)</span>
+        <span class="n">y_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">in_bounds_y</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x_vec</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y_vec</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">arr</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">arr</span></div>
+
+<div class="viewcode-block" id="MapData.distance"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.distance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">float64</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        euclidean distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="MapData.closest_node_idx"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.closest_node_idx">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">closest_node_idx</span><span class="p">(</span>
+            <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">],</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        given a list of nodes `Ln`  and a single node `Nb`,</span>
+<span class="sd">        will return the index of the closest node in the list to `Nb`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">closest_index</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">([</span><span class="n">node</span><span class="p">],</span> <span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">closest_index</span></div>
+
+<div class="viewcode-block" id="MapData.closest_towards_point"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.closest_towards_point">[docs]</a>    <span class="k">def</span> <span class="nf">closest_towards_point</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        given a list/set of points, and a target,</span>
+<span class="sd">        will return the point that is closest to that target</span>
+<span class="sd">        Example usage would be to calculate a position for</span>
+<span class="sd">        tanks in direction to the enemy forces</span>
+<span class="sd">        passing in the Area&#39;s corners as points and enemy army&#39;s location as target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span></div>
+
+    <span class="sd">&quot;&quot;&quot;Query methods&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MapData.region_connectivity_all_paths"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.region_connectivity_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">region_connectivity_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">goal_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span>
+                                      <span class="n">not_through</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Region</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Region</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns all possible paths through regions (ramps),</span>
+<span class="sd">        can exclude a region by passing it in a not_through list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">find_all_paths</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_region</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal_region</span><span class="p">)</span>
+        <span class="n">filtered_paths</span> <span class="o">=</span> <span class="n">all_paths</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">not_through</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">all_paths</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">x</span> <span class="ow">in</span> <span class="n">not_through</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">path</span><span class="p">]):</span>
+                    <span class="n">filtered_paths</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">all_paths</span> <span class="o">=</span> <span class="n">filtered_paths</span>
+        <span class="k">return</span> <span class="n">all_paths</span></div>
+
+<div class="viewcode-block" id="MapData.where_all"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.where_all">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">where_all</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]],</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">VisionBlockerArea</span><span class="p">],</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Region</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]],</span>
+    <span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Will query a point on the map and will return a list of all Area&#39;s that point belong to</span>
+<span class="sd">        region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
+<span class="sd">        choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">choke</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">choke</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">choke</span><span class="p">)</span>
+        <span class="c1"># assert (len(list(set(results))) == len(results)), f&quot;results{results},  list(set(results)){list(set(results))}&quot;</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="MapData.where"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.where">[docs]</a>    <span class="k">def</span> <span class="nf">where</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Region</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Will query a point on the map and will return the first result in the following order:</span>
+<span class="sd">        Region,</span>
+<span class="sd">        MDRamp,</span>
+<span class="sd">        VisionBlockerArea</span>
+<span class="sd">        region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">region</span>
+        <span class="k">for</span> <span class="n">choke</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">choke</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">choke</span></div>
+
+<div class="viewcode-block" id="MapData.in_region_p"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.in_region_p">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">in_region_p</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        will query a if a point is in, and in which Region using Set of Points &lt;fast&gt;</span>
+<span class="sd">        time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        as long as polygon points is of type set, not list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">inside_p</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">region</span></div>
+
+<div class="viewcode-block" id="MapData.in_region_i"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.in_region_i">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">in_region_i</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        will query a if a point is in, and in which Region using Indices &lt;slow&gt;</span>
+<span class="sd">        time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">inside_i</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">region</span></div>
+
+    <span class="sd">&quot;&quot;&quot; longest map compile is 1.9 s &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Compile methods&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_clean_plib_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># needs to be called AFTER MDramp and VisionBlocker are populated</span>
+        <span class="n">raw_chokes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_map</span><span class="o">.</span><span class="n">chokes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw_chokes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PathLibChoke</span><span class="p">(</span><span class="n">pathlib_choke</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">areas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span><span class="p">,</span>
+                                                                  <span class="n">areas</span><span class="o">=</span><span class="n">areas</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">],</span>
+                                <span class="n">areas</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">li</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+            <span class="n">li</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_sets_with_mutual_elements</span><span class="p">(</span><span class="n">list_mdchokes</span><span class="o">=</span><span class="n">local_chokes</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="n">area</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">minili</span> <span class="ow">in</span> <span class="n">li</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">minili</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_clean_polys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">pol</span><span class="o">.</span><span class="n">area</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_region_area</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pol</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pol</span><span class="o">.</span><span class="n">is_choke</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pol</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pol</span><span class="p">))</span>
+
+<div class="viewcode-block" id="MapData.compile_map"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.compile_map">[docs]</a>    <span class="nd">@progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m Map Compilation Progress </span><span class="se">\u001b</span><span class="s2">[37m&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">compile_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;user can call this to recompute&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_regions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_vision_blockers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_map_ramps</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_chokes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_polys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">:</span>
+            <span class="n">poly</span><span class="o">.</span><span class="n">calc_areas</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ramp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">:</span>
+            <span class="n">ramp</span><span class="o">.</span><span class="n">set_regions</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">set_connectivity_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">connectivity_graph</span></div>
+
+    <span class="k">def</span> <span class="nf">_calc_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; converting the placement grid to our own kind of grid&quot;&quot;&quot;</span>
+        <span class="c1"># cleaning the grid and then searching for 2x2 patterned regions</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">binary_fill_holes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># for our grid,  mineral walls are considered as a barrier between regions</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_blockers</span><span class="p">:</span>
+            <span class="n">grid</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])][</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">point</span><span class="o">.</span><span class="n">neighbors4</span><span class="p">:</span>
+                <span class="n">point_</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="n">n</span><span class="o">.</span><span class="n">rounded</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="o">.</span><span class="n">rounded</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="n">point_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">point_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">grid</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">point_</span><span class="p">[</span><span class="mi">1</span><span class="p">])][</span><span class="nb">int</span><span class="p">(</span><span class="n">point_</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">generate_binary_structure</span><span class="p">(</span><span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">BINARY_STRUCTURE</span><span class="p">)</span>
+        <span class="n">labeled_array</span><span class="p">,</span> <span class="n">num_features</span> <span class="o">=</span> <span class="n">ndlabel</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># for some operations the array must have same numbers or rows and cols,  adding</span>
+        <span class="c1"># zeros to fix that</span>
+        <span class="c1"># rows, cols = labeled_array.shape</span>
+        <span class="c1"># self.region_grid = np.append(labeled_array, np.zeros((abs(cols - rows), cols)), axis=0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span> <span class="o">=</span> <span class="n">labeled_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span><span class="p">)</span>
+        <span class="n">vb_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span>
+
+        <span class="c1"># some maps has no vision blockers</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vb_points</span><span class="p">):</span>
+            <span class="n">vision_blockers_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="n">vb_points</span><span class="p">)</span>
+            <span class="n">vision_blockers_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
+            <span class="n">vision_blockers_array</span><span class="p">[</span><span class="n">vision_blockers_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">vb_labeled_array</span><span class="p">,</span> <span class="n">vb_num_features</span> <span class="o">=</span> <span class="n">ndlabel</span><span class="p">(</span><span class="n">vision_blockers_array</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_grid</span> <span class="o">=</span> <span class="n">vb_labeled_array</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vb_labeled_array</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_map_ramps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span> <span class="o">=</span> <span class="p">[</span><span class="n">MDRamp</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                 <span class="n">ramp</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+                                 <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+                          <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_calc_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute VisionBlockerArea</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span><span class="p">)):</span>
+
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_grid</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="n">vb_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">vba</span> <span class="o">=</span> <span class="n">VisionBlockerArea</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">vb_arr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vba</span><span class="o">.</span><span class="n">area</span> <span class="o">&lt;=</span> <span class="mi">200</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vba</span><span class="p">)</span>
+                    <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">vba</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">areas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">vba</span><span class="p">:</span>
+                                <span class="n">vba</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">vba</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_calc_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute ChokeArea</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_plib_chokes</span><span class="p">()</span>
+        <span class="n">chokes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">choke</span> <span class="ow">in</span> <span class="n">chokes</span><span class="p">:</span>
+
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">choke</span><span class="o">.</span><span class="n">pixels</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_choke_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="n">center_of_mass</span><span class="p">(</span><span class="n">new_choke_array</span><span class="p">)</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+
+                <span class="n">new_choke</span> <span class="o">=</span> <span class="n">ChokeArea</span><span class="p">(</span>
+                        <span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">new_choke_array</span><span class="p">,</span> <span class="n">pathlibchoke</span><span class="o">=</span><span class="n">choke</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
+                        <span class="n">area</span><span class="o">.</span><span class="n">region_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
+                    <span class="n">new_choke</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">] Cant add </span><span class="si">{</span><span class="n">choke</span><span class="si">}</span><span class="s2"> with 0 points&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_calc_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute Region</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># some areas are with area of 1, 2 ,5   these are not what we want,</span>
+        <span class="c1"># so we filter those out</span>
+        <span class="c1"># if len(self.map_ramps) == 0:</span>
+        <span class="c1">#     self._set_map_ramps()</span>
+        <span class="n">pre_regions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions_labels</span><span class="p">)):</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">Region</span><span class="p">(</span>
+                    <span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span> <span class="o">==</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">map_expansions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_locations</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pre_regions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span>
+            <span class="c1"># gather the regions that are bigger than self.min_region_area</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">pre_regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_region_area</span> <span class="o">&gt;</span> <span class="n">region</span><span class="o">.</span><span class="n">area</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_region_area</span><span class="p">:</span>
+                <span class="n">region</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span>
+                <span class="c1"># region.calc_ramps()</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="sd">&quot;&quot;&quot;Plot methods&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MapData.plot_map"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">save</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.save()&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.plot_influenced_path"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.plot_influenced_path">[docs]</a>    <span class="k">def</span> <span class="nf">plot_influenced_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">weight_array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
+                             <span class="n">plot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">save</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.save()&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.show()&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_influenced_path</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">weight_array</span><span class="o">=</span><span class="n">weight_array</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                           <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_plot_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        plot Region</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_regions</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        plot vbs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_vision_blockers</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_plot_normal_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # todo: account for gold minerals and rich gas</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_normal_resources</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_plot_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute Chokes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_chokes</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MapData[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="si">}</span><span class="s2">]&gt;&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Elad Yaniv
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
