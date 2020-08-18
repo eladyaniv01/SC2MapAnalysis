@@ -1,5 +1,3 @@
-"""DISABLED UNTIL AIARENA SUPPORTS TQDM"""
-
 import contextlib
 import functools
 import sys
