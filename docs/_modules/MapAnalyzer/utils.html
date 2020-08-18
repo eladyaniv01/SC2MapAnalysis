@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -174,7 +170,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer.MapData</span> <span class="kn">import</span> <span class="n">MapData</span>
 
 
-<div class="viewcode-block" id="get_sets_with_mutual_elements"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.utils.get_sets_with_mutual_elements">[docs]</a><span class="k">def</span> <span class="nf">get_sets_with_mutual_elements</span><span class="p">(</span><span class="n">list_mdchokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">],</span>
+<div class="viewcode-block" id="get_sets_with_mutual_elements"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.utils.get_sets_with_mutual_elements">[docs]</a><span class="k">def</span> <span class="nf">get_sets_with_mutual_elements</span><span class="p">(</span><span class="n">list_mdchokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">],</span>
                                   <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                   <span class="n">base_choke</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]:</span>
     <span class="n">li</span> <span class="o">=</span> <span class="p">[]</span>
@@ -190,7 +186,7 @@
     <span class="k">return</span> <span class="n">li</span></div>
 
 
-<div class="viewcode-block" id="mock_map_data"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.utils.mock_map_data">[docs]</a><span class="k">def</span> <span class="nf">mock_map_data</span><span class="p">(</span><span class="n">map_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MapData&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="mock_map_data"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.utils.mock_map_data">[docs]</a><span class="k">def</span> <span class="nf">mock_map_data</span><span class="p">(</span><span class="n">map_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MapData&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">MapAnalyzer.MapData</span> <span class="kn">import</span> <span class="n">MapData</span>
     <span class="k">with</span> <span class="n">lzma</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">map_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">raw_game_data</span><span class="p">,</span> <span class="n">raw_game_info</span><span class="p">,</span> <span class="n">raw_observation</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -199,7 +195,7 @@
     <span class="k">return</span> <span class="n">MapData</span><span class="p">(</span><span class="n">bot</span><span class="o">=</span><span class="n">bot</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="import_bot_instance"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.utils.import_bot_instance">[docs]</a><span class="k">def</span> <span class="nf">import_bot_instance</span><span class="p">(</span>
+<div class="viewcode-block" id="import_bot_instance"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.utils.import_bot_instance">[docs]</a><span class="k">def</span> <span class="nf">import_bot_instance</span><span class="p">(</span>
         <span class="n">raw_game_data</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span>
         <span class="n">raw_game_info</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span>
         <span class="n">raw_observation</span><span class="p">:</span> <span class="n">ResponseObservation</span><span class="p">,</span>
@@ -226,13 +222,13 @@
     <span class="k">return</span> <span class="n">bot</span></div>
 
 
-<div class="viewcode-block" id="get_map_files_folder"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.utils.get_map_files_folder">[docs]</a><span class="k">def</span> <span class="nf">get_map_files_folder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_map_files_folder"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.utils.get_map_files_folder">[docs]</a><span class="k">def</span> <span class="nf">get_map_files_folder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">folder</span> <span class="o">=</span> <span class="n">ROOT_DIR</span>
     <span class="n">subfolder</span> <span class="o">=</span> <span class="s2">&quot;pickle_gameinfo&quot;</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">subfolder</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_map_file_list"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.utils.get_map_file_list">[docs]</a><span class="k">def</span> <span class="nf">get_map_file_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_map_file_list"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.utils.get_map_file_list">[docs]</a><span class="k">def</span> <span class="nf">get_map_file_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -159,7 +155,7 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 
-<div class="viewcode-block" id="CustomDeprecationWarning"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.exceptions.CustomDeprecationWarning">[docs]</a><span class="k">class</span> <span class="nc">CustomDeprecationWarning</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomDeprecationWarning"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.exceptions.CustomDeprecationWarning">[docs]</a><span class="k">class</span> <span class="nc">CustomDeprecationWarning</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldarg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old</span> <span class="o">=</span> <span class="n">oldarg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">newarg</span>
@@ -168,7 +164,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[DeprecationWarning] Passing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">old</span><span class="si">}</span><span class="s2">` argument is deprecated, and will have no effect,</span><span class="se">\n</span><span class="s2">Use `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="si">}</span><span class="s2">` instead&quot;</span></div>
 
 
-<div class="viewcode-block" id="PatherNoPointsException"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.exceptions.PatherNoPointsException">[docs]</a><span class="k">class</span> <span class="nc">PatherNoPointsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="PatherNoPointsException"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.exceptions.PatherNoPointsException">[docs]</a><span class="k">class</span> <span class="nc">PatherNoPointsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
@@ -180,7 +176,7 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Got: Start </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">, Goal </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">goal</span><span class="si">}</span><span class="s2">.&quot;</span></div>
 
 
-<div class="viewcode-block" id="OutOfBoundsException"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.exceptions.OutOfBoundsException">[docs]</a><span class="k">class</span> <span class="nc">OutOfBoundsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="OutOfBoundsException"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.exceptions.OutOfBoundsException">[docs]</a><span class="k">class</span> <span class="nc">OutOfBoundsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">point</span> <span class="o">=</span> <span class="n">p</span>

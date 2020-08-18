@@ -38,7 +38,6 @@ goto end
 
 :github
 rmdir /S /Q "%BUILDDIR%"
-copy /Y "D:\proj\SC2MapAnalysisDocs\README.md" "%SOURCEDIR%/source"
 %SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 echo. 2>"%DOCS%/.nojekyll"
 goto end

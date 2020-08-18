@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -170,7 +166,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span>
 
 
-<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region">[docs]</a><span class="k">class</span> <span class="nc">Region</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
+<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region">[docs]</a><span class="k">class</span> <span class="nc">Region</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">map_data</span><span class="p">:</span> <span class="s1">&#39;MapData&#39;</span><span class="p">,</span>
@@ -217,7 +213,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_points</span>
 
-<div class="viewcode-block" id="Region.plot_perimeter"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region.plot_perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">plot_perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Region.plot_perimeter"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.plot_perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">plot_perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        plot_perimeter</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -297,7 +293,7 @@
                         <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="Region.plot"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Region.Region.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Region.plot"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            plot</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -324,11 +320,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bases</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<div class="viewcode-block" id="Region.__repr__"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        __repr__</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Region &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;Region &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

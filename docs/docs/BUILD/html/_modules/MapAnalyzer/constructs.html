@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -169,7 +165,7 @@
     <span class="kn">from</span> <span class="nn">.sc2pathlibp.choke</span> <span class="kn">import</span> <span class="n">Choke</span>
 
 
-<div class="viewcode-block" id="PathLibChoke"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.PathLibChoke">[docs]</a><span class="k">class</span> <span class="nc">PathLibChoke</span><span class="p">:</span>
+<div class="viewcode-block" id="PathLibChoke"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.PathLibChoke">[docs]</a><span class="k">class</span> <span class="nc">PathLibChoke</span><span class="p">:</span>
     <span class="c1"># noinspection PyProtectedMember</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathlib_choke</span><span class="p">:</span> <span class="s2">&quot;Choke&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pk</span>
@@ -181,7 +177,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]PathLibChoke; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="ChokeArea"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.ChokeArea">[docs]</a><span class="k">class</span> <span class="nc">ChokeArea</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
+<div class="viewcode-block" id="ChokeArea"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.ChokeArea">[docs]</a><span class="k">class</span> <span class="nc">ChokeArea</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ChokeArea DocString</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -203,7 +199,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]ChokeArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&gt; of  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="MDRamp"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp">[docs]</a><span class="k">class</span> <span class="nc">MDRamp</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
+<div class="viewcode-block" id="MDRamp"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.MDRamp">[docs]</a><span class="k">class</span> <span class="nc">MDRamp</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MDRamp DocString</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -213,11 +209,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_ramp</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span> <span class="o">=</span> <span class="n">ramp</span>
 
-<div class="viewcode-block" id="MDRamp.closest_region"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp.closest_region">[docs]</a>    <span class="k">def</span> <span class="nf">closest_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_list</span><span class="p">):</span>
+<div class="viewcode-block" id="MDRamp.closest_region"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.MDRamp.closest_region">[docs]</a>    <span class="k">def</span> <span class="nf">closest_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_list</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">region_list</span><span class="p">,</span>
                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">area</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">area</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MDRamp.set_regions"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.MDRamp.set_regions">[docs]</a>    <span class="k">def</span> <span class="nf">set_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MDRamp.set_regions"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.MDRamp.set_regions">[docs]</a>    <span class="k">def</span> <span class="nf">set_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">:</span>
             <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -267,7 +263,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;R[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 
-<div class="viewcode-block" id="VisionBlockerArea"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.constructs.VisionBlockerArea">[docs]</a><span class="k">class</span> <span class="nc">VisionBlockerArea</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
+<div class="viewcode-block" id="VisionBlockerArea"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.constructs.VisionBlockerArea">[docs]</a><span class="k">class</span> <span class="nc">VisionBlockerArea</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    VisionBlockerArea DocString</span>
 <span class="sd">    &quot;&quot;&quot;</span>

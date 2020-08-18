@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -160,17 +156,17 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.constructs</span> <span class="kn">import</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">sc2.bot_ai</span> <span class="kn">import</span> <span class="n">BotAI</span>
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_fill_holes</span><span class="p">,</span> <span class="n">center_of_mass</span><span class="p">,</span> <span class="n">generate_binary_structure</span><span class="p">,</span> <span class="n">label</span> <span class="k">as</span> <span class="n">ndlabel</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
 
-<span class="kn">from</span> <span class="nn">MapAnalyzer.constructs</span> <span class="kn">import</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
 <span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span>
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
@@ -179,9 +175,10 @@
 <span class="n">WHITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m&quot;</span>
 
 
-<div class="viewcode-block" id="MapData"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData">[docs]</a><span class="k">class</span> <span class="nc">MapData</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData">[docs]</a><span class="k">class</span> <span class="nc">MapData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    MapData DocString</span>
+<span class="sd">    Entry point for the user</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -225,106 +222,222 @@
 
         <span class="c1"># compile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compiling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">WHITE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compile_map</span><span class="p">()</span>  <span class="c1"># this is called on init, but allowed to be called again every step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compile_map</span><span class="p">()</span>  <span class="c1"># this is called on init, but allowed to be called again every step</span>
 
     <span class="sd">&quot;&quot;&quot;Properties&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the private method</span>
+<span class="sd">        :rtype: Set[Point2]</span>
+<span class="sd">        Exposing the computed method</span>
+
+<span class="sd">            ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`</span>
+<span class="sd">            ``vision_blockers`` are the raw data received from ``burnysc2`` and will be processed later on.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span>
 
     <span class="sd">&quot;&quot;&quot; Pathing methods&quot;&quot;&quot;</span>
 
     <span class="c1"># dont cache this</span>
-<div class="viewcode-block" id="MapData.get_pyastar_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_pyastar_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pyastar_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="MapData.get_pyastar_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_pyastar_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pyastar_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                          <span class="n">air_pathing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        Warning:</span>
+<span class="sd">            ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`</span>
+
+
+<span class="sd">        Requests a new pathing grid</span>
+<span class="sd">        This grid will have all non pathable cells set to ``np.inf``</span>
+<span class="sd">        pathable cells will be set to the default_weight which it&#39;s default is 1</span>
+<span class="sd">        After you get the grid, you can add your own influence</span>
+<span class="sd">        This grid can be reused in the duration of the frame,</span>
+<span class="sd">        and should be regenerated(once) on each frame</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            destructables that has been destroyed will be updated by default,</span>
+<span class="sd">            the only known use case for ``include_destructables`` usage is illustrated in the first example below</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            We want to check if breaking the destructables in our path will make it better,</span>
+<span class="sd">            so we treat destructables as if they were pathable</span>
+
+<span class="sd">            &gt;&gt;&gt; # 1</span>
+<span class="sd">            &gt;&gt;&gt; no_destructables_grid = self.get_pyastar_grid(default_weight = 1, include_destructables= False)</span>
+
+<span class="sd">            &gt;&gt;&gt; # 2 set up a grid with default weight of 300</span>
+<span class="sd">            &gt;&gt;&gt; custom_weight_grid = self.get_pyastar_grid(default_weight = 300)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_climber_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_air_vs_ground_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_clean_air_grid`</span>
+<span class="sd">            * :meth:`.MapData.add_influence`</span>
+<span class="sd">            * :meth:`.MapData.pathfind`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">air_pathing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;air_pathing&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.get_clean_air_grid()&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_pyastar_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">,</span> <span class="n">include_destructables</span><span class="o">=</span><span class="n">include_destructables</span><span class="p">,</span>
                                             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for</span>
+<span class="sd">        units that can climb, such as Reaper, Colossus</span>
+
+<span class="sd">        This grid can be reused in the duration of the frame,</span>
+<span class="sd">        and should be regenerated(once) on each frame</span>
+<span class="sd">        This grid also gets updated with all nonpathables when requested</span>
+<span class="sd">        such as structures, and destructables</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">                &gt;&gt;&gt; updated_climber_grid = self.get_climber_grid(default_weight = 1)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_air_vs_ground_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_clean_air_grid`</span>
+<span class="sd">            * :meth:`.MapData.add_influence`</span>
+<span class="sd">            * :meth:`.MapData.pathfind`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_climber_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain making</span>
+<span class="sd">        air units naturally &quot;drawn&quot; to it.</span>
+
+<span class="sd">        Caution:</span>
+<span class="sd">            requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">                &gt;&gt;&gt; air_vs_ground_grid = self.get_air_vs_ground_grid()</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_climber_grid`</span>
+<span class="sd">            * :meth:`.MapData.get_clean_air_grid`</span>
+<span class="sd">            * :meth:`.MapData.add_influence`</span>
+<span class="sd">            * :meth:`.MapData.pathfind`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_air_vs_ground_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        Will return a grid marking every cell as pathable with ``default_weight``</span>
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_air_vs_ground_grid`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_clean_air_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.pathfind"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.pathfind">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.pathfind"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.pathfind">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                 <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: Union[List[Point2], None]</span>
+<span class="sd">        Will return the path with lowest cost (sum)  given a weighted array,  start , and goal.</span>
+<span class="sd">        If no path is possible, will return None</span>
+
+<span class="sd">        Tip:</span>
+<span class="sd">            ``sensitivity`` indicates how to slice the path,</span>
+<span class="sd">            just like doing: ``result_path = path[::sensitivity]``</span>
+<span class="sd">                where ``path`` is the return value from this function</span>
+
+<span class="sd">            this is useful since in most use cases you wouldn&#39;t want</span>
+<span class="sd">            to get each and every single point,  getting every `nth` point works better in practice</span>
+
+<span class="sd">        Caution:</span>
+<span class="sd">            ``allow_diagonal=True`` will result in a slight performance penalty</span>
+<span class="sd">            however, if you don&#39;t over-use it, it will naturally generate shorter paths</span>
+<span class="sd">            by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.</span>
+
+<span class="sd">        TODO: a few more examples</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; grid = self.get_pyastar_grid()</span>
+<span class="sd">            &gt;&gt;&gt; # start / goal could be any tuple / Point2</span>
+<span class="sd">            &gt;&gt;&gt; path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">,</span>
                                     <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.add_influence"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.add_influence">[docs]</a>    <span class="k">def</span> <span class="nf">add_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;when safe is off will not adjust values below 1 which could result in a crash&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MapData.add_influence"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.add_influence">[docs]</a>    <span class="k">def</span> <span class="nf">add_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``</span>
+<span class="sd">        default</span>
+<span class="sd">        Warning:</span>
+<span class="sd">            when ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;default_weight&#39;</span><span class="p">))</span>
+            <span class="n">default_weight</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span></div>
 
     <span class="sd">&quot;&quot;&quot;Utility methods&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MapData.log"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="MapData.log"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Lazy logging&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.save"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MapData.save"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save Plot to a file, much like ``plt.save(filename)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.show"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MapData.show"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,</span>
+<span class="sd">        this method will always be compatible</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MapData.close"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MapData.close"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close an opened plot, just like ``plt.close()``  but in case there will be changes in debugger,</span>
+<span class="sd">        this method will always be compatible</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MapData.save_plot"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.save_plot">[docs]</a>    <span class="k">def</span> <span class="nf">save_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Will save the plot to a file names after the map name</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot_map</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MapData.ramp_close_enough"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.ramp_close_enough">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">ramp_close_enough</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ramp</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
-
-<div class="viewcode-block" id="MapData.get_ramp_nodes"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_ramp_nodes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">get_ramp_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">ramp</span><span class="o">.</span><span class="n">center</span> <span class="k">for</span> <span class="n">ramp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="MapData.get_ramp"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.get_ramp">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_ramp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">center</span> <span class="o">==</span> <span class="n">node</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="MapData.indices_to_points"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.indices_to_points">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MapData.indices_to_points"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.indices_to_points">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">indices_to_points</span><span class="p">(</span>
             <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">Point2</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        convert indices to a set of points</span>
+<span class="sd">        :rtype: Set[Union[Tuple[int64, int64], Point2]]</span>
+<span class="sd">        Convert indices to a set of points(``tuples``, not ``Point2`` )</span>
 <span class="sd">        Will only work when both dimensions are of same length</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">set</span><span class="p">([(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]))])</span></div>
 
-<div class="viewcode-block" id="MapData.points_to_indices"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.points_to_indices">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MapData.points_to_indices"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.points_to_indices">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">points_to_indices</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        convert points to a tuple of two 1d arrays</span>
+<span class="sd">        :rtype: Tuple[ndarray, ndarray]</span>
+<span class="sd">        Convert a set / list of points to a tuple of two 1d numpy arrays</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="MapData.points_to_numpy_array"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.points_to_numpy_array">[docs]</a>    <span class="k">def</span> <span class="nf">points_to_numpy_array</span><span class="p">(</span>
+<div class="viewcode-block" id="MapData.points_to_numpy_array"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.points_to_numpy_array">[docs]</a>    <span class="k">def</span> <span class="nf">points_to_numpy_array</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        convert points to numpy ndarray</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
+
+<span class="sd">        Convert points to numpy ndarray</span>
+
+<span class="sd">        Caution:</span>
+<span class="sd">                will handle safely(by ignoring) points that are ``out of bounds``, without warning</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
@@ -351,33 +464,44 @@
         <span class="n">arr</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">arr</span></div>
 
-<div class="viewcode-block" id="MapData.distance"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.distance">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MapData.distance"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.distance">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">float64</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        euclidean distance</span>
+<span class="sd">        :rtype: float64</span>
+<span class="sd">        Euclidean distance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="MapData.closest_node_idx"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.closest_node_idx">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MapData.closest_node_idx"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.closest_node_idx">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">closest_node_idx</span><span class="p">(</span>
             <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">],</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">ndarray</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        given a list of nodes `Ln`  and a single node `Nb`,</span>
-<span class="sd">        will return the index of the closest node in the list to `Nb`</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        Given a list of ``nodes``  and a single ``node`` ,</span>
+<span class="sd">        will return the index of the closest node in the list to ``node``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">closest_index</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">([</span><span class="n">node</span><span class="p">],</span> <span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">closest_index</span></div>
 
-<div class="viewcode-block" id="MapData.closest_towards_point"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.closest_towards_point">[docs]</a>    <span class="k">def</span> <span class="nf">closest_towards_point</span><span class="p">(</span>
+<div class="viewcode-block" id="MapData.closest_towards_point"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.closest_towards_point">[docs]</a>    <span class="k">def</span> <span class="nf">closest_towards_point</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        given a list/set of points, and a target,</span>
+<span class="sd">        :rtype: Point2</span>
+<span class="sd">        Given a list/set of points, and a target,</span>
 <span class="sd">        will return the point that is closest to that target</span>
-<span class="sd">        Example usage would be to calculate a position for</span>
-<span class="sd">        tanks in direction to the enemy forces</span>
-<span class="sd">        passing in the Area&#39;s corners as points and enemy army&#39;s location as target</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">                calculate a position for tanks in direction to the enemy forces</span>
+<span class="sd">                passing in the Area&#39;s corners as points and enemy army&#39;s location as target</span>
+
+<span class="sd">                &gt;&gt;&gt; enemy_army_position = Point2((50,50)) # random point for this example</span>
+<span class="sd">                &gt;&gt;&gt; my_base_location = self.bot.townhalls[0]</span>
+<span class="sd">                &gt;&gt;&gt; my_region = self.where(my_base_location)</span>
+<span class="sd">                &gt;&gt;&gt; corners = my_region.corner_points</span>
+<span class="sd">                &gt;&gt;&gt; best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)</span>
+<span class="sd">                (57,120)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span>
@@ -387,10 +511,11 @@
 
     <span class="sd">&quot;&quot;&quot;Query methods&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MapData.region_connectivity_all_paths"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.region_connectivity_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">region_connectivity_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">goal_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span>
+<div class="viewcode-block" id="MapData.region_connectivity_all_paths"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.region_connectivity_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">region_connectivity_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span> <span class="n">goal_region</span><span class="p">:</span> <span class="n">Region</span><span class="p">,</span>
                                       <span class="n">not_through</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Region</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Region</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns all possible paths through regions (ramps),</span>
+<span class="sd">        :rtype: List[List[:mod:`.Region`]]</span>
+<span class="sd">        Returns all possible paths through all :mod:`.Region` (via ramps),</span>
 <span class="sd">        can exclude a region by passing it in a not_through list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">find_all_paths</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_region</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal_region</span><span class="p">)</span>
@@ -402,19 +527,24 @@
             <span class="n">all_paths</span> <span class="o">=</span> <span class="n">filtered_paths</span>
         <span class="k">return</span> <span class="n">all_paths</span></div>
 
-<div class="viewcode-block" id="MapData.where_all"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.where_all">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<div class="viewcode-block" id="MapData.where_all"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.where_all">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">where_all</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-        <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]],</span>
-        <span class="n">List</span><span class="p">[</span><span class="n">VisionBlockerArea</span><span class="p">],</span>
-        <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Region</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Region</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">]</span>
     <span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: List[Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]</span>
 <span class="sd">        Will query a point on the map and will return a list of all Area&#39;s that point belong to</span>
-<span class="sd">        region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
-<span class="sd">        choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
-<span class="sd">        ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
+
+<span class="sd">        Tip:</span>
+
+<span class="sd">            *avg performance*</span>
+
+<span class="sd">            * :class:`.Region` query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
+<span class="sd">            * :class:`.ChokeArea` ``query 18 µs`` ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">            * :class:`.MDRamp` query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)</span>
+
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
@@ -431,17 +561,24 @@
         <span class="c1"># assert (len(list(set(results))) == len(results)), f&quot;results{results},  list(set(results)){list(set(results))}&quot;</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
-<div class="viewcode-block" id="MapData.where"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.where">[docs]</a>    <span class="k">def</span> <span class="nf">where</span><span class="p">(</span>
+<div class="viewcode-block" id="MapData.where"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.where">[docs]</a>    <span class="k">def</span> <span class="nf">where</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Region</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]</span>
 <span class="sd">        Will query a point on the map and will return the first result in the following order:</span>
 <span class="sd">        Region,</span>
 <span class="sd">        MDRamp,</span>
-<span class="sd">        VisionBlockerArea</span>
-<span class="sd">        region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
-<span class="sd">        ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
-<span class="sd">        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">        ChokeArea</span>
+
+<span class="sd">        Tip:</span>
+
+<span class="sd">            *avg performance*</span>
+
+<span class="sd">            * :class:`.Region` query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">            * :class:`.ChokeArea` query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+<span class="sd">            * :class:`.MDRamp` ``query 11.7 µs`` ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
             <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
@@ -455,10 +592,11 @@
             <span class="k">if</span> <span class="n">choke</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">choke</span></div>
 
-<div class="viewcode-block" id="MapData.in_region_p"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.in_region_p">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<div class="viewcode-block" id="MapData.in_region_p"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.in_region_p">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">in_region_p</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        will query a if a point is in, and in which Region using Set of Points &lt;fast&gt;</span>
+<span class="sd">        :rtype: Optional[:mod:`.Region`]</span>
+<span class="sd">        Will query if a point is in, and in which Region using Set of Points &lt;fast&gt;</span>
 <span class="sd">        time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
 <span class="sd">        as long as polygon points is of type set, not list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -470,12 +608,13 @@
             <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">inside_p</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">region</span></div>
 
-<div class="viewcode-block" id="MapData.in_region_i"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.in_region_i">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<div class="viewcode-block" id="MapData.in_region_i"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.in_region_i">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">in_region_i</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        will query a if a point is in, and in which Region using Indices &lt;slow&gt;</span>
+<span class="sd">        :rtype: Optional[:mod:`.Region`]</span>
+<span class="sd">        Will query a if a point is in, and in which Region using Indices &lt;slow&gt;</span>
 <span class="sd">        time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
@@ -523,9 +662,8 @@
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pol</span><span class="p">))</span>
 
-<div class="viewcode-block" id="MapData.compile_map"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.compile_map">[docs]</a>    <span class="nd">@progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m Map Compilation Progress </span><span class="se">\u001b</span><span class="s2">[37m&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">compile_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;user can call this to recompute&quot;&quot;&quot;</span>
+    <span class="nd">@progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m Map Compilation Progress </span><span class="se">\u001b</span><span class="s2">[37m&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_compile_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_calc_grid</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calc_regions</span><span class="p">()</span>
@@ -540,10 +678,10 @@
             <span class="n">ramp</span><span class="o">.</span><span class="n">set_regions</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">set_connectivity_graph</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">connectivity_graph</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">connectivity_graph</span>
 
     <span class="k">def</span> <span class="nf">_calc_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; converting the placement grid to our own kind of grid&quot;&quot;&quot;</span>
+        <span class="c1">#converting the placement grid to our own kind of grid</span>
         <span class="c1"># cleaning the grid and then searching for 2x2 patterned regions</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="n">binary_fill_holes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="c1"># for our grid,  mineral walls are considered as a barrier between regions</span>
@@ -581,9 +719,8 @@
                           <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_calc_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        compute VisionBlockerArea</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute VisionBlockerArea</span>
+
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span><span class="p">)):</span>
 
             <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_grid</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
@@ -602,9 +739,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">vba</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_calc_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        compute ChokeArea</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute ChokeArea</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_plib_chokes</span><span class="p">()</span>
         <span class="n">chokes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -632,9 +768,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">] Cant add </span><span class="si">{</span><span class="n">choke</span><span class="si">}</span><span class="s2"> with 0 points&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_calc_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        compute Region</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute Region</span>
+
         <span class="c1"># some areas are with area of 1, 2 ,5   these are not what we want,</span>
         <span class="c1"># so we filter those out</span>
         <span class="c1"># if len(self.map_ramps) == 0:</span>
@@ -660,7 +795,7 @@
 
     <span class="sd">&quot;&quot;&quot;Plot methods&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MapData.plot_map"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
+<div class="viewcode-block" id="MapData.plot_map"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -670,9 +805,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.save()&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.plot_influenced_path"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.MapData.MapData.plot_influenced_path">[docs]</a>    <span class="k">def</span> <span class="nf">plot_influenced_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">weight_array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
+<div class="viewcode-block" id="MapData.plot_influenced_path"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.plot_influenced_path">[docs]</a>    <span class="k">def</span> <span class="nf">plot_influenced_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">weight_array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
                              <span class="n">plot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                              <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A useful debug utility method for experimenting with the :mod:`.Pather` module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">save</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.save()&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -682,27 +820,16 @@
                                            <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_plot_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        plot Region</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_regions</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_plot_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        plot vbs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_vision_blockers</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_plot_normal_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        # todo: account for gold minerals and rich gas</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># todo: account for gold minerals and rich gas</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_normal_resources</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_plot_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        compute Chokes</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_chokes</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -168,7 +164,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span><span class="p">,</span> <span class="n">Region</span>
 
 
-<div class="viewcode-block" id="BuildablePoints"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.BuildablePoints">[docs]</a><span class="k">class</span> <span class="nc">BuildablePoints</span><span class="p">:</span>
+<div class="viewcode-block" id="BuildablePoints"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.BuildablePoints">[docs]</a><span class="k">class</span> <span class="nc">BuildablePoints</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;ChokeArea BuildablePoints are always the edges, this is useful for walling off&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
@@ -182,7 +178,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BuildablePoints.update"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.BuildablePoints.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BuildablePoints.update"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.BuildablePoints.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">parr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">parr</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
          <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span>
@@ -198,7 +194,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">buildable_points</span></div></div>
 
 
-<div class="viewcode-block" id="Polygon"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon">[docs]</a><span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon">[docs]</a><span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Polygon DocString</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -238,7 +234,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Region</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Polygon.calc_areas"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon.calc_areas">[docs]</a>    <span class="k">def</span> <span class="nf">calc_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.calc_areas"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.calc_areas">[docs]</a>    <span class="k">def</span> <span class="nf">calc_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># this method uses where_all which means</span>
         <span class="c1"># it should be called at the end of the map compilation when areas are populated</span>
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span>
@@ -251,7 +247,7 @@
             <span class="n">areas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_areas</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">areas</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Polygon.plot"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<div class="viewcode-block" id="Polygon.plot"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        plot</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -318,7 +314,7 @@
         <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clean_points</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">center_of_mass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">cm</span>
 
-<div class="viewcode-block" id="Polygon.is_inside_point"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon.is_inside_point">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="Polygon.is_inside_point"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.is_inside_point">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">is_inside_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        is_inside_point</span>
@@ -329,7 +325,7 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Polygon.is_inside_indices"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.Polygon.Polygon.is_inside_indices">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="Polygon.is_inside_indices"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.is_inside_indices">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">is_inside_indices</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>

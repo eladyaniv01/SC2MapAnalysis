@@ -1,5 +1,5 @@
 Command-Line Interface
-=======================
+----------------------
 
 Current usage is internal only
 

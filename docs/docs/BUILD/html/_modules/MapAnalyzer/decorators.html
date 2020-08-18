@@ -83,14 +83,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.html">MapAnalyzer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer.sc2pathlibp.html">MapAnalyzer.sc2pathlibp package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html">README.MD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#builds">Builds:</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#summary">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#why-do-we-need-this">Why Do we need this ?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#getting-started">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/README.html#how-to-plug-it-on-your-bot">How to plug it on your bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/vb.html">Command-Line Interface</a></li>
 </ul>
 
@@ -156,9 +152,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for MapAnalyzer.decorators</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;DISABLED UNTIL AIARENA SUPPORTS TQDM&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">contextlib</span>
+<span></span><span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
@@ -172,8 +166,7 @@
 
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">std_tqdm</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="logger_wraps"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.decorators.logger_wraps">[docs]</a><span class="k">def</span> <span class="nf">logger_wraps</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="logger_wraps"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.decorators.logger_wraps">[docs]</a><span class="k">def</span> <span class="nf">logger_wraps</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
@@ -192,7 +185,7 @@
     <span class="k">return</span> <span class="n">wrapper</span></div>
 
 
-<div class="viewcode-block" id="std_out_err_redirect_tqdm"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.decorators.std_out_err_redirect_tqdm">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<div class="viewcode-block" id="std_out_err_redirect_tqdm"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.decorators.std_out_err_redirect_tqdm">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">std_out_err_redirect_tqdm</span><span class="p">():</span>
     <span class="n">orig_out_err</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
     <span class="k">try</span><span class="p">:</span>
@@ -206,7 +199,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">orig_out_err</span></div>
 
 
-<div class="viewcode-block" id="provide_progress_bar"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.decorators.provide_progress_bar">[docs]</a><span class="k">def</span> <span class="nf">provide_progress_bar</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<div class="viewcode-block" id="provide_progress_bar"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.decorators.provide_progress_bar">[docs]</a><span class="k">def</span> <span class="nf">provide_progress_bar</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
                          <span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;MapData&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                          <span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Tqdm wrapper for a long-running function</span>
@@ -243,7 +236,7 @@
     <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="progress_wrapped"><a class="viewcode-back" href="../../source/MapAnalyzer.html#MapAnalyzer.decorators.progress_wrapped">[docs]</a><span class="k">def</span> <span class="nf">progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Progress&quot;</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<div class="viewcode-block" id="progress_wrapped"><a class="viewcode-back" href="../../source/Utilities.html#MapAnalyzer.decorators.progress_wrapped">[docs]</a><span class="k">def</span> <span class="nf">progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Progress&quot;</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
                      <span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decorate a function to add a progress bar&quot;&quot;&quot;</span>
 
