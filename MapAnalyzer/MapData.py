@@ -68,7 +68,7 @@ class MapData:
 
         # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
-        self.compile_map()  # this is called on init, but allowed to be called again every step
+        self._compile_map()  # this is called on init, but allowed to be called again every step
 
     """Properties"""
 
@@ -208,7 +208,8 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True, weight=None) -> ndarray:
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True,
+                      weight=None) -> ndarray:
         """
         will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
         default
@@ -228,7 +229,7 @@ class MapData:
 
     def save(self, filename):
         """
-        Save Plot to a file
+        Save Plot to a file, much like ``plt.save(filename)``
         """
         self.debugger.save(filename=filename)
 
@@ -242,14 +243,14 @@ class MapData:
     def close(self):
         """
         Close an opened plot, just like ``plt.close()``  but in case there will be changes in debugger,
-         this method will always be compatible
+        this method will always be compatible
         """
         self.debugger.close()
 
     @staticmethod
     def indices_to_points(
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
-    ) -> Set[Tuple[int64, int64]]:
+    ) -> Set[Union[Tuple[int64, int64], Point2]]:
         """
         convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
@@ -324,11 +325,12 @@ class MapData:
         will return the point that is closest to that target
 
         Example:
-            calculate a position for tanks in direction to the enemy forces
-            passing in the Area's corners as points and enemy army's location as target
-            >>> corners = my_region.corner_points
-            >>> best_siege_spot = self.map_data.closest_towards_point(points=corners, target=enemy_army_position)
-            (57,120)
+                calculate a position for tanks in direction to the enemy forces
+                passing in the Area's corners as points and enemy army's location as target
+
+                >>> corners = my_region.corner_points
+                >>> best_siege_spot = self.map_data.closest_towards_point(points=corners, target=enemy_army_position)
+                (57,120)
         """
         if isinstance(points, list):
             return points[self.closest_node_idx(node=target, nodes=points)]
@@ -341,6 +343,7 @@ class MapData:
     def region_connectivity_all_paths(self, start_region: Region, goal_region: Region,
                                       not_through: Optional[List[Region]] = None) -> List[List[Region]]:
         """
+        :rtype: List[List[:mod:`.Region`]]
         returns all possible paths through all :mod:`.Region` (via ramps),
         can exclude a region by passing it in a not_through list
         """
@@ -356,16 +359,21 @@ class MapData:
     @lru_cache(200)
     def where_all(
             self, point: Union[Point2, tuple]
-    ) -> Union[
-        List[Union[MDRamp, VisionBlockerArea]],
-        List[VisionBlockerArea],
-        List[Union[Region, VisionBlockerArea]],
+    ) -> List[Union[Region, VisionBlockerArea, MDRamp]
     ]:
         """
+        :rtype: List[Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
         Will query a point on the map and will return a list of all Area's that point belong to
-        region query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
-        choke query 18 µs ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        ramp query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+
+        Tip:
+
+            *avg performance*
+
+            * :class:`.Region` query 21.5 µs ± 652 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+            * :class:`.ChokeArea` ``query 18 µs`` ± 1.25 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+            * :class:`.MDRamp` query  22 µs ± 982 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+
+
         """
         results = []
         if isinstance(point, Point2):
@@ -386,13 +394,20 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> Union[Region, MDRamp, VisionBlockerArea]:
         """
+        :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
         Will query a point on the map and will return the first result in the following order:
         Region,
         MDRamp,
-        VisionBlockerArea
-        region query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        ramp query 11.7 µs ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        choke query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        ChokeArea
+
+        Tip:
+
+            *avg performance*
+
+            * :class:`.Region` query 7.09 µs ± 329 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+            * :class:`.ChokeArea` query  17.9 µs ± 1.22 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+            * :class:`.MDRamp` ``query 11.7 µs`` ± 1.13 µs per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -409,6 +424,7 @@ class MapData:
     @lru_cache(100)
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
+        :rtype: Optional[:mod:`.Region`]
         will query a if a point is in, and in which Region using Set of Points <fast>
         time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         as long as polygon points is of type set, not list
@@ -426,6 +442,7 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> Optional[Region]:  # pragma: no cover
         """
+        :rtype: Optional[:mod:`.Region`]
         will query a if a point is in, and in which Region using Indices <slow>
         time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         """
@@ -475,8 +492,7 @@ class MapData:
                         self.polygons.pop(self.polygons.index(pol))
 
     @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
-    def compile_map(self) -> None:
-        """user can call this to recompute"""
+    def _compile_map(self) -> None:
 
         self._calc_grid()
         self._calc_regions()
@@ -494,7 +510,7 @@ class MapData:
         self.connectivity_graph = self.pather.connectivity_graph
 
     def _calc_grid(self) -> None:
-        """ converting the placement grid to our own kind of grid"""
+        #converting the placement grid to our own kind of grid
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions
@@ -532,9 +548,8 @@ class MapData:
                           for r in self.bot.game_info.map_ramps]
 
     def _calc_vision_blockers(self) -> None:
-        """
-        compute VisionBlockerArea
-        """
+        # compute VisionBlockerArea
+
         for i in range(len(self.vision_blockers_labels)):
 
             indices = np.where(self.vision_blockers_grid == i)
@@ -553,9 +568,8 @@ class MapData:
                     self.polygons.pop(self.polygons.index(vba))
 
     def _calc_chokes(self) -> None:
-        """
-        compute ChokeArea
-        """
+        # compute ChokeArea
+
         self._clean_plib_chokes()
         chokes = [c for c in self.pathlib_to_local_chokes if c.id not in self.overlapping_choke_ids]
         self.map_chokes = self.map_ramps.copy()
@@ -583,9 +597,8 @@ class MapData:
                 self.logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
-        """
-        compute Region
-        """
+        # compute Region
+
         # some areas are with area of 1, 2 ,5   these are not what we want,
         # so we filter those out
         # if len(self.map_ramps) == 0:
@@ -624,6 +637,9 @@ class MapData:
     def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
                              plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
                              fontdict: dict = None) -> None:
+        """
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+        """
         if save is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         if plot is not None:
@@ -633,27 +649,16 @@ class MapData:
                                            fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
-        """
-        plot Region
-        """
         return self.debugger.plot_regions(fontdict=fontdict)
 
     def _plot_vision_blockers(self) -> None:
-        """
-        plot vbs
-        """
         self.debugger.plot_vision_blockers()
 
     def _plot_normal_resources(self) -> None:
-        """
         # todo: account for gold minerals and rich gas
-        """
         self.debugger.plot_normal_resources()
 
     def _plot_chokes(self) -> None:
-        """
-        compute Chokes
-        """
         self.debugger.plot_chokes()
 
     def __repr__(self) -> str:
