@@ -52,8 +52,8 @@ logger = map_data.logger
 base = map_data.bot.townhalls[0]
 reg_start = map_data.where(base.position_tuple)
 reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
-p0 = reg_start.center
-p1 = reg_end.center
+p0 = Point2(reg_start.center)
+p1 = Point2(reg_end.center)
 influence_grid = map_data.get_pyastar_grid()
 ramps = reg_end.region_ramps
 # logger.error(ramps)
