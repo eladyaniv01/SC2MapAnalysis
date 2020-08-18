@@ -75,6 +75,7 @@ class MapData:
     @property
     def vision_blockers(self) -> Set[Point2]:
         """
+        :rtype: Set[Point2]
         Exposing the computed method
 
             ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`
@@ -88,6 +89,7 @@ class MapData:
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
                          air_pathing: Optional[bool] = None) -> ndarray:
         """
+        :rtype: numpy.ndarray
         Warning:
             ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`
 
@@ -127,6 +129,7 @@ class MapData:
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """
+        :rtype: numpy.ndarray
         Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for
         units that can climb, such as Reaper, Colossus
 
@@ -149,6 +152,7 @@ class MapData:
 
     def get_air_vs_ground_grid(self, default_weight: int = 100):
         """
+        :rtype: numpy.ndarray
         ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain making
         air units naturally "drawn" to it.
 
@@ -169,6 +173,7 @@ class MapData:
 
     def get_clean_air_grid(self, default_weight: int = 1):
         """
+        :rtype: numpy.ndarray
         Will return a grid marking every cell as pathable with ``default_weight``
         See Also:
             * :meth:`.MapData.get_air_vs_ground_grid`
@@ -179,6 +184,7 @@ class MapData:
                  grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
         """
+        :rtype: Union[List[Point2], None]
         Will return the path with lowest cost (sum)  given a weighted array,  start , and goal.
         If no path is possible, will return None
 
@@ -211,6 +217,7 @@ class MapData:
     def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True,
                       weight=None) -> ndarray:
         """
+        :rtype: numpy.ndarray
         Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
         default
         Warning:
@@ -252,6 +259,7 @@ class MapData:
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
     ) -> Set[Union[Tuple[int64, int64], Point2]]:
         """
+        :rtype: Set[Union[Tuple[int64, int64], Point2]]
         Convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
         """
@@ -261,6 +269,7 @@ class MapData:
     @staticmethod
     def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
         """
+        :rtype: Tuple[ndarray, ndarray]
         Convert a set / list of points to a tuple of two 1d numpy arrays
         """
         return np.array([p[0] for p in points]), np.array([p[1] for p in points])
@@ -269,6 +278,8 @@ class MapData:
             self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
     ) -> ndarray:
         """
+        :rtype: numpy.ndarray
+
         Convert points to numpy ndarray
 
         Caution:
@@ -302,6 +313,7 @@ class MapData:
     @staticmethod
     def distance(p1: Point2, p2: Point2) -> float64:
         """
+        :rtype: float64
         Euclidean distance
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
@@ -311,6 +323,7 @@ class MapData:
             node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
     ) -> int:
         """
+        :rtype: int
         Given a list of ``nodes``  and a single ``node`` ,
         will return the index of the closest node in the list to ``node``
         """
@@ -321,6 +334,7 @@ class MapData:
             self, points: List[Point2], target: Union[Point2, tuple]
     ) -> Point2:
         """
+        :rtype: Point2
         Given a list/set of points, and a target,
         will return the point that is closest to that target
 
