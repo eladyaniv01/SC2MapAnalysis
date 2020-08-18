@@ -138,7 +138,7 @@ class MapData:
         This grid also gets updated with all nonpathables when requested
         such as structures, and destructables
 
-        Examples:
+        Example:
                 >>> updated_climber_grid = self.get_climber_grid(default_weight = 1)
 
         See Also:
@@ -157,9 +157,9 @@ class MapData:
         air units naturally "drawn" to it.
 
         Caution:
-            requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
+            Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
 
-        Examples:
+        Example:
                 >>> air_vs_ground_grid = self.get_air_vs_ground_grid()
 
         See Also:
@@ -203,7 +203,7 @@ class MapData:
 
         TODO: a few more examples
 
-        Examples:
+        Example:
             >>> grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
             >>> path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
@@ -219,9 +219,10 @@ class MapData:
         """
         :rtype: numpy.ndarray
         Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
-        default
+        default_weight of 100
+
         Warning:
-            when ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
+            When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
         """
         if weight is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='weight', newarg='default_weight'))
@@ -283,7 +284,7 @@ class MapData:
         Convert points to numpy ndarray
 
         Caution:
-                will handle safely(by ignoring) points that are ``out of bounds``, without warning
+                Will handle safely(by ignoring) points that are ``out of bounds``, without warning
         """
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
@@ -339,7 +340,7 @@ class MapData:
         will return the point that is closest to that target
 
         Example:
-                calculate a position for tanks in direction to the enemy forces
+                Calculate a position for tanks in direction to the enemy forces
                 passing in the Area's corners as points and enemy army's location as target
 
                 >>> enemy_army_position = Point2((50,50)) # random point for this example
