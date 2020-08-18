@@ -12,7 +12,6 @@ from tqdm.contrib import DummyTqdmFile
 
 tqdm = partial(std_tqdm, dynamic_ncols=True)
 
-
 def logger_wraps(*, entry=True, exit=True, level="INFO"):
     def wrapper(func):
         name = func.__name__
