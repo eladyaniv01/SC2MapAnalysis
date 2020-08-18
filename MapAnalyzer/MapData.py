@@ -104,14 +104,14 @@ class MapData:
             the only known use case for ``include_destructables`` usage is illustrated in the first example below
 
         Examples:
-            we want to check if breaking the destructables in our path will make it better,
+            We want to check if breaking the destructables in our path will make it better,
             so we treat destructables as if they were pathable
 
             >>> # 1
-            >>> no_destructables_grid = self.map_data.get_pyastar_grid(default_weight = 1, include_destructables= False)
+            >>> no_destructables_grid = self.get_pyastar_grid(default_weight = 1, include_destructables= False)
 
             >>> # 2 set up a grid with default weight of 300
-            >>> custom_weight_grid = self.map_data.get_pyastar_grid(default_weight = 300)
+            >>> custom_weight_grid = self.get_pyastar_grid(default_weight = 300)
 
         See Also:
             * :meth:`.MapData.get_climber_grid`
@@ -136,7 +136,7 @@ class MapData:
         such as structures, and destructables
 
         Examples:
-                >>> updated_climber_grid = self.map_data.get_climber_grid(default_weight = 1)
+                >>> updated_climber_grid = self.get_climber_grid(default_weight = 1)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -156,7 +156,7 @@ class MapData:
             requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
 
         Examples:
-                >>> air_vs_ground_grid = self.map_data.get_air_vs_ground_grid()
+                >>> air_vs_ground_grid = self.get_air_vs_ground_grid()
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -169,7 +169,7 @@ class MapData:
 
     def get_clean_air_grid(self, default_weight: int = 1):
         """
-        will return a grid marking every cell as pathable with ``default_weight``
+        Will return a grid marking every cell as pathable with ``default_weight``
         See Also:
             * :meth:`.MapData.get_air_vs_ground_grid`
         """
@@ -198,9 +198,9 @@ class MapData:
         TODO: a few more examples
 
         Examples:
-            >>> grid = self.map_data.get_pyastar_grid()
+            >>> grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.map_data.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
+            >>> path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -211,7 +211,7 @@ class MapData:
     def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True,
                       weight=None) -> ndarray:
         """
-        will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
+        Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
         default
         Warning:
             when ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
@@ -224,7 +224,7 @@ class MapData:
     """Utility methods"""
 
     def log(self, msg):
-        """ lazy logging"""
+        """ Lazy logging"""
         self.logger.debug(f"{msg}")
 
     def save(self, filename):
@@ -235,7 +235,7 @@ class MapData:
 
     def show(self):
         """
-        calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,
+        Calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,
         this method will always be compatible
         """
         self.debugger.show()
@@ -252,7 +252,7 @@ class MapData:
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
     ) -> Set[Union[Tuple[int64, int64], Point2]]:
         """
-        convert indices to a set of points(``tuples``, not ``Point2`` )
+        Convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
         """
 
@@ -261,7 +261,7 @@ class MapData:
     @staticmethod
     def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
         """
-        convert a set / list of points to a tuple of two 1d numpy arrays
+        Convert a set / list of points to a tuple of two 1d numpy arrays
         """
         return np.array([p[0] for p in points]), np.array([p[1] for p in points])
 
@@ -269,7 +269,7 @@ class MapData:
             self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
     ) -> ndarray:
         """
-        convert points to numpy ndarray
+        Convert points to numpy ndarray
 
         Caution:
                 will handle safely(by ignoring) points that are ``out of bounds``, without warning
@@ -302,7 +302,7 @@ class MapData:
     @staticmethod
     def distance(p1: Point2, p2: Point2) -> float64:
         """
-        euclidean distance
+        Euclidean distance
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
@@ -311,7 +311,7 @@ class MapData:
             node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
     ) -> int:
         """
-        given a list of ``nodes``  and a single ``node`` ,
+        Given a list of ``nodes``  and a single ``node`` ,
         will return the index of the closest node in the list to ``node``
         """
         closest_index = distance.cdist([node], nodes).argmin()
@@ -321,15 +321,18 @@ class MapData:
             self, points: List[Point2], target: Union[Point2, tuple]
     ) -> Point2:
         """
-        given a list/set of points, and a target,
+        Given a list/set of points, and a target,
         will return the point that is closest to that target
 
         Example:
                 calculate a position for tanks in direction to the enemy forces
                 passing in the Area's corners as points and enemy army's location as target
 
+                >>> enemy_army_position = Point2((50,50)) # random point for this example
+                >>> my_base_location = self.bot.townhalls[0]
+                >>> my_region = self.where(my_base_location)
                 >>> corners = my_region.corner_points
-                >>> best_siege_spot = self.map_data.closest_towards_point(points=corners, target=enemy_army_position)
+                >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
                 (57,120)
         """
         if isinstance(points, list):
@@ -344,7 +347,7 @@ class MapData:
                                       not_through: Optional[List[Region]] = None) -> List[List[Region]]:
         """
         :rtype: List[List[:mod:`.Region`]]
-        returns all possible paths through all :mod:`.Region` (via ramps),
+        Returns all possible paths through all :mod:`.Region` (via ramps),
         can exclude a region by passing it in a not_through list
         """
         all_paths = self.pather.find_all_paths(start=start_region, goal=goal_region)
@@ -425,7 +428,7 @@ class MapData:
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
         :rtype: Optional[:mod:`.Region`]
-        will query a if a point is in, and in which Region using Set of Points <fast>
+        Will query if a point is in, and in which Region using Set of Points <fast>
         time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         as long as polygon points is of type set, not list
         """
@@ -443,7 +446,7 @@ class MapData:
     ) -> Optional[Region]:  # pragma: no cover
         """
         :rtype: Optional[:mod:`.Region`]
-        will query a if a point is in, and in which Region using Indices <slow>
+        Will query a if a point is in, and in which Region using Indices <slow>
         time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
         """
         if isinstance(point, Point2):
