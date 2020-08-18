@@ -2,17 +2,17 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.Debugger import MapAnalyzerDebugger
+from MapAnalyzer.Pather import MapAnalyzerPather
+from MapAnalyzer.Region import Region
+from MapAnalyzer.utils import get_sets_with_mutual_elements
 from numpy import float64, int64, ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
-from MapAnalyzer.Debugger import MapAnalyzerDebugger
-from MapAnalyzer.Pather import MapAnalyzerPather
-from MapAnalyzer.Region import Region
-from MapAnalyzer.utils import get_sets_with_mutual_elements
 from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
@@ -76,6 +76,9 @@ class MapData:
     def vision_blockers(self) -> Set[Point2]:
         """
         Exposing the computed method
+
+            ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`
+            ``vision_blockers`` are the raw data received from ``burnysc2`` and will be processed later on.
         """
         return self._vision_blockers
 
@@ -85,9 +88,37 @@ class MapData:
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
                          air_pathing: Optional[bool] = None) -> ndarray:
         """
-        Request a new grid
+        Warning:
+            ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`
+
+
+        Requests a new pathing grid
+        This grid will have all non pathable cells set to ``np.inf``
+        pathable cells will be set to the default_weight which it's default is 1
+        After you get the grid, you can add your own influence
         This grid can be reused in the duration of the frame,
-        and should be regenerated on each frame
+        and should be regenerated(once) on each frame
+
+        Note:
+            destructables that has been destroyed will be updated by default,
+            the only known use case for ``include_destructables`` usage is illustrated in the first example below
+
+        Examples:
+            we want to check if breaking the destructables in our path will make it better,
+            so we treat destructables as if they were pathable
+
+            >>> # 1
+            >>> no_destructables_grid = self.map_data.get_pyastar_grid(default_weight = 1, include_destructables= False)
+
+            >>> # 2 set up a grid with default weight of 300
+            >>> custom_weight_grid = self.map_data.get_pyastar_grid(default_weight = 300)
+
+        See Also:
+            * :meth:`.MapData.get_climber_grid`
+            * :meth:`.MapData.get_air_vs_ground_grid`
+            * :meth:`.MapData.get_clean_air_grid`
+            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.pathfind`
         """
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
@@ -96,77 +127,131 @@ class MapData:
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """
-        Climber grid is a grid modified by sc2pathlib, and is used for
+        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for
         units that can climb, such as Reaper, Colossus
 
         This grid can be reused in the duration of the frame,
-        and should be regenerated on each frame
+        and should be regenerated(once) on each frame
+        This grid also gets updated with all nonpathables when requested
+        such as structures, and destructables
 
+        Examples:
+                >>> updated_climber_grid = self.map_data.get_climber_grid(default_weight = 1)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.get_air_vs_ground_grid`
+            * :meth:`.MapData.get_clean_air_grid`
+            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.pathfind`
         """
         return self.pather.get_climber_grid(default_weight)
 
     def get_air_vs_ground_grid(self, default_weight: int = 100):
+        """
+        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain making
+        air units naturally "drawn" to it.
+
+        Caution:
+            requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
+
+        Examples:
+                >>> air_vs_ground_grid = self.map_data.get_air_vs_ground_grid()
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.get_climber_grid`
+            * :meth:`.MapData.get_clean_air_grid`
+            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.pathfind`
+        """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
     def get_clean_air_grid(self, default_weight: int = 1):
+        """
+        will return a grid marking every cell as pathable with ``default_weight``
+        See Also:
+            * :meth:`.MapData.get_air_vs_ground_grid`
+        """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
-    def pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
+    def pathfind(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
+                 grid: Optional[ndarray] = None,
+                 allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
+        """
+        Will return the path with lowest cost (sum)  given a weighted array,  start , and goal.
+        If no path is possible, will return None
+
+        Tip:
+            ``sensitivity`` indicates how to slice the path,
+            just like doing: ``result_path = path[::sensitivity]``
+                where ``path`` is the return value from this function
+
+            this is useful since in most use cases you wouldn't want
+            to get each and every single point,  getting every `nth` point works better in practice
+
+        Caution:
+            ``allow_diagonal=True`` will result in a slight performance penalty
+            however, if you don't over-use it, it will naturally generate shorter paths
+            by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.
+
+        TODO: a few more examples
+
+        Examples:
+            >>> grid = self.map_data.get_pyastar_grid()
+            >>> # start / goal could be any tuple / Point2
+            >>> path = self.map_data.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+        """
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True, weight=None) -> ndarray:
         """
+        will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
+        default
         Warning:
-            when safe is off will not adjust values below 1 which could result in a crash`
+            when ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
         """
-        return self.pather.add_influence(p=p, r=r, arr=arr, weight=weight, safe=safe)
+        if weight is not None:
+            self.logger.warning(CustomDeprecationWarning(oldarg='weight', newarg='default_weight'))
+            default_weight = weight
+        return self.pather.add_influence(p=p, r=r, arr=arr, weight=default_weight, safe=safe)
 
     """Utility methods"""
 
     def log(self, msg):
+        """ lazy logging"""
         self.logger.debug(f"{msg}")
 
     def save(self, filename):
-        """"""
+        """
+        Save Plot to a file
+        """
         self.debugger.save(filename=filename)
 
     def show(self):
-        """"""
+        """
+        calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,
+        this method will always be compatible
+        """
         self.debugger.show()
 
     def close(self):
-        """"""
+        """
+        Close an opened plot, just like ``plt.close()``  but in case there will be changes in debugger,
+         this method will always be compatible
+        """
         self.debugger.close()
-
-    def save_plot(self) -> None:
-        """
-        Will save the plot to a file names after the map name
-        """
-        self.plot_map()
-        self.debugger.save(filename=f"{self.map_name}")
-
-    @lru_cache()
-    def ramp_close_enough(self, ramp, p, n=8):
-        if self.distance(p, ramp.bottom_center) < n or self.distance(p, ramp.top_center) < n:
-            return True
-        return False
-
-    @lru_cache()
-    def get_ramp_nodes(self):
-        return [ramp.center for ramp in self.map_ramps]
-
-    @lru_cache(200)
-    def get_ramp(self, node):
-        return [r for r in self.map_ramps if r.center == node][0]
 
     @staticmethod
     def indices_to_points(
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
     ) -> Set[Tuple[int64, int64]]:
         """
-        convert indices to a set of points
+        convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
         """
 
@@ -175,7 +260,7 @@ class MapData:
     @staticmethod
     def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
         """
-        convert points to a tuple of two 1d arrays
+        convert a set / list of points to a tuple of two 1d numpy arrays
         """
         return np.array([p[0] for p in points]), np.array([p[1] for p in points])
 
@@ -184,6 +269,9 @@ class MapData:
     ) -> ndarray:
         """
         convert points to numpy ndarray
+
+        Caution:
+                will handle safely(by ignoring) points that are ``out of bounds``, without warning
         """
         rows, cols = self.path_arr.shape
         arr = np.zeros((rows, cols), dtype=np.uint8)
@@ -222,8 +310,8 @@ class MapData:
             node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
     ) -> int:
         """
-        given a list of nodes `Ln`  and a single node `Nb`,
-        will return the index of the closest node in the list to `Nb`
+        given a list of ``nodes``  and a single ``node`` ,
+        will return the index of the closest node in the list to ``node``
         """
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
@@ -234,9 +322,13 @@ class MapData:
         """
         given a list/set of points, and a target,
         will return the point that is closest to that target
-        Example usage would be to calculate a position for
-        tanks in direction to the enemy forces
-        passing in the Area's corners as points and enemy army's location as target
+
+        Example:
+            calculate a position for tanks in direction to the enemy forces
+            passing in the Area's corners as points and enemy army's location as target
+            >>> corners = my_region.corner_points
+            >>> best_siege_spot = self.map_data.closest_towards_point(points=corners, target=enemy_army_position)
+            (57,120)
         """
         if isinstance(points, list):
             return points[self.closest_node_idx(node=target, nodes=points)]
@@ -249,7 +341,7 @@ class MapData:
     def region_connectivity_all_paths(self, start_region: Region, goal_region: Region,
                                       not_through: Optional[List[Region]] = None) -> List[List[Region]]:
         """
-        returns all possible paths through regions (ramps),
+        returns all possible paths through all :mod:`.Region` (via ramps),
         can exclude a region by passing it in a not_through list
         """
         all_paths = self.pather.find_all_paths(start=start_region, goal=goal_region)

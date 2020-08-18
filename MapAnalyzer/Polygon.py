@@ -9,37 +9,6 @@ from scipy.ndimage import center_of_mass
 if TYPE_CHECKING:
     from MapAnalyzer import MapData, Region
 
-
-class BuildablePoints:
-    """ChokeArea BuildablePoints are always the edges, this is useful for walling off"""
-
-    def __init__(self, polygon):
-        self.polygon = polygon
-        self.points = None
-
-    @property
-    def free_pct(self) -> float:
-        if self.points is None:
-            self.polygon.map_data.logger.warning("BuildablePoints needs to update first")
-            self.update()
-        return len(self.points) / len(self.polygon.points)
-
-    def update(self) -> None:
-        parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
-        [self.polygon.map_data.add_influence(p=(unit.position.x, unit.position.y), r=unit.radius, arr=parr, safe=False)
-         for unit in
-         self.polygon.map_data.bot.all_units]
-        buildable_indices = np.where(parr == 1)
-        buildable_points = []
-        _points = list(self.polygon.map_data.indices_to_points(buildable_indices))
-        placement_grid = self.polygon.map_data.placement_arr.T
-        for p in _points:
-            if p[0] < placement_grid.shape[0] and p[1] < placement_grid.shape[1]:
-                if placement_grid[p] == 1:
-                    buildable_points.append(p)
-        self.points = buildable_points
-
-
 class Polygon:
     """
     Polygon DocString
@@ -217,3 +186,34 @@ class Polygon:
     #     pass
     def __repr__(self) -> str:
         return f"<Polygon[size={self.area}]: {self.areas}>"
+
+
+class BuildablePoints:
+    """ChokeArea BuildablePoints are always the edges, this is useful for walling off"""
+
+    def __init__(self, polygon):
+        self.polygon = polygon
+        self.points = None
+
+    @property
+    def free_pct(self) -> float:
+        if self.points is None:
+            self.polygon.map_data.logger.warning("BuildablePoints needs to update first")
+            self.update()
+        return len(self.points) / len(self.polygon.points)
+
+    def update(self) -> None:
+        parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
+        [self.polygon.map_data.add_influence(p=(unit.position.x, unit.position.y), r=unit.radius, arr=parr, safe=False)
+         for unit in
+         self.polygon.map_data.bot.all_units]
+        buildable_indices = np.where(parr == 1)
+        buildable_points = []
+        _points = list(self.polygon.map_data.indices_to_points(buildable_indices))
+        placement_grid = self.polygon.map_data.placement_arr.T
+        for p in _points:
+            if p[0] < placement_grid.shape[0] and p[1] < placement_grid.shape[1]:
+                if placement_grid[p] == 1:
+                    buildable_points.append(p)
+        self.points = buildable_points
+
