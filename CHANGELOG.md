@@ -7,34 +7,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* Region is now a Child of Polygon
+### Refactoring
 
-### Features
+* *add_influence* to *add_cost*, r to radius, p to position, arr to grid ([4bfbfee](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4bfbfee6edbddaa1f45a0d1bc06b5edc61bcb643))
+* compile_map is no a private method (_compile_map) ([8b27883](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8b2788367c92f4eb5a4201ae96c165c75687f830))
 
-* Polygon/ Region now has the property 'buildable_points' ([#63](https://github.com/eladyaniv01/SC2MapAnalysis/issues/63)) ([2100501](https://github.com/eladyaniv01/SC2MapAnalysis/commit/21005016ab9669dfc276aee4a709e0c24435f2d2))
-
-
-### Bug Fixes
-
-* versionbump cli now commits setup.py before calling standard-version ([50eb667](https://github.com/eladyaniv01/SC2MapAnalysis/commit/50eb667c48949a0847742ed5aec8957f07cd8ff9))
-
-
-*  Base (#65) -> dev -> master (#66) ([60e2d2d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/60e2d2de8cb89d6649a09e8e66e379483d0a7a0f)), closes [#65](https://github.com/eladyaniv01/SC2MapAnalysis/issues/65) [#66](https://github.com/eladyaniv01/SC2MapAnalysis/issues/66) [#64](https://github.com/eladyaniv01/SC2MapAnalysis/issues/64)
 
 
 ### Documentation
 
-* added cli reminder to commit setup.py on versionbump ([28a65a3](https://github.com/eladyaniv01/SC2MapAnalysis/commit/28a65a303a14ae08bf4b00253cb2ace13b8b5cff))
-* addedd warning to `add_influence` ([bbf7009](https://github.com/eladyaniv01/SC2MapAnalysis/commit/bbf7009189835c0dc4741f47d873a63448c34e4a))
-* adding docstring for sphinx ([0ed279d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0ed279d94929c494f979e625ba2c59e28eceed79))
-* adding docstring for sphinx ([a2464af](https://github.com/eladyaniv01/SC2MapAnalysis/commit/a2464afff67b9d3b64a1395fe8b179521dca43dc))
-* update ([c5a8cf7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c5a8cf742abc22d7de03f4aa01a08e0ee454dc0f))
+* documentation is in draft stage and can be found at https://eladyaniv01.github.io/SC2MapAnalysis
 
-
-### Refactoring
-
-* add_influence to add_cost, r to radius, p to position, arr to grid ([4bfbfee](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4bfbfee6edbddaa1f45a0d1bc06b5edc61bcb643))
-* compile_map is no a private method ([8b27883](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8b2788367c92f4eb5a4201ae96c165c75687f830))
 
 ### [0.0.53](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.48...v0.0.53) (2020-08-16)
 
