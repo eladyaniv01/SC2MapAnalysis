@@ -75,7 +75,6 @@ class MapData:
     @property
     def vision_blockers(self) -> Set[Point2]:
         """
-        :rtype: Set[Point2]
         Exposing the computed method
 
             ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`
@@ -187,7 +186,7 @@ class MapData:
 
     def get_clean_air_grid(self, default_weight: int = 1):
         """
-        :rtype: ndarray
+        :rtype: numpy.ndarray
         Will return a grid marking every cell as pathable with ``default_weight``
 
         See Also:
@@ -226,7 +225,7 @@ class MapData:
             by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.
 
         TODO:
-            a few more examples
+            more examples for different usages available
 
         Example:
             >>> grid = self.get_pyastar_grid()
@@ -440,9 +439,9 @@ class MapData:
         :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
         Will query a point on the map and will return the first result in the following order:
 
-            * Region
-            * MDRamp
-            * ChokeArea
+            * :class:`.Region`
+            * :class:`.MDRamp`
+            * :class:`.ChokeArea`
 
         Tip:
 
