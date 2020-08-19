@@ -199,7 +199,7 @@ class MapData:
                  grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
         """
-        :rtype: Union[List[:class:`Point2`], None]
+        :rtype: Union[List[:class:`.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
 
         **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`
@@ -283,7 +283,7 @@ class MapData:
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
     ) -> Set[Union[Tuple[int64, int64], Point2]]:
         """
-        :rtype: Set[Union[Tuple[int64, int64], :class:`Point2`]]
+        :rtype: Set[Union[Tuple[int64, int64], :class:`.Point2`]]
         Convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
         """
@@ -358,7 +358,7 @@ class MapData:
             self, points: List[Point2], target: Union[Point2, tuple]
     ) -> Point2:
         """
-        :rtype: :class:`Point2`
+        :rtype: :class:`.Point2`
         Given a list/set of points, and a target,
         will return the point that is closest to that target
 
