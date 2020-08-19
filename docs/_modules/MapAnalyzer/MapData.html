@@ -84,7 +84,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapData.html">MapAnalyzer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/Polygon.html">Polygon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/Region.html">Region</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/Utilities.html">Utilities</a></li>
@@ -230,7 +230,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: Set[Point2]</span>
 <span class="sd">        Exposing the computed method</span>
 
 <span class="sd">            ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`</span>
@@ -342,7 +341,7 @@
 
 <div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: ndarray</span>
+<span class="sd">        :rtype: numpy.ndarray</span>
 <span class="sd">        Will return a grid marking every cell as pathable with ``default_weight``</span>
 
 <span class="sd">        See Also:</span>
@@ -595,9 +594,9 @@
 <span class="sd">        :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]</span>
 <span class="sd">        Will query a point on the map and will return the first result in the following order:</span>
 
-<span class="sd">            * Region</span>
-<span class="sd">            * MDRamp</span>
-<span class="sd">            * ChokeArea</span>
+<span class="sd">            * :class:`.Region`</span>
+<span class="sd">            * :class:`.MDRamp`</span>
+<span class="sd">            * :class:`.ChokeArea`</span>
 
 <span class="sd">        Tip:</span>
 

@@ -137,13 +137,13 @@ rst_prolog = """
 epub_exclude_files = ['search.html']
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-        'https://docs.python.org/': None,
+        ' https://docs.python.org/3/': None,
         'https://burnysc2.github.io/python-sc2/docs/': None,
         'https://numpy.org/doc/stable/': None,
         'https://docs.scipy.org/doc/scipy/reference': None,
         'https://matplotlib.org': None,
         'https://docs.h5py.org/en/latest/': None,
-        'https://www.sphinx-doc.org/en/stable/': None,
+        ' https://www.sphinx-doc.org/en/master/': None,
         # 'https://docs.djangoproject.com/en/dev/': None,
         'https://www.attrs.org/en/stable/': None,
         'https://sarge.readthedocs.io/en/latest/': None
