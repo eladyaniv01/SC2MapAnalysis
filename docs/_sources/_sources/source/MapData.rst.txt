@@ -1,5 +1,5 @@
-MapData
-=======
+MapAnalyzer
+===========
 
 sc2pathlibp subpackage
 ----------------------
@@ -8,6 +8,10 @@ sc2pathlibp subpackage
 pyastar subpackage
 ----------------------
 `pyastar (github) <https://github.com/hjweide/pyastar>`_
+
+
+MapData
+-------
 
 .. automodule:: MapAnalyzer.MapData
    :members:

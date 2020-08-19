@@ -354,7 +354,7 @@
                  <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: Union[List[Point2], None]</span>
+<span class="sd">        :rtype: Union[List[:class:`Point2`], None]</span>
 <span class="sd">        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.</span>
 
 <span class="sd">        **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`</span>
@@ -438,7 +438,7 @@
             <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">],</span> <span class="n">Point2</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: Set[Union[Tuple[int64, int64], Point2]]</span>
+<span class="sd">        :rtype: Set[Union[Tuple[int64, int64], :class:`Point2`]]</span>
 <span class="sd">        Convert indices to a set of points(``tuples``, not ``Point2`` )</span>
 <span class="sd">        Will only work when both dimensions are of same length</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -513,7 +513,7 @@
             <span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: Point2</span>
+<span class="sd">        :rtype: :class:`Point2`</span>
 <span class="sd">        Given a list/set of points, and a target,</span>
 <span class="sd">        will return the point that is closest to that target</span>
 
