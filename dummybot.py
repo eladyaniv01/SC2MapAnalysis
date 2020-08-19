@@ -81,46 +81,55 @@ class MATester(sc2.BotAI):
             self.client.debug_sphere_out(p=pos, r=r - 1, color=RED)
 
     async def on_step(self, iteration: int):
+        pos = self.map_data.bot.townhalls.ready.first.position
+        areas = self.map_data.where_all(pos)
+        self.logger.debug(areas)
+        region = areas[0]
+        self.logger.debug(region)
+        self.logger.debug(region.points)
+        list_points = list(region.points)
+        self.logger.debug(type(list_points))
+        self.logger.debug(list_points)
         # self._plot_influence()
-        hero = self.workers.by_tag(self.hero_tag)
-        dist = 1.5 * hero.calculate_speed() * 1.4
-        if self.target is None:
-            self.target = self.path.pop(0)
-        self.logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
-        if self.map_data.distance(hero.position, self.target) > 1:
-            hero.move(self.target)
-
-        if self.map_data.distance(hero.position, self.target) <= dist:
-            if len(self.path) > 0:
-                self.target = self.path.pop(0)
-            else:
-                self.logger.info("Path Complete")
-
-        p = hero.position
-        h = self.get_terrain_z_height(p)
-        pos = Point3((p.x, p.y, h))
-        box_r = 1
-        color = GREEN
-        p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
-        p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
-        self.client.debug_box_out(p0, p1, color=color)
-
-        p = self.target
-        h = self.get_terrain_z_height(p)
-        pos = Point3((p.x, p.y, h))
-        box_r = 1
-        color = RED
-        p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
-        p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
-        self.client.debug_box_out(p0, p1, color=color)
-
-        self.client.debug_text_world(
-                "\n".join([f"start {self.p0}", ]), Point2(self.p0), color=BLUE, size=30,
-        )
-        self.client.debug_text_world(
-                "\n".join([f"end {self.p1}", ]), Point2(self.p1), color=RED, size=30,
-        )
-        self._draw_point_list(self.path, text='*')
+        # hero = self.workers.by_tag(self.hero_tag)
+        # dist = 1.5 * hero.calculate_speed() * 1.4
+        # if self.target is None:
+        #     self.target = self.path.pop(0)
+        # self.logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
+        # if self.map_data.distance(hero.position, self.target) > 1:
+        #     hero.move(self.target)
+        #
+        # if self.map_data.distance(hero.position, self.target) <= dist:
+        #     if len(self.path) > 0:
+        #         self.target = self.path.pop(0)
+        #     else:
+        #         self.logger.info("Path Complete")
+        #
+        # p = hero.position
+        # h = self.get_terrain_z_height(p)
+        # pos = Point3((p.x, p.y, h))
+        # box_r = 1
+        # color = GREEN
+        # p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
+        # p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
+        # self.client.debug_box_out(p0, p1, color=color)
+        #
+        # p = self.target
+        # h = self.get_terrain_z_height(p)
+        # pos = Point3((p.x, p.y, h))
+        # box_r = 1
+        # color = RED
+        # p0 = Point3((pos.x - box_r, pos.y - box_r, pos.z + box_r)) + Point2((0.5, 0.5))
+        # p1 = Point3((pos.x + box_r, pos.y + box_r, pos.z - box_r)) + Point2((0.5, 0.5))
+        # self.client.debug_box_out(p0, p1, color=color)
+        #
+        # self.client.debug_text_world(
+        #         "\n".join([f"start {self.p0}", ]), Point2(self.p0), color=BLUE, size=30,
+        # )
+        # self.client.debug_text_world(
+        #         "\n".join([f"end {self.p1}", ]), Point2(self.p1), color=RED, size=30,
+        # )
+        # self._draw_point_list(self.path, text='*')
 
     def _draw_point_list(self, point_list: List = None, color=None, text=None, box_r=None) -> bool:
         if not color:
