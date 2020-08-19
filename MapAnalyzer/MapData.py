@@ -80,6 +80,7 @@ class MapData:
 
             ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`
             ``vision_blockers`` are the raw data received from ``burnysc2`` and will be processed later on.
+
         """
         return self._vision_blockers
 
@@ -94,19 +95,25 @@ class MapData:
             ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`
 
 
-        Requests a new pathing grid
-        This grid will have all non pathable cells set to ``np.inf``
-        pathable cells will be set to the default_weight which it's default is 1
-        After you get the grid, you can add your own influence
-        This grid can be reused in the duration of the frame,
-        and should be regenerated(once) on each frame
+        Requests a new pathing grid.
+
+        This grid will have all non pathable cells set to ``np.inf``.
+
+        pathable cells will be set to the default_weight which it's default is 1.
+
+        After you get the grid, you can add your own influence.
+
+        This grid can, and **should** be reused in the duration of the frame,
+        and should be regenerated(**once**) on each frame.
 
         Note:
             destructables that has been destroyed will be updated by default,
+
             the only known use case for ``include_destructables`` usage is illustrated in the first example below
 
-        Examples:
+        Example:
             We want to check if breaking the destructables in our path will make it better,
+
             so we treat destructables as if they were pathable
 
             >>> # 1
@@ -121,6 +128,7 @@ class MapData:
             * :meth:`.MapData.get_clean_air_grid`
             * :meth:`.MapData.add_influence`
             * :meth:`.MapData.pathfind`
+
         """
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
@@ -130,12 +138,16 @@ class MapData:
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for
-        units that can climb, such as Reaper, Colossus
+        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
+
+        such as Reaper, Colossus
 
         This grid can be reused in the duration of the frame,
-        and should be regenerated(once) on each frame
+
+        and should be regenerated(once) on each frame.
+
         This grid also gets updated with all nonpathables when requested
+
         such as structures, and destructables
 
         Example:
@@ -153,8 +165,9 @@ class MapData:
     def get_air_vs_ground_grid(self, default_weight: int = 100):
         """
         :rtype: numpy.ndarray
-        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain making
-        air units naturally "drawn" to it.
+        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,
+
+         making air units naturally "drawn" to it.
 
         Caution:
             Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
@@ -168,15 +181,18 @@ class MapData:
             * :meth:`.MapData.get_clean_air_grid`
             * :meth:`.MapData.add_influence`
             * :meth:`.MapData.pathfind`
+
         """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
     def get_clean_air_grid(self, default_weight: int = 1):
         """
-        :rtype: numpy.ndarray
+        :rtype: ndarray
         Will return a grid marking every cell as pathable with ``default_weight``
+
         See Also:
             * :meth:`.MapData.get_air_vs_ground_grid`
+
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
@@ -185,8 +201,11 @@ class MapData:
                  allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
         """
         :rtype: Union[List[Point2], None]
-        Will return the path with lowest cost (sum)  given a weighted array,  start , and goal.
-        If no path is possible, will return None
+        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
+
+        **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`
+
+        If no path is possible, will return ``None``
 
         Tip:
             ``sensitivity`` indicates how to slice the path,
@@ -194,14 +213,20 @@ class MapData:
                 where ``path`` is the return value from this function
 
             this is useful since in most use cases you wouldn't want
-            to get each and every single point,  getting every `nth` point works better in practice
+            to get each and every single point,
+
+            getting every  n-``th`` point works better in practice
+
 
         Caution:
-            ``allow_diagonal=True`` will result in a slight performance penalty
-            however, if you don't over-use it, it will naturally generate shorter paths
+            ``allow_diagonal=True`` will result in a slight performance penalty.
+
+            `However`, if you don't over-use it, it will naturally generate shorter paths,
+
             by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.
 
-        TODO: a few more examples
+        TODO:
+            a few more examples
 
         Example:
             >>> grid = self.get_pyastar_grid()
@@ -210,24 +235,23 @@ class MapData:
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
+
         """
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, default_weight: int = 100, safe: bool = True,
-                      weight=None) -> ndarray:
+    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True,
+                      ) -> ndarray:
         """
         :rtype: numpy.ndarray
         Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
-        default_weight of 100
+        weight of 100
 
         Warning:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
+
         """
-        if weight is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='weight', newarg='default_weight'))
-            default_weight = weight
-        return self.pather.add_influence(p=p, r=r, arr=arr, weight=default_weight, safe=safe)
+        return self.pather.add_influence(p=p, r=r, arr=arr, weight=weight, safe=safe)
 
     """Utility methods"""
 
@@ -363,6 +387,7 @@ class MapData:
         """
         :rtype: List[List[:mod:`.Region`]]
         Returns all possible paths through all :mod:`.Region` (via ramps),
+
         can exclude a region by passing it in a not_through list
         """
         all_paths = self.pather.find_all_paths(start=start_region, goal=goal_region)
@@ -414,9 +439,10 @@ class MapData:
         """
         :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
         Will query a point on the map and will return the first result in the following order:
-        Region,
-        MDRamp,
-        ChokeArea
+
+            * Region
+            * MDRamp
+            * ChokeArea
 
         Tip:
 
