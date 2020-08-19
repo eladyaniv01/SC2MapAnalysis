@@ -26,7 +26,8 @@ class BuildablePoints:
 
     def update(self) -> None:
         parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
-        [self.polygon.map_data.add_influence(p=(unit.position.x, unit.position.y), r=unit.radius, arr=parr, safe=False)
+        [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius, grid=parr,
+                                        safe=False)
          for unit in
          self.polygon.map_data.bot.all_units]
         buildable_indices = np.where(parr == 1)

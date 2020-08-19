@@ -125,7 +125,7 @@ class MapData:
             * :meth:`.MapData.get_climber_grid`
             * :meth:`.MapData.get_air_vs_ground_grid`
             * :meth:`.MapData.get_clean_air_grid`
-            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
 
         """
@@ -156,7 +156,7 @@ class MapData:
             * :meth:`.MapData.get_pyastar_grid`
             * :meth:`.MapData.get_air_vs_ground_grid`
             * :meth:`.MapData.get_clean_air_grid`
-            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
         """
         return self.pather.get_climber_grid(default_weight)
@@ -178,7 +178,7 @@ class MapData:
             * :meth:`.MapData.get_pyastar_grid`
             * :meth:`.MapData.get_climber_grid`
             * :meth:`.MapData.get_clean_air_grid`
-            * :meth:`.MapData.add_influence`
+            * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
 
         """
@@ -199,7 +199,7 @@ class MapData:
                  grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
         """
-        :rtype: Union[List[:class:`.Point2`], None]
+        :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
 
         **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`
@@ -239,18 +239,18 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True,
-                      ) -> ndarray:
+    def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
+                 ) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``
+        Will add cost to a `circle-shaped` area with a center ``position`` and radius ``radius``
         weight of 100
 
         Warning:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
 
         """
-        return self.pather.add_influence(p=p, r=r, arr=arr, weight=weight, safe=safe)
+        return self.pather.add_influence(p=position, r=radius, arr=grid, weight=weight, safe=safe)
 
     """Utility methods"""
 
@@ -283,7 +283,7 @@ class MapData:
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
     ) -> Set[Union[Tuple[int64, int64], Point2]]:
         """
-        :rtype: Set[Union[Tuple[int64, int64], :class:`.Point2`]]
+        :rtype: Set[Union[Tuple[int64, int64], :class:`sc2.position.Point2`]]
         Convert indices to a set of points(``tuples``, not ``Point2`` )
         Will only work when both dimensions are of same length
         """
@@ -337,7 +337,7 @@ class MapData:
     @staticmethod
     def distance(p1: Point2, p2: Point2) -> float64:
         """
-        :rtype: float64
+        :rtype: numpy.float64
         Euclidean distance
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
@@ -358,7 +358,7 @@ class MapData:
             self, points: List[Point2], target: Union[Point2, tuple]
     ) -> Point2:
         """
-        :rtype: :class:`.Point2`
+        :rtype: :class:`sc2.position.Point2`
         Given a list/set of points, and a target,
         will return the point that is closest to that target
 

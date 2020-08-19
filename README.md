@@ -164,11 +164,11 @@ getting the basic pathing grid :
 
 Adding influence :
 ------------------
-`def add_influence(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:`
+`def add_cost(p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100) -> ndarray:`
 
 Usage:
 
-`map_data.add_influence(p, r, arr, weight)`
+`map_data.add_cost(p, r, arr, weight)`
 
 * `p`: center point (for example p could be an enemy units position)
 * `r`: radius (for example  r ->  attack range)
@@ -257,7 +257,7 @@ for idx in range(8):
     r = 7 + idx
     # note that we use the default weight of 100,  we could pass custom weights for each point though
     for p in pts:
-        arr = map_data.add_influence(p, r, arr, weight=-100)
+        arr = map_data.add_cost(p, r, arr, weight=-100)
 
     """Plot path on weighted grid"""
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, name=f"Added {NUM_POINTS} of influence",
@@ -287,9 +287,9 @@ from typing import List
 
 import sc2
 from sc2.player import Bot, Computer
-from sc2.position import Point3
+from sc2.position import Point3, Point2
 
-from MapAnalyzer import MapData, Point2
+from MapAnalyzer import MapData
 
 GREEN = Point3((0, 255, 0))
 RED = Point3((255, 0, 0))

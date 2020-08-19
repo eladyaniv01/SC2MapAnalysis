@@ -102,7 +102,7 @@ class TestPathing:
 
         arr = map_data.get_pyastar_grid()
         for p in pts:
-            arr = map_data.add_influence(p, r, arr)
+            arr = map_data.add_cost(p, r, arr)
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None), f"path = {path}"
 
@@ -138,6 +138,6 @@ class TestPathing:
 
         arr = map_data.get_pyastar_grid()
         for p in pts:
-            arr = map_data.add_influence(p, r, arr)
+            arr = map_data.add_cost(p, r, arr)
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None)
