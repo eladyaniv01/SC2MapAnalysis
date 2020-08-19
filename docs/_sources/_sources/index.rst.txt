@@ -6,7 +6,7 @@
 Welcome to Sc2MapAnalyzer's documentation!
 ==========================================
 
-.. todo::
+.. todolist::
 
 
 .. toctree::

@@ -25,7 +25,7 @@ copyright = '2020, Elad Yaniv'
 author = 'Elad Yaniv'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.53'
+release = '0.53'
 
 
 # -- General configuration ---------------------------------------------------
@@ -65,6 +65,7 @@ napoleon_use_rtype = True
 napoleon_type_aliases = None
 
 
+
 import easydev
 import shutil
 jscopybutton_path = easydev.copybutton.get_copybutton_path()
@@ -101,7 +102,7 @@ html_theme_options = {
     'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
-    'style_nav_header_background': 'grey',
+    # 'style_nav_header_background': 'grey',
     # Toc options
     'collapse_navigation': True,
     'sticky_navigation': True,
@@ -113,7 +114,6 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-html_logo = 'https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&logo-EladYaniv01&style-plastic'
 autosummary_generate = True
 autodoc_typehints = 'description'
 texinfo_show_urls = 'footnote'
@@ -121,10 +121,39 @@ rst_prolog = """
 .. _Changelog: https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md
 .. |MasterBuildIMG| image:: https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master
 .. |VersionBuildIMG| image:: https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&logo-EladYaniv01&style-plastic
-
 .. raw:: html
 
     <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&amp;logo-EladYaniv01&amp;style-plastic" width="109" height="21" /></p>
     <p><a href="https://github.com/eladyaniv01/SC2MapAnalysis/tree/master" target="_"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master" /></a></p>
-    
+    <script type="text/javascript">
+    <!-- Adds target=_blank to external links -->
+
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
 """
+# A list of files that should not be packed into the epub file.
+epub_exclude_files = ['search.html']
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+        'https://docs.python.org/': None,
+        'https://burnysc2.github.io/python-sc2/docs/': None,
+        'https://numpy.org/doc/stable/': None,
+        'https://docs.scipy.org/doc/scipy/reference': None,
+        'https://matplotlib.org': None,
+        'https://docs.h5py.org/en/latest/': None,
+        'https://www.sphinx-doc.org/en/stable/': None,
+        # 'https://docs.djangoproject.com/en/dev/': None,
+        'https://www.attrs.org/en/stable/': None,
+        'https://sarge.readthedocs.io/en/latest/': None
+                       }
+
+def setup(app):
+# app.add_stylesheet('custom.css') # remove line numbers
+    app.add_js_file('copybutton.js') # show/hide prompt >>>
+# use :numref: for references (instead of :ref:)
+numfig = True
+smart_quotes = True
+html_use_smartypants = True
+

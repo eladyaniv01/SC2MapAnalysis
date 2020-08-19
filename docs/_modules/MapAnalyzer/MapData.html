@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.53 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.53 documentation</title>
   
 
   
@@ -32,6 +32,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/copybutton.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -47,7 +48,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search"  style="background: grey" >
+        <div class="wy-side-nav-search" >
           
 
           
@@ -234,6 +235,7 @@
 
 <span class="sd">            ``vision_blockers`` are not to be confused with :data:`self.map_vision_blockers`</span>
 <span class="sd">            ``vision_blockers`` are the raw data received from ``burnysc2`` and will be processed later on.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span>
 
@@ -248,19 +250,25 @@
 <span class="sd">            ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`</span>
 
 
-<span class="sd">        Requests a new pathing grid</span>
-<span class="sd">        This grid will have all non pathable cells set to ``np.inf``</span>
-<span class="sd">        pathable cells will be set to the default_weight which it&#39;s default is 1</span>
-<span class="sd">        After you get the grid, you can add your own influence</span>
-<span class="sd">        This grid can be reused in the duration of the frame,</span>
-<span class="sd">        and should be regenerated(once) on each frame</span>
+<span class="sd">        Requests a new pathing grid.</span>
+
+<span class="sd">        This grid will have all non pathable cells set to ``np.inf``.</span>
+
+<span class="sd">        pathable cells will be set to the default_weight which it&#39;s default is 1.</span>
+
+<span class="sd">        After you get the grid, you can add your own influence.</span>
+
+<span class="sd">        This grid can, and **should** be reused in the duration of the frame,</span>
+<span class="sd">        and should be regenerated(**once**) on each frame.</span>
 
 <span class="sd">        Note:</span>
 <span class="sd">            destructables that has been destroyed will be updated by default,</span>
+
 <span class="sd">            the only known use case for ``include_destructables`` usage is illustrated in the first example below</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">            We want to check if breaking the destructables in our path will make it better,</span>
+
 <span class="sd">            so we treat destructables as if they were pathable</span>
 
 <span class="sd">            &gt;&gt;&gt; # 1</span>
@@ -275,6 +283,7 @@
 <span class="sd">            * :meth:`.MapData.get_clean_air_grid`</span>
 <span class="sd">            * :meth:`.MapData.add_influence`</span>
 <span class="sd">            * :meth:`.MapData.pathfind`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">air_pathing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;air_pathing&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.get_clean_air_grid()&#39;</span><span class="p">))</span>
@@ -284,15 +293,19 @@
 <div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
-<span class="sd">        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for</span>
-<span class="sd">        units that can climb, such as Reaper, Colossus</span>
+<span class="sd">        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,</span>
+
+<span class="sd">        such as Reaper, Colossus</span>
 
 <span class="sd">        This grid can be reused in the duration of the frame,</span>
-<span class="sd">        and should be regenerated(once) on each frame</span>
+
+<span class="sd">        and should be regenerated(once) on each frame.</span>
+
 <span class="sd">        This grid also gets updated with all nonpathables when requested</span>
+
 <span class="sd">        such as structures, and destructables</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">                &gt;&gt;&gt; updated_climber_grid = self.get_climber_grid(default_weight = 1)</span>
 
 <span class="sd">        See Also:</span>
@@ -307,13 +320,14 @@
 <div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
-<span class="sd">        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain making</span>
-<span class="sd">        air units naturally &quot;drawn&quot; to it.</span>
+<span class="sd">        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,</span>
+
+<span class="sd">         making air units naturally &quot;drawn&quot; to it.</span>
 
 <span class="sd">        Caution:</span>
-<span class="sd">            requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`</span>
+<span class="sd">            Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">                &gt;&gt;&gt; air_vs_ground_grid = self.get_air_vs_ground_grid()</span>
 
 <span class="sd">        See Also:</span>
@@ -322,15 +336,18 @@
 <span class="sd">            * :meth:`.MapData.get_clean_air_grid`</span>
 <span class="sd">            * :meth:`.MapData.add_influence`</span>
 <span class="sd">            * :meth:`.MapData.pathfind`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_air_vs_ground_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: numpy.ndarray</span>
+<span class="sd">        :rtype: ndarray</span>
 <span class="sd">        Will return a grid marking every cell as pathable with ``default_weight``</span>
+
 <span class="sd">        See Also:</span>
 <span class="sd">            * :meth:`.MapData.get_air_vs_ground_grid`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_clean_air_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
@@ -339,8 +356,11 @@
                  <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: Union[List[Point2], None]</span>
-<span class="sd">        Will return the path with lowest cost (sum)  given a weighted array,  start , and goal.</span>
-<span class="sd">        If no path is possible, will return None</span>
+<span class="sd">        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.</span>
+
+<span class="sd">        **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`</span>
+
+<span class="sd">        If no path is possible, will return ``None``</span>
 
 <span class="sd">        Tip:</span>
 <span class="sd">            ``sensitivity`` indicates how to slice the path,</span>
@@ -348,39 +368,45 @@
 <span class="sd">                where ``path`` is the return value from this function</span>
 
 <span class="sd">            this is useful since in most use cases you wouldn&#39;t want</span>
-<span class="sd">            to get each and every single point,  getting every `nth` point works better in practice</span>
+<span class="sd">            to get each and every single point,</span>
+
+<span class="sd">            getting every  n-``th`` point works better in practice</span>
+
 
 <span class="sd">        Caution:</span>
-<span class="sd">            ``allow_diagonal=True`` will result in a slight performance penalty</span>
-<span class="sd">            however, if you don&#39;t over-use it, it will naturally generate shorter paths</span>
+<span class="sd">            ``allow_diagonal=True`` will result in a slight performance penalty.</span>
+
+<span class="sd">            `However`, if you don&#39;t over-use it, it will naturally generate shorter paths,</span>
+
 <span class="sd">            by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.</span>
 
-<span class="sd">        TODO: a few more examples</span>
+<span class="sd">        TODO:</span>
+<span class="sd">            more examples for different usages available</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; grid = self.get_pyastar_grid()</span>
 <span class="sd">            &gt;&gt;&gt; # start / goal could be any tuple / Point2</span>
 <span class="sd">            &gt;&gt;&gt; path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)</span>
 
 <span class="sd">        See Also:</span>
 <span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">,</span>
                                     <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.add_influence"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.add_influence">[docs]</a>    <span class="k">def</span> <span class="nf">add_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                      <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.add_influence"><a class="viewcode-back" href="../../source/MapData.html#MapAnalyzer.MapData.MapData.add_influence">[docs]</a>    <span class="k">def</span> <span class="nf">add_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
 <span class="sd">        Will add cost to a `circle-shaped` area with a center ``p`` and radius ``r``</span>
-<span class="sd">        default</span>
+<span class="sd">        weight of 100</span>
+
 <span class="sd">        Warning:</span>
-<span class="sd">            when ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`</span>
+<span class="sd">            When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;default_weight&#39;</span><span class="p">))</span>
-            <span class="n">default_weight</span> <span class="o">=</span> <span class="n">weight</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span></div>
 
     <span class="sd">&quot;&quot;&quot;Utility methods&quot;&quot;&quot;</span>
 
@@ -437,7 +463,7 @@
 <span class="sd">        Convert points to numpy ndarray</span>
 
 <span class="sd">        Caution:</span>
-<span class="sd">                will handle safely(by ignoring) points that are ``out of bounds``, without warning</span>
+<span class="sd">                Will handle safely(by ignoring) points that are ``out of bounds``, without warning</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
@@ -493,7 +519,7 @@
 <span class="sd">        will return the point that is closest to that target</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">                calculate a position for tanks in direction to the enemy forces</span>
+<span class="sd">                Calculate a position for tanks in direction to the enemy forces</span>
 <span class="sd">                passing in the Area&#39;s corners as points and enemy army&#39;s location as target</span>
 
 <span class="sd">                &gt;&gt;&gt; enemy_army_position = Point2((50,50)) # random point for this example</span>
@@ -516,6 +542,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: List[List[:mod:`.Region`]]</span>
 <span class="sd">        Returns all possible paths through all :mod:`.Region` (via ramps),</span>
+
 <span class="sd">        can exclude a region by passing it in a not_through list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">find_all_paths</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_region</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal_region</span><span class="p">)</span>
@@ -567,9 +594,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]</span>
 <span class="sd">        Will query a point on the map and will return the first result in the following order:</span>
-<span class="sd">        Region,</span>
-<span class="sd">        MDRamp,</span>
-<span class="sd">        ChokeArea</span>
+
+<span class="sd">            * Region</span>
+<span class="sd">            * MDRamp</span>
+<span class="sd">            * ChokeArea</span>
 
 <span class="sd">        Tip:</span>
 
