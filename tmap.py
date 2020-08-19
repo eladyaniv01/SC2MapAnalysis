@@ -59,7 +59,7 @@ for i in range(50):
 
 arr = map_data.get_pyastar_grid()
 for p in pts:
-    arr = map_data.add_influence(p, r, arr)
+    arr = map_data.add_cost(p, r, arr)
 path = map_data.pathfind(p0, p1, grid=arr)
 map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr)
 map_data.show()
@@ -69,12 +69,12 @@ assert (path is not None), f"path = {path}"
 # start = (110, 95)
 # goal = (110, 40)
 # grid = map_data.get_pyastar_grid()
-# grid = map_data.add_influence((170, 140), r=20, arr=grid, weight=np.inf)
+# grid = map_data.add_cost((170, 140), r=20, arr=grid, weight=np.inf)
 # resource_blockers = [Point2(m.position) for m in map_data.mineral_fields if "rich" in m.name.lower()]
 # for pos in resource_blockers:
 # radius = 1
 # map_data.log(pos)
-# grid = map_data.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
+# grid = map_data.add_cost(p=pos, r=radius, arr=grid, weight=np.inf)
 # path = map_data.pathfind(start=start, goal=goal, grid=grid)
 #
 # map_data.plot_influenced_path(start=start, goal=goal, weight_array=grid)

@@ -3,9 +3,9 @@ from typing import List
 
 import sc2
 from sc2.player import Bot, Computer
-from sc2.position import Point3
+from sc2.position import Point3, Point2
 
-from MapAnalyzer import MapData, Point2
+from MapAnalyzer import MapData
 
 GREEN = Point3((0, 255, 0))
 RED = Point3((255, 0, 0))
@@ -57,7 +57,7 @@ class MATester(sc2.BotAI):
         # for tup in self.influence_points:
         #     p = tup[0]
         #     r = tup[1]
-        #     self.map_data.add_influence(p, r=r, arr=self.influence_grid)
+        #     self.map_data.add_cost(p, r=r, arr=self.influence_grid)
         self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens,
                                            allow_diagonal=True)
         self.hero_tag = self.workers[0].tag
