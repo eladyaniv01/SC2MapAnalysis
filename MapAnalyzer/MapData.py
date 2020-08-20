@@ -96,11 +96,11 @@ class MapData:
 
         Requests a new pathing grid.
 
-        This grid will have all non pathable cells set to ``np.inf``.
+        This grid will have all non pathable cells set to :class:`numpy.inf`.
 
-        pathable cells will be set to the default_weight which it's default is 1.
+        pathable cells will be set to the ``default_weight`` which it's default is ``1``.
 
-        After you get the grid, you can add your own influence.
+        After you get the grid, you can add your own ``cost`` (also known as ``weight`` or ``influence``)
 
         This grid can, and **should** be reused in the duration of the frame,
         and should be regenerated(**once**) on each frame.
@@ -202,7 +202,8 @@ class MapData:
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
 
-        **If no** ``grid`` **has been provided**, will request a fresh grid from :mod:`.Pather`
+
+        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
 
         If no path is possible, will return ``None``
 
@@ -281,19 +282,22 @@ class MapData:
     @staticmethod
     def indices_to_points(
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
-    ) -> Set[Union[Tuple[int64, int64], Point2]]:
+    ) -> Set[Union[Tuple[int, int], Point2]]:
         """
-        :rtype: Set[Union[Tuple[int64, int64], :class:`sc2.position.Point2`]]
+        :rtype: :class:`.set` (Union[:class:`.tuple` (:class:`.int`, :class:`.int`), :class:`sc2.position.Point2`)
+
         Convert indices to a set of points(``tuples``, not ``Point2`` )
+
         Will only work when both dimensions are of same length
+
         """
 
         return set([(int(indices[0][i]), int(indices[1][i])) for i in range(len(indices[0]))])
 
     @staticmethod
-    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
+    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[np.ndarray, np.ndarray]:
         """
-        :rtype: Tuple[ndarray, ndarray]
+        :rtype: Tuple[numpy.ndarray, numpy.ndarray]
         Convert a set / list of points to a tuple of two 1d numpy arrays
         """
         return np.array([p[0] for p in points]), np.array([p[1] for p in points])
@@ -337,8 +341,10 @@ class MapData:
     @staticmethod
     def distance(p1: Point2, p2: Point2) -> float64:
         """
-        :rtype: numpy.float64
+        :rtype: float64
+
         Euclidean distance
+
         """
         return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
 
@@ -348,8 +354,11 @@ class MapData:
     ) -> int:
         """
         :rtype: int
+
         Given a list of ``nodes``  and a single ``node`` ,
+
         will return the index of the closest node in the list to ``node``
+
         """
         closest_index = distance.cdist([node], nodes).argmin()
         return closest_index
@@ -359,7 +368,9 @@ class MapData:
     ) -> Point2:
         """
         :rtype: :class:`sc2.position.Point2`
+
         Given a list/set of points, and a target,
+
         will return the point that is closest to that target
 
         Example:
@@ -384,10 +395,15 @@ class MapData:
     def region_connectivity_all_paths(self, start_region: Region, goal_region: Region,
                                       not_through: Optional[List[Region]] = None) -> List[List[Region]]:
         """
+        :param start_region: :mod:`.Region`
+        :param goal_region: :mod:`.Region`
+        :param not_through: Optional[List[:mod:`.Region`]]
         :rtype: List[List[:mod:`.Region`]]
+
         Returns all possible paths through all :mod:`.Region` (via ramps),
 
         can exclude a region by passing it in a not_through list
+
         """
         all_paths = self.pather.find_all_paths(start=start_region, goal=goal_region)
         filtered_paths = all_paths.copy()
@@ -404,6 +420,7 @@ class MapData:
     ) -> List[Union[Region, VisionBlockerArea, MDRamp]]:
         """
         :rtype: List[Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
+
         Will query a point on the map and will return a list of all Area's that point belong to
 
         Tip:
@@ -433,9 +450,10 @@ class MapData:
 
     def where(
             self, point: Union[Point2, tuple]
-    ) -> Union[Region, MDRamp, VisionBlockerArea]:
+    ) -> Union[Region, MDRamp, ChokeArea, VisionBlockerArea]:
         """
-        :rtype: Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
+        :rtype: Union[:mod:`.Region`, :mod:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
+
         Will query a point on the map and will return the first result in the following order:
 
             * :class:`.Region`
@@ -467,9 +485,14 @@ class MapData:
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
         :rtype: Optional[:mod:`.Region`]
+
         Will query if a point is in, and in which Region using Set of Points <fast>
-        time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        as long as polygon points is of type set, not list
+
+        Tip:
+            time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
+            as long as polygon points is of type :class:`.set`, not :class:`.list`
+
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -485,8 +508,12 @@ class MapData:
     ) -> Optional[Region]:  # pragma: no cover
         """
         :rtype: Optional[:mod:`.Region`]
+
         Will query a if a point is in, and in which Region using Indices <slow>
-        time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
+        Tip:
+            time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -670,7 +697,9 @@ class MapData:
             self, fontdict: dict = None, save: Optional[bool] = None, figsize: int = 20
     ) -> None:
         """
-        Plot map
+
+        Plot map (does not ``show`` or ``save``)
+
         """
         if save is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
@@ -680,7 +709,9 @@ class MapData:
                              plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         """
+
         A useful debug utility method for experimenting with the :mod:`.Pather` module
+
         """
         if save is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
