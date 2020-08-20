@@ -8,7 +8,7 @@ from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
@@ -417,9 +417,9 @@ class MapData:
     @lru_cache(200)
     def where_all(
             self, point: Union[Point2, tuple]
-    ) -> List[Union[Region, VisionBlockerArea, MDRamp]]:
+    ) -> List[Union[Region, ChokeArea, VisionBlockerArea, MDRamp]]:
         """
-        :rtype: List[Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
+        :rtype: List[Union[:mod:`.Region`,:class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
 
         Will query a point on the map and will return a list of all Area's that point belong to
 
@@ -452,7 +452,7 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> Union[Region, MDRamp, ChokeArea, VisionBlockerArea]:
         """
-        :rtype: Union[:mod:`.Region`, :mod:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
+        :rtype: Union[:mod:`.Region`, :class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]
 
         Will query a point on the map and will return the first result in the following order:
 
