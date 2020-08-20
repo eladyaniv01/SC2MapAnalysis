@@ -6,8 +6,8 @@
 
 * ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic) [Changelog](https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md)  
 
-* ![https://eladyaniv01.github.io/SC2MapAnalysis/](https://img.shields.io/badge/Documentation-latest-green?style=plastic&logo=appveyor)
-
+* ![](https://img.shields.io/badge/Documentation-latest-green?style=plastic&logo=appveyor)
+   [Documentation](https://eladyaniv01.github.io/SC2MapAnalysis/)
    
 # Summary
 
