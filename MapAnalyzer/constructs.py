@@ -12,6 +12,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class PathLibChoke:
+    """
+
+    wrapper to the data returned by :mod:`sc2pathlibp`,
+
+    with a bit of added fields / data type for convenience
+
+    """
     # noinspection PyProtectedMember
     def __init__(self, pathlib_choke: "Choke", pk: int):
         self.id = pk
@@ -25,7 +32,9 @@ class PathLibChoke:
 
 class ChokeArea(Polygon):
     """
-    ChokeArea DocString
+
+    Base class for all chokes
+
     """
 
     def __init__(
@@ -47,7 +56,10 @@ class ChokeArea(Polygon):
 
 class MDRamp(ChokeArea):
     """
-    MDRamp DocString
+
+    Wrapper for :class:`sc2.game_info.Ramp`,
+
+    is responsible for calculating the relevant :class:`.Region`
     """
 
     def __init__(self, map_data: "MapData", array: np.ndarray, ramp: sc2Ramp) -> None:
@@ -56,10 +68,23 @@ class MDRamp(ChokeArea):
         self.ramp = ramp
 
     def closest_region(self, region_list):
+        """
+
+        Will return the closest region with respect to self
+
+        """
         return min(region_list,
                    key=lambda area: min(self.map_data.distance(area.center, point) for point in self.perimeter_points))
 
     def set_regions(self):
+        """
+
+        Method for calculating the relevant :class:`.Region`
+
+        TODO:
+             Make this a private method
+
+        """
         from MapAnalyzer.Region import Region
         for p in self.perimeter_points:
             areas = self.map_data.where_all(p)
@@ -86,7 +111,11 @@ class MDRamp(ChokeArea):
 
     @property
     def top_center(self) -> Point2:
-        # warning when sc2 fails to provide a top_center, and fallback to  .center
+        """
+
+        Alerts when sc2 fails to provide a top_center, and fallback to  :meth:`.center`
+
+        """
         if self.ramp.top_center is not None:
             return self.ramp.top_center
         else:
@@ -95,7 +124,11 @@ class MDRamp(ChokeArea):
 
     @property
     def bottom_center(self) -> Point2:
-        # warning when sc2 fails to provide a bottom_center, and fallback to  .center
+        """
+
+        Alerts when sc2 fails to provide a bottom_center, and fallback to  :meth:`.center`
+
+        """
         if self.ramp.bottom_center is not None:
             return self.ramp.bottom_center
         else:
@@ -111,7 +144,14 @@ class MDRamp(ChokeArea):
 
 class VisionBlockerArea(ChokeArea):
     """
-    VisionBlockerArea DocString
+
+    VisionBlockerArea are areas containing tiles that hide the units that stand in it,
+
+    (for example,  bushes)
+
+    Units that attack from within a :class:`VisionBlockerArea`
+
+    cannot be targeted by units that do not stand inside
     """
 
     def __init__(self, map_data: "MapData", array: np.ndarray) -> None:

@@ -6,13 +6,24 @@ import numpy as np
 from sc2.position import Point2
 
 from MapAnalyzer.Polygon import Polygon
-from MapAnalyzer.constructs import MDRamp
+from MapAnalyzer.constructs import MDRamp, ChokeArea
 
 if TYPE_CHECKING:
     from MapAnalyzer import MapData
 
 
 class Region(Polygon):
+    """
+    Higher order "Area" , all of the maps can be summed up by it's :class:`.Region`s
+
+    Tip:
+        A :class:`.Region` may contain other :class:`.Polygons` inside it,
+
+        Such as :class:`.ChokeArea` and :class:`.MDRamp`.
+
+        But i will never share a point with another :class:`.Region`
+
+    """
     def __init__(
             self,
             map_data: 'MapData',
@@ -34,15 +45,30 @@ class Region(Polygon):
 
     @property
     def region_ramps(self) -> List[MDRamp]:
+        """
+
+        Property access to :class:`.MDRamp` of this region
+
+        """
         return [r for r in self.areas if r.is_ramp]
 
     @property
-    def region_chokes(self) -> List[MDRamp]:
+    def region_chokes(self) -> List[ChokeArea]:
+        """
+
+        Property access to :class:`.ChokeArea` of this region
+
+        """
         return [r for r in self.areas if r.is_choke]
 
     @property
     @lru_cache()
     def connected_regions(self):
+        """
+
+        Provides a list of :class:`.Region` that are connected by chokes to ``self``
+
+        """
         connected_regions = []
         for choke in self.region_chokes:
             for region in choke.regions:
@@ -50,16 +76,11 @@ class Region(Polygon):
                     connected_regions.append(region)
         return connected_regions
 
-    @property
-    def corners(self) -> List[Point2]:
-        """
-        corners
-        """
-        return self.corner_points
-
     def plot_perimeter(self, self_only: bool = True) -> None:
         """
-        plot_perimeter
+
+        Debug Method plot_perimeter
+
         """
         import matplotlib.pyplot as plt
 
@@ -78,9 +99,6 @@ class Region(Polygon):
             plt.scatter(corner[0], corner[1], marker="v", c="red", s=150)
 
     def _plot_ramps(self) -> None:
-        """
-        plot_ramps
-        """
         import matplotlib.pyplot as plt
         plt.style.use("ggplot")
         for ramp in self.region_ramps:
@@ -96,9 +114,6 @@ class Region(Polygon):
             plt.scatter(x, y, color="w")
 
     def _plot_vision_blockers(self) -> None:
-        """
-        plot_vision_blockers
-        """
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
@@ -107,9 +122,6 @@ class Region(Polygon):
                 plt.text(vb[0], vb[1], "X", c="r")
 
     def _plot_minerals(self) -> None:
-        """
-        plot_minerals
-        """
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
@@ -120,9 +132,6 @@ class Region(Polygon):
                 )
 
     def _plot_geysers(self) -> None:
-        """
-        plot_geysers
-        """
         import matplotlib.pyplot as plt
 
         plt.style.use("ggplot")
@@ -139,7 +148,9 @@ class Region(Polygon):
 
     def plot(self, self_only: bool = True, testing: bool = False) -> None:
         """
-            plot
+
+            Debug Method plot
+
         """
         import matplotlib.pyplot as plt
 
@@ -160,12 +171,11 @@ class Region(Polygon):
     @property
     def base_locations(self) -> List[Point2]:
         """
-        base_locations
+
+        base_locations inside ``self``
+
         """
         return self.bases
 
     def __repr__(self) -> str:  # pragma: no cover
-        """
-        __repr__
-        """
         return "Region " + str(self.label)
