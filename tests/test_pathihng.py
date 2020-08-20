@@ -3,6 +3,7 @@ import os
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
 
+from MapAnalyzer import Region
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_files_folder, mock_map_data
 from tests.mocksetup import get_map_datas, get_random_point, logger
@@ -92,6 +93,8 @@ class TestPathing:
     def test_handle_illegal_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where(base.position_tuple)
+        assert (isinstance(reg_start,
+                           Region)), f"reg_start = {reg_start},  base = {base}, position_tuple = {base.position_tuple}"
         reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
         p0 = reg_start.center
         p1 = reg_end.center
