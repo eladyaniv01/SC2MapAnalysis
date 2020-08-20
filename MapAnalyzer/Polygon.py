@@ -11,7 +11,16 @@ if TYPE_CHECKING:
 
 
 class BuildablePoints:
-    """ChokeArea BuildablePoints are always the edges, this is useful for walling off"""
+    """
+
+    Represents the Buildable Points in a :class:`.Polygon`,
+
+    "Lazy" class that will only update information when it is needed
+
+    Tip:
+        :class:`.BuildablePoints` that belong to a :class:`.ChokeArea`  are always the edges, this is useful for walling off
+
+    """
 
     def __init__(self, polygon):
         self.polygon = polygon
@@ -19,12 +28,24 @@ class BuildablePoints:
 
     @property
     def free_pct(self) -> float:
+        """
+
+        A simple method for knowing what % of the points is left available out of the total
+
+        """
         if self.points is None:
             self.polygon.map_data.logger.warning("BuildablePoints needs to update first")
             self.update()
         return len(self.points) / len(self.polygon.points)
 
     def update(self) -> None:
+        """
+
+        To be called only by :class:`.Polygon`, this ensures that updates are done in a lazy fashion,
+
+        the update is evaluated only when there is need for the information, otherwise it is ignored
+
+        """
         parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
         [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius, grid=parr,
                                         safe=False)
@@ -43,7 +64,9 @@ class BuildablePoints:
 
 class Polygon:
     """
-    Polygon DocString
+
+    Base Class for "Area"
+
     """
 
     # noinspection PyProtectedMember
@@ -57,32 +80,48 @@ class Polygon:
         self.array = array
         self.areas = []  # set by map_data / Region
         self.indices = np.where(self.array == 1)
-        # getting base points, for perimeter and corner creation
-        self._clean_points = map_data.indices_to_points(self.indices)
+        self._set_points()
+        self.map_data.polygons.append(self)
+        self._buildable_points = BuildablePoints(polygon=self)
+
+    def _set_points(self):
+        self._clean_points = self.map_data.indices_to_points(self.indices)
         self.points = set([Point2((int(p[0]), int(p[1]))) for p in self._clean_points])
         self.points = set([Point2(p) for p in self._clean_points])
-        points = [p for p in map_data.indices_to_points(self.indices)]
+        points = [p for p in self.map_data.indices_to_points(self.indices)]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
         self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
         self.indices = self.map_data.points_to_indices(self.points)
-        self.map_data.polygons.append(self)
-        self._buildable_points = BuildablePoints(polygon=self)
-        # self.calc_areas()
 
     @property
     def buildable_points(self) -> BuildablePoints:
+        """
+
+        :rtype: :class:`.BuildablePoints`
+
+        Is a responsible for holding and updating the buildable points of it's respected :class:`.Polygon`
+
+        """
         self._buildable_points.update()
         return self._buildable_points
 
     @property
     def regions(self) -> List["Region"]:
+        """
+
+        :rtype: List[:class:`.Region`]
+
+        Filters out every Polygon that is not a region, and is inside / bordering with ``self``
+
+        """
         from MapAnalyzer.Region import Region
         if len(self.areas) > 0:
             return [r for r in self.areas if isinstance(r, Region)]
         return []
 
     def calc_areas(self) -> None:
+        # This is called by MapData, at a specific point in the sequence of compiling the map
         # this method uses where_all which means
         # it should be called at the end of the map compilation when areas are populated
         points = self.perimeter_points
@@ -97,7 +136,9 @@ class Polygon:
 
     def plot(self, testing: bool = False) -> None:  # pragma: no cover
         """
+
         plot
+
         """
         import matplotlib.pyplot as plt
         plt.style.use("ggplot")
@@ -111,7 +152,9 @@ class Polygon:
     @lru_cache()
     def nodes(self) -> List[Point2]:
         """
-        nodes
+
+        List of :class:`.Point2`
+
         """
         return [p for p in self.points]
 
@@ -119,7 +162,12 @@ class Polygon:
     @lru_cache()
     def corner_array(self) -> ndarray:
         """
-        corner_array
+
+        This is how the corners are calculated
+
+        TODO
+            make this adjustable to the user
+
         """
         from skimage.feature import corner_harris, corner_peaks
 
@@ -131,7 +179,11 @@ class Polygon:
     @property
     @lru_cache()
     def width(self) -> float:
-        # lazy width calculation,   will be approx 0.5 < x < 1.5 of real width
+        """
+
+        Lazy width calculation,   will be approx 0.5 < x < 1.5 of real width
+
+        """
         pl = list(self.perimeter_points)
         s1 = min(pl)
         s2 = max(pl)
@@ -143,21 +195,29 @@ class Polygon:
     @lru_cache()
     def corner_points(self) -> List[Point2]:
         """
-        corner_points
+
+        :rtype: List[:class:`.Point2`]
+
         """
         points = [Point2((int(p[0]), int(p[1]))) for p in self.corner_array if self.is_inside_point(Point2(p))]
         return points
 
     @property
     def clean_points(self) -> List[Tuple[int64, int64]]:
+        # For internal usage
+
         return list(self._clean_points)  # needs to be array-like for numpy calcs
 
     @property
     def center(self) -> Point2:
         """
-        since the center is always going to be a float,
-        and for performance considerations we use integer coordinates
-        we will return the closest point registered
+
+        Since the center is always going to be a ``float``,
+
+        and for performance considerations we use integer coordinates.
+
+        We will return the closest point registered
+
         """
 
         cm = self.map_data.closest_towards_point(points=self.clean_points, target=center_of_mass(self.array))
@@ -166,7 +226,9 @@ class Polygon:
     @lru_cache()
     def is_inside_point(self, point: Union[Point2, tuple]) -> bool:
         """
-        is_inside_point
+
+        Query via Set(Point2)  ''fast''
+
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -179,7 +241,9 @@ class Polygon:
             self, point: Union[Point2, tuple]
     ) -> bool:  # pragma: no cover
         """
-        is_inside_indices
+
+        Query via 2d np.array  ''slower''
+
         """
         if isinstance(point, Point2):
             point = point.rounded
@@ -188,7 +252,9 @@ class Polygon:
     @property
     def perimeter(self) -> np.ndarray:
         """
-        perimeter
+
+        The perimeter is interpolated between inner and outer cell-types using broadcasting
+
         """
         isolated_region = self.array
         xx, yy = np.gradient(isolated_region)
@@ -198,7 +264,9 @@ class Polygon:
     @property
     def perimeter_points(self) -> Set[Tuple[int64, int64]]:
         """
-        perimeter points
+
+        Useful method for getting  perimeter points
+
         """
         li = [Point2((int(p[0]), int(p[1]))) for p in self.perimeter]
         return set(li)
@@ -206,17 +274,11 @@ class Polygon:
     @property
     def area(self) -> int:
         """
-        area
+
+        Sum of all points
+
         """
         return len(self.points)
 
-    # @property
-    # def get_holes(self) -> List[tuple]:  # pragma: no cover
-    #     """
-    #     :return:
-    #     :rtype:
-    #     """
-    #     # fly zones inside the Polygon
-    #     pass
     def __repr__(self) -> str:
         return f"<Polygon[size={self.area}]: {self.areas}>"
