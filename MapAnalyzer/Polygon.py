@@ -71,21 +71,22 @@ class Polygon:
 
     # noinspection PyProtectedMember
     def __init__(self, map_data: "MapData", array: ndarray) -> None:  # pragma: no cover
+        self.map_data = map_data
+        self.array = array
+        self.indices = np.where(self.array == 1)
+        self._clean_points = self.map_data.indices_to_points(self.indices)
+        self._set_points()
         self.id = None  # TODO
         self.is_choke = False
         self.is_ramp = False
         self.is_vision_blocker = False
         self.is_region = False
-        self.map_data = map_data
-        self.array = array
         self.areas = []  # set by map_data / Region
-        self.indices = np.where(self.array == 1)
-        self._set_points()
         self.map_data.polygons.append(self)
         self._buildable_points = BuildablePoints(polygon=self)
 
     def _set_points(self):
-        self._clean_points = self.map_data.indices_to_points(self.indices)
+
         self.points = set([Point2((int(p[0]), int(p[1]))) for p in self._clean_points])
         self.points = set([Point2(p) for p in self._clean_points])
         points = [p for p in self.map_data.indices_to_points(self.indices)]
@@ -203,7 +204,7 @@ class Polygon:
         return points
 
     @property
-    def _clean_points(self) -> List[Tuple[int64, int64]]:
+    def clean_points(self) -> List[Tuple[int64, int64]]:
         # For internal usage
 
         return list(self._clean_points)  # needs to be array-like for numpy calcs
@@ -220,7 +221,7 @@ class Polygon:
 
         """
 
-        cm = self.map_data.closest_towards_point(points=self._clean_points, target=center_of_mass(self.array))
+        cm = self.map_data.closest_towards_point(points=self.clean_points, target=center_of_mass(self.array))
         return cm
 
     @lru_cache()
