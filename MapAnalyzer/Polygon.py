@@ -203,7 +203,7 @@ class Polygon:
         return points
 
     @property
-    def clean_points(self) -> List[Tuple[int64, int64]]:
+    def _clean_points(self) -> List[Tuple[int64, int64]]:
         # For internal usage
 
         return list(self._clean_points)  # needs to be array-like for numpy calcs
@@ -220,7 +220,7 @@ class Polygon:
 
         """
 
-        cm = self.map_data.closest_towards_point(points=self.clean_points, target=center_of_mass(self.array))
+        cm = self.map_data.closest_towards_point(points=self._clean_points, target=center_of_mass(self.array))
         return cm
 
     @lru_cache()

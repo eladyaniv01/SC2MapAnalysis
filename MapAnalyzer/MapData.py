@@ -419,7 +419,7 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> List[Union[Region, ChokeArea, VisionBlockerArea, MDRamp]]:
         """
-        :rtype: List[Union[:mod:`.Region`,:class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
+        :rtype: List[Union[:mod:`.Region`, :class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
 
         Will query a point on the map and will return a list of all Area's that point belong to
 
