@@ -166,7 +166,16 @@
 
 
 <div class="viewcode-block" id="BuildablePoints"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.BuildablePoints">[docs]</a><span class="k">class</span> <span class="nc">BuildablePoints</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;ChokeArea BuildablePoints are always the edges, this is useful for walling off&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Represents the Buildable Points in a :class:`.Polygon`,</span>
+
+<span class="sd">    &quot;Lazy&quot; class that will only update information when it is needed</span>
+
+<span class="sd">    Tip:</span>
+<span class="sd">        :class:`.BuildablePoints` that belong to a :class:`.ChokeArea`  are always the edges, this is useful for walling off</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span> <span class="o">=</span> <span class="n">polygon</span>
@@ -174,14 +183,27 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">free_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        A simple method for knowing what % of the points is left available out of the total</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;BuildablePoints needs to update first&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BuildablePoints.update"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.BuildablePoints.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        To be called only by :class:`.Polygon`, this ensures that updates are done in a lazy fashion,</span>
+
+<span class="sd">        the update is evaluated only when there is need for the information, otherwise it is ignored</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
-        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">add_influence</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">parr</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">add_cost</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">parr</span><span class="p">,</span>
+                                        <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
          <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">all_units</span><span class="p">]</span>
         <span class="n">buildable_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">parr</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
@@ -197,7 +219,9 @@
 
 <div class="viewcode-block" id="Polygon"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon">[docs]</a><span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Polygon DocString</span>
+
+<span class="sd">    Base Class for &quot;Area&quot;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># noinspection PyProtectedMember</span>
@@ -211,31 +235,48 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set by map_data / Region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="c1"># getting base points, for perimeter and corner creation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">])</span>
-        <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)]</span>
-        <span class="n">points</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corner_points</span><span class="p">)</span>
-        <span class="n">points</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_points</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span> <span class="o">=</span> <span class="n">BuildablePoints</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="c1"># self.calc_areas()</span>
+
+    <span class="k">def</span> <span class="nf">_set_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">])</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)]</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corner_points</span><span class="p">)</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">buildable_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuildablePoints</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :rtype: :class:`.BuildablePoints`</span>
+
+<span class="sd">        Is a responsible for holding and updating the buildable points of it&#39;s respected :class:`.Polygon`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Region&quot;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :rtype: List[:class:`.Region`]</span>
+
+<span class="sd">        Filters out every Polygon that is not a region, and is inside / bordering with ``self``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Region</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Polygon.calc_areas"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.calc_areas">[docs]</a>    <span class="k">def</span> <span class="nf">calc_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># This is called by MapData, at a specific point in the sequence of compiling the map</span>
         <span class="c1"># this method uses where_all which means</span>
         <span class="c1"># it should be called at the end of the map compilation when areas are populated</span>
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span>
@@ -250,7 +291,9 @@
 
 <div class="viewcode-block" id="Polygon.plot"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">        plot</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;ggplot&quot;</span><span class="p">)</span>
@@ -264,7 +307,9 @@
     <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        nodes</span>
+
+<span class="sd">        List of :class:`.Point2`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">]</span>
 
@@ -272,7 +317,12 @@
     <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">corner_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        corner_array</span>
+
+<span class="sd">        This is how the corners are calculated</span>
+
+<span class="sd">        TODO</span>
+<span class="sd">            make this adjustable to the user</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">skimage.feature</span> <span class="kn">import</span> <span class="n">corner_harris</span><span class="p">,</span> <span class="n">corner_peaks</span>
 
@@ -284,6 +334,11 @@
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Lazy width calculation,   will be approx 0.5 &lt; x &lt; 1.5 of real width</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">)</span>
         <span class="n">s1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pl</span><span class="p">)</span>
         <span class="n">s2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pl</span><span class="p">)</span>
@@ -295,30 +350,40 @@
     <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">corner_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        corner_points</span>
+
+<span class="sd">        :rtype: List[:class:`.Point2`]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_array</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">))]</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_array</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">))]</span>
         <span class="k">return</span> <span class="n">points</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">clean_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">)</span>  <span class="c1"># needs to be array like for numpy calcs</span>
+    <span class="k">def</span> <span class="nf">_clean_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
+        <span class="c1"># For internal usage</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">)</span>  <span class="c1"># needs to be array-like for numpy calcs</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        since the center is always going to be a float,</span>
-<span class="sd">        and for performance considerations we use integer coordinates</span>
-<span class="sd">        we will return the closest point registered</span>
+
+<span class="sd">        Since the center is always going to be a ``float``,</span>
+
+<span class="sd">        and for performance considerations we use integer coordinates.</span>
+
+<span class="sd">        We will return the closest point registered</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clean_points</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">center_of_mass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">))</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">center_of_mass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">cm</span>
 
 <div class="viewcode-block" id="Polygon.is_inside_point"><a class="viewcode-back" href="../../source/Polygon.html#MapAnalyzer.Polygon.Polygon.is_inside_point">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">is_inside_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        is_inside_point</span>
+
+<span class="sd">        Query via Set(Point2)  &#39;&#39;fast&#39;&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
             <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
@@ -331,7 +396,9 @@
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        is_inside_indices</span>
+
+<span class="sd">        Query via 2d np.array  &#39;&#39;slower&#39;&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
             <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
@@ -340,7 +407,9 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        perimeter</span>
+
+<span class="sd">        The perimeter is interpolated between inner and outer cell-types using broadcasting</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">isolated_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span>
         <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">isolated_region</span><span class="p">)</span>
@@ -350,26 +419,22 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">perimeter_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        perimeter points</span>
+
+<span class="sd">        Useful method for getting  perimeter points</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">li</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span><span class="p">]</span>
+        <span class="n">li</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">li</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        area</span>
+
+<span class="sd">        Sum of all points</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
-    <span class="c1"># @property</span>
-    <span class="c1"># def get_holes(self) -&gt; List[tuple]:  # pragma: no cover</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     :return:</span>
-    <span class="c1">#     :rtype:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     # fly zones inside the Polygon</span>
-    <span class="c1">#     pass</span>
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Polygon[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 </pre></div>

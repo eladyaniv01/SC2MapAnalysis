@@ -73,7 +73,7 @@ if os.path.isdir('_static')==False:
     os.mkdir('_static')
 shutil.copy(jscopybutton_path, '_static')
 
-todo_include_todos=True
+todo_include_todos=False
 source_suffix = {
     '.rst': 'restructuredtext',
     '.txt': 'restructuredtext',

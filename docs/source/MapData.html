@@ -87,9 +87,9 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MapAnalyzer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-MapAnalyzer.MapData">MapData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sc2pathlibp-subpackage">sc2pathlibp subpackage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyastar-subpackage">pyastar subpackage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-MapAnalyzer.MapData">MapData</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Polygon.html">Polygon</a></li>
@@ -171,14 +171,39 @@
   });
 </script><div class="section" id="mapanalyzer">
 <h1>MapAnalyzer<a class="headerlink" href="#mapanalyzer" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="sc2pathlibp-subpackage">
-<h2>sc2pathlibp subpackage<a class="headerlink" href="#sc2pathlibp-subpackage" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/DrInfy/sc2-pathlib">sc2-pathlib (github)</a></p>
-</div>
-<div class="section" id="pyastar-subpackage">
-<h2>pyastar subpackage<a class="headerlink" href="#pyastar-subpackage" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/hjweide/pyastar">pyastar (github)</a></p>
-</div>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-MapAnalyzer.MapData" title="MapAnalyzer.MapData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzer.MapData</span></code></a>(bot[, loglevel])</p></td>
+<td><p>Entry point for the user</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Polygon.html#module-MapAnalyzer.Polygon" title="MapAnalyzer.Polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon</span></code></a>(map_data, array)</p></td>
+<td><p>Base Class for “Area”</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzer.Region</span></code></a>(map_data, array, label, …)</p></td>
+<td><p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
 <div class="section" id="module-MapAnalyzer.MapData">
 <span id="mapdata"></span><h2>MapData<a class="headerlink" href="#module-MapAnalyzer.MapData" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -186,23 +211,23 @@
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.MapData.</code><code class="sig-name descname">MapData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bot</span></em>, <em class="sig-param"><span class="n">loglevel</span><span class="o">=</span><span class="default_value">'ERROR'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Entry point for the user</p>
 <dl class="py method">
-<dt id="MapAnalyzer.MapData.MapData.add_influence">
-<code class="sig-name descname">add_influence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">weight</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">safe</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.add_influence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.add_influence" title="Permalink to this definition">¶</a></dt>
+<dt id="MapAnalyzer.MapData.MapData.add_cost">
+<code class="sig-name descname">add_cost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">grid</span></em>, <em class="sig-param"><span class="n">weight</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">safe</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.add_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.add_cost" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>p</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em>) – </p></li>
-<li><p><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>arr</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
+<li><p><strong>position</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
 <li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
 <li><p><strong>safe</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
-<p>Will add cost to a <cite>circle-shaped</cite> area with a center <code class="docutils literal notranslate"><span class="pre">p</span></code> and radius <code class="docutils literal notranslate"><span class="pre">r</span></code>
+<p>Will add cost to a <cite>circle-shaped</cite> area with a center <code class="docutils literal notranslate"><span class="pre">position</span></code> and radius <code class="docutils literal notranslate"><span class="pre">radius</span></code>
 weight of 100</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -231,8 +256,8 @@ this method will always be compatible</p>
 </ul>
 </dd>
 </dl>
-<p>Given a list of <code class="docutils literal notranslate"><span class="pre">nodes</span></code>  and a single <code class="docutils literal notranslate"><span class="pre">node</span></code> ,
-will return the index of the closest node in the list to <code class="docutils literal notranslate"><span class="pre">node</span></code></p>
+<p>Given a list of <code class="docutils literal notranslate"><span class="pre">nodes</span></code>  and a single <code class="docutils literal notranslate"><span class="pre">node</span></code> ,</p>
+<p>will return the index of the closest node in the list to <code class="docutils literal notranslate"><span class="pre">node</span></code></p>
 </dd></dl>
 
 <dl class="py method">
@@ -249,8 +274,8 @@ will return the index of the closest node in the list to <code class="docutils l
 </ul>
 </dd>
 </dl>
-<p>Given a list/set of points, and a target,
-will return the point that is closest to that target</p>
+<p>Given a list/set of points, and a target,</p>
+<p>will return the point that is closest to that target</p>
 <div class="admonition-example admonition">
 <p class="admonition-title">Example</p>
 <p>Calculate a position for tanks in direction to the enemy forces
@@ -271,7 +296,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <em class="property">static </em><code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p1</span></em>, <em class="sig-param"><span class="n">p2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.distance" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>numpy.float64</p>
+<dd class="field-odd"><p>float64</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
@@ -314,7 +339,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_pyastar_grid" title="MapAnalyzer.MapData.MapData.get_pyastar_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_pyastar_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_climber_grid" title="MapAnalyzer.MapData.MapData.get_climber_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_climber_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="MapAnalyzer.MapData.MapData.get_clean_air_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_clean_air_grid()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_influence" title="MapAnalyzer.MapData.MapData.add_influence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_influence()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_cost" title="MapAnalyzer.MapData.MapData.add_cost"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_cost()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.pathfind" title="MapAnalyzer.MapData.MapData.pathfind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.pathfind()</span></code></a></p></li>
 </ul>
 </div>
@@ -369,7 +394,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_pyastar_grid" title="MapAnalyzer.MapData.MapData.get_pyastar_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_pyastar_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid" title="MapAnalyzer.MapData.MapData.get_air_vs_ground_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_air_vs_ground_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="MapAnalyzer.MapData.MapData.get_clean_air_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_clean_air_grid()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_influence" title="MapAnalyzer.MapData.MapData.add_influence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_influence()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_cost" title="MapAnalyzer.MapData.MapData.add_cost"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_cost()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.pathfind" title="MapAnalyzer.MapData.MapData.pathfind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.pathfind()</span></code></a></p></li>
 </ul>
 </div>
@@ -395,9 +420,9 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <p><code class="docutils literal notranslate"><span class="pre">air_pathing</span></code> is deprecated, use <a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="MapAnalyzer.MapData.MapData.get_clean_air_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_clean_air_grid()</span></code></a> or <a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid" title="MapAnalyzer.MapData.MapData.get_air_vs_ground_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_air_vs_ground_grid()</span></code></a></p>
 </div>
 <p>Requests a new pathing grid.</p>
-<p>This grid will have all non pathable cells set to <code class="docutils literal notranslate"><span class="pre">np.inf</span></code>.</p>
-<p>pathable cells will be set to the default_weight which it’s default is 1.</p>
-<p>After you get the grid, you can add your own influence.</p>
+<p>This grid will have all non pathable cells set to <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.inf</span></code>.</p>
+<p>pathable cells will be set to the <code class="docutils literal notranslate"><span class="pre">default_weight</span></code> which it’s default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>After you get the grid, you can add your own <code class="docutils literal notranslate"><span class="pre">cost</span></code> (also known as <code class="docutils literal notranslate"><span class="pre">weight</span></code> or <code class="docutils literal notranslate"><span class="pre">influence</span></code>)</p>
 <p>This grid can, and <strong>should</strong> be reused in the duration of the frame,
 and should be regenerated(<strong>once</strong>) on each frame.</p>
 <div class="admonition note">
@@ -424,7 +449,7 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_climber_grid" title="MapAnalyzer.MapData.MapData.get_climber_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_climber_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid" title="MapAnalyzer.MapData.MapData.get_air_vs_ground_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_air_vs_ground_grid()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="MapAnalyzer.MapData.MapData.get_clean_air_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_clean_air_grid()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_influence" title="MapAnalyzer.MapData.MapData.add_influence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_influence()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.add_cost" title="MapAnalyzer.MapData.MapData.add_cost"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.add_cost()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#MapAnalyzer.MapData.MapData.pathfind" title="MapAnalyzer.MapData.MapData.pathfind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.pathfind()</span></code></a></p></li>
 </ul>
 </div>
@@ -441,8 +466,11 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 <dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
 </dl>
-<p>Will query a if a point is in, and in which Region using Indices &lt;slow&gt;
-time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
+<p>Will query a if a point is in, and in which Region using Indices &lt;slow&gt;</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -456,9 +484,12 @@ time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 
 <dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
 </dl>
-<p>Will query if a point is in, and in which Region using Set of Points &lt;fast&gt;
-time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-as long as polygon points is of type set, not list</p>
+<p>Will query if a point is in, and in which Region using Set of Points &lt;fast&gt;</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
+<p>as long as polygon points is of type <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>, not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -466,14 +497,14 @@ as long as polygon points is of type set, not list</p>
 <em class="property">static </em><code class="sig-name descname">indices_to_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.indices_to_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.indices_to_points" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Set[Union[Tuple[int64, int64], <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a>]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a> (Union[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>), <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a>)</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>indices</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em><em>]</em>) – </p>
 </dd>
 </dl>
-<p>Convert indices to a set of points(<code class="docutils literal notranslate"><span class="pre">tuples</span></code>, not <code class="docutils literal notranslate"><span class="pre">Point2</span></code> )
-Will only work when both dimensions are of same length</p>
+<p>Convert indices to a set of points(<code class="docutils literal notranslate"><span class="pre">tuples</span></code>, not <code class="docutils literal notranslate"><span class="pre">Point2</span></code> )</p>
+<p>Will only work when both dimensions are of same length</p>
 </dd></dl>
 
 <dl class="py method">
@@ -500,7 +531,7 @@ Will only work when both dimensions are of same length</p>
 </dd>
 </dl>
 <p>Will return the path with lowest cost (sum) given a weighted array (<code class="docutils literal notranslate"><span class="pre">grid</span></code>), <code class="docutils literal notranslate"><span class="pre">start</span></code> , and <code class="docutils literal notranslate"><span class="pre">goal</span></code>.</p>
-<p><strong>If no</strong> <code class="docutils literal notranslate"><span class="pre">grid</span></code> <strong>has been provided</strong>, will request a fresh grid from <code class="xref py py-mod docutils literal notranslate"><span class="pre">Pather</span></code></p>
+<p><strong>IF NO</strong> <code class="docutils literal notranslate"><span class="pre">grid</span></code> <strong>has been provided</strong>, will request a fresh grid from <code class="xref py py-class docutils literal notranslate"><span class="pre">Pather</span></code></p>
 <p>If no path is possible, will return <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -518,10 +549,6 @@ to get each and every single point,</p>
 <p><code class="docutils literal notranslate"><span class="pre">allow_diagonal=True</span></code> will result in a slight performance penalty.</p>
 <p><cite>However</cite>, if you don’t over-use it, it will naturally generate shorter paths,</p>
 <p>by converting(for example) <code class="docutils literal notranslate"><span class="pre">move_right</span> <span class="pre">+</span> <span class="pre">move_up</span></code> into <code class="docutils literal notranslate"><span class="pre">move_top_right</span></code> etc.</p>
-</div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>more examples for different usages available</p>
 </div>
 <div class="admonition-example admonition">
 <p class="admonition-title">Example</p>
@@ -564,7 +591,7 @@ to get each and every single point,</p>
 <dl class="py method">
 <dt id="MapAnalyzer.MapData.MapData.plot_map">
 <code class="sig-name descname">plot_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fontdict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.plot_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.plot_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot map</p>
+<dd><p>Plot map (does not <code class="docutils literal notranslate"><span class="pre">show</span></code> or <code class="docutils literal notranslate"><span class="pre">save</span></code>)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -584,7 +611,7 @@ to get each and every single point,</p>
 <em class="property">static </em><code class="sig-name descname">points_to_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.points_to_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.points_to_indices" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Tuple[ndarray, ndarray]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a>]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>points</strong> (<em>Set</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>]</em>) – </p>
@@ -615,15 +642,15 @@ to get each and every single point,</p>
 <dt id="MapAnalyzer.MapData.MapData.region_connectivity_all_paths">
 <code class="sig-name descname">region_connectivity_all_paths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_region</span></em>, <em class="sig-param"><span class="n">goal_region</span></em>, <em class="sig-param"><span class="n">not_through</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.region_connectivity_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.region_connectivity_all_paths" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[List[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>]]</p>
-</dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>start_region</strong> (<a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – </p></li>
-<li><p><strong>goal_region</strong> (<a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – </p></li>
-<li><p><strong>not_through</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a><em>]</em><em>]</em>) – </p></li>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_region</strong> (<a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – <a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a></p></li>
+<li><p><strong>goal_region</strong> (<a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – <a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a></p></li>
+<li><p><strong>not_through</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a><em>]</em><em>]</em>) – Optional[List[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>]]</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>]]</p>
 </dd>
 </dl>
 <p>Returns all possible paths through all <a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a> (via ramps),</p>
@@ -656,7 +683,7 @@ this method will always be compatible</p>
 <code class="sig-name descname">where</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.where"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.where" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
@@ -686,7 +713,7 @@ this method will always be compatible</p>
 <code class="sig-name descname">where_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/MapData.html#MapData.where_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.where_all" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Union[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]]</p>
+<dd class="field-odd"><p>List[Union[<a class="reference internal" href="Region.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="Polygon.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
@@ -706,6 +733,14 @@ this method will always be compatible</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="sc2pathlibp-subpackage">
+<h2>sc2pathlibp subpackage<a class="headerlink" href="#sc2pathlibp-subpackage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/DrInfy/sc2-pathlib">sc2-pathlib (github)</a></p>
+</div>
+<div class="section" id="pyastar-subpackage">
+<h2>pyastar subpackage<a class="headerlink" href="#pyastar-subpackage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/hjweide/pyastar">pyastar (github)</a></p>
 </div>
 </div>
 

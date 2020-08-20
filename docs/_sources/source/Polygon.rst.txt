@@ -1,6 +1,9 @@
 Polygon
 =======
 
+.. autosummary:: MapAnalyzer.Polygon
+   :recursive:
+
 .. automodule:: MapAnalyzer.Polygon
    :members:
    :undoc-members:
@@ -9,6 +12,9 @@ Polygon
 
 ChokeArea, RampArea, VisionBlockerArea
 --------------------------------------
+
+.. autosummary:: MapAnalyzer.constructs
+   :recursive:
 
 .. automodule:: MapAnalyzer.constructs
    :members:

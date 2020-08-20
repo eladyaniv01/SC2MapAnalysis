@@ -88,7 +88,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="MapData.html">MapAnalyzer</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Polygon</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-MapAnalyzer.constructs">ChokeArea, RampArea, VisionBlockerArea</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chokearea-ramparea-visionblockerarea">ChokeArea, RampArea, VisionBlockerArea</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Region.html">Region</a></li>
@@ -167,22 +167,41 @@
   $(document).ready(function () {
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
   });
-</script><div class="section" id="module-MapAnalyzer.Polygon">
-<span id="polygon"></span><h1>Polygon<a class="headerlink" href="#module-MapAnalyzer.Polygon" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
+</script><div class="section" id="polygon">
+<h1>Polygon<a class="headerlink" href="#polygon" title="Permalink to this headline">¶</a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-MapAnalyzer.Polygon" title="MapAnalyzer.Polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon</span></code></a>(map_data, array)</p></td>
+<td><p>Base Class for “Area”</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-MapAnalyzer.Polygon"></span><dl class="py class">
 <dt id="MapAnalyzer.Polygon.BuildablePoints">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Polygon.</code><code class="sig-name descname">BuildablePoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">polygon</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/Polygon.html#BuildablePoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>ChokeArea BuildablePoints are always the edges, this is useful for walling off</p>
+<p>Represents the Buildable Points in a <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a>,</p>
+<p>“Lazy” class that will only update information when it is needed</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><a class="reference internal" href="#MapAnalyzer.Polygon.BuildablePoints" title="MapAnalyzer.Polygon.BuildablePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildablePoints</span></code></a> that belong to a <a class="reference internal" href="#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>  are always the edges, this is useful for walling off</p>
+</div>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.BuildablePoints.free_pct">
 <em class="property">property </em><code class="sig-name descname">free_pct</code><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints.free_pct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A simple method for knowing what % of the points is left available out of the total</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.BuildablePoints.update">
 <code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/Polygon.html#BuildablePoints.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.BuildablePoints.update" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>To be called only by <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a>, this ensures that updates are done in a lazy fashion,</p>
+<p>the update is evaluated only when there is need for the information, otherwise it is ignored</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
 </dd>
@@ -195,16 +214,24 @@
 <dt id="MapAnalyzer.Polygon.Polygon">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Polygon.</code><code class="sig-name descname">Polygon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span></em>, <em class="sig-param"><span class="n">array</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/Polygon.html#Polygon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Polygon DocString</p>
+<p>Base Class for “Area”</p>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.area">
 <em class="property">property </em><code class="sig-name descname">area</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.area" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sum of all points</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.buildable_points">
 <em class="property">property </em><code class="sig-name descname">buildable_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.buildable_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><a class="reference internal" href="#MapAnalyzer.Polygon.BuildablePoints" title="MapAnalyzer.Polygon.BuildablePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildablePoints</span></code></a></p>
+<p>Is a responsible for holding and updating the buildable points of it’s respected <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>rtype</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.calc_areas">
@@ -219,30 +246,37 @@
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.center">
 <em class="property">property </em><code class="sig-name descname">center</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.center" title="Permalink to this definition">¶</a></dt>
-<dd><p>since the center is always going to be a float,
-and for performance considerations we use integer coordinates
-we will return the closest point registered</p>
+<dd><p>Since the center is always going to be a <code class="docutils literal notranslate"><span class="pre">float</span></code>,</p>
+<p>and for performance considerations we use integer coordinates.</p>
+<p>We will return the closest point registered</p>
 </dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Polygon.Polygon.clean_points">
-<em class="property">property </em><code class="sig-name descname">clean_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.clean_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.corner_array">
 <em class="property">property </em><code class="sig-name descname">corner_array</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.corner_array" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is how the corners are calculated</p>
+<dl class="simple">
+<dt>TODO</dt><dd><p>make this adjustable to the user</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.corner_points">
 <em class="property">property </em><code class="sig-name descname">corner_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.corner_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>List[<code class="xref py py-class docutils literal notranslate"><span class="pre">Point2</span></code>]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>rtype</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.is_inside_indices">
 <code class="sig-name descname">is_inside_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/Polygon.html#Polygon.is_inside_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.is_inside_indices" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Query via 2d np.array  ‘’slower’’</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
@@ -255,7 +289,8 @@ we will return the closest point registered</p>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.is_inside_point">
 <code class="sig-name descname">is_inside_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/Polygon.html#Polygon.is_inside_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.is_inside_point" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Query via Set(Point2)  ‘’fast’’</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
@@ -268,17 +303,19 @@ we will return the closest point registered</p>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.nodes">
 <em class="property">property </em><code class="sig-name descname">nodes</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>List of <code class="xref py py-class docutils literal notranslate"><span class="pre">Point2</span></code></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.perimeter">
 <em class="property">property </em><code class="sig-name descname">perimeter</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.perimeter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The perimeter is interpolated between inner and outer cell-types using broadcasting</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.perimeter_points">
 <em class="property">property </em><code class="sig-name descname">perimeter_points</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.perimeter_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>perimeter points</p>
+<dd><p>Useful method for getting  perimeter points</p>
 </dd></dl>
 
 <dl class="py method">
@@ -297,48 +334,72 @@ we will return the closest point registered</p>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.regions">
 <em class="property">property </em><code class="sig-name descname">regions</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.regions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>List[<a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>]</p>
+<p>Filters out every Polygon that is not a region, and is inside / bordering with <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>rtype</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Polygon.width">
 <em class="property">property </em><code class="sig-name descname">width</code><a class="headerlink" href="#MapAnalyzer.Polygon.Polygon.width" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lazy width calculation,   will be approx 0.5 &lt; x &lt; 1.5 of real width</p>
+</dd></dl>
 
 </dd></dl>
 
-<div class="section" id="module-MapAnalyzer.constructs">
-<span id="chokearea-ramparea-visionblockerarea"></span><h2>ChokeArea, RampArea, VisionBlockerArea<a class="headerlink" href="#module-MapAnalyzer.constructs" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
+<div class="section" id="chokearea-ramparea-visionblockerarea">
+<h2>ChokeArea, RampArea, VisionBlockerArea<a class="headerlink" href="#chokearea-ramparea-visionblockerarea" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-MapAnalyzer.constructs" title="MapAnalyzer.constructs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzer.constructs</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-MapAnalyzer.constructs"></span><dl class="py class">
 <dt id="MapAnalyzer.constructs.ChokeArea">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">ChokeArea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">map_data</span></em>, <em class="sig-param"><span class="n">pathlibchoke</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#ChokeArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.ChokeArea" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
-<p>ChokeArea DocString</p>
+<p>Base class for all chokes</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="MapAnalyzer.constructs.MDRamp">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">MDRamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span></em>, <em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">ramp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#MDRamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.constructs.ChokeArea</span></code></a></p>
-<p>MDRamp DocString</p>
+<p>Wrapper for <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/game_info/index.html#sc2.game_info.Ramp" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.game_info.Ramp</span></code></a>,</p>
+<p>is responsible for calculating the relevant <a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 <dl class="py method">
 <dt id="MapAnalyzer.constructs.MDRamp.bottom_center">
 <em class="property">property </em><code class="sig-name descname">bottom_center</code><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.bottom_center" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alerts when sc2 fails to provide a bottom_center, and fallback to  <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon.center" title="MapAnalyzer.Polygon.Polygon.center"><code class="xref py py-meth docutils literal notranslate"><span class="pre">center()</span></code></a></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.constructs.MDRamp.closest_region">
 <code class="sig-name descname">closest_region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#MDRamp.closest_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.closest_region" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will return the closest region with respect to self</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.constructs.MDRamp.set_regions">
 <code class="sig-name descname">set_regions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#MDRamp.set_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.set_regions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for calculating the relevant <a class="reference internal" href="Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.constructs.MDRamp.top_center">
 <em class="property">property </em><code class="sig-name descname">top_center</code><a class="headerlink" href="#MapAnalyzer.constructs.MDRamp.top_center" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alerts when sc2 fails to provide a top_center, and fallback to  <a class="reference internal" href="#MapAnalyzer.Polygon.Polygon.center" title="MapAnalyzer.Polygon.Polygon.center"><code class="xref py py-meth docutils literal notranslate"><span class="pre">center()</span></code></a></p>
+</dd></dl>
 
 </dd></dl>
 
@@ -346,13 +407,18 @@ we will return the closest point registered</p>
 <dt id="MapAnalyzer.constructs.PathLibChoke">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">PathLibChoke</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pathlib_choke</span></em>, <em class="sig-param"><span class="n">pk</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#PathLibChoke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.PathLibChoke" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>wrapper to the data returned by <a href="#id2"><span class="problematic" id="id3">:package:`.MapAnalyzer.sc2pathlibp`</span></a> , <code class="xref py py-class docutils literal notranslate"><span class="pre">sc2pathlibp</span></code> , <code class="xref py py-func docutils literal notranslate"><span class="pre">sc2pathlibp()</span></code></p>
+<p>with a bit of added fields / data type for convenience</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="MapAnalyzer.constructs.VisionBlockerArea">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.constructs.</code><code class="sig-name descname">VisionBlockerArea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span></em>, <em class="sig-param"><span class="n">array</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/MapAnalyzer/constructs.html#VisionBlockerArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.constructs.VisionBlockerArea" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.constructs.ChokeArea</span></code></a></p>
-<p>VisionBlockerArea DocString</p>
+<p>VisionBlockerArea are areas containing tiles that hide the units that stand in it,</p>
+<p>(for example,  bushes)</p>
+<p>Units that attack from within a <a class="reference internal" href="#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a></p>
+<p>cannot be targeted by units that do not stand inside</p>
 </dd></dl>
 
 </div>
