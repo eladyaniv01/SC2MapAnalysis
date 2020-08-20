@@ -59,11 +59,12 @@ class Polygon:
         self.indices = np.where(self.array == 1)
         # getting base points, for perimeter and corner creation
         self._clean_points = map_data.indices_to_points(self.indices)
+        self.points = set([Point2((int(p[0]), int(p[1]))) for p in self._clean_points])
         self.points = set([Point2(p) for p in self._clean_points])
         points = [p for p in map_data.indices_to_points(self.indices)]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
-        self.points = set([Point2(p) for p in points])
+        self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
         self.indices = self.map_data.points_to_indices(self.points)
         self.map_data.polygons.append(self)
         self._buildable_points = BuildablePoints(polygon=self)
@@ -130,6 +131,7 @@ class Polygon:
     @property
     @lru_cache()
     def width(self) -> float:
+        # lazy width calculation,   will be approx 0.5 < x < 1.5 of real width
         pl = list(self.perimeter_points)
         s1 = min(pl)
         s2 = max(pl)
@@ -143,12 +145,12 @@ class Polygon:
         """
         corner_points
         """
-        points = [Point2(p) for p in self.corner_array if self.is_inside_point(Point2(p))]
+        points = [Point2((int(p[0]), int(p[1]))) for p in self.corner_array if self.is_inside_point(Point2(p))]
         return points
 
     @property
     def clean_points(self) -> List[Tuple[int64, int64]]:
-        return list(self._clean_points)  # needs to be array like for numpy calcs
+        return list(self._clean_points)  # needs to be array-like for numpy calcs
 
     @property
     def center(self) -> Point2:
@@ -198,7 +200,7 @@ class Polygon:
         """
         perimeter points
         """
-        li = [Point2((p[0], p[1])) for p in self.perimeter]
+        li = [Point2((int(p[0]), int(p[1]))) for p in self.perimeter]
         return set(li)
 
     @property

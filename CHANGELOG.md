@@ -10,9 +10,11 @@ All notable changes to this project will be documented in this file. See [standa
 ### Refactoring
 
 * *add_influence* to *add_cost*, r to radius, p to position, arr to grid ([4bfbfee](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4bfbfee6edbddaa1f45a0d1bc06b5edc61bcb643))
-* compile_map is no a private method (_compile_map) ([8b27883](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8b2788367c92f4eb5a4201ae96c165c75687f830))
+* compile_map is now a private method (_compile_map) ([8b27883](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8b2788367c92f4eb5a4201ae96c165c75687f830))
 
+### Bug Fixes
 
+* all points returned from mapdata object will now be of type Point2,  and populated with standard integers
 
 ### Documentation
 

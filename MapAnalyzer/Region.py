@@ -21,8 +21,6 @@ class Region(Polygon):
             map_expansions: List[Point2],
     ) -> None:
         super().__init__(map_data=map_data, array=array)
-        self.map_data = map_data
-        self.array = array
         self.label = label
         self.is_region = True
         self.bases = [

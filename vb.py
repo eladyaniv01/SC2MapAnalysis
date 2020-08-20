@@ -69,7 +69,7 @@ def mt(apply):
     click.echo(click.style("This could take a few seconds", fg='blue'))
     encoded_modules = subprocess.check_output("monkeytype list-modules", shell=True)
     list_modules = encoded_modules.decode().split('\r\n')
-    to_exclude = {'mocksetup', 'sc2pathlibp'}
+    to_exclude = {'mocksetup', 'sc2pathlibp', '', None}
     if apply:
         for m in list_modules:
             if [x for x in to_exclude if x in m] == []:
