@@ -2,17 +2,17 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
-from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
-from MapAnalyzer.Debugger import MapAnalyzerDebugger
-from MapAnalyzer.Pather import MapAnalyzerPather
-from MapAnalyzer.Region import Region
-from MapAnalyzer.utils import get_sets_with_mutual_elements
 from numpy import float64, int64, ndarray
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from MapAnalyzer.Debugger import MapAnalyzerDebugger
+from MapAnalyzer.Pather import MapAnalyzerPather
+from MapAnalyzer.Region import Region
+from MapAnalyzer.utils import get_sets_with_mutual_elements
 from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke
 from .decorators import progress_wrapped
@@ -288,7 +288,7 @@ class MapData:
         Will only work when both dimensions are of same length
         """
 
-        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
+        return set([(int(indices[0][i]), int(indices[1][i])) for i in range(len(indices[0]))])
 
     @staticmethod
     def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[ndarray, ndarray]:
@@ -401,8 +401,7 @@ class MapData:
     @lru_cache(200)
     def where_all(
             self, point: Union[Point2, tuple]
-    ) -> List[Union[Region, VisionBlockerArea, MDRamp]
-    ]:
+    ) -> List[Union[Region, VisionBlockerArea, MDRamp]]:
         """
         :rtype: List[Union[:mod:`.Region`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
         Will query a point on the map and will return a list of all Area's that point belong to
@@ -553,7 +552,7 @@ class MapData:
         self.connectivity_graph = self.pather.connectivity_graph
 
     def _calc_grid(self) -> None:
-        #converting the placement grid to our own kind of grid
+        # converting the placement grid to our own kind of grid
         # cleaning the grid and then searching for 2x2 patterned regions
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions

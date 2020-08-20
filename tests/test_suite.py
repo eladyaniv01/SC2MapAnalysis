@@ -2,6 +2,7 @@ from random import randint
 
 from _pytest.python import Metafunc
 from hypothesis import given, settings
+from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_file_list, mock_map_data
@@ -31,7 +32,23 @@ def test_mapdata(n, m):
     map_data = mock_map_data(random.choice(map_files))
     # map_data.plot_map()
     logger.info(f"Loaded Map : {map_data.bot.game_info.map_name}, n,m = {n}, {m}")
+    # tuples
     points = [(i, j) for i in range(n + 1) for j in range(m + 1)]
+    set_points = set(points)
+    indices = map_data.points_to_indices(set_points)
+    i = randint(0, n)
+    j = randint(0, m)
+    assert (i, j) in points
+    assert (i, j) in set_points
+    assert i in indices[0] and j in indices[1]
+    new_points = map_data.indices_to_points(indices)
+    assert new_points == set_points
+
+    # Point2's
+    points = [Point2((i, j)) for i in range(n + 1) for j in range(m + 1)]
+
+    for point in points:
+        assert (point is not None)
     set_points = set(points)
     indices = map_data.points_to_indices(set_points)
     i = randint(0, n)
@@ -60,10 +77,15 @@ class TestSanity:
             assert (polygon.is_inside_indices(polygon.center))
 
             extended_pts = polygon.points.union(polygon.perimeter_points)
+            assert (polygon.points == extended_pts)
 
             for point in extended_pts:
                 assert (polygon.is_inside_indices(point) is True)
                 assert (polygon.is_inside_point(point) is True)
+
+                # https://github.com/BurnySc2/python-sc2/issues/62
+                assert (point is not None)
+                assert (type(point[0] == int))
 
             for point in polygon.corner_points:
                 assert (point in polygon.corner_array)
