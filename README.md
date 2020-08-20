@@ -1,13 +1,14 @@
 # SC2MapAnalysis 
 
-Builds:
--------
 
 * ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
  [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
 
 * ![](https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color=blue&logo=EladYaniv01&style=plastic) [Changelog](https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md)  
 
+* ![Documentation](https://img.shields.io/badge/Documentation-latest-green?style=plastic&logo=appveyor)
+   [Documentation](https://eladyaniv01.github.io/SC2MapAnalysis/)
+   
 # Summary
 
 A standalone plugin for python SC2 api 

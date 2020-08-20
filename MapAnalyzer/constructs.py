@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class PathLibChoke:
     """
 
-    wrapper to the data returned by :mod:`sc2pathlibp`,
+    wrapper to the data returned by :package:`.MapAnalyzer.sc2pathlibp` , :class:`.sc2pathlibp` , :func:`.sc2pathlibp`
 
     with a bit of added fields / data type for convenience
 

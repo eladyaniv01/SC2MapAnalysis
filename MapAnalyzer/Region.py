@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
 class Region(Polygon):
     """
-    Higher order "Area" , all of the maps can be summed up by it's :class:`.Region`s
+    Higher order "Area" , all of the maps can be summed up by it's :class:`.Region`
 
     Tip:
-        A :class:`.Region` may contain other :class:`.Polygons` inside it,
+        A :class:`.Region` may contain other :class:`.Polygon` inside it,
 
         Such as :class:`.ChokeArea` and :class:`.MDRamp`.
 
