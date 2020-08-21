@@ -6,7 +6,8 @@ from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
 from loguru import logger
-from numpy import int64, ndarray
+from numpy import ndarray
+from sc2.position import Point2
 
 from .constants import COLORS, LOG_FORMAT, LOG_MODULE
 
@@ -64,7 +65,8 @@ class MapAnalyzerDebugger:
         plt.savefig(f"{filename}.png")
         self.logger.debug(f"Plot Saved to {full_path}")
 
-    def plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
+    def plot_regions(self,
+                     fontdict: Dict[str, Union[str, int]]) -> None:
         """"""
         import matplotlib.pyplot as plt
         for lbl, reg in self.map_data.regions.items():
@@ -174,7 +176,10 @@ class MapAnalyzerDebugger:
             tick.label1.set_fontweight("bold")
         plt.grid()
 
-    def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
+    def plot_influenced_path(self, start: Union[Tuple[int, int], Point2],
+                             goal: Union[Tuple[int, int], Point2],
+                             weight_array: ndarray,
+                             allow_diagonal=False,
                              name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
@@ -189,7 +194,8 @@ class MapAnalyzerDebugger:
         arr = weight_array.copy()
         path = self.map_data.pathfind(start, goal,
                                       grid=arr,
-                                      sensitivity=1)
+                                      sensitivity=1,
+                                      allow_diagonal=allow_diagonal)
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
             path = np.flipud(path)  # for plot align

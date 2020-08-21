@@ -65,7 +65,7 @@ class BuildablePoints:
 class Polygon:
     """
 
-    Base Class for "Area"
+    Base Class for Representing an "Area"
 
     """
 

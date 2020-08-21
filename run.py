@@ -38,45 +38,57 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    if 'reef' in mf.lower():
-        map_file = mf
-        break
-
-# noinspection PyUnboundLocalVariable
-with lzma.open(map_file, "rb") as f:
-    raw_game_data, raw_game_info, raw_observation = pickle.load(f)
-
-bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-map_data = MapData(bot, loglevel="DEBUG")
-map_data.plot_map()
-map_data.show()
-logger = map_data.logger
-base = map_data.bot.townhalls[0]
-reg_start = map_data.where(base.position_tuple)
-reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
-p0 = Point2(reg_start.center)
-p1 = Point2(reg_end.center)
-influence_grid = map_data.get_pyastar_grid()
-ramps = reg_end.region_ramps
-# logger.error(ramps)
-if len(ramps) > 1:
-    if map_data.distance(ramps[0].top_center, reg_end.center) < map_data.distance(ramps[1].top_center,
-                                                                                  reg_end.center):
-        ramp = ramps[0]
-    else:
-        ramp = ramps[1]
-else:
-    ramp = ramps[0]
-
-# influence_points = [(ramp.top_center, 2), (Point2((66, 66)), 18)]
-
-influence_points = _get_random_influence(25, 5)
-# for tup in influence_points:
-#     p = tup[0]
-#     r = tup[1]
-#     map_data.add_cost(p, r=r, arr=influence_grid)
-map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid)
-map_data.show()
+    with lzma.open(mf, "rb") as f:
+        raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+    bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+    map_data = MapData(bot, loglevel="DEBUG")
+    base = map_data.bot.townhalls[0]
+    reg_start = map_data.where(base.position_tuple)
+    reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+    p0 = Point2(reg_start.center)
+    p1 = Point2(reg_end.center)
+    influence_grid = map_data.get_clean_air_grid()
+    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=True)
+    map_data.show()
+#     if 'dream' in mf.lower():
+#         map_file = mf
+#         break
+#
+# # noinspection PyUnboundLocalVariable
+# with lzma.open(map_file, "rb") as f:
+#     raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+#
+# bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+# map_data = MapData(bot, loglevel="DEBUG")
+# map_data.plot_map()
+# map_data.show()
+# logger = map_data.logger
+# base = map_data.bot.townhalls[0]
+# reg_start = map_data.where(base.position_tuple)
+# reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+# p0 = Point2(reg_start.center)
+# p1 = Point2(reg_end.center)
+# influence_grid = map_data.get_pyastar_grid()
+# ramps = reg_end.region_ramps
+# # logger.error(ramps)
+# if len(ramps) > 1:
+#     if map_data.distance(ramps[0].top_center, reg_end.center) < map_data.distance(ramps[1].top_center,
+#                                                                                   reg_end.center):
+#         ramp = ramps[0]
+#     else:
+#         ramp = ramps[1]
+# else:
+#     ramp = ramps[0]
+#
+# # influence_points = [(ramp.top_center, 2), (Point2((66, 66)), 18)]
+#
+# influence_points = _get_random_influence(25, 5)
+# # for tup in influence_points:
+# #     p = tup[0]
+# #     r = tup[1]
+# #     map_data.add_cost(p, r=r, arr=influence_grid)
+# map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid)
+# map_data.show()
 
 # get corner regions centers for start / end points
 # base = map_data.bot.townhalls[0]

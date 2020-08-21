@@ -21,7 +21,7 @@ class Region(Polygon):
 
         Such as :class:`.ChokeArea` and :class:`.MDRamp`.
 
-        But i will never share a point with another :class:`.Region`
+        But it will never share a point with another :class:`.Region`
 
     """
     def __init__(
