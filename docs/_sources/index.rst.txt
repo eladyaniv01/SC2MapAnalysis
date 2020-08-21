@@ -1,9 +1,3 @@
-.. |githubIMG| image:: _static/GitHub-Mark-64px.png
-
-
-.. autosummary::
-   :recursive:
-
 Welcome to Sc2MapAnalyzer's documentation!
 ==========================================
 
@@ -11,13 +5,9 @@ Welcome to Sc2MapAnalyzer's documentation!
    :maxdepth: 3
    :glob:
 
-   source/*
+   source/MapAnalyzer/*
 
-    .. toctree::
-       :maxdepth: 3
-       :glob:
 
-       *
 
 
 

@@ -1,0 +1,41 @@
+:mod:`MapAnalyzer.utils`
+========================
+
+.. py:module:: MapAnalyzer.utils
+
+
+Utils
+-----
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   MapAnalyzer.utils.get_sets_with_mutual_elements
+   MapAnalyzer.utils.mock_map_data
+   MapAnalyzer.utils.import_bot_instance
+   MapAnalyzer.utils.get_map_files_folder
+   MapAnalyzer.utils.get_map_file_list
+
+
+.. function:: get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke], area: Optional[Union[MDRamp, VisionBlockerArea]] = None, base_choke: None = None) -> List[List]
+
+
+.. function:: mock_map_data(map_file: str) -> 'MapData'
+
+
+.. function:: import_bot_instance(raw_game_data: Response, raw_game_info: Response, raw_observation: ResponseObservation) -> BotAI
+
+   import_bot_instance DocString
+
+
+.. function:: get_map_files_folder() -> str
+
+
+.. function:: get_map_file_list() -> List[str]
+
+   easy way to produce less than all maps,  for example if we want to test utils, we only need one MapData object
+
+
