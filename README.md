@@ -9,8 +9,8 @@
 * ![](https://img.shields.io/badge/Documentation-latest-green?style=plastic&logo=appveyor)
    [Documentation](https://eladyaniv01.github.io/SC2MapAnalysis/)
    
-# Summary
-
+Summary
+-------
 A standalone plugin for python SC2 api 
 
 Early Stage development,
@@ -156,8 +156,8 @@ Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) l
  'ZenLE.xz']
 ```
 
-# Pathfinding
-
+Pathfinding
+---------------
 
 getting the basic pathing grid :
 

@@ -8,13 +8,12 @@ from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
 from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
-from .constructs import ChokeArea, PathLibChoke
+from .constructs import ChokeArea, PathLibChoke, MDRamp, VisionBlockerArea
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
 
@@ -68,7 +67,7 @@ class MapData:
 
         # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
-        self._compile_map()  # this is called on init, but allowed to be called again every step
+        self._compile_map()
 
     """Properties"""
 
@@ -86,7 +85,9 @@ class MapData:
     """ Pathing methods"""
 
     # dont cache this
-    def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True,
+    def get_pyastar_grid(self,
+                         default_weight: int = 1,
+                         include_destructables: bool = True,
                          air_pathing: Optional[bool] = None) -> ndarray:
         """
         :rtype: numpy.ndarray
@@ -131,7 +132,8 @@ class MapData:
         """
         if air_pathing is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
-        return self.pather.get_pyastar_grid(default_weight=default_weight, include_destructables=include_destructables,
+        return self.pather.get_pyastar_grid(default_weight=default_weight,
+                                            include_destructables=include_destructables,
                                             )
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
@@ -268,14 +270,18 @@ class MapData:
     def show(self):
         """
         Calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,
-        this method will always be compatible
+
+        This method will always be compatible
+
         """
         self.debugger.show()
 
     def close(self):
         """
         Close an opened plot, just like ``plt.close()``  but in case there will be changes in debugger,
-        this method will always be compatible
+
+        This method will always be compatible
+
         """
         self.debugger.close()
 
@@ -298,7 +304,9 @@ class MapData:
     def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[np.ndarray, np.ndarray]:
         """
         :rtype: Tuple[numpy.ndarray, numpy.ndarray]
+
         Convert a set / list of points to a tuple of two 1d numpy arrays
+
         """
         return np.array([p[0] for p in points]), np.array([p[1] for p in points])
 
@@ -419,9 +427,30 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> List[Union[Region, ChokeArea, VisionBlockerArea, MDRamp]]:
         """
-        :rtype: List[Union[:mod:`.Region`, :class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
+        :rtype: List[Union[:class:`.Region`, :class:`.ChokeArea`, :class:`.VisionBlockerArea`, :class:`.MDRamp`]]
 
-        Will query a point on the map and will return a list of all Area's that point belong to
+        Will return a list containing all :class:`.Polygon` that occupy the given point.
+
+        If a :class:`.Region` exists in that list, it will be the first item
+
+        Caution:
+                Not all points on the map belong to a :class:`.Region` , some are in ``border`` polygons such as :class:`.MDRamp`
+
+
+        Example:
+                >>> # query in which region is the enemy main
+                >>> position = self.bot.enemy_start_locations[0].position
+                >>> all_polygon_areas_in_position = self.where_all(position)
+                [Region 0]
+
+                >>> enemy_main_base_region = all_polygon_areas_in_position[0]
+                >>> enemy_main_base_region
+                Region 0
+
+                >>> # now it is very easy to know which region is the enemy's natural
+                >>> enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region
+                >>> enemy_natural_region
+                Region 3
 
         Tip:
 
@@ -484,7 +513,7 @@ class MapData:
     @lru_cache(100)
     def in_region_p(self, point: Union[Point2, tuple]) -> Optional[Region]:
         """
-        :rtype: Optional[:mod:`.Region`]
+        :rtype: Optional[:class:`.Region`]
 
         Will query if a point is in, and in which Region using Set of Points <fast>
 
@@ -507,11 +536,15 @@ class MapData:
             self, point: Union[Point2, tuple]
     ) -> Optional[Region]:  # pragma: no cover
         """
-        :rtype: Optional[:mod:`.Region`]
+        :rtype: Optional[:class:`.Region`]
 
-        Will query a if a point is in, and in which Region using Indices <slow>
+        Will query a if a point is in, and in which Region using Indices <slower>
+
+
 
         Tip:
+            :meth:`.in_region_p` performs better,  and should be used.
+
             time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
 
         """
@@ -694,8 +727,10 @@ class MapData:
     """Plot methods"""
 
     def plot_map(
-            self, fontdict: dict = None, save: Optional[bool] = None, figsize: int = 20
-    ) -> None:
+            self,
+            fontdict: dict = None,
+            save: Optional[bool] = None,
+            figsize: int = 20) -> None:
         """
 
         Plot map (does not ``show`` or ``save``)
@@ -705,7 +740,11 @@ class MapData:
             self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
-    def plot_influenced_path(self, start: Tuple[int64, int64], goal: Tuple[int64, int64], weight_array: ndarray,
+    def plot_influenced_path(self,
+                             start: Union[Tuple[int, int], Point2],
+                             goal: Union[Tuple[int, int], Point2],
+                             weight_array: ndarray,
+                             allow_diagonal=False,
                              plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         """
@@ -713,13 +752,15 @@ class MapData:
         A useful debug utility method for experimenting with the :mod:`.Pather` module
 
         """
-        if save is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         if plot is not None:
             self.logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
 
-        self.debugger.plot_influenced_path(start=start, goal=goal, weight_array=weight_array, name=name,
-                                           fontdict=fontdict)
+        self.debugger.plot_influenced_path(start=start,
+                                           goal=goal,
+                                           weight_array=weight_array,
+                                           name=name,
+                                           fontdict=fontdict,
+                                           allow_diagonal=allow_diagonal)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)
