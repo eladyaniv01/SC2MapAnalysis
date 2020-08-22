@@ -3,7 +3,7 @@ from setuptools import setup
 
 logger = logging.getLogger(__name__)
 
-
+__version__ = "0.0.55"
 def get_version():
     from MapAnalyzer import __version__
     return __version__
