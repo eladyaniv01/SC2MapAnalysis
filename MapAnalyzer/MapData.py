@@ -12,7 +12,7 @@ from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
-from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
+from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA, __version__
 from .constructs import ChokeArea, PathLibChoke, MDRamp, VisionBlockerArea
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
@@ -29,6 +29,7 @@ class MapData:
     def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
         # store relevant data from api
         self.bot = bot
+        self.version = __version__
         self.map_name: str = bot.game_info.map_name
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
         self.path_arr: ndarray = bot.game_info.pathing_grid.data_numpy
@@ -593,7 +594,7 @@ class MapData:
                     if isinstance(a, MDRamp):
                         self.polygons.pop(self.polygons.index(pol))
 
-    @progress_wrapped(estimated_time=0, desc="\u001b[32m Map Compilation Progress \u001b[37m")
+    @progress_wrapped(estimated_time=0, desc=f"\u001b[32m Version {__version__} Map Compilation Progress \u001b[37m")
     def _compile_map(self) -> None:
 
         self._calc_grid()
