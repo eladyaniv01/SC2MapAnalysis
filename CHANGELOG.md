@@ -8,8 +8,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * fixed the calling order in polygon._set_points() ([2e60287](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2e6028708efd7756925f0748f5aa8a4b14c80d14))
-* fixed the calling order in polygon._set_points() ([bda6ab4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/bda6ab4cbb2dd94ffdecf9208a409213d0d3c03b))
-* fixed the calling order in polygon._set_points() ([458e94a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/458e94ad15fbdb6fc7323f9380b5e0ba4b7132a2))
 
 
 ### Documentation
@@ -19,12 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Refactoring
 
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([4409c7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4409c7d2aea65b7ec5599916e0d466d3d82a4062))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([ba3248b](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ba3248b103611345214be3139e995bd10ef147d4))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([bb089c4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/bb089c46806695ae2d7249b64a716868428f0866))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([6676e66](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6676e66841d661cabe58a2113ce2d59787b29739))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([7333db0](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7333db0173b336eea2a113a86f37e3ef1b5f25d2))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([c0ee332](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c0ee332f2872f9208f1af2d7bbeba26f82921c8f))
+* version attribute is now in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([4409c7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4409c7d2aea65b7ec5599916e0d466d3d82a4062))
 
 ### [0.0.55](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.54...v0.0.55) (2020-08-20)
 

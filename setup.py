@@ -3,7 +3,7 @@ from setuptools import setup
 
 logger = logging.getLogger(__name__)
 
-__version__ = "0.0.55"
+__version__ = "0.0.56"
 
 
 requirements = [  # pragma: no cover
@@ -20,7 +20,8 @@ requirements = [  # pragma: no cover
 ]
 setup(  # pragma: no cover
         name="sc2mapanalyzer",
-        version=f"{__version__}",
+        # version=f"{__version__}",
+        version="0.0.56",
         install_requires=requirements,
         setup_requires=["wheel", "numpy"],
         extras_require={
