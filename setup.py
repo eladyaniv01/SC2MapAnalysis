@@ -1,5 +1,4 @@
 import logging
-from MapAnalyzer import __version__
 from setuptools import setup
 
 logger = logging.getLogger(__name__)
