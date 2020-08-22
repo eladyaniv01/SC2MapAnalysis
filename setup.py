@@ -4,6 +4,11 @@ from setuptools import setup
 
 logger = logging.getLogger(__name__)
 
+
+def get_version():
+    from MapAnalyzer import __version__
+    return __version__
+
 requirements = [  # pragma: no cover
         "Cython",
         "pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
@@ -18,7 +23,7 @@ requirements = [  # pragma: no cover
 ]
 setup(  # pragma: no cover
         name="sc2mapanalyzer",
-        version=f"{__version__}",
+        version=f"{get_version()}",
         install_requires=requirements,
         setup_requires=["wheel", "numpy"],
         extras_require={
