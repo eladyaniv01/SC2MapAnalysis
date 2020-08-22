@@ -22,6 +22,7 @@ WHITE = "\u001b[32m"
 
 class MapData:
     """
+
     Entry point for the user
 
     """
