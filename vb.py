@@ -29,7 +29,13 @@ def parse_setup():
     return setup_parsed
 
 
-def update_setup(new_version):
+def b_minor(new_version):
+    setup_parsed = parse_setup()
+    old_version_regex = r"(\d*[.]\d*[.]\d*)"
+    old_version = re.findall(old_version_regex, setup_parsed)[0]
+    setup_updated = setup_parsed.replace(old_version, new_version)
+    with open('setup.py', 'w') as f:
+        f.write(setup_updated)
     init_string = f"""
 # flake8: noqa
 from .MapData import MapData
@@ -94,9 +100,6 @@ def gv():
 
 @vb.command(help='Bump Minor')
 def bumpminor():
-    setup_parsed = parse_setup()
-    # old_version_regex = r"(\d*[.]\d*[.]\d*)"
-    # old_version = re.findall(old_version_regex, setup_parsed)[0]
     old_version = current_version
     minor = re.findall(r"([.]\d*)", old_version)[-1]
     minor = minor.replace('.', '')
@@ -106,7 +109,7 @@ def bumpminor():
     click.echo(f"Bumping to : " + click.style(bump, fg='blue'))
     new_version = str(old_version).replace(minor, bump)
     click.echo(f"Updated Version: " + click.style(new_version, fg='red'))
-    update_setup(new_version)
+    b_minor(new_version)
 
 
 @vb.command(help='Custom git log command for last N days')
