@@ -1,9 +1,10 @@
 import re
+import os
 import subprocess
 from pathlib import Path
 __author__ = "Elad Yaniv"
 import click
-
+from MapAnalyzer import __version__ as current_version
 
 @click.group(help='Commands marked with (LIVE) require SC launch and windows environment.')
 def vb():
@@ -29,28 +30,31 @@ def parse_setup():
 
 
 def update_setup(new_version):
-    setup_parsed = parse_setup()
-    old_version_regex = r"(\d*[.]\d*[.]\d*)"
-    old_version = re.findall(old_version_regex, setup_parsed)[0]
-    setup_updated = setup_parsed.replace(old_version, new_version)
-    with open('setup.py', 'w') as f:
-        f.write(setup_updated)
+    init_string = f"""
+# flake8: noqa
+from .MapData import MapData
+from .Polygon import Polygon
+from .Region import Region
+from .constructs import ChokeArea, MDRamp, VisionBlockerArea
 
-    import os
+__version__ = "{new_version}"
+
+    """
+    with open('MapAnalyzer/__init__.py', 'w') as f:
+        f.write(init_string)
+
     curdir = os.getcwd()
     click.echo(click.style(curdir + '\\standard-version', fg='blue'))
     subprocess.check_call('git fetch', shell=True)
     subprocess.check_call('git pull', shell=True)
-    subprocess.check_call('git add setup.py', shell=True)
-    subprocess.check_call('git commit -m "bump setup.py"', shell=True)
+    subprocess.check_call('git add MapAnalyzer/__init__.py', shell=True)
+    subprocess.check_call('git commit -m "MapAnalyzer/__init__.py"', shell=True)
     subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
     # subprocess.check_call('git push --follow-tags origin', shell=True)
 
 
 @vb.command(help='sphinx make for gh pages')
 def makedocs():
-    click.echo(click.style("Updating README.MD", fg='blue'))
-    update_readme_to_sphinx()
     p = Path()
     path = p.joinpath('docs').absolute()
     click.echo(click.style(f"calling {path}//make github", fg='green'))
@@ -81,10 +85,7 @@ def mt(apply):
 
 @vb.command(help='Get current version')
 def gv():
-    import re
-    setup_parsed = parse_setup()
-    old_version_regex = r"(\d*[.]\d*[.]\d*)"
-    old_version = re.findall(old_version_regex, setup_parsed)[0]
+    old_version = current_version
     click.echo(click.style(old_version, fg='green'))
     click.echo("Running git describe")
     subprocess.check_call('git describe')
@@ -93,8 +94,9 @@ def gv():
 @vb.command(help='Bump Minor')
 def bumpminor():
     setup_parsed = parse_setup()
-    old_version_regex = r"(\d*[.]\d*[.]\d*)"
-    old_version = re.findall(old_version_regex, setup_parsed)[0]
+    # old_version_regex = r"(\d*[.]\d*[.]\d*)"
+    # old_version = re.findall(old_version_regex, setup_parsed)[0]
+    old_version = current_version
     minor = re.findall(r"([.]\d*)", old_version)[-1]
     minor = minor.replace('.', '')
     click.echo(f"Current Version: " + click.style(old_version, fg='green'))
