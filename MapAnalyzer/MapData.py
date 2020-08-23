@@ -190,7 +190,9 @@ class MapData:
 
     def get_clean_air_grid(self, default_weight: int = 1):
         """
+
         :rtype: numpy.ndarray
+
         Will return a grid marking every cell as pathable with ``default_weight``
 
         See Also:
@@ -248,7 +250,9 @@ class MapData:
                  ) -> ndarray:
         """
         :rtype: numpy.ndarray
+
         Will add cost to a `circle-shaped` area with a center ``position`` and radius ``radius``
+
         weight of 100
 
         Warning:
@@ -260,17 +264,24 @@ class MapData:
     """Utility methods"""
 
     def log(self, msg):
-        """ Lazy logging"""
+        """
+
+         Lazy logging
+
+         """
         self.logger.debug(f"{msg}")
 
     def save(self, filename):
         """
+
         Save Plot to a file, much like ``plt.save(filename)``
+
         """
         self.debugger.save(filename=filename)
 
     def show(self):
         """
+
         Calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,
 
         This method will always be compatible
@@ -778,4 +789,4 @@ class MapData:
         self.debugger.plot_chokes()
 
     def __repr__(self) -> str:
-        return f"<MapData[{self.bot.game_info.map_name}][{self.bot}]>"
+        return f"<MapData[{self.version}][{self.bot.game_info.map_name}][{self.bot}]>"
