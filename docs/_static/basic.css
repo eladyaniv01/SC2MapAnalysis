@@ -223,7 +223,6 @@ table.modindextable td {
 
 div.body {
     min-width: 450px;
-    max-width: 800px;
 }
 
 div.body p, div.body dd, div.body li, div.body blockquote {
@@ -689,12 +688,20 @@ abbr, acronym {
 /* -- code displays --------------------------------------------------------- */
 
 pre {
-    overflow: auto;
-    overflow-y: hidden;  /* fixes display issues on Chrome browsers */
+    background: rgba(25, 109, 23, 0.54);
+    padding: 7px 30px;
+    margin: 15px -30px;
+    line-height: 1.3em;
+    box-shadow: inset 0 1px 10px rgba(0,0,0,0.3),0 1px 0 rgba(255,255,255,0.1),0 -1px 0 rgba(0,0,0,0.5);
 }
 
 pre, div[class|="highlight"] {
     clear: both;
+    background: #2b2b2b;
+    padding: 7px 30px;
+    margin: 15px -30px;
+    line-height: 1.3em;
+    box-shadow: inset 0 1px 10px rgba(0,0,0,0.3),0 1px 0 rgba(255,255,255,0.1),0 -1px 0 rgba(0,0,0,0.5);
 }
 
 span.pre {

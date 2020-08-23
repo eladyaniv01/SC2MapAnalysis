@@ -16,8 +16,20 @@ copyright = '2020, Elad Yaniv'
 author = 'Elad Yaniv'
 
 # The full version, including alpha/beta/rc tags
-release = '0.55'
+from MapAnalyzer import __version__
+release =  __version__
+html_theme = "sphinx_rtd_theme"
+# html_theme = 'yummy_sphinx_theme'
+# html_theme = 'trstyle'
+# html_theme = 'sphinxjp.themes.trstyle'
 
+# import caktus_theme
+# html_theme = 'caktus'
+# html_theme_path = [caktus_theme.get_theme_dir()]
+# html_sidebars = caktus_theme.default_sidebars()
+
+# html_theme = 'sphinxdoc'
+# html_theme = 'groundwork'
 # -- General configuration ---------------------------------------------------
 
 extensions = ['sphinx.ext.viewcode',
@@ -34,7 +46,9 @@ extensions = ['sphinx.ext.viewcode',
               'sphinx.ext.imgmath',
               'sphinx.ext.ifconfig',
               'matplotlib.sphinxext.plot_directive',
-              'recommonmark']
+              'recommonmark',
+              'rinoh.frontend.sphinx',
+              'sphinxjp.themecore']
 
 extensions.append('autoapi.extension')
 autoapi_options =[ 'members',
@@ -86,7 +100,7 @@ exclude_patterns = []
 viewcode_follow_imported_members = True
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "sphinx_rtd_theme"
+
 html_theme_options = {
         'canonical_url'             : '',
         #  Provided by Google in your dashboard
@@ -99,8 +113,10 @@ html_theme_options = {
         'collapse_navigation'       : True,
         'sticky_navigation'         : True,
         'navigation_depth'          : 4,
-        'includehidden'             : True,
-        'titles_only'               : False
+        'includehidden'             : False,
+        'titles_only'               : False,
+        'vcs_pageview_mode': 'view',
+        'github_url': 'https://github.com/eladyaniv01/SC2MapAnalysis'
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -155,3 +171,20 @@ def setup(app):
 numfig = True
 smart_quotes = True
 html_use_smartypants = True
+latex_elements = {
+    'fontpkg': r'''
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+''',
+    'preamble': r'''
+\usepackage[titles]{tocloft}
+\cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
+\setlength{\cftchapnumwidth}{0.75cm}
+\setlength{\cftsecindent}{\cftchapnumwidth}
+\setlength{\cftsecnumwidth}{1.25cm}
+''',
+    'fncychap': r'\usepackage[Bjornstrup]{fncychap}',
+    'printindex': r'\footnotesize\raggedright\printindex',
+}
+latex_show_urls = 'footnote'

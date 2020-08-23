@@ -1,0 +1,66 @@
+:orphan:
+
+.. py:module:: MapAnalyzer.Pather
+
+
+Pather
+------
+
+
+.. autoapisummary::
+
+   MapAnalyzer.Pather.MapAnalyzerPather
+
+
+
+.. py:class:: MapAnalyzerPather(map_data: MapData)
+
+   .. method:: set_connectivity_graph(self)
+
+
+
+   .. method:: find_all_paths(self, start: Region, goal: Region, path: Optional[List[Region]] = None)
+
+
+
+   .. method:: _set_pathlib_map(self)
+
+
+      Will initialize the sc2pathlib `SC2Map` object for future use
+
+
+   .. method:: _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True)
+
+
+
+   .. method:: get_base_pathing_grid(self)
+
+
+
+   .. method:: get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True)
+
+
+      Grid for units like reaper / colossus
+
+
+   .. method:: get_clean_air_grid(self, default_weight: int = 2)
+
+
+
+   .. method:: get_air_vs_ground_grid(self, default_weight: int)
+
+
+
+   .. method:: get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True)
+
+
+
+   .. method:: pathfind(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None, allow_diagonal: bool = False, sensitivity: int = 1)
+
+
+
+   .. method:: add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True)
+
+
+
+

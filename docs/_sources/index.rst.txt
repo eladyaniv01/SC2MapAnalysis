@@ -2,10 +2,15 @@ Welcome to Sc2MapAnalyzer's documentation!
 ==========================================
 
 .. toctree::
-   :maxdepth: 3
-   :glob:
+    :maxdepth: 3
+    :caption: Contents
+    :glob:
 
-   source/MapAnalyzer/*
+    source/gettingstarted/*
+    source/howto/*
+    source/MapAnalyzer/*
+
+
 
 
 

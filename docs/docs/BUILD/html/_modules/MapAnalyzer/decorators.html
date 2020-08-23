@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.decorators &mdash; Sc2MapAnalyzer 0.55 documentation</title>
+  <title>MapAnalyzer.decorators &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
   
 
   
@@ -83,9 +83,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/package.html">Subpackages</a></li>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
 </ul>
 
             
@@ -162,9 +164,9 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span> <span class="k">as</span> <span class="n">std_tqdm</span>
 <span class="kn">from</span> <span class="nn">tqdm.contrib</span> <span class="kn">import</span> <span class="n">DummyTqdmFile</span>
 
-<div class="viewcode-block" id="tqdm"><a class="viewcode-back" href="../../source/utils/decorators/index.rst.html#MapAnalyzer.decorators.tqdm">[docs]</a><span class="n">tqdm</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">std_tqdm</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">std_tqdm</span><span class="p">,</span> <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="logger_wraps"><a class="viewcode-back" href="../../source/utils/decorators/index.rst.html#MapAnalyzer.decorators.logger_wraps">[docs]</a><span class="k">def</span> <span class="nf">logger_wraps</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">logger_wraps</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">entry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
@@ -180,11 +182,11 @@
 
         <span class="k">return</span> <span class="n">wrapped</span>
 
-    <span class="k">return</span> <span class="n">wrapper</span></div>
+    <span class="k">return</span> <span class="n">wrapper</span>
 
 
 <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
-<div class="viewcode-block" id="std_out_err_redirect_tqdm"><a class="viewcode-back" href="../../source/utils/decorators/index.rst.html#MapAnalyzer.decorators.std_out_err_redirect_tqdm">[docs]</a><span class="k">def</span> <span class="nf">std_out_err_redirect_tqdm</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">std_out_err_redirect_tqdm</span><span class="p">():</span>
     <span class="n">orig_out_err</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">DummyTqdmFile</span><span class="p">,</span> <span class="n">orig_out_err</span><span class="p">)</span>
@@ -194,10 +196,10 @@
         <span class="k">raise</span> <span class="n">exc</span>
     <span class="c1"># Always restore sys.stdout/err if necessary</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">orig_out_err</span></div>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">orig_out_err</span>
 
 
-<div class="viewcode-block" id="provide_progress_bar"><a class="viewcode-back" href="../../source/utils/decorators/index.rst.html#MapAnalyzer.decorators.provide_progress_bar">[docs]</a><span class="k">def</span> <span class="nf">provide_progress_bar</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<div class="viewcode-block" id="provide_progress_bar"><a class="viewcode-back" href="../../source/MapAnalyzer/decorators/index.rst.html#MapAnalyzer.decorators.provide_progress_bar">[docs]</a><span class="k">def</span> <span class="nf">provide_progress_bar</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
                          <span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;MapData&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                          <span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Tqdm wrapper for a long-running function</span>
@@ -234,7 +236,7 @@
     <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="progress_wrapped"><a class="viewcode-back" href="../../source/utils/decorators/index.rst.html#MapAnalyzer.decorators.progress_wrapped">[docs]</a><span class="k">def</span> <span class="nf">progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Progress&quot;</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<div class="viewcode-block" id="progress_wrapped"><a class="viewcode-back" href="../../source/MapAnalyzer/decorators/index.rst.html#MapAnalyzer.decorators.progress_wrapped">[docs]</a><span class="k">def</span> <span class="nf">progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Progress&quot;</span><span class="p">,</span> <span class="n">tstep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
                      <span class="n">tqdm_kwargs</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decorate a function to add a progress bar&quot;&quot;&quot;</span>
 

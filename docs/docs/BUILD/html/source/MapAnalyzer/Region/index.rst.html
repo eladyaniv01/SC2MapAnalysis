@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Region(Polygon) &mdash; Sc2MapAnalyzer 0.55 documentation</title>
+  <title>Region(Polygon) &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
   
 
   
@@ -85,41 +85,29 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../MapData/index.rst.html">MapData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Polygon/index.rst.html">Polygon Variants &amp; Helpers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Region(Polygon)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#MapAnalyzer.Region.Region">Region</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.region_ramps">region_ramps</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.region_chokes">region_chokes</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.connected_regions">connected_regions</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.plot_perimeter">plot_perimeter</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.plot">plot</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region.base_locations">base_locations</a></li>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../howto/index.html">How To</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Package Contents</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-MapAnalyzer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../MapData/index.rst.html">MapData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Polygon/index.rst.html">Polygon Variants &amp; Helpers</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Region(Polygon)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Region.Region">Region</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../Pather/index.rst.html">Pather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugger/index.rst.html">Debugger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../constants/index.rst.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../decorators/index.rst.html">Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/index.rst.html">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/index.rst.html">Utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../Pather/index.rst.html">Pather</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Debugger/index.rst.html">Debugger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../constants/index.rst.html">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../decorators/index.rst.html">Decorators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../exceptions/index.rst.html">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/index.rst.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#subpackages">Subpackages</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../package.html">Subpackages</a></li>
 </ul>
 
             
@@ -166,7 +154,7 @@
     
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a> &raquo;</li>
+          <li><a href="../index.html">Package Contents</a> &raquo;</li>
         
       <li>Region(Polygon)</li>
     
@@ -203,21 +191,21 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Region</span></code></a>(map_data: MapData, array: np.ndarray, label: int, map_expansions: List[Point2])</p></td>
-<td><p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Region</span></code></a>(map_data: MapData, array: np.ndarray, label: int, map_expansions: List[Point2])</p></td>
+<td><p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt id="MapAnalyzer.Region.Region">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Region.</code><code class="sig-name descname">Region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">np.ndarray</span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">map_expansions</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Point2<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Region.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../Polygon.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
-<p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
+<p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>A <a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> may contain other <a class="reference internal" href="../../Polygon.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a> inside it,</p>
+<p>A <a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> may contain other <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a> inside it,</p>
 <p>Such as <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.ChokeArea" title="MapAnalyzer.Polygon.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a> and <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.MDRamp" title="MapAnalyzer.Polygon.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>.</p>
-<p>But it will never share a point with another <a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
+<p>But it will never share a point with another <a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 </div>
 <dl class="py method">
 <dt id="MapAnalyzer.Region.Region.region_ramps">
@@ -234,7 +222,7 @@
 <dl class="py method">
 <dt id="MapAnalyzer.Region.Region.connected_regions">
 <em class="property">property </em><code class="sig-name descname">connected_regions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Region.html#Region.connected_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.connected_regions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides a list of <a class="reference internal" href="../../Region.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that are connected by chokes to <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
+<dd><p>Provides a list of <a class="reference internal" href="#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that are connected by chokes to <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
 </dd></dl>
 
 <dl class="py method">

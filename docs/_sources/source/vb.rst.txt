@@ -1,9 +1,0 @@
-Command-Line Interface
-----------------------
-
-Current usage is internal only
-
-.. automodule:: vb
-   :members:
-   :undoc-members:
-   :show-inheritance:

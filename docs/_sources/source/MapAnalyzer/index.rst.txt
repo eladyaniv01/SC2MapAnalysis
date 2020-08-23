@@ -1,11 +1,14 @@
+Package Contents
+=================
 
 :mod:`MapAnalyzer`
-==================
+------------------
 
 .. py:module:: MapAnalyzer
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 3
+   :caption: Modules, Classes, Methods
    :glob:
 
    MapData/*
@@ -17,3 +20,10 @@
    decorators/*
    exceptions/*
    utils/*
+
+
+Subpackages
+-----------
+
+* `sc2-pathlib (github) <https://github.com/DrInfy/sc2-pathlib>`_
+* `pyastar (github) <https://github.com/hjweide/pyastar>`_

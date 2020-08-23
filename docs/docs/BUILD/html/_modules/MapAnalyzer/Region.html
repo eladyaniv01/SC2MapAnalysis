@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Region &mdash; Sc2MapAnalyzer 0.55 documentation</title>
+  <title>MapAnalyzer.Region &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
   
 
   
@@ -83,9 +83,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/package.html">Subpackages</a></li>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
 </ul>
 
             
@@ -164,7 +166,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span>
 
 
-<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region">[docs]</a><span class="k">class</span> <span class="nc">Region</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
+<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region">[docs]</a><span class="k">class</span> <span class="nc">Region</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Higher order &quot;Area&quot; , all of the maps can be summed up by it&#39;s :class:`.Region`</span>
 
@@ -196,7 +198,7 @@
 
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Region.region_ramps"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.region_ramps">[docs]</a>    <span class="k">def</span> <span class="nf">region_ramps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">]:</span>
+<div class="viewcode-block" id="Region.region_ramps"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.region_ramps">[docs]</a>    <span class="k">def</span> <span class="nf">region_ramps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Property access to :class:`.MDRamp` of this region</span>
@@ -205,7 +207,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">is_ramp</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Region.region_chokes"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.region_chokes">[docs]</a>    <span class="k">def</span> <span class="nf">region_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChokeArea</span><span class="p">]:</span>
+<div class="viewcode-block" id="Region.region_chokes"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.region_chokes">[docs]</a>    <span class="k">def</span> <span class="nf">region_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChokeArea</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Property access to :class:`.ChokeArea` of this region</span>
@@ -215,7 +217,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Region.connected_regions"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.connected_regions">[docs]</a>    <span class="k">def</span> <span class="nf">connected_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Region.connected_regions"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions">[docs]</a>    <span class="k">def</span> <span class="nf">connected_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Provides a list of :class:`.Region` that are connected by chokes to ``self``</span>
@@ -228,7 +230,7 @@
                     <span class="n">connected_regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">connected_regions</span></div>
 
-<div class="viewcode-block" id="Region.plot_perimeter"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.plot_perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">plot_perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Region.plot_perimeter"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.plot_perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">plot_perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Debug Method plot_perimeter</span>
@@ -298,7 +300,7 @@
                         <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="Region.plot"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Region.plot"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">self_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">            Debug Method plot</span>
@@ -321,7 +323,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plot_perimeter</span><span class="p">(</span><span class="n">self_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Region.base_locations"><a class="viewcode-back" href="../../source/Region.html#MapAnalyzer.Region.Region.base_locations">[docs]</a>    <span class="k">def</span> <span class="nf">base_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
+<div class="viewcode-block" id="Region.base_locations"><a class="viewcode-back" href="../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.base_locations">[docs]</a>    <span class="k">def</span> <span class="nf">base_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        base_locations inside ``self``</span>

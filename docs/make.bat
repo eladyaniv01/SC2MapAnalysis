@@ -10,6 +10,7 @@ if "%SPHINXBUILD%" == "" (
 set ROOTPROJECTDIR=../.
 set SOURCEDIR=.
 set BUILDDIR=docs/BUILD
+set RINOHDIR=docs/BUILD/RINOH
 set DOCS=docs
 
 if "%1" == "" goto help

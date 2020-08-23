@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.55 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
   
 
   
@@ -83,9 +83,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/package.html">Subpackages</a></li>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
 </ul>
 
             
@@ -154,19 +156,18 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.constructs</span> <span class="kn">import</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">sc2.bot_ai</span> <span class="kn">import</span> <span class="n">BotAI</span>
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_fill_holes</span><span class="p">,</span> <span class="n">center_of_mass</span><span class="p">,</span> <span class="n">generate_binary_structure</span><span class="p">,</span> <span class="n">label</span> <span class="k">as</span> <span class="n">ndlabel</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
 
-<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
-<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span><span class="p">,</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
 
@@ -175,6 +176,7 @@
 
 <div class="viewcode-block" id="MapData"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData">[docs]</a><span class="k">class</span> <span class="nc">MapData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">    Entry point for the user</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -182,6 +184,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># store relevant data from api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">__version__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">placement_grid</span><span class="o">.</span><span class="n">data_numpy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">pathing_grid</span><span class="o">.</span><span class="n">data_numpy</span>
@@ -341,7 +344,9 @@
 
 <div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">        :rtype: numpy.ndarray</span>
+
 <span class="sd">        Will return a grid marking every cell as pathable with ``default_weight``</span>
 
 <span class="sd">        See Also:</span>
@@ -399,7 +404,9 @@
                  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
+
 <span class="sd">        Will add cost to a `circle-shaped` area with a center ``position`` and radius ``radius``</span>
+
 <span class="sd">        weight of 100</span>
 
 <span class="sd">        Warning:</span>
@@ -411,17 +418,24 @@
     <span class="sd">&quot;&quot;&quot;Utility methods&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MapData.log"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Lazy logging&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">         Lazy logging</span>
+
+<span class="sd">         &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapData.save"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">        Save Plot to a file, much like ``plt.save(filename)``</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapData.show"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">        Calling debugger to show, just like ``plt.show()``  but in case there will be changes in debugger,</span>
 
 <span class="sd">        This method will always be compatible</span>
@@ -746,7 +760,7 @@
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pol</span><span class="p">))</span>
 
-    <span class="nd">@progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m Map Compilation Progress </span><span class="se">\u001b</span><span class="s2">[37m&quot;</span><span class="p">)</span>
+    <span class="nd">@progress_wrapped</span><span class="p">(</span><span class="n">estimated_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m Version </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> Map Compilation Progress </span><span class="se">\u001b</span><span class="s2">[37m&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_compile_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_calc_grid</span><span class="p">()</span>
@@ -929,7 +943,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_chokes</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MapData[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="si">}</span><span class="s2">]&gt;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MapData[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="si">}</span><span class="s2">]&gt;&quot;</span></div>
 </pre></div>
 
            </div>

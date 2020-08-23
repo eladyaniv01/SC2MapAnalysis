@@ -3,6 +3,7 @@
 .. py:module:: MapAnalyzer.MapData
 
 
+
 MapData
 -------
 
@@ -14,6 +15,7 @@ MapData
 .. autoapisummary::
 
    MapAnalyzer.MapData.MapData
+
 
 .. py:class:: MapData(bot: BotAI, loglevel: str = 'ERROR')
 
