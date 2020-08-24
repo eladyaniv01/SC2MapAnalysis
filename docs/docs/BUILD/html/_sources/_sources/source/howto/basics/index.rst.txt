@@ -1,0 +1,54 @@
+Basic - Recipes
+===============
+
+Get our Starting :class:`.Region`
+---------------------------------
+
+* :meth:`.MapData.where`
+
+.. code-block::
+
+        >>> my_base_raw_location = map_data.bot.townhalls[0].position
+        >>> my_region = map_data.where(my_base_raw_location)
+        >>> my_region
+        Region 1
+
+
+Get Enemy Main and Natural :class:`.Region`
+--------------------------------------------
+
+* :meth:`.MapData.where_all`
+* :meth:`.Region.connected_regions`
+
+.. code-block::
+
+        >>> # query in which region is the enemy main
+        >>> position = map_data.bot.enemy_start_locations[0].position
+        >>> all_polygon_areas_in_position = map_data.where_all(position)
+        [Region 0]
+
+        >>> enemy_main_base_region = all_polygon_areas_in_position[0]
+        >>> enemy_main_base_region
+        Region 0
+
+        >>> # now it is very easy to know which region is the enemy's natural
+        >>> enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region
+        >>> enemy_natural_region
+        Region 3
+
+
+:class:`.Region` connectivity
+-------------------------------
+
+* :meth:`.Region.connected_regions`
+
+.. code-block::
+
+        >>> my_base_raw_location = map_data.bot.townhalls[0]
+        >>> my_region = map_data.where(my_base_location)
+        >>> my_region
+        Region 1
+        >>> my_region.connected_regions # returns a list
+        [Region 3]
+
+

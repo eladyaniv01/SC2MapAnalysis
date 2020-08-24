@@ -79,3 +79,15 @@ Plotting our custom Cost
 
 .. image:: path_with_cost.png
    :width: 75%
+
+
+Influenced paths plots:
+-----------------------
+
+.. image:: https://user-images.githubusercontent.com/40754127/89323316-299bd500-d68e-11ea-8f98-24e7d9e78e1e.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323320-299bd500-d68e-11ea-8b89-d59d1387adca.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323322-2a346b80-d68e-11ea-8de6-996565e40c6b.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323304-24d72100-d68e-11ea-9ffc-8e835ea8c505.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323311-27d21180-d68e-11ea-97c4-99d6acd3cfa3.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323312-286aa800-d68e-11ea-854b-cfbb7beb261a.png
+.. image:: https://user-images.githubusercontent.com/40754127/89323315-29033e80-d68e-11ea-97cb-17957ee9675c.png

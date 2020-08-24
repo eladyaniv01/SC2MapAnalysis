@@ -166,6 +166,12 @@
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">How To - Recipes</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="basics/index.rst.html">Basic - Recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basics/index.rst.html#get-our-starting-region">Get our Starting <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics/index.rst.html#get-enemy-main-and-natural-region">Get Enemy Main and Natural <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics/index.rst.html#region-connectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> connectivity</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plot/index.rst.html">Plotting - Recipes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/index.rst.html#plot-the-map-and-view-it-in-memory">Plot the map and view it in memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot/index.rst.html#plot-the-map-and-save-it-to-a-file">Plot the map and save it to a file</a></li>
@@ -184,53 +190,6 @@
 </li>
 </ul>
 </div>
-<div class="section" id="get-our-starting-region">
-<h2>Get our Starting <a class="reference internal" href="../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#get-our-starting-region" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.where" title="MapAnalyzer.MapData.MapData.where"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where()</span></code></a></p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
-<span class="go">Region 1</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="get-enemy-main-and-natural-region">
-<h2>Get Enemy Main and Natural <a class="reference internal" href="../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#get-enemy-main-and-natural-region" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.where_all" title="MapAnalyzer.MapData.MapData.where_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where_all()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># query in which region is the enemy main</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_start_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">all_polygon_areas_in_position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-<span class="go">[Region 0]</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span> <span class="o">=</span> <span class="n">all_polygon_areas_in_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span>
-<span class="go">Region 0</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># now it is very easy to know which region is the enemy&#39;s natural</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span> <span class="o">=</span> <span class="n">enemy_main_base_region</span><span class="o">.</span><span class="n">connected_regions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># connected_regions is a property of a Region</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span>
-<span class="go">Region 3</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="region-connectivity">
-<h2><a class="reference internal" href="../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> connectivity<a class="headerlink" href="#region-connectivity" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
-<span class="go">Region 1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span> <span class="c1"># returns a list</span>
-<span class="go">[Region 3]</span>
-</pre></div>
-</div>
 <p><strong>Indices and tables</strong></p>
 <blockquote>
 <div><ul class="simple">
@@ -239,7 +198,6 @@
 <li><p><a class="reference internal" href="../../../search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div></blockquote>
-</div>
 </div>
 
 
