@@ -44,6 +44,11 @@ class MapAnalyzerDebugger:
         self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
 
     @staticmethod
+    def scatter(*args, **kwargs):
+        import matplotlib.pyplot as plt
+        plt.scatter(*args, **kwargs)
+
+    @staticmethod
     def show():
         import matplotlib.pyplot as plt
         plt.show()
