@@ -95,7 +95,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['technical']
 
 viewcode_follow_imported_members = True
 # -- Options for HTML output -------------------------------------------------
@@ -128,6 +128,17 @@ autodoc_default_options = {
         'autosummary': True,
 }
 texinfo_show_urls = 'footnote'
+
+rst_epilog = """
+
+**Indices and tables**
+
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`
+
+"""
+
 rst_prolog = """
 .. _Changelog: https://github.com/eladyaniv01/SC2MapAnalysis/blob/master/CHANGELOG.md
 .. |MasterBuildIMG| image:: https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master

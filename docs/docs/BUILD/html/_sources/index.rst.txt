@@ -10,31 +10,3 @@ Welcome to Sc2MapAnalyzer's documentation!
     source/howto/*
     source/MapAnalyzer/*
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-.. todolist::

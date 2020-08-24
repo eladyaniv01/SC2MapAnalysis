@@ -6,56 +6,60 @@ Installation
 
 **you will need to have** `64 bit python <https://www.python.org/downloads/>`_ **installed**
 
-Step 1 - Download and Install
------------------------------
 
-    *Inside* your bots virtual environment,
+Download and Install
+--------------------
 
-    clone the repo into its own directory,
+*Inside* your bots virtual environment,
 
-    somewhere outside your bot folders:
+clone the repo into its own directory,
 
-    .. code-block:: bash
+somewhere outside your bot folders:
 
-        git clone https://github.com/eladyaniv01/SC2MapAnalysis.git
+.. code-block:: bash
 
-        cd SC2MapAnalysis
+    git clone https://github.com/eladyaniv01/SC2MapAnalysis.git
 
-    And then:
+    cd SC2MapAnalysis
 
-    .. code-block:: bash
+And then:
 
-        pip install .
+.. code-block:: bash
 
-
-    - or if you want to contribute, or run tests locally
-
-    .. code-block:: bash
-
-        pip install -e .[dev]
+    pip install .
 
 
-    - or just with
+- or if you want to contribute, or run tests locally
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        pip install -r requirements.txt
-
-Step 2 - Folder Structure
--------------------------
-
-    All that is left now, is to grab the ``MapAnalyzer`` folder, and place it in your bot root directory
-
-    Roughly like so:
-
-    | MyBot
-    | ├── MapAnalyzer
-    | │   ├── ... dependencies for MapAnalyzer
-    | │   ├── ...
-    | │ ... your bot files and folders here
+    pip install -e .[dev]
 
 
-    In the folder structure above:
+- or just with
 
-    - ``MyBot`` is the folder of your bot
-    - ``MapAnalyzer`` is the directory from this repo (MapAnalyzer dir) that you have unpacked in your bot root
+.. code-block:: bash
+
+    pip install -r requirements.txt
+
+
+.. rst-class:: bignums
+
+Folder Structure
+----------------
+
+All that is left now, is to grab the ``MapAnalyzer`` folder, and place it in your bot root directory
+
+Roughly like so:
+
+| MyBot
+| ├── MapAnalyzer
+| │   ├── ... dependencies for MapAnalyzer
+| │   ├── ...
+| │ ... your bot files and folders here
+
+
+In the folder structure above:
+
+- ``MyBot`` is the folder of your bot
+- ``MapAnalyzer`` is the directory from this repo (MapAnalyzer dir) that you have unpacked in your bot root

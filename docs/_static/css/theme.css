@@ -20,6 +20,14 @@ audio, canvas, video {
     display: none
 }
 
+a.reference.internal span.pre {
+    font-size: 150%;
+    font-weight: bold;
+    display: inline-block;
+    margin: 3px;
+
+}
+
 * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -4611,7 +4619,7 @@ hr {
 }
 
 .rst-content .wy-breadcrumbs li tt.literal, .wy-breadcrumbs li .rst-content tt.literal, .wy-breadcrumbs li code.literal {
-    color: #404040
+    color: blue;
 }
 
 .wy-breadcrumbs-extra {
@@ -5405,6 +5413,14 @@ footer p {
     font-size: 60%;
     margin: 0 .2em
 }
+.rst-content.style-external-links a.reference.external:after {
+    font-family: FontAwesome;
+    content: "\f08e";
+    color: #b3b3b3;
+    vertical-align: super;
+    font-size: 60%;
+    margin: 0 .2em
+}
 
 .rst-content blockquote {
     margin-left: 24px;
@@ -6009,3 +6025,4 @@ span[id*=MathJax-Span] {
     src: url(fonts/Roboto-Slab-Bold.woff2?9984f4a9bda09be08e83f2506954adbe) format("woff2"), url(fonts/Roboto-Slab-Bold.woff?bed5564a116b05148e3b3bea6fb1162a) format("woff");
     font-display: block
 }
+

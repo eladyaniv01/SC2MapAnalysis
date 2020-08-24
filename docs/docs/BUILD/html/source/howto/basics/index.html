@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Basic - Recipes &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Plotting - Recipes" href="../plot/index.html" />
+    <link rel="prev" title="How To - Recipes" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Sc2MapAnalyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">How To - Recipes</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic - Recipes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-our-starting-region">Get our Starting <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-enemy-main-and-natural-region">Get Enemy Main and Natural <code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#region-connectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code> connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../plot/index.html">Plotting - Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../PathFinding/index.html">Pathfinding - Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Buildings/index.html">Building Grid - Recipes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/index.html">Package Contents</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sc2MapAnalyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">How To - Recipes</a> &raquo;</li>
+        
+      <li>Basic - Recipes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/source/howto/basics/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+    <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://img.shields.io/github/package-json/v/eladyaniv01/SC2MapAnalysis?color-blue&amp;logo-EladYaniv01&amp;style-plastic" width="109" height="21" /></p>
+  <p><a href="https://github.com/eladyaniv01/SC2MapAnalysis/tree/master" target="_"><img style="display: block; margin-left: auto; margin-right: auto;" src="https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch-master" /></a></p>
+  <script type="text/javascript">
+  <!-- Adds target=_blank to external links -->
+
+  $(document).ready(function () {
+    $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+  });
+</script><div class="section" id="basic-recipes">
+<h1>Basic - Recipes<a class="headerlink" href="#basic-recipes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-our-starting-region">
+<h2>Get our Starting <a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#get-our-starting-region" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.where" title="MapAnalyzer.MapData.MapData.where"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where()</span></code></a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
+<span class="go">Region 1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-enemy-main-and-natural-region">
+<h2>Get Enemy Main and Natural <a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#get-enemy-main-and-natural-region" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.where_all" title="MapAnalyzer.MapData.MapData.where_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where_all()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># query in which region is the enemy main</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_start_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_polygon_areas_in_position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+<span class="go">[Region 0]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span> <span class="o">=</span> <span class="n">all_polygon_areas_in_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span>
+<span class="go">Region 0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># now it is very easy to know which region is the enemy&#39;s natural</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span> <span class="o">=</span> <span class="n">enemy_main_base_region</span><span class="o">.</span><span class="n">connected_regions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># connected_regions is a property of a Region</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span>
+<span class="go">Region 3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="region-connectivity">
+<h2><a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> connectivity<a class="headerlink" href="#region-connectivity" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
+<span class="go">Region 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span> <span class="c1"># returns a list</span>
+<span class="go">[Region 3]</span>
+</pre></div>
+</div>
+<p><strong>Indices and tables</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../../genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="../../../py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="../../../search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../plot/index.html" class="btn btn-neutral float-right" title="Plotting - Recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="How To - Recipes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Elad Yaniv
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

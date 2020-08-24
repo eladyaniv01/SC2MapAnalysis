@@ -1,0 +1,32 @@
+:orphan:
+
+:mod:`MapAnalyzer.exceptions`
+=============================
+
+.. py:module:: MapAnalyzer.exceptions
+
+
+Module Contents
+---------------
+
+.. py:exception:: CustomDeprecationWarning(oldarg=None, newarg=None)
+
+   Bases: :class:`BaseException`
+
+   Common base class for all exceptions
+
+
+.. py:exception:: PatherNoPointsException(start, goal)
+
+   Bases: :class:`BaseException`
+
+   Common base class for all exceptions
+
+
+.. py:exception:: OutOfBoundsException(p: Tuple[int, int])
+
+   Bases: :class:`BaseException`
+
+   Common base class for all exceptions
+
+

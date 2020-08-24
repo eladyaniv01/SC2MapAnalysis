@@ -10,6 +10,7 @@ Region(Polygon)
 
    MapAnalyzer.Region.Region
 
+
 .. py:class:: Region(map_data: MapData, array: np.ndarray, label: int, map_expansions: List[Point2])
 
    Bases: :class:`MapAnalyzer.Polygon.Polygon`
@@ -19,9 +20,9 @@ Region(Polygon)
    .. tip::
 
       A :class:`.Region` may contain other :class:`.Polygon` inside it,
-      
+
       Such as :class:`.ChokeArea` and :class:`.MDRamp`.
-      
+
       But it will never share a point with another :class:`.Region`
 
    .. method:: region_ramps(self)
