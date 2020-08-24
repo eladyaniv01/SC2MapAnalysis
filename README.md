@@ -13,10 +13,6 @@ Summary
 -------
 A standalone plugin for python SC2 api 
 
-Early Stage development,
-- [Getting Started](#getting-started)
-- [Pathfinding](#Pathfinding)
-- [How to plug it on your bot](#How-to-plug-it-on-your-bot)
 
 Why Do we need this ? 
 =====================
