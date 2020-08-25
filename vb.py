@@ -10,6 +10,7 @@ def vb():
     pass
 
 def update_readme_to_sphinx():
+    return
     import re
     with open(".nojekyll", "w") as f:
         f.close()
@@ -54,7 +55,7 @@ def update_setup(new_version):
 @vb.command(help='sphinx make for gh pages')
 def makedocs():
     click.echo(click.style("Updating README.MD", fg='blue'))
-    update_readme_to_sphinx()
+    # update_readme_to_sphinx()
     p = Path()
     path = p.joinpath('docs').absolute()
     click.echo(click.style(f"calling {path}//make github", fg='green'))
