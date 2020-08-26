@@ -23,7 +23,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * BuildablePoints to Buildables ([ce3b7ac](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ce3b7acb2d3cacdf7b744d76c2f9e02aabe71413))
 * Pather add_influence to add_cost ([8cc6c47](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8cc6c4747f1d0aa0228037cffa3d2989ee9ece83))
-* version attribute is no in MapAnalyzer.__init__.py ,  updated versionbump methods  in vb,  and adjusted setup ([6120e6b](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6120e6b12458af6968a06ae28bbc6351cc5f1498))
 
 ### [0.0.56](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.55...v0.0.56) (2020-08-22)
 
@@ -108,11 +107,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 ### [0.0.51](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.50...v0.0.51) (2020-08-14)
-
-### Features
-
-* Polygon/ Region now has the property 'buildable_points' ([#63](https://github.com/eladyaniv01/SC2MapAnalysis/issues/63)) ([2100501](https://github.com/eladyaniv01/SC2MapAnalysis/commit/21005016ab9669dfc276aee4a709e0c24435f2d2))
-
 
 ### Bug Fixes
 
