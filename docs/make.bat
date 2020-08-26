@@ -39,7 +39,7 @@ goto end
 
 :github
 rmdir /S /Q "%BUILDDIR%"
-%SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+%SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% -v %O%
 echo. 2>"%DOCS%/.nojekyll"
 goto end
 

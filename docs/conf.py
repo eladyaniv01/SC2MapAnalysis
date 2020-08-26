@@ -50,6 +50,8 @@ extensions = ['sphinx.ext.viewcode',
               'rinoh.frontend.sphinx',
               'sphinxjp.themecore']
 
+autodoc_mock_imports = ["sc2pathlibp"]
+
 extensions.append('autoapi.extension')
 autoapi_options =[ 'members',
                    'show-inheritance',
@@ -64,6 +66,10 @@ autoapi_ignore = ["*sc2pathlibp*"]
 
 autoapi_keep_files = True
 autoapi_generate_api_docs = False
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This pattern also affects html_static_path and html_extra_path.
+exclude_patterns = ['technical']
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
@@ -72,7 +78,7 @@ napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = False
-napoleon_use_admonition_for_references = False
+napoleon_use_admonition_for_references = True
 napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
@@ -92,10 +98,7 @@ source_suffix = {
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['technical']
+
 
 viewcode_follow_imported_members = True
 # -- Options for HTML output -------------------------------------------------
