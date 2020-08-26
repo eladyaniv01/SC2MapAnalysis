@@ -89,7 +89,7 @@ class TestSanity:
 
             for point in polygon.corner_points:
                 assert (point in polygon.corner_array)
-            assert (polygon.buildable_points.free_pct is not None)
+            assert (polygon.buildables.free_pct is not None)
 
     def test_regions(self, map_data: MapData) -> None:
         for region in map_data.regions.values():

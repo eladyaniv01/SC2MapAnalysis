@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from MapAnalyzer import MapData, Region
 
 
-class BuildablePoints:
+class Buildables:
     """
 
     Represents the Buildable Points in a :class:`.Polygon`,
@@ -83,7 +83,7 @@ class Polygon:
         self.is_region = False
         self.areas = []  # set by map_data / Region
         self.map_data.polygons.append(self)
-        self._buildable_points = BuildablePoints(polygon=self)
+        self._buildables = Buildables(polygon=self)
 
     def _set_points(self):
 
@@ -96,7 +96,7 @@ class Polygon:
         self.indices = self.map_data.points_to_indices(self.points)
 
     @property
-    def buildable_points(self) -> BuildablePoints:
+    def buildables(self) -> Buildables:
         """
 
         :rtype: :class:`.BuildablePoints`
@@ -104,8 +104,8 @@ class Polygon:
         Is a responsible for holding and updating the buildable points of it's respected :class:`.Polygon`
 
         """
-        self._buildable_points.update()
-        return self._buildable_points
+        self._buildables.update()
+        return self._buildables
 
     @property
     def regions(self) -> List["Region"]:
