@@ -7,15 +7,14 @@ Polygon Variants & Helpers
 
 .. autoapisummary::
 
+   MapAnalyzer.Polygon.Buildables
    MapAnalyzer.Polygon.Polygon
-   MapAnalyzer.Polygon.BuildablePoints
    MapAnalyzer.constructs.ChokeArea
    MapAnalyzer.constructs.MDRamp
    MapAnalyzer.constructs.VisionBlockerArea
 
 
-
-.. py:class:: BuildablePoints(polygon)
+.. py:class:: Buildables(polygon)
 
    Represents the Buildable Points in a :class:`.Polygon`,
 
@@ -43,7 +42,7 @@ Polygon Variants & Helpers
 
    Base Class for Representing an "Area"
 
-   .. method:: buildable_points(self)
+   .. method:: buildables(self)
       :property:
 
 
@@ -142,9 +141,6 @@ Polygon Variants & Helpers
       Sum of all points
 
 
-
-
-
 .. py:class:: PathLibChoke(pathlib_choke: Choke, pk: int)
 
    wrapper to the data returned by :mod:`.MapAnalyzer.sc2pathlibp`
@@ -207,5 +203,4 @@ Polygon Variants & Helpers
    Units that attack from within a :class:`VisionBlockerArea`
 
    cannot be targeted by units that do not stand inside
-
 

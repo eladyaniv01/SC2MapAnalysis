@@ -164,7 +164,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span><span class="p">,</span> <span class="n">Region</span>
 
 
-<div class="viewcode-block" id="BuildablePoints"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.BuildablePoints">[docs]</a><span class="k">class</span> <span class="nc">BuildablePoints</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables">[docs]</a><span class="k">class</span> <span class="nc">Buildables</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Represents the Buildable Points in a :class:`.Polygon`,</span>
@@ -181,7 +181,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="BuildablePoints.free_pct"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.BuildablePoints.free_pct">[docs]</a>    <span class="k">def</span> <span class="nf">free_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables.free_pct"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables.free_pct">[docs]</a>    <span class="k">def</span> <span class="nf">free_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        A simple method for knowing what % of the points is left available out of the total</span>
@@ -192,7 +192,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuildablePoints.update"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.BuildablePoints.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables.update"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        To be called only by :class:`.Polygon`, this ensures that updates are done in a lazy fashion,</span>
@@ -237,7 +237,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_region</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set by map_data / Region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span> <span class="o">=</span> <span class="n">BuildablePoints</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buildables</span> <span class="o">=</span> <span class="n">Buildables</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -250,7 +250,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.buildable_points"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.buildable_points">[docs]</a>    <span class="k">def</span> <span class="nf">buildable_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuildablePoints</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.buildables"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.buildables">[docs]</a>    <span class="k">def</span> <span class="nf">buildables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Buildables</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: :class:`.BuildablePoints`</span>
@@ -258,8 +258,8 @@
 <span class="sd">        Is a responsible for holding and updating the buildable points of it&#39;s respected :class:`.Polygon`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildable_points</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buildables</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildables</span></div>
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Polygon.regions"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.regions">[docs]</a>    <span class="k">def</span> <span class="nf">regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Region&quot;</span><span class="p">]:</span>

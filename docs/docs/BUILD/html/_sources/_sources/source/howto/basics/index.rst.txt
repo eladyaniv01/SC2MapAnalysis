@@ -32,6 +32,7 @@ Get Enemy Main and Natural :class:`.Region`
         Region 0
 
         >>> # now it is very easy to know which region is the enemy's natural
+        >>> # connected_regions is a property of a Region
         >>> enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region
         >>> enemy_natural_region
         Region 3
