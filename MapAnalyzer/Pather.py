@@ -6,7 +6,7 @@ from numpy import ndarray
 from sc2.position import Point2
 from skimage import draw as skdraw
 
-from MapAnalyzer.constants import NONPATHABLE_RADIUS, RESOURCE_BLOCKER_RADIUS
+from MapAnalyzer.constants import NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR, GEYSER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
@@ -72,13 +72,14 @@ class MapAnalyzerPather:
         nonpathables = self.map_data.bot.structures
         nonpathables.extend(self.map_data.bot.enemy_structures)
         nonpathables.extend(self.map_data.mineral_fields)
+        nonpathables.extend(self.map_data.normal_geysers)
         for obj in nonpathables:
-            radius = NONPATHABLE_RADIUS
-            if 'mineral' in obj.name.lower():
-                radius = NONPATHABLE_RADIUS * 1.5
+            radius = NONPATHABLE_RADIUS_FACTOR
+            if 'geyser' in obj.name.lower():
+                radius = NONPATHABLE_RADIUS_FACTOR * GEYSER_RADIUS_FACTOR
             grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf)
         for pos in self.map_data.resource_blockers:
-            radius = RESOURCE_BLOCKER_RADIUS
+            radius = RESOURCE_BLOCKER_RADIUS_FACTOR
             grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf)
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]

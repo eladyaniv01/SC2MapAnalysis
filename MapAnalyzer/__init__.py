@@ -4,10 +4,9 @@ from .MapData import MapData
 from .Polygon import Polygon
 from .Region import Region
 from .constructs import ChokeArea, MDRamp, VisionBlockerArea
-from .constants import __version__
+from pkg_resources import get_distribution, DistributionNotFound
 
-
-
-__version__ = "0.0.57"
-
-    
+try:
+    __version__ = get_distribution('sc2mapanalyzer')
+except DistributionNotFound:
+    __version__ = 'dev'

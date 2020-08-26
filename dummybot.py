@@ -72,24 +72,33 @@ class MATester(sc2.BotAI):
                     (Point2(self.get_random_point(50, 130, 25, 175)), r))
         return pts
 
-    def _plot_influence(self):
-        for tup in self.influence_points:
-            p = tup[0]
-            r = tup[1]
+    def _plot_influence(self, units):
+        for unit in units:
+            p = unit.position
+            r = unit.radius
             h = self.get_terrain_z_height(p)
             pos = Point3((p.x, p.y, h))
-            self.client.debug_sphere_out(p=pos, r=r - 1, color=RED)
+            self.client.debug_sphere_out(p=pos, r=r, color=RED)
+
 
     async def on_step(self, iteration: int):
-        pos = self.map_data.bot.townhalls.ready.first.position
-        areas = self.map_data.where_all(pos)
-        self.logger.debug(areas)
-        region = areas[0]
-        self.logger.debug(region)
-        self.logger.debug(region.points)
-        list_points = list(region.points)
-        self.logger.debug(type(list_points))
-        self.logger.debug(list_points)
+        nonpathables = self.map_data.bot.structures
+        nonpathables.extend(self.map_data.bot.enemy_structures)
+        nonpathables.extend(self.map_data.mineral_fields)
+        nonpathables.extend(self.map_data.bot.vespene_geyser)
+        destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
+        nonpathables.extend(destructables_filtered)
+        self.influence_points = nonpathables
+        self._plot_influence(nonpathables)
+        # pos = self.map_data.bot.townhalls.ready.first.position
+        # areas = self.map_data.where_all(pos)
+        # self.logger.debug(areas)
+        # region = areas[0]
+        # self.logger.debug(region)
+        # self.logger.debug(region.points)
+        # list_points = list(region.points)
+        # self.logger.debug(type(list_points))
+        # self.logger.debug(list_points)
         # self._plot_influence()
         # hero = self.workers.by_tag(self.hero_tag)
         # dist = 1.5 * hero.calculate_speed() * 1.4
@@ -152,6 +161,7 @@ def main():
     map = "GoldenWallLE"
     map = "GoldenWallLE"
     map = "AbyssalReefLE"
+    map = "SubmarineLE"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],

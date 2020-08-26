@@ -8,14 +8,22 @@ from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
+
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
-from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA, __version__
+from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
 from .constructs import ChokeArea, PathLibChoke, MDRamp, VisionBlockerArea
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
+
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    __version__ = get_distribution('sc2mapanalyzer')
+except DistributionNotFound:
+    __version__ = 'dev'
 
 WHITE = "\u001b[32m"
 
