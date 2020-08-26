@@ -8,8 +8,8 @@ from skimage import draw as skdraw
 
 from MapAnalyzer.constants import NONPATHABLE_RADIUS, RESOURCE_BLOCKER_RADIUS
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
-from .sc2pathlibp import Sc2Map
 from MapAnalyzer.Region import Region
+from .sc2pathlibp import Sc2Map
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -76,15 +76,15 @@ class MapAnalyzerPather:
             radius = NONPATHABLE_RADIUS
             if 'mineral' in obj.name.lower():
                 radius = NONPATHABLE_RADIUS * 1.5
-            grid = self.add_influence(p=obj.position.rounded, r=radius * obj.radius, arr=grid, weight=np.inf)
+            grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS
-            grid = self.add_influence(p=pos, r=radius, arr=grid, weight=np.inf)
+            grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf)
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
             for rock in destructables_filtered:
                 if "plates" not in rock.name.lower():
-                    self.add_influence(p=rock.position, r=1 * rock.radius, arr=grid, weight=np.inf)
+                    self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
     def get_base_pathing_grid(self) -> ndarray:
@@ -134,11 +134,12 @@ class MapAnalyzerPather:
             self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    def add_influence(self, p: Tuple[int, int], r: int, arr: ndarray, weight: int = 100, safe: bool = True) -> ndarray:
-        ri, ci = skdraw.disk(center=(int(p[0]), int(p[1])), radius=r, shape=arr.shape)
+    def add_cost(self, position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
+                 safe: bool = True) -> ndarray:
+        ri, ci = skdraw.disk(center=(int(position[0]), int(position[1])), radius=radius, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.map_data.logger.debug(OutOfBoundsException(p))
+            self.map_data.logger.debug(OutOfBoundsException(position))
             # self.map_data.logger.trace()
             return arr
 

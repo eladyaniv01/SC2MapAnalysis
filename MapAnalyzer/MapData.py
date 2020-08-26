@@ -259,7 +259,7 @@ class MapData:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
 
         """
-        return self.pather.add_influence(p=position, r=radius, arr=grid, weight=weight, safe=safe)
+        return self.pather.add_cost(position=position, radius=radius, arr=grid, weight=weight, safe=safe)
 
     """Utility methods"""
 
