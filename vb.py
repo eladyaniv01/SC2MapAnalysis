@@ -4,10 +4,7 @@ import subprocess
 from pathlib import Path
 __author__ = "Elad Yaniv"
 import click
-from pkg_resources import get_distribution
 
-VERSION = get_distribution('sc2mapanalyzer')
-current_version = VERSION.version
 
 
 @click.group(help='Commands marked with (LIVE) require SC launch and windows environment.')
@@ -31,23 +28,6 @@ def parse_setup():
     with open("setup.py", 'r') as f:
         setup_parsed = f.read()
     return setup_parsed
-
-
-def b_minor(new_version):
-    setup_parsed = parse_setup()
-    old_version_regex = r"(\d*[.]\d*[.]\d*)"
-    old_version = re.findall(old_version_regex, setup_parsed)[0]
-    setup_updated = setup_parsed.replace(old_version, new_version)
-    with open('setup.py', 'w') as f:
-        f.write(setup_updated)
-
-    curdir = os.getcwd()
-    click.echo(click.style(curdir + '\\standard-version', fg='blue'))
-    subprocess.check_call('git fetch', shell=True)
-    subprocess.check_call('git pull', shell=True)
-    subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
-    # subprocess.check_call('git push --follow-tags origin', shell=True)
-
 
 @vb.command(help='sphinx make for gh pages')
 def makedocs():
@@ -81,15 +61,15 @@ def mt(apply):
 
 @vb.command(help='Get current version')
 def gv():
-    old_version = current_version
-    click.echo(click.style(old_version, fg='green'))
     click.echo("Running git describe")
     subprocess.check_call('git describe')
 
 
 @vb.command(help='Bump Minor')
 def bumpminor():
-    old_version = current_version
+    setup_parsed = parse_setup()
+    old_version_regex = r"(\d*[.]\d*[.]\d*)"
+    old_version = re.findall(old_version_regex, setup_parsed)[0]
     minor = re.findall(r"([.]\d*)", old_version)[-1]
     minor = minor.replace('.', '')
     click.echo(f"Current Version: " + click.style(old_version, fg='green'))
@@ -99,6 +79,24 @@ def bumpminor():
     new_version = str(old_version).replace(minor, bump)
     click.echo(f"Updated Version: " + click.style(new_version, fg='red'))
     b_minor(new_version)
+
+
+def b_minor(new_version):
+    setup_parsed = parse_setup()
+    old_version_regex = r"(\d*[.]\d*[.]\d*)"
+    old_version = re.findall(old_version_regex, setup_parsed)[0]
+    setup_updated = setup_parsed.replace(old_version, new_version)
+    with open('setup.py', 'w') as f:
+        f.write(setup_updated)
+
+    curdir = os.getcwd()
+    click.echo(click.style(curdir + '\\standard-version', fg='blue'))
+    subprocess.check_call('git fetch', shell=True)
+    subprocess.check_call('git pull', shell=True)
+    subprocess.check_call('git add setup.py', shell=True)
+    subprocess.check_call('git commit -m \"setup bump\" ', shell=True)
+    subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
+    # subprocess.check_call('git push --follow-tags origin', shell=True)
 
 
 @vb.command(help='Custom git log command for last N days')
