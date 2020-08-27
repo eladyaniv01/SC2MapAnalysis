@@ -78,8 +78,8 @@ class TestPathing:
 
     def test_region_connectivity(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
-        region = map_data.where(base.position_tuple)
-        destination = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        region = map_data.where_all(base.position_tuple)[0]
+        destination = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         all_possible_paths = map_data.region_connectivity_all_paths(start_region=region,
                                                                     goal_region=destination)
         for p in all_possible_paths:
@@ -92,10 +92,10 @@ class TestPathing:
 
     def test_handle_illegal_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
-        reg_start = map_data.where(base.position_tuple)
+        reg_start = map_data.where_all(base.position_tuple)[0]
         assert (isinstance(reg_start,
                            Region)), f"reg_start = {reg_start},  base = {base}, position_tuple = {base.position_tuple}"
-        reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         p0 = reg_start.center
         p1 = reg_end.center
         pts = []
@@ -115,8 +115,8 @@ class TestPathing:
 
     def test_sensitivity(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
-        reg_start = map_data.where(base.position_tuple)
-        reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         p0 = reg_start.center
         p1 = reg_end.center
         arr = map_data.get_pyastar_grid()
@@ -130,8 +130,8 @@ class TestPathing:
     def test_pathing_influence(self, map_data: MapData, caplog: LogCaptureFixture) -> None:
         logger.info(map_data)
         base = map_data.bot.townhalls[0]
-        reg_start = map_data.where(base.position_tuple)
-        reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         p0 = reg_start.center
         p1 = reg_end.center
         pts = []
