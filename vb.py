@@ -54,13 +54,21 @@ def update_setup(new_version):
 
 @vb.command(help='sphinx make for gh pages')
 def makedocs():
-    click.echo(click.style("Updating README.MD", fg='blue'))
+    # click.echo(click.style("Updating README.MD", fg='blue'))
     # update_readme_to_sphinx()
     p = Path()
     path = p.joinpath('docs').absolute()
     click.echo(click.style(f"calling {path}//make github", fg='green'))
     subprocess.check_call(f'{path}//make github', shell=True)
 
+@vb.command(help='add, commit , push')
+def pushdocs():
+    # click.echo(click.style("Updating README.MD", fg='blue'))
+    # update_readme_to_sphinx()
+
+    subprocess.check_call('git add docs --all -f', shell=True)
+    subprocess.check_call('git commit -m \"docs update\" ', shell=True)
+    subprocess.check_call('git push" ', shell=True)
 
 @vb.command(help='print setup.py')
 def printsetup():
