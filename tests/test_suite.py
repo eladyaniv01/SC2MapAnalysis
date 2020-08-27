@@ -6,7 +6,7 @@ from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_file_list, mock_map_data
-from tests.mocksetup import get_map_datas, logger, random, Region, st
+from tests.mocksetup import get_map_datas, logger, random, st
 
 logger = logger
 
@@ -74,13 +74,12 @@ class TestSanity:
             assert (polygon.width > 0)
             assert (polygon.area > 0)
             assert (polygon.is_inside_point(polygon.center))
-            assert (polygon.is_inside_indices(polygon.center))
+
 
             extended_pts = polygon.points.union(polygon.perimeter_points)
             assert (polygon.points == extended_pts)
 
             for point in extended_pts:
-                assert (polygon.is_inside_indices(point) is True)
                 assert (polygon.is_inside_point(point) is True)
 
                 # https://github.com/BurnySc2/python-sc2/issues/62
@@ -94,12 +93,7 @@ class TestSanity:
     def test_regions(self, map_data: MapData) -> None:
         for region in map_data.regions.values():
             for p in region.points:
-                assert isinstance(
-                        map_data.where(p), Region  # using where because the first return will be always Region
-                ), f"<MD : {map_data}, Region : {region}," \
-                    f" where :  {map_data.where(region.center)} point : {region.center}>"
-
-            assert (region in map_data.where_all(region.center))
+                assert (region in map_data.where_all(p)), f"expected {region}, got {map_data.where_all(p)}, point {p}"
             assert (region == map_data.where(region.center))
 
             # coverage
@@ -123,4 +117,4 @@ class TestSanity:
             for p in vb.points:
                 assert (vb in map_data.where_all(p)), \
                     map_data.logger.error(f"<Map : {map_data}, Choke : {vb},"
-                                          f" where :  {map_data.where(vb.center)} point : {vb.center}>")
+                                          f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")
