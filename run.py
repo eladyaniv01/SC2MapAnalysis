@@ -43,8 +43,8 @@ for mf in map_files:
     bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
     map_data = MapData(bot, loglevel="DEBUG")
     base = map_data.bot.townhalls[0]
-    reg_start = map_data.where(base.position_tuple)
-    reg_end = map_data.where(map_data.bot.enemy_start_locations[0].position)
+    reg_start = map_data.where_all(base.position_tuple)[0]
+    reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
     p0 = Point2(reg_start.center)
     p1 = Point2(reg_end.center)
     influence_grid = map_data.get_clean_air_grid()
