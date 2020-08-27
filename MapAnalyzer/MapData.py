@@ -408,7 +408,7 @@ class MapData:
 
                 >>> enemy_army_position = Point2((50,50)) # random point for this example
                 >>> my_base_location = self.bot.townhalls[0]
-                >>> my_region = self.where(my_base_location)
+                >>> my_region = self.where_all(my_base_location)[0]
                 >>> corners = my_region.corner_points
                 >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
                 (57,120)
@@ -549,32 +549,7 @@ class MapData:
         if isinstance(point, tuple):
             point = int(point[0]), int(point[1])
         for region in self.regions.values():
-            if region.inside_p(point):
-                return region
-
-    @lru_cache(100)
-    def in_region_i(
-            self, point: Union[Point2, tuple]
-    ) -> Optional[Region]:  # pragma: no cover
-        """
-        :rtype: Optional[:class:`.Region`]
-
-        Will query a if a point is in, and in which Region using Indices <slower>
-
-
-
-        Tip:
-            :meth:`.in_region_p` performs better,  and should be used.
-
-            time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-
-        """
-        if isinstance(point, Point2):
-            point = point.rounded
-        if isinstance(point, tuple):
-            point = int(point[0]), int(point[1])
-        for region in self.regions.values():
-            if region.inside_i(point):
+            if region.is_inside_point(point):
                 return region
 
     """ longest map compile is 1.9 s """
