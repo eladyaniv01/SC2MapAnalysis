@@ -35,8 +35,8 @@ class MATester(sc2.BotAI):
         self.map_data = MapData(self, loglevel="DEBUG")
         self.logger = self.map_data.logger
         base = self.townhalls[0]
-        reg_start = self.map_data.where(base.position_tuple)
-        reg_end = self.map_data.where(self.enemy_start_locations[0].position)
+        reg_start = self.map_data.where_all(base.position_tuple)[0]
+        reg_end = self.map_data.where_all(self.enemy_start_locations[0].position)[0]
         self.p0 = reg_start.center
         self.p1 = reg_end.center
         self.influence_grid = self.map_data.get_pyastar_grid()
