@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapData &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  <title>MapData &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
   
 
   
@@ -507,7 +507,7 @@ weight of 100</p>
 passing in the Area’s corners as points and enemy army’s location as target</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_army_position</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span> <span class="c1"># random point for this example</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">corners</span> <span class="o">=</span> <span class="n">my_region</span><span class="o">.</span><span class="n">corner_points</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">best_siege_spot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">corners</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">enemy_army_position</span><span class="p">)</span>
 <span class="go">(57,120)</span>
@@ -625,7 +625,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 
 <dl class="py method">
 <dt id="MapAnalyzer.MapData.MapData.in_region_i">
-<code class="sig-name descname">in_region_i</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Point2<span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/MapData.html#MapData.in_region_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.in_region_i" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">in_region_i</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Point2<span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MapAnalyzer.MapData.MapData.in_region_i" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Optional[<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>]</p>

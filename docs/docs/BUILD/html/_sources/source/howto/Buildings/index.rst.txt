@@ -5,15 +5,15 @@ Find wall off building positions in a :class:`.Region`
 ------------------------------------------------------
 
 * :class:`.Polygon.Buildables`
-* :meth:`.Buildables.polygon`
-* :meth:`.Buildables.points`
+* :obj:`.Buildables.polygon`
+* :obj:`.Buildables.points`
 * :meth:`.Buildables.free_pct`
 * :meth:`.Region.region_ramps`
 
 .. code-block::
 
         >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where(my_base_raw_location)
+        >>> my_region = map_data.where_all(my_base_raw_location)[0]
         >>> my_region
         Region 1
         >>> # in most cases  region will have only one ramp,  but there are cases of more than one
@@ -22,8 +22,7 @@ Find wall off building positions in a :class:`.Region`
         >>> my_region_ramp = my_region.region_ramps[0]
         >>> my_region_ramp
         <MDRamp[size=32]: [Region 3, Region 1]>
-        >>> # buildable_points is a class! not a list of points, probably needs a rename
-        >>> my_region_ramp.buildable_points
+        >>> my_region_ramp.buildables
         <MapAnalyzer.Polygon.Buildables object at 0x000001B5208DD2C8>
         >>> # you can also see that these buildable points only belong
         >>> # to this specific Polygon, in our case MDRamp

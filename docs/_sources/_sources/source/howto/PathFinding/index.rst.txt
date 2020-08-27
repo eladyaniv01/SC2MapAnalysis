@@ -18,12 +18,12 @@ Pathfinding - Recipes
 Pathfinding - from our main to the enemy's main
 -------------------------------------------------
 
-* :meth:`.MapData.where`
+* :meth:`.MapData.where_all`
 * :meth:`.MapData.pathfind`
 
 .. code-block::
 
-        >>> enemy_main_region = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
         >>> grid = map_data.get_pyastar_grid()
@@ -35,14 +35,14 @@ Pathfinding - from our main to the enemy's main
 Plot and Debug the Pather
 -------------------------
 
-* :meth:`.MapData.where`
+* :meth:`.MapData.where_all`
 * :meth:`.MapData.plot_influenced_path`
 
 .. code-block::
 
         >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where(my_base_raw_location)
-        >>> enemy_main_region = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        >>> my_region = map_data.where_all(my_base_raw_location)[0]
+        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
         >>> grid = map_data.get_pyastar_grid()
@@ -57,7 +57,7 @@ Plot and Debug the Pather
 Plotting our custom Cost
 -------------------------
 
-* :meth:`.MapData.where`
+* :meth:`.MapData.where_all`
 * :meth:`.MapData.plot_influenced_path`
 * :meth:`.MapData.add_cost`
 
@@ -66,8 +66,8 @@ Plotting our custom Cost
 .. code-block::
 
         >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where(my_base_raw_location)
-        >>> enemy_main_region = map_data.where(map_data.bot.enemy_start_locations[0].position)
+        >>> my_region = map_data.where_all(my_base_raw_location)[0]
+        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
         >>> grid = map_data.get_pyastar_grid()

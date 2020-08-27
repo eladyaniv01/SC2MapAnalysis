@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
   
 
   
@@ -162,14 +162,22 @@
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_fill_holes</span><span class="p">,</span> <span class="n">center_of_mass</span><span class="p">,</span> <span class="n">generate_binary_structure</span><span class="p">,</span> <span class="n">label</span> <span class="k">as</span> <span class="n">ndlabel</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
 
+
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
-<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span><span class="p">,</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
 <span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
+
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">get_distribution</span><span class="p">,</span> <span class="n">DistributionNotFound</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">__version__</span> <span class="o">=</span> <span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;sc2mapanalyzer&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">DistributionNotFound</span><span class="p">:</span>
+    <span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;dev&#39;</span>
 
 <span class="n">WHITE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\u001b</span><span class="s2">[32m&quot;</span>
 
@@ -554,7 +562,7 @@
 
 <span class="sd">                &gt;&gt;&gt; enemy_army_position = Point2((50,50)) # random point for this example</span>
 <span class="sd">                &gt;&gt;&gt; my_base_location = self.bot.townhalls[0]</span>
-<span class="sd">                &gt;&gt;&gt; my_region = self.where(my_base_location)</span>
+<span class="sd">                &gt;&gt;&gt; my_region = self.where_all(my_base_location)[0]</span>
 <span class="sd">                &gt;&gt;&gt; corners = my_region.corner_points</span>
 <span class="sd">                &gt;&gt;&gt; best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)</span>
 <span class="sd">                (57,120)</span>
@@ -695,32 +703,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">inside_p</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">region</span></div>
-
-    <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<div class="viewcode-block" id="MapData.in_region_i"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.in_region_i">[docs]</a>    <span class="k">def</span> <span class="nf">in_region_i</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Region</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :rtype: Optional[:class:`.Region`]</span>
-
-<span class="sd">        Will query a if a point is in, and in which Region using Indices &lt;slower&gt;</span>
-
-
-
-<span class="sd">        Tip:</span>
-<span class="sd">            :meth:`.in_region_p` performs better,  and should be used.</span>
-
-<span class="sd">            time benchmark 18.6 µs ± 197 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">Point2</span><span class="p">):</span>
-            <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">rounded</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">inside_i</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">is_inside_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">region</span></div>
 
     <span class="sd">&quot;&quot;&quot; longest map compile is 1.9 s &quot;&quot;&quot;</span>

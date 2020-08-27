@@ -9,7 +9,7 @@ Get our Starting :class:`.Region`
 .. code-block::
 
         >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where(my_base_raw_location)
+        >>> my_region = map_data.where_all(my_base_raw_location)[0]
         >>> my_region
         Region 1
 
@@ -46,7 +46,7 @@ Get Enemy Main and Natural :class:`.Region`
 .. code-block::
 
         >>> my_base_raw_location = map_data.bot.townhalls[0]
-        >>> my_region = map_data.where(my_base_location)
+        >>> my_region = map_data.where_all(my_base_location)[0]
         >>> my_region
         Region 1
         >>> my_region.connected_regions # returns a list

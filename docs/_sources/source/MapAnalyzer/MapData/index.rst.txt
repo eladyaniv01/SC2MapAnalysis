@@ -281,7 +281,7 @@ MapData
          
          >>> enemy_army_position = Point2((50,50)) # random point for this example
          >>> my_base_location = self.bot.townhalls[0]
-         >>> my_region = self.where(my_base_location)
+         >>> my_region = self.where_all(my_base_location)[0]
          >>> corners = my_region.corner_points
          >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
          (57,120)

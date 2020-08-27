@@ -16,8 +16,14 @@ copyright = '2020, Elad Yaniv'
 author = 'Elad Yaniv'
 
 # The full version, including alpha/beta/rc tags
-from MapAnalyzer import __version__
-release =  __version__
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    __version__ = get_distribution('sc2mapanalyzer').version
+except DistributionNotFound:
+    __version__ = 'dev'
+
+release = __version__
 html_theme = "sphinx_rtd_theme"
 # html_theme = 'yummy_sphinx_theme'
 # html_theme = 'trstyle'

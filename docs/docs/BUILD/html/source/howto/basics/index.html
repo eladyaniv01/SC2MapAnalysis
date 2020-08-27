@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Basic - Recipes &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  <title>Basic - Recipes &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
   
 
   
@@ -184,7 +184,7 @@
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.where" title="MapAnalyzer.MapData.MapData.where"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where()</span></code></a></p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
 <span class="go">Region 1</span>
 </pre></div>
@@ -219,7 +219,7 @@
 <li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
 <span class="go">Region 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span> <span class="c1"># returns a list</span>

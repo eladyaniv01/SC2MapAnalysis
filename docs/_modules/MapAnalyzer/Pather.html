@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
   
 
   
@@ -160,7 +160,7 @@
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
 <span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">draw</span> <span class="k">as</span> <span class="n">skdraw</span>
 
-<span class="kn">from</span> <span class="nn">MapAnalyzer.constants</span> <span class="kn">import</span> <span class="n">NONPATHABLE_RADIUS</span><span class="p">,</span> <span class="n">RESOURCE_BLOCKER_RADIUS</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.constants</span> <span class="kn">import</span> <span class="n">NONPATHABLE_RADIUS_FACTOR</span><span class="p">,</span> <span class="n">RESOURCE_BLOCKER_RADIUS_FACTOR</span><span class="p">,</span> <span class="n">GEYSER_RADIUS_FACTOR</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.exceptions</span> <span class="kn">import</span> <span class="n">OutOfBoundsException</span><span class="p">,</span> <span class="n">PatherNoPointsException</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">.sc2pathlibp</span> <span class="kn">import</span> <span class="n">Sc2Map</span>
@@ -226,13 +226,14 @@
         <span class="n">nonpathables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">structures</span>
         <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_structures</span><span class="p">)</span>
         <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">mineral_fields</span><span class="p">)</span>
+        <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">normal_geysers</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">nonpathables</span><span class="p">:</span>
-            <span class="n">radius</span> <span class="o">=</span> <span class="n">NONPATHABLE_RADIUS</span>
-            <span class="k">if</span> <span class="s1">&#39;mineral&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">radius</span> <span class="o">=</span> <span class="n">NONPATHABLE_RADIUS</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">NONPATHABLE_RADIUS_FACTOR</span>
+            <span class="k">if</span> <span class="s1">&#39;geyser&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">radius</span> <span class="o">=</span> <span class="n">NONPATHABLE_RADIUS_FACTOR</span> <span class="o">*</span> <span class="n">GEYSER_RADIUS_FACTOR</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_cost</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">rounded</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">obj</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">resource_blockers</span><span class="p">:</span>
-            <span class="n">radius</span> <span class="o">=</span> <span class="n">RESOURCE_BLOCKER_RADIUS</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">RESOURCE_BLOCKER_RADIUS_FACTOR</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_cost</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">include_destructables</span><span class="p">:</span>
             <span class="n">destructables_filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">destructables</span> <span class="k">if</span> <span class="s2">&quot;plates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>

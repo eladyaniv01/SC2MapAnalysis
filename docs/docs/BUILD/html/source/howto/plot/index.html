@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Plotting - Recipes &mdash; Sc2MapAnalyzer 0.0.56 documentation</title>
+  <title>Plotting - Recipes &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
   
 
   
@@ -204,7 +204,7 @@
 <div class="section" id="plot-any-polygon">
 <h2>Plot any  Polygon<a class="headerlink" href="#plot-any-polygon" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
