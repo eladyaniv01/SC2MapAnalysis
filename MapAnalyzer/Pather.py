@@ -91,7 +91,7 @@ class MapAnalyzerPather:
     def get_base_pathing_grid(self) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
-        vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
+        vbs = np.array(self.map_data.bot.game_info.vision_blockers)
         # faster way to do :
         # for point in self.map_data.bot.game_info.vision_blockers:
         #         #     grid[point] = 1
