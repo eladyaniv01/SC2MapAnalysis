@@ -89,7 +89,15 @@ class MapAnalyzerPather:
         return grid
 
     def get_base_pathing_grid(self) -> ndarray:
-        return np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+        #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
+        vbs = np.array(self.map_data.bot.game_info.vision_blockers)
+        # faster way to do :
+        # for point in self.map_data.bot.game_info.vision_blockers:
+        #         #     grid[point] = 1
+        grid[[*vbs.T]] = 1  # <-
+
+        return grid
 
     def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
@@ -127,6 +135,7 @@ class MapAnalyzerPather:
         if grid is None:
             grid = self.get_pyastar_grid()
 
+        # inbounds  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             path = path.tolist()  # this make the mapping not override the int boolean with numpy boolean
