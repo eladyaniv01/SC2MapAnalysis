@@ -8,7 +8,10 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * visionblockers are now counted as pathable in the path grid ([8120fe9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8120fe954faab20ef88f3efd7522c1d521cab530))
-* visionblockers are now counted as pathable in the path grid ([93678d9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/93678d91dcdcd3946d9a86ba3e98b119069e6f49))
+
+### Issues Closed:
+
+ * [#72 VisionBlockerArea is considered unpathable by the pathing grid ](https://github.com/eladyaniv01/SC2MapAnalysis/issues/72)
 
 ### [0.0.59](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.58...v0.0.59) (2020-08-27)
 
