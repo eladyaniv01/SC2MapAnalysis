@@ -13,8 +13,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 * added check that returns only points that are in bounds ([86891c9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/86891c9fb8560ffa8006bc8e9ff6e88d1952f668))
 
+* pather now includes geysers as non pathable ([94d592c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/94d592c5e76b2cca79786ce963269521ceacd9a8))
+
 ### Issues Closed:
 
+ * [#70 pather ignores geysers](https://github.com/eladyaniv01/SC2MapAnalysis/issues/70)
  * [#73 clean_air_grid size is bigger than playable area size, so pather with try to path to areas where units can't go](https://github.com/eladyaniv01/SC2MapAnalysis/issues/73)
 
 
