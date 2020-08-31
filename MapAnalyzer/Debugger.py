@@ -5,6 +5,7 @@ import warnings
 from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
+import sc2
 from loguru import logger
 from numpy import ndarray
 from sc2.position import Point2
@@ -15,17 +16,25 @@ if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
 
-class LogFilter:
+class LocalLogFilter:
     def __init__(self, module_name: str, level: str = "ERROR") -> None:
         self.module_name = module_name
         self.level = level
 
     def __call__(self, record: Dict[str, Any]) -> bool:
         levelno = logger.level(self.level).no
-        if self.module_name.lower() in record["name"].lower() or 'main' in record["name"].lower():
+        if self.module_name.lower() in record["name"].lower():
             return record["level"].no >= levelno
         return False
 
+
+class LogFilter:
+    def __init__(self, level: str = "ERROR") -> None:
+        self.level = level
+
+    def __call__(self, record: Dict[str, Any]) -> bool:
+        levelno = logger.level(self.level).no
+        return record["level"].no >= levelno
 
 class MapAnalyzerDebugger:
     """
@@ -37,10 +46,12 @@ class MapAnalyzerDebugger:
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
-        self.logger = logger
-        self.log_filter = LogFilter(module_name=LOG_MODULE, level=loglevel)
+        self.logger = sc2.main.logger
         self.logger.remove()
+        self.local_log_filter = LocalLogFilter(module_name=LOG_MODULE, level=loglevel)
+        self.log_filter = LogFilter(level=loglevel)
         self.log_format = LOG_FORMAT
+        self.logger.add(sys.stderr, format=self.log_format, filter=self.local_log_filter)
         self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
 
     @staticmethod

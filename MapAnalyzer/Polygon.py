@@ -59,7 +59,7 @@ class Buildables:
             if p[0] < placement_grid.shape[0] and p[1] < placement_grid.shape[1]:
                 if placement_grid[p] == 1:
                     buildable_points.append(p)
-        self.points = buildable_points
+        self.points = list(map(Point2, buildable_points))
 
 
 class Polygon:
