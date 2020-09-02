@@ -95,7 +95,7 @@ class MapAnalyzerPather:
         # faster way to do :
         # for point in self.map_data.bot.game_info.vision_blockers:
         #         #     grid[point] = 1
-        grid[[*vbs.T]] = 1  # <-
+        grid[tuple(vbs.T)] = 1  # <-
 
         return grid
 
