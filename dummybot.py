@@ -32,35 +32,35 @@ class MATester(sc2.BotAI):
         self.path = None
 
     async def on_start(self):
-        self.map_data = MapData(self, loglevel="DEBUG")
+        self.map_data = MapData(self, loglevel="DEBUG", arcade=True)
         self.logger = self.map_data.logger
-        base = self.townhalls[0]
-        reg_start = self.map_data.where_all(base.position_tuple)[0]
-        reg_end = self.map_data.where_all(self.enemy_start_locations[0].position)[0]
-        self.p0 = reg_start.center
-        self.p1 = reg_end.center
-        self.influence_grid = self.map_data.get_pyastar_grid()
-        ramps = reg_end.region_ramps
+        # base = self.townhalls[0]
+        # reg_start = self.map_data.where_all(base.position_tuple)[0]
+        # reg_end = self.map_data.where_all(self.enemy_start_locations[0].position)[0]
+        # self.p0 = reg_start.center
+        # self.p1 = reg_end.center
+        # self.influence_grid = self.map_data.get_pyastar_grid()
+        # ramps = reg_end.region_ramps
         # self.logger.error(ramps)
-        if len(ramps) > 1:
-            if self.map_data.distance(ramps[0].top_center, reg_end.center) < self.map_data.distance(ramps[1].top_center,
-                                                                                                    reg_end.center):
-                self.ramp = ramps[0]
-            else:
-                self.ramp = ramps[1]
-        else:
-            self.ramp = ramps[0]
+        # if len(ramps) > 1:
+        #     if self.map_data.distance(ramps[0].top_center, reg_end.center) < self.map_data.distance(ramps[1].top_center,
+        #                                                                                             reg_end.center):
+        #         self.ramp = ramps[0]
+        #     else:
+        #         self.ramp = ramps[1]
+        # else:
+        #     self.ramp = ramps[0]
 
         # self.influence_points = [(self.ramp.top_center, 2), (Point2((66, 66)), 18)]
 
-        self.influence_points = self._get_random_influence(25, 5)
-        # for tup in self.influence_points:
-        #     p = tup[0]
-        #     r = tup[1]
-        #     self.map_data.add_cost(p, r=r, arr=self.influence_grid)
-        self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens,
-                                           allow_diagonal=True)
-        self.hero_tag = self.workers[0].tag
+        # self.influence_points = self._get_random_influence(25, 5)
+        # # for tup in self.influence_points:
+        # #     p = tup[0]
+        # #     r = tup[1]
+        # #     self.map_data.add_cost(p, r=r, arr=self.influence_grid)
+        # self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens,
+        #                                    allow_diagonal=True)
+        # self.hero_tag = self.workers[0].tag
 
     def get_random_point(self, minx, maxx, miny, maxy):
         return (random.randint(minx, maxx), random.randint(miny, maxy))
@@ -82,14 +82,15 @@ class MATester(sc2.BotAI):
 
 
     async def on_step(self, iteration: int):
-        nonpathables = self.map_data.bot.structures
-        nonpathables.extend(self.map_data.bot.enemy_structures)
-        nonpathables.extend(self.map_data.mineral_fields)
-        nonpathables.extend(self.map_data.bot.vespene_geyser)
-        destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
-        nonpathables.extend(destructables_filtered)
-        self.influence_points = nonpathables
-        self._plot_influence(nonpathables)
+        pass
+        # nonpathables = self.map_data.bot.structures
+        # nonpathables.extend(self.map_data.bot.enemy_structures)
+        # nonpathables.extend(self.map_data.mineral_fields)
+        # nonpathables.extend(self.map_data.bot.vespene_geyser)
+        # destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
+        # nonpathables.extend(destructables_filtered)
+        # self.influence_points = nonpathables
+        # self._plot_influence(nonpathables)
         # pos = self.map_data.bot.townhalls.ready.first.position
         # areas = self.map_data.where_all(pos)
         # self.logger.debug(areas)
@@ -162,6 +163,7 @@ def main():
     map = "GoldenWallLE"
     map = "AbyssalReefLE"
     map = "SubmarineLE"
+    map = "aiarena_kingofthehill_1"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],

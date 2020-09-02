@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.62](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.61...v0.0.62) (2020-09-02)
+
+
+### Features
+
+* Buildable points are now mapped to Point2,   logger now inherits sc2.main.logger ([7d8dc88](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7d8dc8801eaafd435a53be2b914d07326675634f))
+* MapData now accepts arcade boolean argument on init ([d380f2e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/d380f2e22f96e897f2a6cf1c323f2f412433f2d1))
+
+
+### Performance Improvements
+
+* Pather changed the unpacking method of vision blockers into the grid ([7f4b9c3](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7f4b9c3293b888305c1259f295ce15abfc363277))
+
 ### [0.0.61](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.60...v0.0.61) (2020-08-30)
 
 
