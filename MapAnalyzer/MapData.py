@@ -77,10 +77,14 @@ class MapData:
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
 
         # compile
-        self.logger.info(f"Compiling {self.map_name} " + WHITE)
         if not self.arcade:
             self.base_locations: list = bot.expansion_locations_list
-            self._compile_map()
+        else:
+            self.logger.info(f" {__version__} Starting in Arcade mode")
+            self.base_locations: list = []
+
+        self.logger.info(f"{__version__} Compiling {self.map_name} " + WHITE)
+        self._compile_map()
 
     """Properties"""
 
