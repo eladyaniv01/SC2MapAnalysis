@@ -47,7 +47,7 @@ class MapData:
         self.normal_geysers = bot.vespene_geyser
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
-        self.base_locations: list = bot.expansion_locations_list
+
 
         # data that will be generated and cached
         self.min_region_area = MIN_REGION_AREA
@@ -79,6 +79,7 @@ class MapData:
         # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
         if not self.arcade:
+            self.base_locations: list = bot.expansion_locations_list
             self._compile_map()
 
     """Properties"""
