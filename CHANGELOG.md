@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.63](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.62...v0.0.63) (2020-09-02)
+
+
+### Bug Fixes
+
+* debugger will now not try to inherit sc2 logger when in arcade mode ([03fefd7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/03fefd71869d56fff31a32b24743f34d80538c2e))
+* mapdata will now compile the map  in arcade mode, with limited information available ([92d9a5f](https://github.com/eladyaniv01/SC2MapAnalysis/commit/92d9a5fb8c438e3bfea0a879ae812b4113c82ec3))
+
 ### [0.0.62](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.61...v0.0.62) (2020-09-02)
 
 
