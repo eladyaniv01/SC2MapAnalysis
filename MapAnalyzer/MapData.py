@@ -35,9 +35,10 @@ class MapData:
 
     """
 
-    def __init__(self, bot: BotAI, loglevel: str = "ERROR") -> None:
+    def __init__(self, bot: BotAI, loglevel: str = "ERROR", arcade=False) -> None:
         # store relevant data from api
         self.bot = bot
+        self.arcade = arcade
         self.version = __version__
         self.map_name: str = bot.game_info.map_name
         self.placement_arr: ndarray = bot.game_info.placement_grid.data_numpy
@@ -77,7 +78,8 @@ class MapData:
 
         # compile
         self.logger.info(f"Compiling {self.map_name} " + WHITE)
-        self._compile_map()
+        if not self.arcade:
+            self._compile_map()
 
     """Properties"""
 
