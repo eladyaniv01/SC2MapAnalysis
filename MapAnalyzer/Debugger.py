@@ -43,10 +43,14 @@ class MapAnalyzerDebugger:
 
     def __init__(self, map_data: "MapData", loglevel: str = "ERROR") -> None:
         self.map_data = map_data
+        if not self.map_data.arcade:
+            self.logger = sc2.main.logger
+        else:
+            self.logger = logger
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
-        self.logger = sc2.main.logger
+
         self.logger.remove()
         self.local_log_filter = LocalLogFilter(module_name=LOG_MODULE, level=loglevel)
         self.log_filter = LogFilter(level=loglevel)
@@ -163,7 +167,9 @@ class MapAnalyzerDebugger:
             self, fontdict: dict = None, figsize: int = 20
     ) -> None:
         """
+
         Plot map
+
         """
 
         if not fontdict:
