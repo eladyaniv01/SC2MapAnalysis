@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.63 documentation</title>
   
 
   
@@ -189,9 +189,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">arcade</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># store relevant data from api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arcade</span> <span class="o">=</span> <span class="n">arcade</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">__version__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">placement_grid</span><span class="o">.</span><span class="n">data_numpy</span>
@@ -200,7 +201,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normal_geysers</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">vespene_geyser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">terrain_height</span><span class="o">.</span><span class="n">data_numpy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">base_locations</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">expansion_locations_list</span>
+
 
         <span class="c1"># data that will be generated and cached</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_region_area</span> <span class="o">=</span> <span class="n">MIN_REGION_AREA</span>
@@ -230,7 +231,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span>
 
         <span class="c1"># compile</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compiling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">WHITE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arcade</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_locations</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">expansion_locations_list</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> Starting in Arcade mode&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_locations</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> Compiling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="n">WHITE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compile_map</span><span class="p">()</span>
 
     <span class="sd">&quot;&quot;&quot;Properties&quot;&quot;&quot;</span>

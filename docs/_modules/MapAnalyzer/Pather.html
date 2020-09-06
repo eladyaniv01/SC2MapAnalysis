@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.57 documentation</title>
+  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.63 documentation</title>
   
 
   
@@ -243,7 +243,15 @@
         <span class="k">return</span> <span class="n">grid</span>
 
 <div class="viewcode-block" id="MapAnalyzerPather.get_base_pathing_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/Pather/index.html#MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_pathing_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1">#  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val</span>
+        <span class="n">vbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span><span class="p">))</span>
+        <span class="c1"># faster way to do :</span>
+        <span class="c1"># for point in self.map_data.bot.game_info.vision_blockers:</span>
+        <span class="c1">#         #     grid[point] = 1</span>
+        <span class="n">grid</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vbs</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># &lt;-</span>
+
+        <span class="k">return</span> <span class="n">grid</span></div>
 
 <div class="viewcode-block" id="MapAnalyzerPather.get_climber_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/Pather/index.html#MapAnalyzer.Pather.MapAnalyzerPather.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Grid for units like reaper / colossus &quot;&quot;&quot;</span>
@@ -260,7 +268,7 @@
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">clean_air_grid</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapAnalyzerPather.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/Pather/index.html#MapAnalyzer.Pather.MapAnalyzerPather.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span>
         <span class="n">air_vs_ground_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">grid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">air_vs_ground_grid</span><span class="o">.</span><span class="n">T</span></div>
 
@@ -279,12 +287,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">PatherNoPointsException</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Using the default pyastar grid as no grid was provided.&quot;</span><span class="p">)</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pyastar_grid</span><span class="p">()</span>
 
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyastar</span><span class="o">.</span><span class="n">astar_path</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># this make the mapping not override the int boolean with numpy boolean</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Point2</span><span class="p">,</span> <span class="n">path</span><span class="p">))[::</span><span class="n">sensitivity</span><span class="p">]</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            for point in path , if point is not in bounds - remove it </span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Point2</span><span class="p">,</span> <span class="n">path</span><span class="p">))[::</span><span class="n">sensitivity</span><span class="p">]</span>
+            <span class="c1"># removing points that are out of bounds</span>
+
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Edge case</span>
+<span class="sd">            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="s1">&#39;everdream&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">map_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">legal_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">if</span> <span class="n">point</span> <span class="ow">and</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">!=</span> <span class="mi">81</span> <span class="ow">and</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">!=</span> <span class="mi">29</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># normal case</span>
+                <span class="n">legal_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">if</span> <span class="n">point</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">legal_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Path found s</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">, g</span><span class="si">{</span><span class="n">goal</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>

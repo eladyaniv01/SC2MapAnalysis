@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MapAnalyzer.constructs &mdash; Sc2MapAnalyzer 0.0.63 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Sc2MapAnalyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To - Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Sc2MapAnalyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>MapAnalyzer.constructs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for MapAnalyzer.constructs</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sc2.game_info</span> <span class="kn">import</span> <span class="n">Ramp</span> <span class="k">as</span> <span class="n">sc2Ramp</span>
+<span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
+
+<span class="kn">from</span> <span class="nn">.Polygon</span> <span class="kn">import</span> <span class="n">Polygon</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span> <span class="nn">.MapData</span> <span class="kn">import</span> <span class="n">MapData</span>
+    <span class="kn">from</span> <span class="nn">.sc2pathlibp.choke</span> <span class="kn">import</span> <span class="n">Choke</span>
+
+
+<span class="k">class</span> <span class="nc">PathLibChoke</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    wrapper to the data returned by :mod:`.sc2pathlibp`</span>
+
+<span class="sd">    with a bit of added fields / data type for convenience</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># noinspection PyProtectedMember</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathlib_choke</span><span class="p">:</span> <span class="s2">&quot;Choke&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pathlib_choke</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">pathlib_choke</span><span class="o">.</span><span class="n">pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_choke</span> <span class="o">=</span> <span class="n">pathlib_choke</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]PathLibChoke; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<div class="viewcode-block" id="ChokeArea"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea">[docs]</a><span class="k">class</span> <span class="nc">ChokeArea</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Base class for all chokes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">pathlibchoke</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;Unregistered&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md_pl_choke</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">pathlibchoke</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">pathlibchoke</span><span class="o">.</span><span class="n">main_line</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pathlibchoke</span><span class="o">.</span><span class="n">id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md_pl_choke</span> <span class="o">=</span> <span class="n">pathlibchoke</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_choke</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]ChokeArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&gt; of  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="MDRamp"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp">[docs]</a><span class="k">class</span> <span class="nc">MDRamp</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Wrapper for :class:`sc2.game_info.Ramp`,</span>
+
+<span class="sd">    is responsible for calculating the relevant :class:`.Region`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ramp</span><span class="p">:</span> <span class="n">sc2Ramp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ramp</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span> <span class="o">=</span> <span class="n">ramp</span>
+
+<div class="viewcode-block" id="MDRamp.closest_region"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp.closest_region">[docs]</a>    <span class="k">def</span> <span class="nf">closest_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Will return the closest region with respect to self</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">region_list</span><span class="p">,</span>
+                   <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">area</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">area</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MDRamp.set_regions"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp.set_regions">[docs]</a>    <span class="k">def</span> <span class="nf">set_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Method for calculating the relevant :class:`.Region`</span>
+
+<span class="sd">        TODO:</span>
+<span class="sd">             Make this a private method</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_points</span><span class="p">:</span>
+            <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+                <span class="c1"># edge case  = its a VisionBlockerArea (and also on the perimeter) so we grab the touching Regions</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">sub_area</span> <span class="ow">in</span> <span class="n">area</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+                        <span class="c1"># add it to our Areas</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_area</span><span class="p">,</span> <span class="n">Region</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sub_area</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_area</span><span class="p">)</span>
+                        <span class="c1"># add ourselves to it&#39;s Areas</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_area</span><span class="p">,</span> <span class="n">Region</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sub_area</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+                            <span class="n">sub_area</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+                <span class="c1"># standard case</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">Region</span><span class="p">)</span> <span class="ow">and</span> <span class="n">area</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+                    <span class="c1"># add ourselves to the Region Area&#39;s</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">Region</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">area</span><span class="o">.</span><span class="n">areas</span><span class="p">:</span>
+                    <span class="n">area</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">region_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">region_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">closest_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_region</span><span class="p">(</span><span class="n">region_list</span><span class="o">=</span><span class="n">region_list</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">closest_region</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">closest_region</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="MDRamp.top_center"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp.top_center">[docs]</a>    <span class="k">def</span> <span class="nf">top_center</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Alerts when sc2 fails to provide a top_center, and fallback to  :meth:`.center`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No top_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="MDRamp.bottom_center"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp.bottom_center">[docs]</a>    <span class="k">def</span> <span class="nf">bottom_center</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Alerts when sc2 fails to provide a bottom_center, and fallback to  :meth:`.center`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No bottom_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MDRamp[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;R[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&quot;</span></div>
+
+
+<div class="viewcode-block" id="VisionBlockerArea"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.VisionBlockerArea">[docs]</a><span class="k">class</span> <span class="nc">VisionBlockerArea</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    VisionBlockerArea are areas containing tiles that hide the units that stand in it,</span>
+
+<span class="sd">    (for example,  bushes)</span>
+
+<span class="sd">    Units that attack from within a :class:`VisionBlockerArea`</span>
+
+<span class="sd">    cannot be targeted by units that do not stand inside</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_vision_blocker</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;VisionBlockerArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Elad Yaniv
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
