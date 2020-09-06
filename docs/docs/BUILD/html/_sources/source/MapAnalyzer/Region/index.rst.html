@@ -176,49 +176,68 @@
 </table>
 <dl class="py class">
 <dt id="MapAnalyzer.Region.Region">
-<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Region.</code><code class="sig-name descname">Region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span><span class="p">:</span> <span class="n">MapData</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">np.ndarray</span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">map_expansions</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Point2<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Region.</code><code class="sig-name descname">Region</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span></em>, <em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">map_expansions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapAnalyzer.Polygon.Polygon</span></code></a></p>
 <p>Higher order “Area” , all of the maps can be summed up by it’s <a class="reference internal" href="../../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>A <a class="reference internal" href="../../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> may contain other <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a> inside it,</p>
-<p>Such as <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.ChokeArea" title="MapAnalyzer.Polygon.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a> and <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.MDRamp" title="MapAnalyzer.Polygon.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>.</p>
+<p>Such as <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a> and <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>.</p>
 <p>But it will never share a point with another <a class="reference internal" href="../../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a></p>
 </div>
 <dl class="py method">
-<dt id="MapAnalyzer.Region.Region.region_ramps">
-<em class="property">property </em><code class="sig-name descname">region_ramps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.region_ramps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.region_ramps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property access to <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.MDRamp" title="MapAnalyzer.Polygon.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a> of this region</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Region.Region.region_chokes">
-<em class="property">property </em><code class="sig-name descname">region_chokes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.region_chokes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.region_chokes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property access to <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.ChokeArea" title="MapAnalyzer.Polygon.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a> of this region</p>
+<dt id="MapAnalyzer.Region.Region.base_locations">
+<em class="property">property </em><code class="sig-name descname">base_locations</code><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.base_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.base_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>base_locations inside <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="MapAnalyzer.Region.Region.connected_regions">
-<em class="property">property </em><code class="sig-name descname">connected_regions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.connected_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.connected_regions" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">connected_regions</code><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.connected_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.connected_regions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a list of <a class="reference internal" href="../../../../source/MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a> that are connected by chokes to <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="MapAnalyzer.Region.Region.plot_perimeter">
-<code class="sig-name descname">plot_perimeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">self_only</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.plot_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot_perimeter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Debug Method plot_perimeter</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="MapAnalyzer.Region.Region.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">self_only</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">testing</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self_only</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">testing</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Debug Method plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
+<li><p><strong>testing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="MapAnalyzer.Region.Region.base_locations">
-<em class="property">property </em><code class="sig-name descname">base_locations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.base_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.base_locations" title="Permalink to this definition">¶</a></dt>
-<dd><p>base_locations inside <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
+<dt id="MapAnalyzer.Region.Region.plot_perimeter">
+<code class="sig-name descname">plot_perimeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self_only</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.plot_perimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.plot_perimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug Method plot_perimeter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>self_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.region_chokes">
+<em class="property">property </em><code class="sig-name descname">region_chokes</code><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.region_chokes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.region_chokes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property access to <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a> of this region</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MapAnalyzer.Region.Region.region_ramps">
+<em class="property">property </em><code class="sig-name descname">region_ramps</code><a class="reference internal" href="../../../../_modules/MapAnalyzer/Region.html#Region.region_ramps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Region.Region.region_ramps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property access to <a class="reference internal" href="../../../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a> of this region</p>
 </dd></dl>
 
 </dd></dl>

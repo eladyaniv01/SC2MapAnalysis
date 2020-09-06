@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../plot/index.html">Plotting - Recipes</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Pathfinding - Recipes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pathfinding-from-our-main-to-the-enemy-s-main">Pathfinding - from our main to the enemy’s main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-and-debug-the-pather-in-game">Plot and Debug the Pather - In Game</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#plot-and-debug-the-pather">Plot and Debug the Pather</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#plotting-our-custom-cost">Plotting our custom Cost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#influenced-paths-plots">Influenced paths plots:</a></li>
@@ -205,6 +206,28 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sensitivity</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path</span>
 <span class="go">[(157, 22), (154, 22), (151, 24), (148, 25), (145, 26), (142, 28), (139, 31), (136, 34), (133, 35), (130, 38), (127, 39), (124, 39), (121, 42), (118, 45), (115, 48), (112, 51), (109, 54), (106, 57), (103, 60), (100, 63), (97, 66), (94, 67), (93, 70), (90, 73), (90, 76), (93, 79), (93, 82), (91, 85), (91, 88), (88, 90), (85, 93), (82, 94), (79, 97), (76, 100), (73, 101), (70, 104), (67, 105), (64, 108), (61, 111), (58, 114), (55, 117), (52, 116), (49, 115), (46, 117), (43, 120)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plot-and-debug-the-pather-in-game">
+<h2>Plot and Debug the Pather - In Game<a class="headerlink" href="#plot-and-debug-the-pather-in-game" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Contributed by <a class="reference external" href="https://github.com/raspersc2">rasper (github)</a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_draw_influence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
+
+    <span class="k">def</span> <span class="nf">get_height</span><span class="p">(</span><span class="n">_x</span><span class="p">,</span> <span class="n">_y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mi">16</span>
+            <span class="o">+</span> <span class="mi">32</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">[(</span><span class="n">floor</span><span class="p">(</span><span class="n">_x</span><span class="p">),</span> <span class="n">floor</span><span class="p">(</span><span class="n">_y</span><span class="p">))]</span> <span class="o">/</span> <span class="mi">255</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">grid</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)):</span>
+        <span class="n">pos</span><span class="p">:</span> <span class="n">Point3</span> <span class="o">=</span> <span class="n">Point3</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">get_height</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)))</span>
+        <span class="n">val</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="mi">168</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">debug_text_world</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

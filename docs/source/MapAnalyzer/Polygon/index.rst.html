@@ -209,13 +209,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polygon</span></code></a>(map_data: MapData, array: ndarray)</p></td>
 <td><p>Base Class for Representing an “Area”</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../../_sources/source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.ChokeArea" title="MapAnalyzer.Polygon.ChokeArea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>(array: np.ndarray, map_data: MapData, pathlibchoke: Optional[PathLibChoke] = None)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChokeArea</span></code>(array: np.ndarray, map_data: MapData, pathlibchoke: Optional[PathLibChoke] = None)</p></td>
 <td><p>Base class for all chokes</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../../_sources/source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.MDRamp" title="MapAnalyzer.Polygon.MDRamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MDRamp</span></code></a>(map_data: MapData, array: np.ndarray, ramp: sc2Ramp)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MDRamp</span></code>(map_data: MapData, array: np.ndarray, ramp: sc2Ramp)</p></td>
 <td><p>Wrapper for <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/game_info/index.html#sc2.game_info.Ramp" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.game_info.Ramp</span></code></a>,</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../../_sources/source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.VisionBlockerArea" title="MapAnalyzer.Polygon.VisionBlockerArea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>(map_data: MapData, array: np.ndarray)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code>(map_data: MapData, array: np.ndarray)</p></td>
 <td><p>VisionBlockerArea are areas containing tiles that hide the units that stand in it,</p></td>
 </tr>
 </tbody>
@@ -228,7 +228,7 @@
 <p>“Lazy” class that will only update information when it is needed</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildablePoints</span></code> that belong to a <a class="reference internal" href="../../../_sources/source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.ChokeArea" title="MapAnalyzer.Polygon.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>  are always the edges, this is useful for walling off</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildablePoints</span></code> that belong to a <a class="reference internal" href="#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>  are always the edges, this is useful for walling off</p>
 </div>
 <dl class="py method">
 <dt id="MapAnalyzer.Polygon.Buildables.free_pct">
