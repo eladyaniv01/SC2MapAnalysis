@@ -86,10 +86,7 @@ class Polygon:
         self._buildables = Buildables(polygon=self)
 
     def _set_points(self):
-
-        self.points = set([Point2((int(p[0]), int(p[1]))) for p in self._clean_points])
-        self.points = set([Point2(p) for p in self._clean_points])
-        points = [p for p in self.map_data.indices_to_points(self.indices)]
+        points = [p for p in self._clean_points]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
         self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
