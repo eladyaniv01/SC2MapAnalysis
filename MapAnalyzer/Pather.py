@@ -133,6 +133,7 @@ class MapAnalyzerPather:
             self.map_data.logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
         if grid is None:
+            self.map_data.logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
         # inbounds  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
@@ -142,7 +143,17 @@ class MapAnalyzerPather:
             for point in path , if point is not in bounds - remove it 
             """
             path = list(map(Point2, path))[::sensitivity]
-            legal_path = [point for point in path if point]  # removing points that are out of bounds
+            # removing points that are out of bounds
+
+            """
+            Edge case
+            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
+            """
+            if 'everdream' in self.map_data.map_name.lower():
+                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
+            else:  # normal case
+                legal_path = [point for point in path if point]
+
             return legal_path
         else:
             self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
