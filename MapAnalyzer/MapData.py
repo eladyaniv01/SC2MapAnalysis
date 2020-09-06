@@ -14,11 +14,12 @@ from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
 from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
-from .constructs import ChokeArea, PathLibChoke, MDRamp, VisionBlockerArea
+from .constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
 
 from pkg_resources import get_distribution, DistributionNotFound
+
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -35,7 +36,7 @@ class MapData:
 
     """
 
-    def __init__(self, bot: BotAI, loglevel: str = "ERROR", arcade=False) -> None:
+    def __init__(self, bot: BotAI, loglevel: str = "ERROR", arcade: bool = False) -> None:
         # store relevant data from api
         self.bot = bot
         self.arcade = arcade
@@ -180,7 +181,7 @@ class MapData:
         """
         return self.pather.get_climber_grid(default_weight)
 
-    def get_air_vs_ground_grid(self, default_weight: int = 100):
+    def get_air_vs_ground_grid(self, default_weight: int = 100) -> ndarray:
         """
         :rtype: numpy.ndarray
         ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,
