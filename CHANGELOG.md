@@ -20,6 +20,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 * air_vs_ground grid now tests that ramps are computed correctly ([6a37be1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6a37be15769774a2f25c43d8b08a523378d7875a))
 
+### Issues Closed:
+
+ * [#77 ramp points which are pathable, are not computed correctly in the air vs ground grid](https://github.com/eladyaniv01/SC2MapAnalysis/issues/77)
+ * [#76 Bug (81, 29) is not in map bounds even though it passes the in_bounds check on EverDreamLE](https://github.com/eladyaniv01/SC2MapAnalysis/issues/76)
+
+
 ### [0.0.63](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.62...v0.0.63) (2020-09-02)
 
 
