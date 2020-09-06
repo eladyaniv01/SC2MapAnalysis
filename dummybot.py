@@ -5,6 +5,8 @@ import sc2
 from sc2.player import Bot, Computer
 from sc2.position import Point3, Point2
 
+import numpy as np
+
 from MapAnalyzer import MapData
 
 GREEN = Point3((0, 255, 0))
@@ -80,8 +82,25 @@ class MATester(sc2.BotAI):
             pos = Point3((p.x, p.y, h))
             self.client.debug_sphere_out(p=pos, r=r, color=RED)
 
+    def _draw_influence(self, grid: np.ndarray, threshold: int = 1) -> None:
+        from math import floor
+
+        def get_height(_x, _y) -> float:
+            return (
+                    -16
+                    + 32 * self.game_info.terrain_height[(floor(_x), floor(_y))] / 255
+            )
+
+        for x, y in zip(*np.where(grid > threshold)):
+            pos: Point3 = Point3((x, y, get_height(x, y)))
+            val: float = grid[x, y]
+            color = (201, 168, 79)
+            self.client.debug_text_world(str(val), pos, color)
 
     async def on_step(self, iteration: int):
+        # self.map_data.logger.info(iteration)
+        grid = self.map_data.get_air_vs_ground_grid()
+        self._draw_influence(grid=grid)
         pass
         # nonpathables = self.map_data.bot.structures
         # nonpathables.extend(self.map_data.bot.enemy_structures)
@@ -163,7 +182,7 @@ def main():
     map = "GoldenWallLE"
     map = "AbyssalReefLE"
     map = "SubmarineLE"
-    map = "aiarena_kingofthehill_1"
+    # map = "aiarena_kingofthehill_1"
     sc2.run_game(
             sc2.maps.get(map),
             [Bot(sc2.Race.Terran, MATester()), Computer(sc2.Race.Zerg, sc2.Difficulty.VeryEasy)],

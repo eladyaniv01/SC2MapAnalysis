@@ -114,7 +114,7 @@ class MapAnalyzerPather:
             return np.where(clean_air_grid == 1, default_weight, 0)
 
     def get_air_vs_ground_grid(self, default_weight: int):
-        grid = np.fmin(self.map_data.path_arr, self.map_data.placement_arr)
+        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr)
         air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
         return air_vs_ground_grid.T
 

@@ -36,6 +36,7 @@ class LogFilter:
         levelno = logger.level(self.level).no
         return record["level"].no >= levelno
 
+
 class MapAnalyzerDebugger:
     """
     MapAnalyzerDebugger
