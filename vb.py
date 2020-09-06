@@ -57,8 +57,6 @@ def mt(apply):
                 subprocess.check_call(f'monkeytype apply {m}', shell=True)
 
 
-
-
 @vb.command(help='Get current version')
 def gv():
     click.echo("Running git describe")
@@ -94,7 +92,7 @@ def b_minor(new_version):
     subprocess.check_call('git fetch', shell=True)
     subprocess.check_call('git pull', shell=True)
     subprocess.check_call('git add setup.py', shell=True)
-    subprocess.check_call('git commit -m \"setup bump\" ', shell=True)
+    subprocess.check_call(f'git commit -m \" setup bump {new_version} \" ', shell=True)
     subprocess.check_call(f'standard-version --release-as {new_version}', shell=True)
     # subprocess.check_call('git push --follow-tags origin', shell=True)
 

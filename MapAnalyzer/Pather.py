@@ -113,7 +113,7 @@ class MapAnalyzerPather:
         else:
             return np.where(clean_air_grid == 1, default_weight, 0)
 
-    def get_air_vs_ground_grid(self, default_weight: int):
+    def get_air_vs_ground_grid(self, default_weight: int) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr)
         air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
         return air_vs_ground_grid.T
@@ -136,7 +136,6 @@ class MapAnalyzerPather:
             self.map_data.logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
-        # inbounds  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             """
