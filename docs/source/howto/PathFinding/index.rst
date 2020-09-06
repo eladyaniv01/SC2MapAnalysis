@@ -45,14 +45,14 @@ Plot and Debug the Pather - In Game
             def get_height(_x, _y) -> float:
                 return (
                     -16
-                    + 32 * self.ai.game_info.terrain_height[(floor(_x), floor(_y))] / 255
+                    + 32 * self.game_info.terrain_height[(floor(_x), floor(_y))] / 255
                 )
 
             for x, y in zip(*np.where(grid > threshold)):
                 pos: Point3 = Point3((x, y, get_height(x, y)))
                 val: float = grid[x, y]
                 color = (201, 168, 79)
-            self.ai.client.debug_text_world(str(val), pos, color)
+            self.client.debug_text_world(str(val), pos, color)
 
 Plot and Debug the Pather
 -------------------------

@@ -32,6 +32,29 @@ Pathfinding - from our main to the enemy's main
         [(157, 22), (154, 22), (151, 24), (148, 25), (145, 26), (142, 28), (139, 31), (136, 34), (133, 35), (130, 38), (127, 39), (124, 39), (121, 42), (118, 45), (115, 48), (112, 51), (109, 54), (106, 57), (103, 60), (100, 63), (97, 66), (94, 67), (93, 70), (90, 73), (90, 76), (93, 79), (93, 82), (91, 85), (91, 88), (88, 90), (85, 93), (82, 94), (79, 97), (76, 100), (73, 101), (70, 104), (67, 105), (64, 108), (61, 111), (58, 114), (55, 117), (52, 116), (49, 115), (46, 117), (43, 120)]
 
 
+Plot and Debug the Pather - In Game
+-----------------------------------
+
+* Contributed by `rasper (github) <https://github.com/raspersc2>`_
+
+.. code-block::
+
+        def _draw_influence(self, grid: np.ndarray, threshold: int = 1) -> None:
+            # self.ai  ->  bot_ai instance
+            from math import floor
+
+            def get_height(_x, _y) -> float:
+                return (
+                    -16
+                    + 32 * self.ai.game_info.terrain_height[(floor(_x), floor(_y))] / 255
+                )
+
+            for x, y in zip(*np.where(grid > threshold)):
+                pos: Point3 = Point3((x, y, get_height(x, y)))
+                val: float = grid[x, y]
+                color = (201, 168, 79)
+            self.ai.client.debug_text_world(str(val), pos, color)
+
 Plot and Debug the Pather
 -------------------------
 
