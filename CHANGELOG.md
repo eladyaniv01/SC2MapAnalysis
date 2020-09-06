@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.64](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.63...v0.0.64) (2020-09-06)
+
+
+### Bug Fixes
+
+* (81, 29) on EverDreamLE  is considered in map bounds even though it is not ([63b91f5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/63b91f5d80688697617175a0155c68f3bd2b2668))
+* air_vs_ground grid now accounts ramp points as pathable ([99ad04d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/99ad04da4b57b360bf82ebcb930b1a9213f21d3d))
+
+
+### Performance Improvements
+
+* removed duplicate calculations from polygon _set_points ([948edeb](https://github.com/eladyaniv01/SC2MapAnalysis/commit/948edeb362bc1f4c15abe38a9864f17db70d6039))
+
+
+### Tests
+
+* air_vs_ground grid now tests that ramps are computed correctly ([6a37be1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6a37be15769774a2f25c43d8b08a523378d7875a))
+
 ### [0.0.63](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.62...v0.0.63) (2020-09-02)
 
 
