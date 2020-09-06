@@ -109,9 +109,15 @@ class TestPathing:
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None), f"path = {path}"
 
-    def test_grid_types(self, map_data: MapData) -> None:
-        # new feat - grid without rocks
-        pass
+    def test_air_vs_ground(self, map_data: MapData) -> None:
+        default_weight = 99
+        grid = map_data.get_air_vs_ground_grid(default_weight=default_weight)
+        ramps = map_data.map_ramps
+        path_array = map_data.path_arr.T
+        for ramp in ramps:
+            for point in ramp.points:
+                if path_array[point.x][point.y] == 1:
+                    assert (grid[point.x][point.y] == default_weight)
 
     def test_sensitivity(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]

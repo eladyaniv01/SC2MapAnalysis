@@ -75,6 +75,8 @@ class Polygon:
         self.array = array
         self.indices = np.where(self.array == 1)
         self._clean_points = self.map_data.indices_to_points(self.indices)
+        self.points = set([Point2(p) for p in
+                           self._clean_points])  # this is to serve data for map data compile,  the accurate calculation will be done on _set_points
         self._set_points()
         self.id = None  # TODO
         self.is_choke = False
@@ -86,6 +88,7 @@ class Polygon:
         self._buildables = Buildables(polygon=self)
 
     def _set_points(self):
+
         points = [p for p in self._clean_points]
         points.extend(self.corner_points)
         points.extend(self.perimeter_points)
