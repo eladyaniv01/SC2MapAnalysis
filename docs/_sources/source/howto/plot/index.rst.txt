@@ -1,3 +1,5 @@
+.. include:: ../header.rst
+
 Plotting - Recipes
 ==================
 

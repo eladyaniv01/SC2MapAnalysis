@@ -168,11 +168,12 @@
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
-<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">PathLibChoke</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
+<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">,</span> <span class="n">PathLibChoke</span>
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
 
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">get_distribution</span><span class="p">,</span> <span class="n">DistributionNotFound</span>
+
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">__version__</span> <span class="o">=</span> <span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;sc2mapanalyzer&#39;</span><span class="p">)</span>
@@ -189,7 +190,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">arcade</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">arcade</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># store relevant data from api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arcade</span> <span class="o">=</span> <span class="n">arcade</span>
@@ -334,7 +335,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_climber_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
 <span class="sd">        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,</span>

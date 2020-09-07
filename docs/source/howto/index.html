@@ -40,7 +40,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Basic - Recipes" href="basics/index.html" />
-    <link rel="prev" title="Getting Started" href="../gettingstarted/index.html" /> 
+    <link rel="prev" title="&lt;no title&gt;" href="header.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -169,7 +169,29 @@
   $(document).ready(function () {
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
   });
-</script><div class="section" id="how-to-recipes">
+</script><div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Recipe Terminology:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self</span></code>  = <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/bot_ai/index.html#sc2.bot_ai.BotAI" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.bot_ai.BotAI</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_data</span></code> = <a class="reference internal" href="../MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData" title="MapAnalyzer.MapData.MapData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapData</span></code></a></p></li>
+</ul>
+</div></blockquote>
+<p><strong>PathFinding Terminology:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cost</span></code> : How much is it going to cost the pather to walk through this cell</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_array</span></code> : a finalized grid(with added cost) passed to plotting</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>the optimal cost will be 1,</p></li>
+<li><p>the worst cost would be  <a class="reference external" href="https://numpy.org/doc/stable/reference/constants.html#numpy.inf" title="(in NumPy v1.19)"><code class="xref py py-data docutils literal notranslate"><span class="pre">numpy.inf</span></code></a> (for non pathable cells)</p></li>
+</ul>
+<p><strong>you should keep that in mind if you want to create a complex influence map with different weights</strong></p>
+</div>
+<div class="section" id="how-to-recipes">
 <h1>How To - Recipes<a class="headerlink" href="#how-to-recipes" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">How To - Recipes</span></p>
@@ -221,7 +243,7 @@
         <a href="basics/index.html" class="btn btn-neutral float-right" title="Basic - Recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../gettingstarted/index.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="header.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

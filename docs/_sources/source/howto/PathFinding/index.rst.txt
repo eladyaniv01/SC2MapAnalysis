@@ -1,18 +1,7 @@
+.. include:: ../header.rst
+
 Pathfinding - Recipes
 =====================
-
-
-.. tip::
-        Terminology:
-
-            * ``cost`` : How much is it going to cost the pather to walk through this cell
-            * ``weight_array`` : a finalized grid(with added cost) passed to plotting
-
-        the optimal cost will be 1,
-
-        and the worst cost would be np.inf( for non pathable cells)
-
-        so you should keep that in mind if you want to create a complex influence map with different weights
 
 
 Pathfinding - from our main to the enemy's main
