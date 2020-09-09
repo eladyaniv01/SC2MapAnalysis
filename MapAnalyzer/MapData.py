@@ -560,6 +560,35 @@ class MapData:
             if region.is_inside_point(point):
                 return region
 
+    def draw_influence_in_game(self, grid: ndarray,
+                               lower_threshold: int = 1,
+                               upper_threshold: int = 1000,
+                               color: Tuple[int, int, int] = (201, 168, 79),
+                               size: int = 13) -> None:
+        """
+        :rtype: None
+        Draws influence (cost) values of a grid in game.
+
+        Caution:
+            Setting the lower threshold too low impacts performance since almost every value will get drawn.
+
+            It's recommended that this is set to the relevant grid's default weight value.
+
+        Example:
+                >>> self.ground_grid = self.get_pyastar_grid(default_weight=1)
+                >>> self.ground_grid = self.add_cost((100, 100), radius=15, grid=self.ground_grid, weight=50)
+                >>> self.draw_influence_in_game(self.ground_grid, lower_threshold=1)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.get_climber_grid`
+            * :meth:`.MapData.get_clean_air_grid`
+            * :meth:`.MapData.get_air_vs_ground_grid`
+            * :meth:`.MapData.add_cost`
+
+        """
+        self.debugger.draw_influence_in_game(self.bot, grid, lower_threshold, upper_threshold, color, size)
+
     """ longest map compile is 1.9 s """
     """Compile methods"""
 
