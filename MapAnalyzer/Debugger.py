@@ -8,7 +8,8 @@ import numpy as np
 import sc2
 from loguru import logger
 from numpy import ndarray
-from sc2.position import Point2
+from sc2 import BotAI
+from sc2.position import Point2, Point3
 
 from .constants import COLORS, LOG_FORMAT, LOG_MODULE
 
@@ -247,3 +248,18 @@ class MapAnalyzerDebugger:
         cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
         plt.title(f"{name}", fontdict=fontdict, loc='right')
         plt.grid()
+
+    def draw_influence_in_game(self, bot: BotAI,
+                               grid: np.ndarray,
+                               lower_threshold: int,
+                               upper_threshold: int,
+                               color: Tuple[int, int, int],
+                               size: int) -> None:
+        height: float = bot.get_terrain_z_height(bot.start_location)
+        for x, y in zip(*np.where((grid > lower_threshold) & (grid < upper_threshold))):
+            pos: Point3 = Point3((x, y, height))
+            if grid[x, y] == np.inf:
+                val: int = 9999
+            else:
+                val: int = int(grid[x, y])
+            bot.client.debug_text_world(str(val), pos, color, size)
