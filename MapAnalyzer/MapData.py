@@ -341,7 +341,7 @@ class MapData:
 
     def points_to_numpy_array(
             self, points: Union[Set[Tuple[int64, int64]], List[Point2], Set[Point2]]
-    ) -> ndarray:
+            , default_value: int = 1) -> ndarray:
         """
         :rtype: numpy.ndarray
 
@@ -372,7 +372,7 @@ class MapData:
         indices = self.points_to_indices(points)
         x = x_vec(indices[0])
         y = y_vec(indices[1])
-        arr[x, y] = 1
+        arr[x, y] = default_value
         return arr
 
     @staticmethod
