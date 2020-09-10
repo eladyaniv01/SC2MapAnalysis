@@ -88,6 +88,19 @@ class MapAnalyzerPather:
                     self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
+    def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+        ri, ci = skdraw.disk(center=(int(from_pos[0]), int(from_pos[1])), radius=radius, shape=grid.shape)
+        if len(ri) == 0 or len(ci) == 0:
+            # this happens when the center point is near map edge, and the radius added goes beyond the edge
+            self.map_data.logger.debug(OutOfBoundsException(from_pos))
+            # self.map_data.logger.trace()
+            return None
+        points = self.map_data.indices_to_points((ri, ci))
+        arr = self.map_data.points_to_numpy_array(points)
+        arr = np.where(arr == 1, grid.T, np.inf)
+        lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
+        return list(map(Point2, lowest_points))
+
     def get_base_pathing_grid(self) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
@@ -114,9 +127,9 @@ class MapAnalyzerPather:
             return np.where(clean_air_grid == 1, default_weight, 0)
 
     def get_air_vs_ground_grid(self, default_weight: int) -> ndarray:
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr)
+        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
-        return air_vs_ground_grid.T
+        return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         grid = self.map_data.pather.get_base_pathing_grid().copy()
