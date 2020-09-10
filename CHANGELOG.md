@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file. See [standa
 
  * [#78 Feature request: find lowest influence / cost within a radius](https://github.com/eladyaniv01/SC2MapAnalysis/issues/78)
  
-
+### [0.0.64](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.63...v0.0.64) (2020-09-06)
 
 ### Bug Fixes
 
