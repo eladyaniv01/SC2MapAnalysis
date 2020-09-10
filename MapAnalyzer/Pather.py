@@ -88,6 +88,27 @@ class MapAnalyzerPather:
                     self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
+    def find_lowest_cost(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+        points = [from_pos]
+        for i in range(radius):
+            for j in range(radius):
+                x1 = from_pos[0] - i
+                x2 = from_pos[0] + i
+                y1 = from_pos[0] - j
+                y2 = from_pos[0] + j
+                p1 = (x1, y1)
+                p2 = (x2, y2)
+                p3 = (x1, y2)
+                p4 = (x2, y1)
+                points.append(p1)
+                points.append(p2)
+                points.append(p3)
+                points.append(p4)
+        arr = self.map_data.points_to_numpy_array(points)
+        arr = np.where(arr == 1, grid.T, np.inf)
+        pts = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
+        return pts
+
     def get_base_pathing_grid(self) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
@@ -114,9 +135,9 @@ class MapAnalyzerPather:
             return np.where(clean_air_grid == 1, default_weight, 0)
 
     def get_air_vs_ground_grid(self, default_weight: int) -> ndarray:
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr)
+        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
-        return air_vs_ground_grid.T
+        return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         grid = self.map_data.pather.get_base_pathing_grid().copy()
