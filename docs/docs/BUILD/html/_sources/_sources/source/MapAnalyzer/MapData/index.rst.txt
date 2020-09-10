@@ -1,0 +1,24 @@
+:orphan:
+
+.. py:module:: MapAnalyzer.MapData
+
+
+
+MapData
+-------
+
+.. important::
+
+            In all examples the assumption is that ``self`` is a :class:`.MapData` , so for using it you will probably need to access it as
+            ``my_own_bot_object.map_data.``   instead of ``self``
+
+.. autoapisummary::
+
+   MapAnalyzer.MapData.MapData
+
+
+.. autoclass:: MapAnalyzer.MapData.MapData
+   :members:
+   :show-inheritance:
+   :no-undoc-members:
+

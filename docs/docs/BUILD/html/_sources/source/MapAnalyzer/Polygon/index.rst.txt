@@ -1,0 +1,40 @@
+:orphan:
+
+.. py:module:: MapAnalyzer.Polygon
+
+Polygon Variants & Helpers
+--------------------------
+
+.. autoapisummary::
+
+   MapAnalyzer.Polygon.Buildables
+   MapAnalyzer.Polygon.Polygon
+   MapAnalyzer.constructs.ChokeArea
+   MapAnalyzer.constructs.MDRamp
+   MapAnalyzer.constructs.VisionBlockerArea
+
+
+.. autoclass:: MapAnalyzer.Polygon.Buildables
+   :members:
+   :show-inheritance:
+   :no-undoc-members:
+
+.. autoclass:: MapAnalyzer.Polygon.Polygon
+   :members:
+   :show-inheritance:
+   :no-undoc-members:
+
+.. autoclass:: MapAnalyzer.constructs.ChokeArea
+   :members:
+   :show-inheritance:
+   :no-undoc-members:
+
+.. autoclass:: MapAnalyzer.constructs.MDRamp
+   :members:
+   :show-inheritance:
+   :no-undoc-members:
+
+.. autoclass:: MapAnalyzer.constructs.VisionBlockerArea
+   :members:
+   :show-inheritance:
+   :no-undoc-members:

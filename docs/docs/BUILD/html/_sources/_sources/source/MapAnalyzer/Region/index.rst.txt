@@ -1,0 +1,16 @@
+:orphan:
+
+
+.. py:module:: MapAnalyzer.Region
+
+Region(Polygon)
+---------------
+
+.. autoapisummary::
+
+   MapAnalyzer.Region.Region
+
+.. autoclass:: MapAnalyzer.Region.Region
+   :members:
+   :show-inheritance:
+   :no-undoc-members:

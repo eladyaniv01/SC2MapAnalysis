@@ -1,0 +1,16 @@
+:orphan:
+
+.. py:module:: MapAnalyzer.Debugger
+
+Debugger
+--------
+
+.. autoapisummary::
+
+   MapAnalyzer.Debugger.MapAnalyzerDebugger
+
+
+.. automodule:: MapAnalyzer.Debugger
+   :members:
+   :show-inheritance:
+   :undoc-members:
