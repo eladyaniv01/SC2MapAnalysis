@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.66](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.64...v0.0.66) (2020-09-10)
 
-### [0.0.64](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.63...v0.0.64) (2020-09-06)
+### Features
+
+* map_data.find_lowest_cost_points within a radius ([ab5073c](https://github.com/eladyaniv01/SC2MapAnalysis/pull/80/commits/ab5073cb57d0f5411d0f35a81c5c5b7a8609f602))
+* map_data.draw_influence_in_game ([23d0004](https://github.com/eladyaniv01/SC2MapAnalysis/pull/79/commits/23d00040fe9c35c106152cd8d09a83c90a4e8795))
+
+
+### Issues Closed:
+
+ * [#78 Feature request: find lowest influence / cost within a radius](https://github.com/eladyaniv01/SC2MapAnalysis/issues/78)
+ 
 
 
 ### Bug Fixes
