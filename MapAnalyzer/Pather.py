@@ -88,26 +88,18 @@ class MapAnalyzerPather:
                     self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
-    def find_lowest_cost(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
-        points = [from_pos]
-        for i in range(radius):
-            for j in range(radius):
-                x1 = from_pos[0] - i
-                x2 = from_pos[0] + i
-                y1 = from_pos[0] - j
-                y2 = from_pos[0] + j
-                p1 = (x1, y1)
-                p2 = (x2, y2)
-                p3 = (x1, y2)
-                p4 = (x2, y1)
-                points.append(p1)
-                points.append(p2)
-                points.append(p3)
-                points.append(p4)
+    def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+        ri, ci = skdraw.disk(center=(int(from_pos[0]), int(from_pos[1])), radius=radius, shape=grid.shape)
+        if len(ri) == 0 or len(ci) == 0:
+            # this happens when the center point is near map edge, and the radius added goes beyond the edge
+            self.map_data.logger.debug(OutOfBoundsException(from_pos))
+            # self.map_data.logger.trace()
+            return None
+        points = self.map_data.indices_to_points((ri, ci))
         arr = self.map_data.points_to_numpy_array(points)
         arr = np.where(arr == 1, grid.T, np.inf)
-        pts = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
-        return pts
+        lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
+        return list(map(Point2, lowest_points))
 
     def get_base_pathing_grid(self) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T

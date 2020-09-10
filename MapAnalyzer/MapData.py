@@ -146,6 +146,7 @@ class MapData:
             * :meth:`.MapData.get_clean_air_grid`
             * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
+            * :meth:`.MapData.find_lowest_cost_points`
 
         """
         if air_pathing is not None:
@@ -153,6 +154,31 @@ class MapData:
         return self.pather.get_pyastar_grid(default_weight=default_weight,
                                             include_destructables=include_destructables,
                                             )
+
+    def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+        """
+        :rtype:  Union[List[:class:`sc2.position.Point2`], None]
+
+        Given an origin point and a radius,  will return a list containing the lowest cost points
+        (if there are more than one)
+
+        Example:
+             >>> grid = self.get_air_vs_ground_grid()
+             >>> position = (100, 80)
+             >>> radius = 10
+             >>> self.find_lowest_cost_points(from_pos=position, radius=radius, grid=grid)
+             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80), (108, 83), (106, 78), (107, 84), (109, 82), (107, 79), (107, 80), (106, 75), (107, 75), (91, 78), (106, 81), (109, 77), (108, 76), (91, 80), (106, 79), (109, 81), (107, 78), (108, 80), (105, 82), (107, 83), (107, 74), (108, 84), (102, 71), (109, 76), (105, 79), (108, 77), (106, 76), (107, 86), (106, 82), (109, 80), (108, 81), (105, 81), (107, 82), (109, 84), (106, 73), (107, 77), (108, 85), (105, 78), (108, 78), (106, 77), (107, 73), (106, 83), (108, 82), (105, 80), (108, 75), (107, 85), (109, 83), (107, 76)]
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.get_climber_grid`
+            * :meth:`.MapData.get_air_vs_ground_grid`
+            * :meth:`.MapData.get_clean_air_grid`
+            * :meth:`.MapData.add_cost`
+            * :meth:`.MapData.pathfind`
+
+        """
+        return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
 
     def get_climber_grid(self, default_weight: int = 1) -> ndarray:
         """
@@ -178,6 +204,7 @@ class MapData:
             * :meth:`.MapData.get_clean_air_grid`
             * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
+            * :meth:`.MapData.find_lowest_cost_points`
         """
         return self.pather.get_climber_grid(default_weight)
 
@@ -200,6 +227,7 @@ class MapData:
             * :meth:`.MapData.get_clean_air_grid`
             * :meth:`.MapData.add_cost`
             * :meth:`.MapData.pathfind`
+            * :meth:`.MapData.find_lowest_cost_points`
 
         """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
@@ -257,6 +285,7 @@ class MapData:
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.find_lowest_cost_points`
 
         """
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
