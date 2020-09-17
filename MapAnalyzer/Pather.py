@@ -4,6 +4,7 @@ import numpy as np
 import pyastar.astar_wrapper as pyastar
 from numpy import ndarray
 from sc2.position import Point2
+from sc2 import UnitTypeId
 from skimage import draw as skdraw
 
 from MapAnalyzer.constants import NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR, GEYSER_RADIUS_FACTOR
@@ -69,8 +70,9 @@ class MapAnalyzerPather:
         )
 
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
-        nonpathables = self.map_data.bot.structures
-        nonpathables.extend(self.map_data.bot.enemy_structures)
+        nonpathables = self.map_data.bot.structures.not_flying
+        nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
+        nonpathables.exclude_type(UnitTypeId.SUPPLYDEPOTLOWERED)
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
         for obj in nonpathables:
