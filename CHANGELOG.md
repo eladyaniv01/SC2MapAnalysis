@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * add cost now accepts `initial_default_weights` argument   (  known use case is for air_vs_ground grid ) ([7fe542f](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7fe542f0a15daf90b0136453c0c6aa8f68242dd4))
 
+### Issues Closed:
+
+ * [#81 Air vs ground grid cost values in non ground pathable areas](https://github.com/eladyaniv01/SC2MapAnalysis/issues/81)
+ 
 ### [0.0.66](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.64...v0.0.66) (2020-09-10)
 
 ### Features
