@@ -47,7 +47,9 @@ for mf in map_files:
     reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
     p0 = Point2(reg_start.center)
     p1 = Point2(reg_end.center)
-    influence_grid = map_data.get_air_vs_ground_grid()
+    influence_grid = map_data.get_air_vs_ground_grid(default_weight=50)
+    p = (50, 130)
+    influence_grid = map_data.add_cost(grid=influence_grid, position=p, radius=10, initial_default_weights=50)
     map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=True)
     map_data.show()
     break
