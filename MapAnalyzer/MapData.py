@@ -292,7 +292,7 @@ class MapData:
                                     sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
-                 ) -> ndarray:
+                 initial_default_weights: int = 0) -> ndarray:
         """
         :rtype: numpy.ndarray
 
@@ -304,7 +304,8 @@ class MapData:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
 
         """
-        return self.pather.add_cost(position=position, radius=radius, arr=grid, weight=weight, safe=safe)
+        return self.pather.add_cost(position=position, radius=radius, arr=grid, weight=weight, safe=safe,
+                                    initial_default_weights=initial_default_weights)
 
     """Utility methods"""
 
