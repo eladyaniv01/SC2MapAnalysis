@@ -8,8 +8,11 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * Buildable points now respect  flying buildings ([b90123f](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b90123f84651488af8a3eea794b95cf94df0b094))
-* Excluded lowered supply depots from non pathables #85 ([#85](https://github.com/eladyaniv01/SC2MapAnalysis/pull/85))
 * pathfind method will now return the path without the start point in it ([06481d8](https://github.com/eladyaniv01/SC2MapAnalysis/commit/06481d8dfec5856bc966c4ec67f5d76c73dc460b))
+
+### Bug Fixes
+
+* Excluded lowered supply depots from non pathables #85 ([#85](https://github.com/eladyaniv01/SC2MapAnalysis/pull/85))
 
 ### Issues Closed:
 
