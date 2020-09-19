@@ -53,17 +53,18 @@ for mf in map_files:
         influence_grid = map_data.get_pyastar_grid()
         # p = (50, 130)
         # influence_grid = map_data.add_cost(grid=influence_grid, position=p, radius=10, initial_default_weights=50)
-        # map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        print(np.unique(map_data.path_arr))
-        plt.imshow(map_data.path_arr, origin="lower")
-        plt.show()
-        plt.imshow(map_data.placement_arr, origin="lower")
-        plt.show()
-        plt.imshow(influence_grid, origin="lower")
-        plt.show()
+        map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
+        map_data.show()
+        # import matplotlib.pyplot as plt
+        # import numpy as np
+        #
+        # print(np.unique(map_data.path_arr))
+        # plt.imshow(map_data.path_arr, origin="lower")
+        # plt.show()
+        # plt.imshow(map_data.placement_arr, origin="lower")
+        # plt.show()
+        # plt.imshow(influence_grid, origin="lower")
+        # plt.show()
         break
 #     if 'dream' in mf.lower():
 #         map_file = mf

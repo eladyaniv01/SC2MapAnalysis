@@ -108,18 +108,14 @@ class MapAnalyzerPather:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
         #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
-        vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
-        # faster way to do :
-        # for point in self.map_data.bot.game_info.vision_blockers:
-        #         #     grid[point] = 1
+        if len(self.map_data.bot.game_info.vision_blockers) > 0:
+            vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
+            # faster way to do :
+            # for point in self.map_data.bot.game_info.vision_blockers:
+            #         #     grid[point] = 1
 
-        # some maps dont have vbs
-        if vbs:
+            # some maps dont have vbs
             grid[tuple(vbs.T)] = 1  # <-
-
-        self.map_data.logger.error(f"path array = {np.unique(self.map_data.path_arr)}")
-        self.map_data.logger.error(f"placement array = {np.unique(self.map_data.placement_arr)}")
-        self.map_data.logger.error(f"inf grid = {np.unique(grid)}")
 
         return grid
 
