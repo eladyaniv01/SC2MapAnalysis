@@ -112,7 +112,10 @@ class MapAnalyzerPather:
         # faster way to do :
         # for point in self.map_data.bot.game_info.vision_blockers:
         #         #     grid[point] = 1
-        grid[tuple(vbs.T)] = 1  # <-
+
+        # some maps dont have vbs
+        if vbs:
+            grid[tuple(vbs.T)] = 1  # <-
 
         self.map_data.logger.error(f"path array = {np.unique(self.map_data.path_arr)}")
         self.map_data.logger.error(f"placement array = {np.unique(self.map_data.placement_arr)}")

@@ -34,7 +34,7 @@ class MATester(sc2.BotAI):
         self.path = None
 
     async def on_start(self):
-        self.map_data = MapData(self, loglevel="ERROR", arcade=True)
+        self.map_data = MapData(self, loglevel="DEBUG", arcade=True)
         self.logger = self.map_data.logger
         base = self.townhalls[0]
         self.base = reg_start = self.map_data.where_all(base.position_tuple)[0]
@@ -100,7 +100,14 @@ class MATester(sc2.BotAI):
     async def on_step(self, iteration: int):
         # grid = self.map_data.get_pyastar_grid()
         # self.map_data.draw_influence_in_game(grid=grid, lower_threshold=0)
-        self.map_data.logger.error(np.unique(self.map_data.path_arr))
+        # self.map_data.logger.error(np.unique(self.map_data.path_arr))
+        # points = self.map_data.indices_to_points(np.where(self.map_data.path_arr.T))
+        # points = self.map_data.indices_to_points(np.where(self.map_data.placement_arr.T))
+        # grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+        grid = self.map_data.get_pyastar_grid(default_weight=1)
+        points = self.map_data.indices_to_points(np.where(grid))
+        self._draw_point_list(point_list=points, text='*')
+        return
         pass
         # self.map_data.logger.info(iteration)
         # grid = self.map_data.get_air_vs_ground_grid()
@@ -167,7 +174,7 @@ class MATester(sc2.BotAI):
     def _draw_point_list(self, point_list: List = None, color=None, text=None, box_r=None) -> bool:
         if not color:
             color = GREEN
-        h = self.get_terrain_z_height(self.townhalls[0]) + 1.2
+        h = self.get_terrain_z_height(self.townhalls[0])
         for p in point_list:
             p = Point2(p)
 
