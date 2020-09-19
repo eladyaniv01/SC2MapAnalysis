@@ -4,7 +4,7 @@ import numpy as np
 import pyastar.astar_wrapper as pyastar
 from numpy import ndarray
 from sc2.position import Point2
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from skimage import draw as skdraw
 
 from MapAnalyzer.constants import NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR, GEYSER_RADIUS_FACTOR
@@ -72,9 +72,9 @@ class MapAnalyzerPather:
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
         nonpathables = self.map_data.bot.structures.not_flying
         nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
-        nonpathables.exclude_type(UnitTypeId.SUPPLYDEPOTLOWERED)
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
+        nonpathables = nonpathables.exclude_type(UnitID.SUPPLYDEPOTLOWERED)
         for obj in nonpathables:
             radius = NONPATHABLE_RADIUS_FACTOR
             if 'geyser' in obj.name.lower():
@@ -168,6 +168,7 @@ class MapAnalyzerPather:
             else:  # normal case
                 legal_path = [point for point in path if point]
 
+            legal_path.pop(0)
             return legal_path
         else:
             self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
