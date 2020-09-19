@@ -79,7 +79,7 @@ Tested Maps ( [AiArena](https://ai-arena.net/) and [SC2ai](https://sc2ai.net/) l
 ```
 ['AbyssalReefLE.xz',
  'AutomatonLE.xz',
- 'DeathAuraLE.xz',
+ 'DeathAuraLE.xz', # currently fails on ground pathing 
  'EphemeronLE.xz',
  'EternalEmpireLE.xz',
  'EverDreamLE.xz',
