@@ -50,7 +50,7 @@ class Buildables:
         [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius, grid=parr,
                                         safe=False)
          for unit in
-         self.polygon.map_data.bot.all_units]
+         self.polygon.map_data.bot.all_units.not_flying]
         buildable_indices = np.where(parr == 1)
         buildable_points = []
         _points = list(self.polygon.map_data.indices_to_points(buildable_indices))

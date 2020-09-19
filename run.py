@@ -38,21 +38,31 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    with lzma.open(mf, "rb") as f:
-        raw_game_data, raw_game_info, raw_observation = pickle.load(f)
-    bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
-    map_data = MapData(bot, loglevel="DEBUG")
-    base = map_data.bot.townhalls[0]
-    reg_start = map_data.where_all(base.position_tuple)[0]
-    reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
-    p0 = Point2(reg_start.center)
-    p1 = Point2(reg_end.center)
-    influence_grid = map_data.get_air_vs_ground_grid(default_weight=50)
-    p = (50, 130)
-    influence_grid = map_data.add_cost(grid=influence_grid, position=p, radius=10, initial_default_weights=50)
-    map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=True)
-    map_data.show()
-    break
+    if 'death' in mf.lower():
+        # if 'abys' in mf.lower():
+        with lzma.open(mf, "rb") as f:
+            raw_game_data, raw_game_info, raw_observation = pickle.load(f)
+        bot = import_bot_instance(raw_game_data, raw_game_info, raw_observation)
+        map_data = MapData(bot, loglevel="DEBUG")
+        base = map_data.bot.townhalls[0]
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        p0 = Point2(reg_start.center)
+        p1 = Point2(reg_end.center)
+        influence_grid = map_data.get_air_vs_ground_grid(default_weight=50)
+        influence_grid = map_data.get_pyastar_grid()
+        # p = (50, 130)
+        # influence_grid = map_data.add_cost(grid=influence_grid, position=p, radius=10, initial_default_weights=50)
+        # map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
+        import matplotlib.pyplot as plt
+
+        plt.imshow(map_data.path_arr, origin="lower")
+        plt.show()
+        plt.imshow(map_data.placement_arr, origin="lower")
+        plt.show()
+        plt.imshow(influence_grid, origin="lower")
+        plt.show()
+        break
 #     if 'dream' in mf.lower():
 #         map_file = mf
 #         break
