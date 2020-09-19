@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.69](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.68...v0.0.69) (2020-09-19)
+
+
+### Bug Fixes
+
+* fix pathing grid set up incorrectly when there are no vision blockers ([d49a084](https://github.com/eladyaniv01/SC2MapAnalysis/commit/d49a084543a90efc5d515b8af43072a1c1e39adb))
+
 ### [0.0.68](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.67...v0.0.68) (2020-09-19)
 
 
