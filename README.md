@@ -1,6 +1,5 @@
 # SC2MapAnalysis 
 
-### Important - Ground pathing is broken on Map `DeathAuraLE` at the moment 
 
 * ![build](https://github.com/eladyaniv01/SC2MapAnalysis/workflows/Build/badge.svg?branch=master) 
  [master](https://github.com/eladyaniv01/SC2MapAnalysis/tree/master) 
