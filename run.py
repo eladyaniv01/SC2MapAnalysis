@@ -55,6 +55,7 @@ for mf in map_files:
         # influence_grid = map_data.add_cost(grid=influence_grid, position=p, radius=10, initial_default_weights=50)
         map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
         map_data.show()
+        
         # import matplotlib.pyplot as plt
         # import numpy as np
         #
