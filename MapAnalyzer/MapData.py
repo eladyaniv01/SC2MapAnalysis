@@ -13,7 +13,7 @@ from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
-from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA
+from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA, CORNER_MIN_DISTANCE
 from .constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
@@ -36,9 +36,11 @@ class MapData:
 
     """
 
-    def __init__(self, bot: BotAI, loglevel: str = "ERROR", arcade: bool = False) -> None:
+    def __init__(self, bot: BotAI, loglevel: str = "ERROR", arcade: bool = False,
+                 corner_distance: int = CORNER_MIN_DISTANCE) -> None:
         # store relevant data from api
         self.bot = bot
+        self.corner_distance = corner_distance  # the lower this value is,  the sharper the corners will be
         self.arcade = arcade
         self.version = __version__
         self.map_name: str = bot.game_info.map_name
@@ -48,7 +50,6 @@ class MapData:
         self.normal_geysers = bot.vespene_geyser
         self.terrain_height: ndarray = bot.game_info.terrain_height.data_numpy
         self._vision_blockers: Set[Point2] = bot.game_info.vision_blockers
-
 
         # data that will be generated and cached
         self.min_region_area = MIN_REGION_AREA
