@@ -72,9 +72,9 @@ class MapAnalyzerPather:
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
         nonpathables = self.map_data.bot.structures.not_flying
         nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
-        nonpathables = nonpathables.exclude_type(UnitID.SUPPLYDEPOTLOWERED)
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
+        nonpathables = nonpathables.exclude_type(UnitID.SUPPLYDEPOTLOWERED)
         for obj in nonpathables:
             radius = NONPATHABLE_RADIUS_FACTOR
             if 'geyser' in obj.name.lower():
@@ -173,6 +173,7 @@ class MapAnalyzerPather:
             else:  # normal case
                 legal_path = [point for point in path if point]
 
+            legal_path.pop(0)
             return legal_path
         else:
             self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
