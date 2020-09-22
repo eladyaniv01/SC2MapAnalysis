@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.66 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.68 documentation</title>
   
 
   
@@ -167,7 +167,7 @@
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
-<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span><span class="p">,</span> <span class="n">CORNER_MIN_DISTANCE</span>
 <span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">,</span> <span class="n">PathLibChoke</span>
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
@@ -190,9 +190,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">arcade</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">arcade</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">corner_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CORNER_MIN_DISTANCE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># store relevant data from api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corner_distance</span> <span class="o">=</span> <span class="n">corner_distance</span>  <span class="c1"># the lower this value is,  the sharper the corners will be</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arcade</span> <span class="o">=</span> <span class="n">arcade</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">__version__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_name</span>
@@ -202,7 +204,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normal_geysers</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">vespene_geyser</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">:</span> <span class="n">ndarray</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">terrain_height</span><span class="o">.</span><span class="n">data_numpy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vision_blockers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Point2</span><span class="p">]</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span>
-
 
         <span class="c1"># data that will be generated and cached</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_region_area</span> <span class="o">=</span> <span class="n">MIN_REGION_AREA</span>

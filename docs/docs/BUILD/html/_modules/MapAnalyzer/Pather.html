@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.66 documentation</title>
+  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.68 documentation</title>
   
 
   
@@ -158,6 +158,7 @@
 <span class="kn">import</span> <span class="nn">pyastar.astar_wrapper</span> <span class="k">as</span> <span class="nn">pyastar</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
+<span class="kn">from</span> <span class="nn">sc2.ids.unit_typeid</span> <span class="kn">import</span> <span class="n">UnitTypeId</span> <span class="k">as</span> <span class="n">UnitID</span>
 <span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">draw</span> <span class="k">as</span> <span class="n">skdraw</span>
 
 <span class="kn">from</span> <span class="nn">MapAnalyzer.constants</span> <span class="kn">import</span> <span class="n">NONPATHABLE_RADIUS_FACTOR</span><span class="p">,</span> <span class="n">RESOURCE_BLOCKER_RADIUS_FACTOR</span><span class="p">,</span> <span class="n">GEYSER_RADIUS_FACTOR</span>
@@ -223,10 +224,11 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_non_pathables_ground</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-        <span class="n">nonpathables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">structures</span>
-        <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_structures</span><span class="p">)</span>
+        <span class="n">nonpathables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">not_flying</span>
+        <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_structures</span><span class="o">.</span><span class="n">not_flying</span><span class="p">)</span>
         <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">mineral_fields</span><span class="p">)</span>
         <span class="n">nonpathables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">normal_geysers</span><span class="p">)</span>
+        <span class="n">nonpathables</span> <span class="o">=</span> <span class="n">nonpathables</span><span class="o">.</span><span class="n">exclude_type</span><span class="p">(</span><span class="n">UnitID</span><span class="o">.</span><span class="n">SUPPLYDEPOTLOWERED</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">nonpathables</span><span class="p">:</span>
             <span class="n">radius</span> <span class="o">=</span> <span class="n">NONPATHABLE_RADIUS_FACTOR</span>
             <span class="k">if</span> <span class="s1">&#39;geyser&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
@@ -256,13 +258,18 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Point2</span><span class="p">,</span> <span class="n">lowest_points</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="MapAnalyzerPather.get_base_pathing_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/Pather/index.html#MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_pathing_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+
         <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
         <span class="c1">#  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val</span>
-        <span class="n">vbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span><span class="p">))</span>
-        <span class="c1"># faster way to do :</span>
-        <span class="c1"># for point in self.map_data.bot.game_info.vision_blockers:</span>
-        <span class="c1">#         #     grid[point] = 1</span>
-        <span class="n">grid</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vbs</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># &lt;-</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span><span class="p">))</span>
+            <span class="c1"># faster way to do :</span>
+            <span class="c1"># for point in self.map_data.bot.game_info.vision_blockers:</span>
+            <span class="c1">#         #     grid[point] = 1</span>
+
+            <span class="c1"># some maps dont have vbs</span>
+            <span class="n">grid</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">vbs</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># &lt;-</span>
 
         <span class="k">return</span> <span class="n">grid</span></div>
 
@@ -320,6 +327,7 @@
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># normal case</span>
                 <span class="n">legal_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">if</span> <span class="n">point</span><span class="p">]</span>
 
+            <span class="n">legal_path</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">legal_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Path found s</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">, g</span><span class="si">{</span><span class="n">goal</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

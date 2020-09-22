@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Polygon &mdash; Sc2MapAnalyzer 0.0.66 documentation</title>
+  <title>MapAnalyzer.Polygon &mdash; Sc2MapAnalyzer 0.0.68 documentation</title>
   
 
   
@@ -204,7 +204,7 @@
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">add_cost</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">parr</span><span class="p">,</span>
                                         <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
          <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span>
-         <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">all_units</span><span class="p">]</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">all_units</span><span class="o">.</span><span class="n">not_flying</span><span class="p">]</span>
         <span class="n">buildable_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">parr</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">buildable_points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">_points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="n">buildable_indices</span><span class="p">))</span>
@@ -230,7 +230,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">indices_to_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span>
-                           <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">])</span>  <span class="c1"># this is to serve data for map data compile,  the accurate calculation will be done on _set_points</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">])</span>  <span class="c1"># this is to serve data for map data compile,  the accurate</span>
+        <span class="c1"># calculation will be done on _set_points</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_points</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># TODO</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_choke</span> <span class="o">=</span> <span class="kc">False</span>
@@ -318,17 +319,14 @@
 <div class="viewcode-block" id="Polygon.corner_array"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.corner_array">[docs]</a>    <span class="k">def</span> <span class="nf">corner_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        This is how the corners are calculated</span>
-
-<span class="sd">        TODO</span>
-<span class="sd">            make this adjustable to the user</span>
+<span class="sd">        :rtype: :class:`.ndarray`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="kn">from</span> <span class="nn">skimage.feature</span> <span class="kn">import</span> <span class="n">corner_harris</span><span class="p">,</span> <span class="n">corner_peaks</span>
 
         <span class="n">array</span> <span class="o">=</span> <span class="n">corner_peaks</span><span class="p">(</span>
-                <span class="n">corner_harris</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">),</span> <span class="n">min_distance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">threshold_rel</span><span class="o">=</span><span class="mf">0.01</span>
-        <span class="p">)</span>
+                <span class="n">corner_harris</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">),</span> <span class="n">min_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">corner_distance</span><span class="p">,</span> <span class="n">threshold_rel</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">array</span></div>
 
     <span class="nd">@property</span>
