@@ -76,7 +76,8 @@ class Polygon:
         self.indices = np.where(self.array == 1)
         self._clean_points = self.map_data.indices_to_points(self.indices)
         self.points = set([Point2(p) for p in
-                           self._clean_points])  # this is to serve data for map data compile,  the accurate calculation will be done on _set_points
+                           self._clean_points])  # this is to serve data for map data compile,  the accurate
+        # calculation will be done on _set_points
         self._set_points()
         self.id = None  # TODO
         self.is_choke = False
@@ -164,17 +165,14 @@ class Polygon:
     def corner_array(self) -> ndarray:
         """
 
-        This is how the corners are calculated
-
-        TODO
-            make this adjustable to the user
+        :rtype: :class:`.ndarray`
 
         """
+
         from skimage.feature import corner_harris, corner_peaks
 
         array = corner_peaks(
-                corner_harris(self.array), min_distance=3, threshold_rel=0.01
-        )
+                corner_harris(self.array), min_distance=self.map_data.corner_distance, threshold_rel=0.01)
         return array
 
     @property
