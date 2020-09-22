@@ -4,6 +4,7 @@ from setuptools import setup
 logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
+        "wheel",
         "Cython",
         "pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
         "burnysc2",
