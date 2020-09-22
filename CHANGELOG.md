@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.70](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.69...v0.0.70) (2020-09-22)
+
+### Bug Fixes
+
+* MapData now accepts a `corner_distance` variable that will determine the corner distance calculation ([294df181](https://github.com/eladyaniv01/SC2MapAnalysis/commit/294df181c272b218eef0c167f24d1db7650a7202))
+
+
+### Build System
+
+* add wheel to requirements and setup.py ([eb663a9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/eb663a95c23c1e180ea385a783af306f47178c6e))
+
+### Issues Closed:
+
+ * [#88 BUG: all possible corners are not found ](https://github.com/eladyaniv01/SC2MapAnalysis/issues/88)
+
 ### [0.0.69](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.68...v0.0.69) (2020-09-19)
 
 
