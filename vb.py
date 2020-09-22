@@ -68,7 +68,7 @@ def pushdocs():
 
     subprocess.check_call('git add docs --all -f', shell=True)
     subprocess.check_call('git commit -m \"docs update\" ', shell=True)
-    subprocess.check_call('git push" ', shell=True)
+    subprocess.check_call('git push', shell=True)
 
 @vb.command(help='print setup.py')
 def printsetup():
