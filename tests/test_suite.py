@@ -2,13 +2,12 @@ from random import randint
 
 from _pytest.python import Metafunc
 from hypothesis import given, settings
+from loguru import logger
 from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_file_list, mock_map_data
-from tests.mocksetup import get_map_datas, logger, random, st
-
-logger = logger
+from tests.mocksetup import get_map_datas, random, st
 
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
@@ -107,7 +106,7 @@ class TestSanity:
         for choke in map_data.map_chokes:
             for p in choke.points:
                 assert (choke in map_data.where_all(p)), \
-                    map_data.logger.error(f"<Map : {map_data}, Choke : {choke},"
+                    logger.error(f"<Map : {map_data}, Choke : {choke},"
                                          f" where :  {map_data.where(choke.center)} point : {choke.center}>")
 
     def test_vision_blockers(self, map_data: MapData) -> None:
@@ -116,5 +115,5 @@ class TestSanity:
             assert (vb in all_chokes)
             for p in vb.points:
                 assert (vb in map_data.where_all(p)), \
-                    map_data.logger.error(f"<Map : {map_data}, Choke : {vb},"
+                    logger.error(f"<Map : {map_data}, Choke : {vb},"
                                           f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")

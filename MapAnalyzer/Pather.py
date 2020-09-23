@@ -2,12 +2,13 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
+from loguru import logger
 from numpy import ndarray
-from sc2.position import Point2
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
+from sc2.position import Point2
 from skimage import draw as skdraw
 
-from MapAnalyzer.constants import NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR, GEYSER_RADIUS_FACTOR
+from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
@@ -94,7 +95,7 @@ class MapAnalyzerPather:
         ri, ci = skdraw.disk(center=(int(from_pos[0]), int(from_pos[1])), radius=radius, shape=grid.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.map_data.logger.debug(OutOfBoundsException(from_pos))
+            logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
             return None
         points = self.map_data.indices_to_points((ri, ci))
@@ -150,10 +151,10 @@ class MapAnalyzerPather:
             start = int(start[0]), int(start[1])
             goal = int(goal[0]), int(goal[1])
         else:
-            self.map_data.logger.warning(PatherNoPointsException(start=start, goal=goal))
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
         if grid is None:
-            self.map_data.logger.warning("Using the default pyastar grid as no grid was provided.")
+            logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
@@ -176,7 +177,7 @@ class MapAnalyzerPather:
             legal_path.pop(0)
             return legal_path
         else:
-            self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
+            logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
     def add_cost(self, position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
@@ -184,7 +185,7 @@ class MapAnalyzerPather:
         ri, ci = skdraw.disk(center=(int(position[0]), int(position[1])), radius=radius, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.map_data.logger.debug(OutOfBoundsException(position))
+            logger.debug(OutOfBoundsException(position))
             # self.map_data.logger.trace()
             return arr
 
@@ -209,7 +210,7 @@ class MapAnalyzerPather:
 
         arr[ri, ci] += weight
         if np.any(arr < 1) and safe:
-            self.map_data.logger.warning(
+            logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
             arr = np.where(arr < 1, 1, arr)
         return arr

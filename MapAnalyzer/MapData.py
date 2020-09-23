@@ -2,24 +2,22 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from numpy import float64, int64, ndarray
+from pkg_resources import DistributionNotFound, get_distribution
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
-from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA, CORNER_MIN_DISTANCE
-from .constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
+from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
+from .constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
-
-from pkg_resources import get_distribution, DistributionNotFound
-
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -71,7 +69,6 @@ class MapData:
         # plugins
         self.log_level = loglevel
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
-        self.logger = self.debugger.logger
         self.pather = MapAnalyzerPather(self)
         self.connectivity_graph = None  # set by pather
         self.pathlib_map = self.pather.pathlib_map
@@ -82,10 +79,10 @@ class MapData:
         if not self.arcade:
             self.base_locations: list = bot.expansion_locations_list
         else:
-            self.logger.info(f" {__version__} Starting in Arcade mode")
+            logger.info(f" {__version__} Starting in Arcade mode")
             self.base_locations: list = []
 
-        self.logger.info(f"{__version__} Compiling {self.map_name} " + WHITE)
+        logger.info(f"{__version__} Compiling {self.map_name} " + WHITE)
         self._compile_map()
 
     """Properties"""
@@ -151,7 +148,7 @@ class MapData:
 
         """
         if air_pathing is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
+            logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight,
                                             include_destructables=include_destructables,
                                             )
@@ -310,13 +307,13 @@ class MapData:
 
     """Utility methods"""
 
-    def log(self, msg):
+    def log(msg):
         """
 
          Lazy logging
 
          """
-        self.logger.debug(f"{msg}")
+        logger.debug(f"{msg}")
 
     def save(self, filename):
         """
@@ -455,7 +452,7 @@ class MapData:
         if isinstance(points, list):
             return points[self.closest_node_idx(node=target, nodes=points)]
         else:
-            self.logger.warning(type(points))
+            logger.warning(type(points))
             return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
@@ -731,7 +728,7 @@ class MapData:
                     new_choke.areas.append(area)
                 self.map_chokes.append(new_choke)
             else:  # pragma: no cover
-                self.logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
+                logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
         # compute Region
@@ -801,7 +798,7 @@ class MapData:
 
         """
         if save is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+            logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path(self,
@@ -817,7 +814,7 @@ class MapData:
 
         """
         if plot is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
+            logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
 
         self.debugger.plot_influenced_path(start=start,
                                            goal=goal,
