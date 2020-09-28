@@ -100,8 +100,18 @@ class MapAnalyzerPather:
             return None
         points = self.map_data.indices_to_points((ri, ci))
         arr = self.map_data.points_to_numpy_array(points)
-        arr = np.where(arr == 1, grid.T, np.inf)
+
+        # sometimes users will want to pass in a grid constructed outside this lib,
+        # and then it will most likely be transposed
+        if arr.shape != grid.shape:
+            arr = arr.T
+            if arr.shape != grid.shape:
+                logger.error(f"Grid Shapes mismatch")
+        arr = np.where(arr == 1, grid, np.inf)
         lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
+        low_cost = np.min(arr)
+        for p in lowest_points:
+            assert (grid[p] == low_cost), f'WTF, p = {p}, low_cost = {low_cost},  grid[p] = {grid[p]}'
         return list(map(Point2, lowest_points))
 
     def get_base_pathing_grid(self) -> ndarray:
