@@ -109,6 +109,43 @@ class TestPathing:
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None), f"path = {path}"
 
+    def test_find_lowest_cost_points(self, map_data: MapData):
+        influence_grid = map_data.get_air_vs_ground_grid()
+        cost_point = (50, 130)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        cost = influence_grid[safe_points[0]]
+        for p in safe_points:
+            assert (influence_grid[
+                        p] == cost), f"grid type = air_vs_ground_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+
+        influence_grid = map_data.get_clean_air_grid()
+        cost_point = (50, 130)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        cost = influence_grid[safe_points[0]]
+        for p in safe_points:
+            assert (influence_grid[
+                        p] == cost), f"grid type = clean_air_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+
+        influence_grid = map_data.get_pyastar_grid()
+        cost_point = (50, 130)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        cost = influence_grid[safe_points[0]]
+        for p in safe_points:
+            assert (influence_grid[
+                        p] == cost), f"grid type = pyastar_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+
+        influence_grid = map_data.get_climber_grid()
+        cost_point = (50, 130)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        cost = influence_grid[safe_points[0]]
+        for p in safe_points:
+            assert (influence_grid[
+                        p] == cost), f"grid type = climber_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+
     def test_air_vs_ground(self, map_data: MapData) -> None:
         default_weight = 99
         grid = map_data.get_air_vs_ground_grid(default_weight=default_weight)
