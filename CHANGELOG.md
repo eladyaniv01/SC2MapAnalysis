@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.71](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.70...v0.0.71) (2020-09-28)
+
+
+### Bug Fixes
+
+* fixed transposed grid bug when searching for low cost points ,  added support for grids constructed from outside sources ([c127901](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c1279014e36adbdeb578b7d5717a1833eb5bdefc))
+* log compatability with bots ([8960716](https://github.com/eladyaniv01/SC2MapAnalysis/commit/896071677394c08993c10b4ea61025cb75620ad9))
+
+
+### Tests
+
+* find low cost points is now tested on all grid types ([6ec010d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6ec010d172d609a7d867a6c51b29320cf310b062))
+
 ### [0.0.70](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.69...v0.0.70) (2020-09-22)
 
 ### Bug Fixes
