@@ -98,20 +98,13 @@ class MapAnalyzerPather:
             logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
             return None
-        points = self.map_data.indices_to_points((ri, ci))
+        points = self.map_data.indices_to_points((ci, ri))
         arr = self.map_data.points_to_numpy_array(points)
-
-        # sometimes users will want to pass in a grid constructed outside this lib,
-        # and then it will most likely be transposed
-        if arr.shape != grid.shape:
-            arr = arr.T
-            if arr.shape != grid.shape:
-                logger.error(f"Grid Shapes mismatch")
-        arr = np.where(arr == 1, grid, np.inf)
+        # Transpose must be done here on the newly generated array,
+        # since the original grid can use this function many times per frame,
+        # and we dont want to transpose it more than once
+        arr = np.where(arr.T == 1, grid, np.inf)
         lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
-        low_cost = np.min(arr)
-        for p in lowest_points:
-            assert (grid[p] == low_cost), f'WTF, p = {p}, low_cost = {low_cost},  grid[p] = {grid[p]}'
         return list(map(Point2, lowest_points))
 
     def get_base_pathing_grid(self) -> ndarray:
@@ -137,7 +130,7 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
-    def get_clean_air_grid(self, default_weight: int = 1):
+    def get_clean_air_grid(self, default_weight: int = 1) -> ndarray:
         clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
         if default_weight == 1:
             return clean_air_grid
@@ -169,16 +162,12 @@ class MapAnalyzerPather:
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
-            """
-            for point in path , if point is not in bounds - remove it 
-            """
             path = list(map(Point2, path))[::sensitivity]
-            # removing points that are out of bounds
-
             """
             Edge case
             EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
             """
+            # `if point` is checking with burnysc2 that the point is in map bounds
             if 'everdream' in self.map_data.map_name.lower():
                 legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
             else:  # normal case

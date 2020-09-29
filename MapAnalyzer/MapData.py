@@ -230,7 +230,7 @@ class MapData:
         """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
-    def get_clean_air_grid(self, default_weight: int = 1):
+    def get_clean_air_grid(self, default_weight: int = 1) -> ndarray:
         """
 
         :rtype: numpy.ndarray

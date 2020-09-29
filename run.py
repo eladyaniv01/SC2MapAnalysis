@@ -5,7 +5,6 @@ import random
 from typing import List
 
 from sc2.position import Point2
-from loguru import logger
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
 
@@ -39,8 +38,9 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    if 'death' in mf.lower():
-        mf = random.choice(map_files)
+    if 'subm' in mf.lower():
+        # if 1==1:
+        #     mf = random.choice(map_files)
         # if 'abys' in mf.lower():
         with lzma.open(mf, "rb") as f:
             raw_game_data, raw_game_info, raw_observation = pickle.load(f)
@@ -57,11 +57,12 @@ for mf in map_files:
         influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
         safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
 
-        logger.info(safe_points)
+        # logger.info(safe_points)
 
         x, y = zip(*safe_points)
         plt.scatter(x, y, s=1)
         map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
-
+        # map_data.save(filename=f"{mf}")
+        # plt.close()
         map_data.show()
-        break
+        # break
