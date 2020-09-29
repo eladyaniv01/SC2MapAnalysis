@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.72](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.71...v0.0.72) (2020-09-29)
+
+
+### Bug Fixes
+
+* fix double transpose bug that happens when requesting low cost points more than once per frame ([ffd6b84](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ffd6b843520a1b9eb3180d1a8429485495b61461))
+
+
+### Tests
+
+* find low cost points now also tests that the distance between the point and the origin makes sense( the array is not transposed) ([76a0e19](https://github.com/eladyaniv01/SC2MapAnalysis/commit/76a0e191fcd838c95a627df2b5ec531bd5b325d0))
+
 ### [0.0.71](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.70...v0.0.71) (2020-09-28)
 
 
