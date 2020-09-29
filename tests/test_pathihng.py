@@ -109,42 +109,54 @@ class TestPathing:
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None), f"path = {path}"
 
-    def test_find_lowest_cost_points(self, map_data: MapData):
+    def test_find_lowest_cost_points(self, map_data: MapData) -> None:
+        cr = 7
+        safe_query_radius = 14
+        expected_max_distance = 2 * safe_query_radius
+
         influence_grid = map_data.get_air_vs_ground_grid()
         cost_point = (50, 130)
-        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        influence_grid = map_data.add_cost(position=cost_point, radius=cr, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=safe_query_radius,
+                                                       grid=influence_grid)
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
                         p] == cost), f"grid type = air_vs_ground_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+            assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_clean_air_grid()
         cost_point = (50, 130)
-        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        influence_grid = map_data.add_cost(position=cost_point, radius=cr, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=safe_query_radius,
+                                                       grid=influence_grid)
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
                         p] == cost), f"grid type = clean_air_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+            assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_pyastar_grid()
         cost_point = (50, 130)
-        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        influence_grid = map_data.add_cost(position=cost_point, radius=cr, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=safe_query_radius,
+                                                       grid=influence_grid)
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
                         p] == cost), f"grid type = pyastar_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+            assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_climber_grid()
         cost_point = (50, 130)
-        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        influence_grid = map_data.add_cost(position=cost_point, radius=cr, grid=influence_grid)
+        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=safe_query_radius,
+                                                       grid=influence_grid)
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
                         p] == cost), f"grid type = climber_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+            assert (map_data.distance(cost_point, p) < expected_max_distance)
 
     def test_air_vs_ground(self, map_data: MapData) -> None:
         default_weight = 99
