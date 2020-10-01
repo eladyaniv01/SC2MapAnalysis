@@ -8,7 +8,6 @@ from sc2.position import Point2
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
 
-import matplotlib.pyplot as plt
 
 def get_random_point(minx, maxx, miny, maxy):
     return (random.randint(minx, maxx), random.randint(miny, maxy))
@@ -51,17 +50,26 @@ for mf in map_files:
         reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
         p0 = Point2(reg_start.center)
         p1 = Point2(reg_end.center)
-        influence_grid = map_data.get_air_vs_ground_grid(default_weight=50)
+        influence_grid = map_data.get_clean_air_grid(default_weight=50)
         # influence_grid = map_data.get_pyastar_grid()
-        cost_point = (50, 130)
+        # cost_point = (50, 130)
+        cost_point = (87, 76)
         influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+        cost_point = (108, 64)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        cost_point = (97, 53)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        # safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
 
         # logger.info(safe_points)
 
-        x, y = zip(*safe_points)
-        plt.scatter(x, y, s=1)
-        map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=False)
+        # x, y = zip(*safe_points)
+        # plt.scatter(x, y, s=1)
+        path = map_data.pathfind(start=p0, goal=p1, grid=influence_grid, allow_diagonal=True)
+        from loguru import logger
+
+        logger.info(len(path))
+        map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=True)
         # map_data.save(filename=f"{mf}")
         # plt.close()
         map_data.show()
