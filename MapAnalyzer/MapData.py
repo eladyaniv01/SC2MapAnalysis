@@ -103,12 +103,13 @@ class MapData:
     # dont cache this
     def get_pyastar_grid(self,
                          default_weight: int = 1,
-                         include_destructables: bool = True,
-                         air_pathing: Optional[bool] = None) -> ndarray:
+                         include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Warning:
-            ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`
+        Note:
+            To query what is the cost in a certain point, simple do `my_grid[certain_point]` where `certain_point`
+
+            is a :class:`tuple` or a :class:`sc2.position.Point2`
 
 
         Requests a new pathing grid.
@@ -147,8 +148,6 @@ class MapData:
             * :meth:`.MapData.find_lowest_cost_points`
 
         """
-        if air_pathing is not None:
-            logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight,
                                             include_destructables=include_destructables,
                                             )
