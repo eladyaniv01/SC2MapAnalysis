@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.73](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.72...v0.0.73) (2020-10-01)
+
+
+### Bug Fixes
+
+* fix clean_air_grid being wrongly constructed of integers instead of np.float32 ([278241c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/278241c7378709ead938b6ddb84eda4f6d6c0e10))
+
+
+### Documentation
+
+* Added instruction on how to query cost in a specific point on the grid ([e0c8e19](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e0c8e19f0602576eadc4b19d84035405ad61f761))
+
+
+### Tests
+
+* now testing clean_air_grid  for dtype bugfix by checking path lengths ([b47bae4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b47bae4f412cdd1e6785a0bb68c4eed8789f62f2))
+
 ### [0.0.72](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.71...v0.0.72) (2020-09-29)
 
 
