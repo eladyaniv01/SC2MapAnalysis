@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapData &mdash; Sc2MapAnalyzer 0.0.68 documentation</title>
+  <title>MapData &mdash; Sc2MapAnalyzer 0.0.71 documentation</title>
   
 
   
@@ -462,7 +462,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 
 <dl class="py method">
 <dt id="MapAnalyzer.MapData.MapData.get_pyastar_grid">
-<code class="sig-name descname">get_pyastar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">air_pathing</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/MapData.html#MapData.get_pyastar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_pyastar_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_pyastar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/MapData.html#MapData.get_pyastar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.get_pyastar_grid" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
@@ -471,13 +471,13 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <dd class="field-even"><ul class="simple">
 <li><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
 <li><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>air_pathing</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">air_pathing</span></code> is deprecated, use <a class="reference internal" href="../../../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_clean_air_grid" title="MapAnalyzer.MapData.MapData.get_clean_air_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_clean_air_grid()</span></code></a> or <a class="reference internal" href="../../../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid" title="MapAnalyzer.MapData.MapData.get_air_vs_ground_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.get_air_vs_ground_grid()</span></code></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To query what is the cost in a certain point, simple do <code class="docutils literal notranslate"><span class="pre">my_grid[certain_point]</span></code> where <cite>certain_point</cite></p>
+<p>is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> or a <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a></p>
 </div>
 <p>Requests a new pathing grid.</p>
 <p>This grid will have all non pathable cells set to <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.inf</span></code>.</p>
@@ -552,7 +552,7 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 
 <dl class="py method">
 <dt id="MapAnalyzer.MapData.MapData.log">
-<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/MapData.html#MapData.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/MapData.html#MapData.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lazy logging</p>
 </dd></dl>
 
