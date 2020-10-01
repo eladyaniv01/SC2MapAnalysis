@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, develop ]
 
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os:  [ubuntu-18.04] # windows-latest need to figure out how to run on win64
-        python-version: [3.8]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2

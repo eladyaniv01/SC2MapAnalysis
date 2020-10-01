@@ -107,7 +107,7 @@ class MapData:
         """
         :rtype: numpy.ndarray
         Note:
-            To query what is the cost in a certain point, simple do `my_grid[certain_point]` where `certain_point`
+            To query what is the cost in a certain point, simple do ``my_grid[certain_point]`` where `certain_point`
 
             is a :class:`tuple` or a :class:`sc2.position.Point2`
 
