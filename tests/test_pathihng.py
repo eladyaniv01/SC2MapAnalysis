@@ -2,6 +2,7 @@ import os
 
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
+from sc2.position import Point2
 
 from MapAnalyzer import Region
 from MapAnalyzer.MapData import MapData
@@ -157,6 +158,39 @@ class TestPathing:
             assert (influence_grid[
                         p] == cost), f"grid type = climber_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
+
+    def test_clean_air_grid_allow_diagonal_true(self, map_data: MapData) -> None:
+        default_weight = 2
+        base = map_data.bot.townhalls[0]
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        p0 = Point2(reg_start.center)
+        p1 = Point2(reg_end.center)
+        grid = map_data.get_clean_air_grid(default_weight=default_weight)
+        cost_points = [(87, 76), (108, 64), (97, 53)]
+        cost_points = list(map(Point2, cost_points))
+        for cost_point in cost_points:
+            grid = map_data.add_cost(position=cost_point, radius=7, grid=grid)
+        path = map_data.pathfind(start=p0, goal=p1, grid=grid, allow_diagonal=True)
+        assert (len(path) < 200)
+
+    def test_clean_air_grid_allow_diagonal_false(self, map_data: MapData) -> None:
+        """
+        non diagonal path should be longer,  but still below 250
+        """
+        default_weight = 2
+        base = map_data.bot.townhalls[0]
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        p0 = Point2(reg_start.center)
+        p1 = Point2(reg_end.center)
+        grid = map_data.get_clean_air_grid(default_weight=default_weight)
+        cost_points = [(87, 76), (108, 64), (97, 53)]
+        cost_points = list(map(Point2, cost_points))
+        for cost_point in cost_points:
+            grid = map_data.add_cost(position=cost_point, radius=7, grid=grid)
+        path = map_data.pathfind(start=p0, goal=p1, grid=grid, allow_diagonal=False)
+        assert (len(path) < 250)
 
     def test_air_vs_ground(self, map_data: MapData) -> None:
         default_weight = 99
