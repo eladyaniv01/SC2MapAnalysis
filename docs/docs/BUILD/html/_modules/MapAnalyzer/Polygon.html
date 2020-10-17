@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.Polygon &mdash; Sc2MapAnalyzer 0.0.71 documentation</title>
+  <title>MapAnalyzer.Polygon &mdash; Sc2MapAnalyzer 0.0.73 documentation</title>
   
 
   
@@ -159,6 +159,7 @@
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">int64</span><span class="p">,</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">center_of_mass</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span><span class="p">,</span> <span class="n">Region</span>
@@ -188,7 +189,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;BuildablePoints needs to update first&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;BuildablePoints needs to update first&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span></div>
 
@@ -201,6 +202,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="c1"># passing safe false to reduce the warnings,</span>
+        <span class="c1"># which are irrelevant in this case</span>
         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">add_cost</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">parr</span><span class="p">,</span>
                                         <span class="n">safe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
          <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span>

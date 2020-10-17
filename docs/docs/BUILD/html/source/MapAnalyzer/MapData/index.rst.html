@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapData &mdash; Sc2MapAnalyzer 0.0.71 documentation</title>
+  <title>MapData &mdash; Sc2MapAnalyzer 0.0.73 documentation</title>
   
 
   
@@ -204,7 +204,7 @@
 <dl class="py class">
 <dt id="MapAnalyzer.MapData.MapData">
 <em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.MapData.</code><code class="sig-name descname">MapData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bot</span></em>, <em class="sig-param"><span class="n">loglevel</span><span class="o">=</span><span class="default_value">'ERROR'</span></em>, <em class="sig-param"><span class="n">arcade</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">corner_distance</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/MapData.html#MapData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Entry point for the user</p>
 <dl class="py method">
 <dt id="MapAnalyzer.MapData.MapData.add_cost">
@@ -215,12 +215,12 @@
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>position</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em>) – </p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>position</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 <li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>safe</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>initial_default_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>safe</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>initial_default_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -244,12 +244,12 @@
 <em class="property">static </em><code class="sig-name descname">closest_node_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em>, <em class="sig-param"><span class="n">nodes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/MapData.html#MapData.closest_node_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.closest_node_idx" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>node</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
-<li><p><strong>nodes</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
+<li><p><strong>nodes</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -267,7 +267,7 @@
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>points</strong> (<em>List</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
-<li><p><strong>target</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p></li>
+<li><p><strong>target</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -310,15 +310,15 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <code class="sig-name descname">draw_influence_in_game</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span></em>, <em class="sig-param"><span class="n">lower_threshold</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">upper_threshold</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">201, 168, 79</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">13</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/MapData.html#MapData.draw_influence_in_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.draw_influence_in_game" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>lower_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>upper_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>color</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em>) – </p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>lower_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>upper_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>color</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -358,7 +358,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>from_pos</strong> (<a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a>) – </p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 <li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
 </ul>
 </dd>
@@ -396,7 +396,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p>
+<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p>
 </dd>
 </dl>
 <p><code class="docutils literal notranslate"><span class="pre">air_vs_ground</span></code> grid is computed in a way that lowers the cost of nonpathable terrain,</p>
@@ -434,7 +434,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p>
+<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p>
 </dd>
 </dl>
 <p>Will return a grid marking every cell as pathable with <code class="docutils literal notranslate"><span class="pre">default_weight</span></code></p>
@@ -454,7 +454,7 @@ passing in the Area’s corners as points and enemy army’s location as target<
 <dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p>
+<dd class="field-even"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p>
 </dd>
 </dl>
 <p>Climber grid is a grid modified by <code class="xref py py-mod docutils literal notranslate"><span class="pre">sc2pathlibp</span></code>, and is used for units that can climb,</p>
@@ -491,15 +491,15 @@ passing in the Area’s corners as points and enemy army’s location as target<
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
+<li><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>To query what is the cost in a certain point, simple do <code class="docutils literal notranslate"><span class="pre">my_grid[certain_point]</span></code> where <cite>certain_point</cite></p>
-<p>is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> or a <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a></p>
+<p>is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> or a <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a></p>
 </div>
 <p>Requests a new pathing grid.</p>
 <p>This grid will have all non pathable cells set to <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.inf</span></code>.</p>
@@ -546,14 +546,14 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 <dd class="field-odd"><p>Optional[<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
+<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
 </dl>
 <p>Will query if a point is in, and in which Region using Set of Points &lt;fast&gt;</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>time benchmark 4.35 µs ± 27.5 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)</p>
-<p>as long as polygon points is of type <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>, not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
+<p>as long as polygon points is of type <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>, not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -562,7 +562,7 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 <em class="property">static </em><code class="sig-name descname">indices_to_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/MapData.html#MapData.indices_to_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.MapData.MapData.indices_to_points" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a> (Union[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>), <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a>)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a> (Union[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>), <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.position.Point2</span></code></a>)</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><p><strong>indices</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em><em>]</em>) – </p>
@@ -587,11 +587,11 @@ and should be regenerated(<strong>once</strong>) on each frame.</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>start</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
-<li><p><strong>goal</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
+<li><p><strong>start</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
+<li><p><strong>goal</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
 <li><p><strong>grid</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
-<li><p><strong>allow_diagonal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>sensitivity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>allow_diagonal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>sensitivity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -639,17 +639,17 @@ to get each and every single point,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
-<li><p><strong>goal</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
+<li><p><strong>start</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
+<li><p><strong>goal</strong> (<em>Union</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>, </em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em>) – </p></li>
 <li><p><strong>weight_array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>plot</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – </p></li>
-<li><p><strong>save</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – </p></li>
-<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – </p></li>
-<li><p><strong>fontdict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – </p></li>
+<li><p><strong>plot</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – </p></li>
+<li><p><strong>save</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – </p></li>
+<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>fontdict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -661,13 +661,13 @@ to get each and every single point,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fontdict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – </p></li>
-<li><p><strong>save</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – </p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>fontdict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – </p></li>
+<li><p><strong>save</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – </p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -680,7 +680,7 @@ to get each and every single point,</p>
 <dd class="field-odd"><p>Tuple[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a>]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>points</strong> (<em>Set</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>]</em>) – </p>
+<dd class="field-even"><p><strong>points</strong> (<em>Set</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>]</em>) – </p>
 </dd>
 </dl>
 <p>Convert a set / list of points to a tuple of two 1d numpy arrays</p>
@@ -696,7 +696,7 @@ to get each and every single point,</p>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>points</strong> (<em>Union</em><em>[</em><em>Set</em><em>[</em><em>Tuple</em><em>[</em><em>numpy.int64</em><em>, </em><em>numpy.int64</em><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em><em>, </em><em>Set</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>]</em><em>]</em>) – </p></li>
-<li><p><strong>default_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>default_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -755,7 +755,7 @@ to get each and every single point,</p>
 <dd class="field-odd"><p>Union[<a class="reference internal" href="../Region/index.rst.html#module-MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-mod docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
+<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
 </dl>
 <p>Will query a point on the map and will return the first result in the following order:</p>
@@ -785,7 +785,7 @@ to get each and every single point,</p>
 <dd class="field-odd"><p>List[Union[<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea" title="MapAnalyzer.constructs.ChokeArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChokeArea</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.VisionBlockerArea" title="MapAnalyzer.constructs.VisionBlockerArea"><code class="xref py py-class docutils literal notranslate"><span class="pre">VisionBlockerArea</span></code></a>, <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp" title="MapAnalyzer.constructs.MDRamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDRamp</span></code></a>]]</p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>]</em>) – </p>
+<dd class="field-even"><p><strong>point</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>]</em>) – </p>
 </dd>
 </dl>
 <p>Will return a list containing all <a class="reference internal" href="../Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon" title="MapAnalyzer.Polygon.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon</span></code></a> that occupy the given point.</p>
