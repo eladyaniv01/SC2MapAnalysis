@@ -10,6 +10,11 @@ All notable changes to this project will be documented in this file. See [standa
 * added example bot ref to README.MD ([7ceedf2](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7ceedf2d16f86b34ecb7ad2b32e594987c2947f1))
 * dummybot.py is an example bot with a few handy use cases showing ([35f1cc9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/35f1cc9295e1afac3d59ee68bb8f767f0d350c91))
 
+### Issues Closed:
+
+ * [#74 create basic example bot usage ](https://github.com/eladyaniv01/SC2MapAnalysis/issues/74)
+
+
 ### [0.0.73](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.72...v0.0.73) (2020-10-01)
 
 
