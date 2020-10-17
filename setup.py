@@ -10,10 +10,10 @@ requirements = [  # pragma: no cover
         "pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
         "burnysc2",
         "matplotlib",
-        "scikit-image",
         "scipy",
         "loguru",
-        "tqdm"
+        "tqdm",
+        "scikit-image",
 
 ]
 setup(  # pragma: no cover
