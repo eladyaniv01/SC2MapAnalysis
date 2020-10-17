@@ -19,10 +19,11 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install numpy
         pip install -r requirements.dev.txt
 
     - name: Test with pytest + Coverage
