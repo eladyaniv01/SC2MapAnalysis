@@ -25,12 +25,16 @@ class MapAnalyzerPather:
         self.pyastar = pyastar
         self.pathlib_map = None
         self._set_pathlib_map()
-        self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
+        if self.pathlib_map:
+            # noinspection PyProtectedMember
+            self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
+        else:
+            logger.error('Could not set Pathlib Map')
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
-        self.connectivity_graph = None
+        self.connectivity_graph = None  # set later by MapData
 
     def set_connectivity_graph(self):
         connectivity_graph = {}
@@ -83,12 +87,12 @@ class MapAnalyzerPather:
             grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS_FACTOR
-            grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf)
+            grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf)
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
             for rock in destructables_filtered:
                 if "plates" not in rock.name.lower():
-                    self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
+                    self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
@@ -181,11 +185,12 @@ class MapAnalyzerPather:
 
     def add_cost(self, position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
                  safe: bool = True, initial_default_weights: int = 0) -> ndarray:
+
         ri, ci = skdraw.disk(center=(int(position[0]), int(position[1])), radius=radius, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
-            # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            logger.debug(OutOfBoundsException(position))
-            # self.map_data.logger.trace()
+            if safe:
+                # this happens when the center point is near map edge, and the radius added goes beyond the edge
+                logger.debug(OutOfBoundsException(position))
             return arr
 
         def in_bounds_ci(x):
