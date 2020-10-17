@@ -5,11 +5,11 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
+        "numpy",
         "Cython",
         "pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar",
         "burnysc2",
         "matplotlib",
-        "numpy",
         "scikit-image",
         "scipy",
         "loguru",
