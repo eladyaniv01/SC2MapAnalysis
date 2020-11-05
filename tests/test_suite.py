@@ -3,9 +3,7 @@ from random import randint
 from _pytest.python import Metafunc
 from hypothesis import given, settings
 from loguru import logger
-from sc2 import UnitTypeId
 from sc2.position import Point2
-
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_file_list, mock_map_data
@@ -99,21 +97,6 @@ class TestSanity:
 
             # coverage
             region.plot(testing=True)
-
-            # wall off buildables
-            buildable_points = region.buildables.points
-            depot = UnitTypeId.SUPPLYDEPOT  # TODO mimic supply depot built on the location,   how ?
-            for ramp in region.region_ramps:
-                assert (len(ramp.ramp.corner_depots) == 2), f"upper2_for_ramp_wall {ramp.ramp.upper2_for_ramp_wall}," \
-                                                            f"upper {ramp.ramp.upper}," \
-                                                            f"  {ramp.ramp.corner_depots}," \
-                                                            f" all points {ramp.ramp.points},"
-
-                p1, p2 = ramp.ramp.corner_depots
-                p3 = ramp.ramp.barracks_in_middle
-                pts = [p1, p2, p3]
-                for p in pts:
-                    assert (p in buildable_points)
 
     def test_ramps(self, map_data: MapData) -> None:
         for ramp in map_data.map_ramps:
