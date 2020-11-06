@@ -1,8 +1,6 @@
-from functools import lru_cache
 from typing import Optional, TYPE_CHECKING
 
 import numpy as np
-from loguru import logger
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
@@ -51,15 +49,6 @@ class ChokeArea(Polygon):
             self.id = pathlibchoke.id
             self.md_pl_choke = pathlibchoke
         self.is_choke = True
-        self.ramp = None
-
-    @property
-    def corner_walloff(self):
-        return sorted(list(self.points), key=lambda x: x.distance_to_point2(self.center), reverse=True)[:2]
-
-    @lru_cache()
-    def same_height(self, p1, p2):
-        return self.map_data.terrain_height[p1] == self.map_data.terrain_height[p2]
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
@@ -77,24 +66,6 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
-        self.x_offset = 0.5
-        self.y_offset = 0.5
-
-    @property
-    def corner_walloff(self):
-        raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)[:2]
-        offset_points = [p.offset((self.x_offset, self.y_offset)) for p in raw_points]
-        offset_points.extend(raw_points)
-        return offset_points
-
-    @property
-    def middle_walloff_depot(self):
-        raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
-        # TODO  its white board time,  need to figure out some geometric intuition here
-        intersects = raw_points[0].circle_intersection(p=raw_points[1], r=2.5 ** 0.5)
-        # p = self.map_data.closest_towards_point(points=self.buildables.points, target=self.top_center)
-        p = max(intersects, key=lambda p: p.distance_to_point2(self.bottom_center))
-        return p
 
     def closest_region(self, region_list):
         """
@@ -152,7 +123,7 @@ class MDRamp(ChokeArea):
         if self.ramp.top_center is not None:
             return self.ramp.top_center
         else:
-            logger.debug(f"No top_center found for {self}, falling back to `center`")
+            self.map_data.logger.debug(f"No top_center found for {self}, falling back to `center`")
             return self.center
 
     @property
@@ -165,7 +136,7 @@ class MDRamp(ChokeArea):
         if self.ramp.bottom_center is not None:
             return self.ramp.bottom_center
         else:
-            logger.debug(f"No bottom_center found for {self}, falling back to `center`")
+            self.map_data.logger.debug(f"No bottom_center found for {self}, falling back to `center`")
             return self.center
 
     def __repr__(self) -> str:  # pragma: no cover

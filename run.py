@@ -5,7 +5,6 @@ import random
 from typing import List
 
 from sc2.position import Point2
-import matplotlib.pyplot as plt
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import import_bot_instance
 
@@ -38,7 +37,7 @@ def get_map_file_list() -> List[str]:
 
 map_files = get_map_file_list()
 for mf in map_files:
-    if 'death' in mf.lower():
+    if 'subm' in mf.lower():
         # if 1==1:
         #     mf = random.choice(map_files)
         # if 'abys' in mf.lower():
@@ -48,39 +47,30 @@ for mf in map_files:
         map_data = MapData(bot, loglevel="DEBUG")
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where_all(base.position_tuple)[0]
-
-        for choke in map_data.map_chokes:
-            x, y = zip(*choke.corner_walloff)
-            plt.scatter(x, y)
-
         reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
-        # p0 = Point2(reg_start.center)
-        # p1 = Point2(reg_end.center)
-        p0 = Point2((104, 153))
-        p1 = Point2((107, 140))
-        # influence_grid = map_data.get_clean_air_grid(default_weight=10)
-        influence_grid = map_data.get_pyastar_grid()
-        cost_point = (50, 130)
-        # cost_point = (107, 140)
-        influence_grid = map_data.add_cost(position=cost_point, radius=15, grid=influence_grid)
-        # cost_point = (107, 140)
-        # influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
-        # cost_point = (107, 140)
-        # influence_grid = map_data.add_cost(position=cost_point, radius=17, grid=influence_grid)
-        # # safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
-        #
-        # # logger.info(safe_points)
-        #
-        # # x, y = zip(*safe_points)
-        # # plt.scatter(x, y, s=1)
-        # path = map_data.pathfind(start=p0, goal=p1, grid=influence_grid, allow_diagonal=True)
-        # for p in path:
-        #     assert (p)
-        # from loguru import logger
-        #
-        # logger.info(len(path))
+        p0 = Point2(reg_start.center)
+        p1 = Point2(reg_end.center)
+        influence_grid = map_data.get_clean_air_grid(default_weight=50)
+        # influence_grid = map_data.get_pyastar_grid()
+        # cost_point = (50, 130)
+        cost_point = (87, 76)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        cost_point = (108, 64)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        cost_point = (97, 53)
+        influence_grid = map_data.add_cost(position=cost_point, radius=7, grid=influence_grid)
+        # safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=14, grid=influence_grid)
+
+        # logger.info(safe_points)
+
+        # x, y = zip(*safe_points)
+        # plt.scatter(x, y, s=1)
+        path = map_data.pathfind(start=p0, goal=p1, grid=influence_grid, allow_diagonal=True)
+        from loguru import logger
+
+        logger.info(len(path))
         map_data.plot_influenced_path(start=p0, goal=p1, weight_array=influence_grid, allow_diagonal=True)
         # map_data.save(filename=f"{mf}")
-        # # plt.close()
+        # plt.close()
         map_data.show()
-        break
+        # break

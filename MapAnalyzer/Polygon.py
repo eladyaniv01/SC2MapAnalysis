@@ -50,8 +50,7 @@ class Buildables:
         parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
         # passing safe false to reduce the warnings,
         # which are irrelevant in this case
-        [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius * 0.9,
-                                        grid=parr,
+        [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius, grid=parr,
                                         safe=False)
          for unit in
          self.polygon.map_data.bot.all_units.not_flying]
