@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.75](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.74...v0.0.75) (2020-11-07)
+
+
+### Features
+
+* ChokeArea now has left/right properties ([be13d59](https://github.com/eladyaniv01/SC2MapAnalysis/commit/be13d598a7fc8ab1d2ab5e7932d36698b9635cb6))
+* MDRamp offset attribute for walloff, corner_walloff, middle_walloff_depot properties ([5fb232c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/5fb232c9f21e4971a0508ad887561824780c50c8))
+* plot_map now also draws the Left/Right bounds of each choke ([da66c0e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/da66c0e7c0dfe90214463e374b1b23fbc513c02e))
+* second attempt to fix build ([9f15489](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9f15489a33d3a5167eeafc37ca8beec935fe657e))
+* WIP  wall off points for each and every choke ([e99bb63](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e99bb63acba3ca57e9a51b16cb22b6c0bab7f395))
+* WIP  wall off points for each and every choke ([7e41eb2](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7e41eb24fe1d007aa079781c983682d57617bda3))
+
+
+### Bug Fixes
+
+* fix install order in setup ([cdbf0f7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/cdbf0f7de2d0d736ac07153467ff65a29dfe898d))
+* overlapping chokes from sc2pathlib are merged (still WIP) ([38cdaa5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/38cdaa506af8b4360ae57dcb713e79c7e3f07e70))
+* typo,  import logger from loguru ([64d0960](https://github.com/eladyaniv01/SC2MapAnalysis/commit/64d096048ad447dad77f3227f53a3cfbc5b7ccb9))
+
+
+### Refactoring
+
+* add_cost is now a static method ([8217749](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8217749cff9e3f5abd8465227590a2c91ff338f5))
+* convert static methods to static ([66b4b0e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/66b4b0e010f08ce04b18c441eeab3d0b56197af4))
+* remove log method ([0d98393](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0d9839343974126eef35e85cf2cb493b2a463edf))
+
 ### [0.0.74](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.73...v0.0.74) (2020-10-17)
 
 
