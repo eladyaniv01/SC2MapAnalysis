@@ -159,6 +159,20 @@ class MapAnalyzerDebugger:
                 plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
                          bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
                 plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+            walls = [choke.left, choke.right]
+            x, y = zip(*walls)
+            fontdict = {"family": "serif", "size": 5}
+            if 'unregistered' not in str(choke.id).lower():
+                plt.text(choke.left[0], choke.left[1], f"C<{choke.id}L>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="green", linewidth=2))
+                plt.text(choke.right[0], choke.right[1], f"C<{choke.id}R>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.9, edgecolor="red", linewidth=2))
+            else:
+                plt.text(choke.left[0], choke.left[1], f"L>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.3, edgecolor="green", linewidth=2))
+                plt.text(choke.right[0], choke.right[1], f"R>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.9, edgecolor="red", linewidth=2))
+            plt.scatter(x, y, marker=r"$\spadesuit$", s=50, edgecolors="b", alpha=0.5)
 
     def plot_map(
             self, fontdict: dict = None, figsize: int = 20
