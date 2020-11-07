@@ -39,7 +39,6 @@ class LogFilter:
         return False
 
 
-
 class MapAnalyzerDebugger:
     """
     MapAnalyzerDebugger
@@ -70,7 +69,8 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         plt.close(fig='all')
 
-    def save(self, filename: str) -> bool:
+    @staticmethod
+    def save(filename: str) -> bool:
 
         for i in inspect.stack():
             if 'test_suite.py' in str(i):
@@ -244,7 +244,8 @@ class MapAnalyzerDebugger:
         plt.title(f"{name}", fontdict=fontdict, loc='right')
         plt.grid()
 
-    def draw_influence_in_game(self, bot: BotAI,
+    @staticmethod
+    def draw_influence_in_game(bot: BotAI,
                                grid: np.ndarray,
                                lower_threshold: int,
                                upper_threshold: int,
