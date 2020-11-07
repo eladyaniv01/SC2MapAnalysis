@@ -386,16 +386,16 @@ class MapData:
         if isinstance(points, set):
             points = list(points)
 
-        def in_bounds_x(x):
+        def in_bounds_x(x_):
             width = arr.shape[0] - 1
-            if 0 < x < width:
-                return x
+            if 0 < x_ < width:
+                return x_
             return 0
 
-        def in_bounds_y(y):
+        def in_bounds_y(y_):
             height = arr.shape[1] - 1
-            if 0 < y < height:
-                return y
+            if 0 < y_ < height:
+                return y_
             return 0
 
         x_vec = np.vectorize(in_bounds_x)
