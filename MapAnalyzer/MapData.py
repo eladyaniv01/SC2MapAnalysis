@@ -414,7 +414,7 @@ class MapData:
         Euclidean distance
 
         """
-        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+        return (pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2)) ** 0.5
 
     @staticmethod
     def closest_node_idx(
@@ -637,9 +637,10 @@ class MapData:
         self._calc_regions()
         self._calc_vision_blockers()
         self._set_map_ramps()
-        self._calc_chokes()
+
         self._clean_polys()
 
+        self._calc_chokes()
         for poly in self.polygons:
             poly.calc_areas()
         for ramp in self.map_ramps:
@@ -730,8 +731,14 @@ class MapData:
 
                     if isinstance(area, Region):
                         area.region_chokes.append(new_choke)
-                    new_choke.areas.append(area)
-                self.map_chokes.append(new_choke)
+                        new_choke.areas.append(area)
+                    if area.is_choke and not area.is_ramp and not area.is_vision_blocker:
+                        self.polygons.remove(new_choke)
+                        area.points.update(new_choke.points)
+                        new_choke = None
+
+                if new_choke:
+                    self.map_chokes.append(new_choke)
             else:  # pragma: no cover
                 logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
 
