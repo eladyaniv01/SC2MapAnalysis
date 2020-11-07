@@ -15,9 +15,9 @@ from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
 from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
-from .constructs import ChokeArea, MDRamp, PathLibChoke, VisionBlockerArea
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -53,7 +53,7 @@ class MapData:
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
-        self.region_grid: Union[ndarray, None] = None
+        self.region_grid: Optional[ndarray] = None
         self.corners: list = []  # set later
         self.polygons: list = []  # set later
         self.map_chokes: list = []  # set later  on compile
@@ -160,11 +160,21 @@ class MapData:
         (if there are more than one)
 
         Example:
-             >>> grid = self.get_air_vs_ground_grid()
+             >>> my_grid = self.get_air_vs_ground_grid()
              >>> position = (100, 80)
-             >>> radius = 10
-             >>> self.find_lowest_cost_points(from_pos=position, radius=radius, grid=grid)
-             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80), (108, 83), (106, 78), (107, 84), (109, 82), (107, 79), (107, 80), (106, 75), (107, 75), (91, 78), (106, 81), (109, 77), (108, 76), (91, 80), (106, 79), (109, 81), (107, 78), (108, 80), (105, 82), (107, 83), (107, 74), (108, 84), (102, 71), (109, 76), (105, 79), (108, 77), (106, 76), (107, 86), (106, 82), (109, 80), (108, 81), (105, 81), (107, 82), (109, 84), (106, 73), (107, 77), (108, 85), (105, 78), (108, 78), (106, 77), (107, 73), (106, 83), (108, 82), (105, 80), (108, 75), (107, 85), (109, 83), (107, 76)]
+             >>> my_radius = 10
+             >>> self.find_lowest_cost_points(from_pos=position, radius=my_radius, grid=my_grid)
+             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80),
+             (108, 83), (106, 78), (107, 84), (109, 82), (107, 79),
+             (107, 80), (106, 75), (107, 75), (91, 78), (106, 81),
+             (109, 77), (108, 76), (91, 80), (106, 79), (109, 81),
+             (107, 78), (108, 80), (105, 82), (107, 83), (107, 74),
+             (108, 84), (102, 71), (109, 76), (105, 79), (108, 77),
+             (106, 76), (107, 86), (106, 82), (109, 80), (108, 81),
+             (105, 81), (107, 82), (109, 84), (106, 73), (107, 77),
+             (108, 85), (105, 78), (108, 78), (106, 77), (107, 73),
+             (106, 83), (108, 82), (105, 80), (108, 75), (107, 85),
+             (109, 83), (107, 76)]
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -213,7 +223,9 @@ class MapData:
          making air units naturally "drawn" to it.
 
         Caution:
-            Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
+            Requesting a grid with a ``default_weight`` of 1 is pointless,
+
+            and  will result in a :meth:`.MapData.get_clean_air_grid`
 
         Example:
                 >>> air_vs_ground_grid = self.get_air_vs_ground_grid()
@@ -244,7 +256,7 @@ class MapData:
 
     def pathfind(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
                  grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
+                 allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
@@ -276,9 +288,9 @@ class MapData:
             more examples for different usages available
 
         Example:
-            >>> grid = self.get_pyastar_grid()
+            >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
+            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -490,7 +502,8 @@ class MapData:
         If a :class:`.Region` exists in that list, it will be the first item
 
         Caution:
-                Not all points on the map belong to a :class:`.Region` , some are in ``border`` polygons such as :class:`.MDRamp`
+                Not all points on the map belong to a :class:`.Region` ,
+                some are in ``border`` polygons such as :class:`.MDRamp`
 
 
         Example:
@@ -504,7 +517,8 @@ class MapData:
                 Region 0
 
                 >>> # now it is very easy to know which region is the enemy's natural
-                >>> enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region
+                >>> # connected_regions is a property of a Region
+                >>> enemy_natural_region = enemy_main_base_region.connected_regions[0]
                 >>> enemy_natural_region
                 Region 3
 
@@ -805,15 +819,13 @@ class MapData:
                              goal: Union[Tuple[int, int], Point2],
                              weight_array: ndarray,
                              allow_diagonal=False,
-                             plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
+                             name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         """
 
         A useful debug utility method for experimenting with the :mod:`.Pather` module
 
         """
-        if plot is not None:
-            logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
 
         self.debugger.plot_influenced_path(start=start,
                                            goal=goal,
