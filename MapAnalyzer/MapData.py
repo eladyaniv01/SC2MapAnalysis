@@ -318,14 +318,6 @@ class MapData:
 
     """Utility methods"""
 
-    def log(msg):
-        """
-
-         Lazy logging
-
-         """
-        logger.debug(f"{msg}")
-
     def save(self, filename):
         """
 
