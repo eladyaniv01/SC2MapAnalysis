@@ -21,6 +21,7 @@ class PathLibChoke:
     with a bit of added fields / data type for convenience
 
     """
+
     # noinspection PyProtectedMember
     def __init__(self, pathlib_choke: "Choke", pk: int):
         self.id = pk
@@ -54,6 +55,14 @@ class ChokeArea(Polygon):
         self.ramp = None
 
     @property
+    def left(self):
+        return min(self.points)
+
+    @property
+    def right(self):
+        return max(self.points)
+
+    @property
     def corner_walloff(self):
         return sorted(list(self.points), key=lambda x: x.distance_to_point2(self.center), reverse=True)[:2]
 
@@ -62,7 +71,7 @@ class ChokeArea(Polygon):
         return self.map_data.terrain_height[p1] == self.map_data.terrain_height[p2]
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
+        return f"<[{self.id}]ChokeArea[size={self.area}]>"
 
 
 class MDRamp(ChokeArea):
@@ -169,7 +178,7 @@ class MDRamp(ChokeArea):
             return self.center
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<MDRamp[size={self.area}]: {self.areas}>"
+        return f"<MDRamp[size={self.area}] {str(self.regions)}>"
 
     def __str__(self):
         return f"R[{self.area}]"
