@@ -183,7 +183,8 @@ class MapAnalyzerPather:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    def add_cost(self, position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
+    @staticmethod
+    def add_cost(position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
                  safe: bool = True, initial_default_weights: int = 0) -> ndarray:
 
         ri, ci = skdraw.disk(center=(int(position[0]), int(position[1])), radius=radius, shape=arr.shape)
