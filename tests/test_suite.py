@@ -12,6 +12,7 @@ from tests.mocksetup import get_map_datas, random, st
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    # noinspection PyGlobalUndefined
     global argnames
     idlist = []
     argvalues = []
@@ -74,7 +75,6 @@ class TestSanity:
             assert (polygon.area > 0)
             assert (polygon.is_inside_point(polygon.center))
 
-
             extended_pts = polygon.points.union(polygon.perimeter_points)
             assert (polygon.points == extended_pts)
 
@@ -107,7 +107,7 @@ class TestSanity:
             for p in choke.points:
                 assert (choke in map_data.where_all(p)), \
                     logger.error(f"<Map : {map_data}, Choke : {choke},"
-                                         f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+                                 f" where :  {map_data.where(choke.center)} point : {choke.center}>")
 
     def test_vision_blockers(self, map_data: MapData) -> None:
         all_chokes = map_data.map_chokes
@@ -116,4 +116,4 @@ class TestSanity:
             for p in vb.points:
                 assert (vb in map_data.where_all(p)), \
                     logger.error(f"<Map : {map_data}, Choke : {vb},"
-                                          f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")
+                                 f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")
