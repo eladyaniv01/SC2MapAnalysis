@@ -86,13 +86,13 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
-        self.x_offset = 0.5
-        self.y_offset = 0.5
+        self.offset = Point2((0.5, 0.5))
+        self.points.add(Point2(self.middle_walloff_depot.rounded))
 
     @property
     def corner_walloff(self):
         raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)[:2]
-        offset_points = [p.offset((self.x_offset, self.y_offset)) for p in raw_points]
+        offset_points = [p.offset(self.offset) for p in raw_points]
         offset_points.extend(raw_points)
         return offset_points
 
@@ -100,10 +100,12 @@ class MDRamp(ChokeArea):
     def middle_walloff_depot(self):
         raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
         # TODO  its white board time,  need to figure out some geometric intuition here
-        intersects = raw_points[0].circle_intersection(p=raw_points[1], r=2.5 ** 0.5)
+        r = max(self.map_data.distance(raw_points[0], raw_points[1]) ** 0.5,
+                self.map_data.distance(raw_points[0], raw_points[1]) / 2)
+        intersects = raw_points[0].circle_intersection(p=raw_points[1], r=r)
         # p = self.map_data.closest_towards_point(points=self.buildables.points, target=self.top_center)
-        p = max(intersects, key=lambda p: p.distance_to_point2(self.bottom_center))
-        return p
+        pt = max(intersects, key=lambda p: p.distance_to_point2(self.bottom_center))
+        return pt.offset(self.offset)
 
     def closest_region(self, region_list):
         """
