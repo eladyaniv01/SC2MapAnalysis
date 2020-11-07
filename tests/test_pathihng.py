@@ -14,6 +14,7 @@ logger = logger
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    # noinspection PyGlobalUndefined
     global argnames
     idlist = []
     argvalues = []
@@ -123,7 +124,8 @@ class TestPathing:
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
-                        p] == cost), f"grid type = air_vs_ground_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+                        p] == cost), f"grid type = air_vs_ground_grid, p = {p}, " \
+                                     f"influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_clean_air_grid()
@@ -134,7 +136,8 @@ class TestPathing:
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
-                        p] == cost), f"grid type = clean_air_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+                        p] == cost), f"grid type = clean_air_grid, p = {p}, " \
+                                     f"influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_pyastar_grid()
@@ -145,7 +148,8 @@ class TestPathing:
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
-                        p] == cost), f"grid type = pyastar_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+                        p] == cost), f"grid type = pyastar_grid, p = {p}, " \
+                                     f"influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
 
         influence_grid = map_data.get_climber_grid()
@@ -156,7 +160,8 @@ class TestPathing:
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[
-                        p] == cost), f"grid type = climber_grid, p = {p}, influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
+                        p] == cost), f"grid type = climber_grid, p = {p}, " \
+                                     f"influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
 
     def test_clean_air_grid_allow_diagonal_true(self, map_data: MapData) -> None:
@@ -200,7 +205,7 @@ class TestPathing:
         for ramp in ramps:
             for point in ramp.points:
                 if path_array[point.x][point.y] == 1:
-                    assert (grid[point.x][point.y] == default_weight)
+                    assert (grid[point.x][point.y] == default_weight), f"point {point}"
 
     def test_sensitivity(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
