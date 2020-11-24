@@ -187,7 +187,7 @@ class MapData:
         """
         return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
 
-    def get_climber_grid(self, default_weight: int = 1) -> ndarray:
+    def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
         Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
@@ -213,7 +213,7 @@ class MapData:
             * :meth:`.MapData.pathfind`
             * :meth:`.MapData.find_lowest_cost_points`
         """
-        return self.pather.get_climber_grid(default_weight)
+        return self.pather.get_climber_grid(default_weight, include_destructables=include_destructables)
 
     def get_air_vs_ground_grid(self, default_weight: int = 100) -> ndarray:
         """
