@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.76](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.75...v0.0.76) (2020-11-24)
+
+
+### Features
+
+* add `include_destructables`  to  `get_climber_grid` in mapdata ([0e8aaf9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0e8aaf926013eb04c40c1a2c12324ad929a4496d))
+
 ### [0.0.75](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.74...v0.0.75) (2020-11-07)
 
 
