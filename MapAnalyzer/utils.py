@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 def get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
                                   area: Optional[Union[MDRamp, VisionBlockerArea]] = None,
-                                  base_choke: None = None) -> List[List]:
+                                  base_choke: PathLibChoke = None) -> List[List]:
     li = []
     if area:
         s1 = area.points

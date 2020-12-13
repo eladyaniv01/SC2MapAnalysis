@@ -7,7 +7,8 @@ class CustomDeprecationWarning(BaseException):
         self.new = newarg
 
     def __str__(self) -> str:
-        return f"[DeprecationWarning] Passing `{self.old}` argument is deprecated, and will have no effect,\nUse `{self.new}` instead"
+        return f"[DeprecationWarning] Passing `{self.old}` argument is deprecated," \
+               f" and will have no effect,\nUse `{self.new}` instead"
 
 
 class PatherNoPointsException(BaseException):

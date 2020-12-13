@@ -2,12 +2,13 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
+from loguru import logger
 from numpy import ndarray
-from sc2.position import Point2
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
+from sc2.position import Point2
 from skimage import draw as skdraw
 
-from MapAnalyzer.constants import NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR, GEYSER_RADIUS_FACTOR
+from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
@@ -24,12 +25,16 @@ class MapAnalyzerPather:
         self.pyastar = pyastar
         self.pathlib_map = None
         self._set_pathlib_map()
-        self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
+        if self.pathlib_map:
+            # noinspection PyProtectedMember
+            self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
+        else:
+            logger.error('Could not set Pathlib Map')
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
         )
-        self.connectivity_graph = None
+        self.connectivity_graph = None  # set later by MapData
 
     def set_connectivity_graph(self):
         connectivity_graph = {}
@@ -82,24 +87,27 @@ class MapAnalyzerPather:
             grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS_FACTOR
-            grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf)
+            grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf)
         if include_destructables:
             destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
             for rock in destructables_filtered:
                 if "plates" not in rock.name.lower():
-                    self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf)
+                    self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf)
         return grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
         ri, ci = skdraw.disk(center=(int(from_pos[0]), int(from_pos[1])), radius=radius, shape=grid.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.map_data.logger.debug(OutOfBoundsException(from_pos))
+            logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
             return None
-        points = self.map_data.indices_to_points((ri, ci))
+        points = self.map_data.indices_to_points((ci, ri))
         arr = self.map_data.points_to_numpy_array(points)
-        arr = np.where(arr == 1, grid.T, np.inf)
+        # Transpose must be done here on the newly generated array,
+        # since the original grid can use this function many times per frame,
+        # and we dont want to transpose it more than once
+        arr = np.where(arr.T == 1, grid, np.inf)
         lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
         return list(map(Point2, lowest_points))
 
@@ -126,12 +134,12 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
-    def get_clean_air_grid(self, default_weight: int = 1):
+    def get_clean_air_grid(self, default_weight: int = 1) -> ndarray:
         clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
         if default_weight == 1:
-            return clean_air_grid
+            return clean_air_grid.copy()
         else:
-            return np.where(clean_air_grid == 1, default_weight, 0)
+            return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
 
     def get_air_vs_ground_grid(self, default_weight: int) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
@@ -150,24 +158,20 @@ class MapAnalyzerPather:
             start = int(start[0]), int(start[1])
             goal = int(goal[0]), int(goal[1])
         else:
-            self.map_data.logger.warning(PatherNoPointsException(start=start, goal=goal))
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
         if grid is None:
-            self.map_data.logger.warning("Using the default pyastar grid as no grid was provided.")
+            logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
-            """
-            for point in path , if point is not in bounds - remove it 
-            """
             path = list(map(Point2, path))[::sensitivity]
-            # removing points that are out of bounds
-
             """
             Edge case
             EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
             """
+            # `if point` is checking with burnysc2 that the point is in map bounds
             if 'everdream' in self.map_data.map_name.lower():
                 legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
             else:  # normal case
@@ -176,16 +180,18 @@ class MapAnalyzerPather:
             legal_path.pop(0)
             return legal_path
         else:
-            self.map_data.logger.debug(f"No Path found s{start}, g{goal}")
+            logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    def add_cost(self, position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
+    @staticmethod
+    def add_cost(position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
                  safe: bool = True, initial_default_weights: int = 0) -> ndarray:
         ri, ci = skdraw.disk(center=(int(round(position[0])), int(round(position[1]))), radius=radius, shape=arr.shape)
+
         if len(ri) == 0 or len(ci) == 0:
-            # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            self.map_data.logger.debug(OutOfBoundsException(position))
-            # self.map_data.logger.trace()
+            if safe:
+                # this happens when the center point is near map edge, and the radius added goes beyond the edge
+                logger.debug(OutOfBoundsException(position))
             return arr
 
         def in_bounds_ci(x):
@@ -209,7 +215,7 @@ class MapAnalyzerPather:
 
         arr[ri, ci] += weight
         if np.any(arr < 1) and safe:
-            self.map_data.logger.warning(
+            logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
             arr = np.where(arr < 1, 1, arr)
         return arr

@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import List, Set, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
+from loguru import logger
 from numpy import int64, ndarray
 from sc2.position import Point2
 from scipy.ndimage import center_of_mass
@@ -18,7 +19,9 @@ class Buildables:
     "Lazy" class that will only update information when it is needed
 
     Tip:
-        :class:`.BuildablePoints` that belong to a :class:`.ChokeArea`  are always the edges, this is useful for walling off
+        :class:`.BuildablePoints` that belong to a :class:`.ChokeArea`
+
+        are always the edges, this is useful for walling off
 
     """
 
@@ -34,7 +37,7 @@ class Buildables:
 
         """
         if self.points is None:
-            self.polygon.map_data.logger.warning("BuildablePoints needs to update first")
+            logger.warning("BuildablePoints needs to update first")
             self.update()
         return len(self.points) / len(self.polygon.points)
 
@@ -47,7 +50,10 @@ class Buildables:
 
         """
         parr = self.polygon.map_data.points_to_numpy_array(self.polygon.points)
-        [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius, grid=parr,
+        # passing safe false to reduce the warnings,
+        # which are irrelevant in this case
+        [self.polygon.map_data.add_cost(position=(unit.position.x, unit.position.y), radius=unit.radius * 0.9,
+                                        grid=parr,
                                         safe=False)
          for unit in
          self.polygon.map_data.bot.all_units.not_flying]
@@ -205,7 +211,7 @@ class Polygon:
     def clean_points(self) -> List[Tuple[int64, int64]]:
         # For internal usage
 
-        return list(self._clean_points)  # needs to be array-like for numpy calcs
+        return list(self._clean_points)  # needs to be array-like for numpy calculations
 
     @property
     def center(self) -> Point2:

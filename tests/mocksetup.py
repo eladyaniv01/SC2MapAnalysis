@@ -17,6 +17,7 @@ from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
 from MapAnalyzer.utils import mock_map_data
 from _pytest.logging import caplog as _caplog
 
+
 # for merging pr from forks,  git push <pr-repo.git> <your-local-branch-name>:<pr-branch-name>
 # pytest -v --disable-warnings
 # mutmut run --paths-to-mutate test_suite.py --runner pytest
@@ -26,7 +27,8 @@ from _pytest.logging import caplog as _caplog
 # mutmut run --paths-to-mutate MapAnalyzer/MapData.py
 
 def get_random_point(minx: int, maxx: int, miny: int, maxy: int) -> Tuple[int, int]:
-    return (random.randint(minx, maxx), random.randint(miny, maxy))
+    return random.randint(minx, maxx), random.randint(miny, maxy)
+
 
 @pytest.fixture
 def caplog(_caplog=_caplog):

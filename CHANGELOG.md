@@ -2,6 +2,107 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.76](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.75...v0.0.76) (2020-11-24)
+
+
+### Features
+
+* add `include_destructables`  to  `get_climber_grid` in mapdata ([0e8aaf9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0e8aaf926013eb04c40c1a2c12324ad929a4496d))
+
+### [0.0.75](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.74...v0.0.75) (2020-11-07)
+
+
+### Features
+
+* ChokeArea now has left/right properties ([be13d59](https://github.com/eladyaniv01/SC2MapAnalysis/commit/be13d598a7fc8ab1d2ab5e7932d36698b9635cb6))
+* MDRamp offset attribute for walloff, corner_walloff, middle_walloff_depot properties ([5fb232c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/5fb232c9f21e4971a0508ad887561824780c50c8))
+* plot_map now also draws the Left/Right bounds of each choke ([da66c0e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/da66c0e7c0dfe90214463e374b1b23fbc513c02e))
+* WIP  wall off points for each and every choke ([e99bb63](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e99bb63acba3ca57e9a51b16cb22b6c0bab7f395))
+
+
+### Bug Fixes
+
+* fix install order in setup ([cdbf0f7](https://github.com/eladyaniv01/SC2MapAnalysis/commit/cdbf0f7de2d0d736ac07153467ff65a29dfe898d))
+* overlapping chokes from sc2pathlib are merged (still WIP) ([38cdaa5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/38cdaa506af8b4360ae57dcb713e79c7e3f07e70))
+* typo,  import logger from loguru ([64d0960](https://github.com/eladyaniv01/SC2MapAnalysis/commit/64d096048ad447dad77f3227f53a3cfbc5b7ccb9))
+
+
+### Refactoring
+
+* add_cost is now a static method ([8217749](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8217749cff9e3f5abd8465227590a2c91ff338f5))
+* overall static methods to be static ([66b4b0e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/66b4b0e010f08ce04b18c441eeab3d0b56197af4))
+* remove log method from MapData ([0d98393](https://github.com/eladyaniv01/SC2MapAnalysis/commit/0d9839343974126eef35e85cf2cb493b2a463edf))
+
+### [0.0.74](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.73...v0.0.74) (2020-10-17)
+
+
+### Features
+
+* added example bot ref to README.MD ([7ceedf2](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7ceedf2d16f86b34ecb7ad2b32e594987c2947f1))
+* dummybot.py is an example bot with a few handy use cases showing ([35f1cc9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/35f1cc9295e1afac3d59ee68bb8f767f0d350c91))
+
+### Issues Closed:
+
+ * [#74 create basic example bot usage ](https://github.com/eladyaniv01/SC2MapAnalysis/issues/74)
+
+
+### [0.0.73](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.72...v0.0.73) (2020-10-01)
+
+
+### Bug Fixes
+
+* fix clean_air_grid being wrongly constructed of integers instead of np.float32 ([278241c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/278241c7378709ead938b6ddb84eda4f6d6c0e10))
+
+
+### Documentation
+
+* Added instruction on how to query cost in a specific point on the grid ([e0c8e19](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e0c8e19f0602576eadc4b19d84035405ad61f761))
+
+
+### Tests
+
+* now testing clean_air_grid  for dtype bugfix by checking path lengths ([b47bae4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b47bae4f412cdd1e6785a0bb68c4eed8789f62f2))
+
+### [0.0.72](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.71...v0.0.72) (2020-09-29)
+
+
+### Bug Fixes
+
+* fix double transpose bug that happens when requesting low cost points more than once per frame ([ffd6b84](https://github.com/eladyaniv01/SC2MapAnalysis/commit/ffd6b843520a1b9eb3180d1a8429485495b61461))
+
+
+### Tests
+
+* find low cost points now also tests that the distance between the point and the origin makes sense( the array is not transposed) ([76a0e19](https://github.com/eladyaniv01/SC2MapAnalysis/commit/76a0e191fcd838c95a627df2b5ec531bd5b325d0))
+
+### [0.0.71](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.70...v0.0.71) (2020-09-28)
+
+
+### Bug Fixes
+
+* fixed transposed grid bug when searching for low cost points ,  added support for grids constructed from outside sources ([c127901](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c1279014e36adbdeb578b7d5717a1833eb5bdefc))
+* log compatability with bots ([8960716](https://github.com/eladyaniv01/SC2MapAnalysis/commit/896071677394c08993c10b4ea61025cb75620ad9))
+
+
+### Tests
+
+* find low cost points is now tested on all grid types ([6ec010d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6ec010d172d609a7d867a6c51b29320cf310b062))
+
+### [0.0.70](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.69...v0.0.70) (2020-09-22)
+
+### Bug Fixes
+
+* MapData now accepts a `corner_distance` variable that will determine the corner distance calculation ([294df181](https://github.com/eladyaniv01/SC2MapAnalysis/commit/294df181c272b218eef0c167f24d1db7650a7202))
+
+
+### Build System
+
+* add wheel to requirements and setup.py ([eb663a9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/eb663a95c23c1e180ea385a783af306f47178c6e))
+
+### Issues Closed:
+
+ * [#88 BUG: all possible corners are not found ](https://github.com/eladyaniv01/SC2MapAnalysis/issues/88)
+
 ### [0.0.69](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.68...v0.0.69) (2020-09-19)
 
 
