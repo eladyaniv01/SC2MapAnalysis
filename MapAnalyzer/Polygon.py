@@ -94,6 +94,22 @@ class Polygon:
         self.map_data.polygons.append(self)
         self._buildables = Buildables(polygon=self)
 
+    @property
+    def top(self):
+        return max(self.points, key=lambda x: (x[1], 0))
+
+    @property
+    def bottom(self):
+        return min(self.points, key=lambda x: (x[1], 0))
+
+    @property
+    def right(self):
+        return max(self.points, key=lambda x: (x[0], 0))
+
+    @property
+    def left(self):
+        return min(self.points, key=lambda x: (x[0], 0))
+
     def _set_points(self):
 
         points = [p for p in self._clean_points]
