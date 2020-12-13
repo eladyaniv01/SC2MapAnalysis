@@ -53,14 +53,27 @@ class ChokeArea(Polygon):
             self.md_pl_choke = pathlibchoke
         self.is_choke = True
         self.ramp = None
+        self.side_a = None
+        self.side_b = None
+        self._set_sides()
 
-    @property
-    def left(self):
-        return min(self.points)
-
-    @property
-    def right(self):
-        return max(self.points)
+    def _set_sides(self):
+        org = self.top
+        pts = [self.bottom, self.right, self.left]
+        res = self.map_data.closest_towards_point(points=pts, target=org)
+        self.side_a = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        if res != self.bottom:
+            org = self.bottom
+            pts = [self.top, self.right, self.left]
+            res = self.map_data.closest_towards_point(points=pts, target=org)
+            self.side_b = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        else:
+            self.side_b = int(round((self.right[0] + self.left[0]) / 2)), int(round((self.right[1] + self.left[1]) / 2))
+        points = list(self.points)
+        points.append(self.side_a)
+        points.append(self.side_b)
+        self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
+        self.indices = self.map_data.points_to_indices(self.points)
 
     @property
     def corner_walloff(self):
