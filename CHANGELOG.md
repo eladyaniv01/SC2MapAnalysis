@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Debugger now plots choke side a and side b with text indicators (sA, sB) ([9dd8c07](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9dd8c072ebab8a66b99c42f792d7cde4c87a1fce))
 * Polygon now has top,bottom,right,left properties ([8f5b0c9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8f5b0c9cd48a2f23dd1666f14becd41aae815df7))
-* Round position in add_cost to reduce inaccuracy (#100)
+* Round position in add_cost to reduce inaccuracy ([#100](https://github.com/eladyaniv01/SC2MapAnalysis/pull/100))
 
 ### Refactoring
 
