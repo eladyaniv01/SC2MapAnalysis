@@ -82,7 +82,7 @@ class TestSanity:
                 assert (polygon.is_inside_point(point) is True)
 
                 # https://github.com/BurnySc2/python-sc2/issues/62
-                assert (point is not None)
+                assert isinstance(point, Point2)
                 assert (type(point[0] == int))
 
             for point in polygon.corner_points:
@@ -108,6 +108,8 @@ class TestSanity:
                 assert (choke in map_data.where_all(p)), \
                     logger.error(f"<Map : {map_data}, Choke : {choke},"
                                  f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+            assert (choke.side_a in choke.points), f"Choke {choke}, side a {choke.side_a} is not in choke points"
+            assert (choke.side_b in choke.points), f"Choke {choke}, side b {choke.side_b} is not in choke points"
 
     def test_vision_blockers(self, map_data: MapData) -> None:
         all_chokes = map_data.map_chokes
