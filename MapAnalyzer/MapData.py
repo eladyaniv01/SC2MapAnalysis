@@ -14,7 +14,9 @@ from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
+
 from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
+
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke

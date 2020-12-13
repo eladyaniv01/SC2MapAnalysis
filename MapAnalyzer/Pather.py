@@ -186,8 +186,8 @@ class MapAnalyzerPather:
     @staticmethod
     def add_cost(position: Tuple[int, int], radius: int, arr: ndarray, weight: int = 100,
                  safe: bool = True, initial_default_weights: int = 0) -> ndarray:
+        ri, ci = skdraw.disk(center=(int(round(position[0])), int(round(position[1]))), radius=radius, shape=arr.shape)
 
-        ri, ci = skdraw.disk(center=(int(position[0]), int(position[1])), radius=radius, shape=arr.shape)
         if len(ri) == 0 or len(ci) == 0:
             if safe:
                 # this happens when the center point is near map edge, and the radius added goes beyond the edge
