@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.77](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.77) (2020-12-13)
+
+
+### Features
+
+* add `include_destructables`  to  `get_climber_grid` in mapdata ([7286ebd](https://github.com/eladyaniv01/SC2MapAnalysis/commit/7286ebd7e073bc60a950a7b7d369c38f29f3f3f5))
+* Debugger now plots choke side a and side b with text indicators (sA, sB) ([9dd8c07](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9dd8c072ebab8a66b99c42f792d7cde4c87a1fce))
+* Polygon now has top,bottom,right,left properties ([8f5b0c9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/8f5b0c9cd48a2f23dd1666f14becd41aae815df7))
+
+
+### Refactoring
+
+* left right of choke are now side_a and side_b,   sides are computed accuratly now ([125f881](https://github.com/eladyaniv01/SC2MapAnalysis/commit/125f8812266c0bc80931c8d80f822276be5753ef))
+
+
+### Tests
+
+* testing the choke sides are included in choke points ([e3b0b26](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e3b0b26d556d4cde3c7724715e6a33c76a9e5c5e))
+
 ### [0.0.76](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.75...v0.0.76) (2020-11-24)
 
 
