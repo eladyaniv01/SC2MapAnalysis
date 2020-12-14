@@ -346,10 +346,11 @@ matplotlib
 # SC2MapAnalysis\MapAnalyzer\constructs.py: 3
 # SC2MapAnalysis\MapAnalyzer\sc2pathlibp\map.py: 4
 # SC2MapAnalysis\MapAnalyzer\sc2pathlibp\path_finder.py: 4
+
 numpy==1.19.3
 
 # SC2MapAnalysis\MapAnalyzer\Pather.py: 4
-pyastar@git+git://github.com/hjweide/pyastar.git@master#egg=pyastar
+pyastar@git+git://github.com/eladyaniv01/pyastar.git@master#egg=pyastar
 
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\_pytesttester.py: 125
 # SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\conftest.py: 7
