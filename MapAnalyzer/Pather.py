@@ -147,7 +147,7 @@ class MapAnalyzerPather:
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
-        grid = self.map_data.pather.get_base_pathing_grid().copy()
+        grid = self.map_data.pather.get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
@@ -214,7 +214,7 @@ class MapAnalyzerPather:
             arr[ri, ci] = np.where(arr[ri, ci] == 1, initial_default_weights, arr[ri, ci])
 
         arr[ri, ci] += weight
-        if np.any(arr < 1) and safe:
+        if safe and np.any(arr < 1):
             logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
             arr = np.where(arr < 1, 1, arr)
