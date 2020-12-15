@@ -104,7 +104,7 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self,
-                         default_weight: int = 1,
+                         default_weight: float = 1,
                          include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
@@ -154,7 +154,7 @@ class MapData:
                                             include_destructables=include_destructables,
                                             )
 
-    def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         """
         :rtype:  Union[List[:class:`sc2.position.Point2`], None]
 
@@ -189,7 +189,7 @@ class MapData:
         """
         return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
 
-    def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
+    def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
         Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
@@ -217,7 +217,7 @@ class MapData:
         """
         return self.pather.get_climber_grid(default_weight, include_destructables=include_destructables)
 
-    def get_air_vs_ground_grid(self, default_weight: int = 100) -> ndarray:
+    def get_air_vs_ground_grid(self, default_weight: float = 100) -> ndarray:
         """
         :rtype: numpy.ndarray
         ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,
@@ -243,7 +243,7 @@ class MapData:
         """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
-    def get_clean_air_grid(self, default_weight: int = 1) -> ndarray:
+    def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
         """
 
         :rtype: numpy.ndarray
@@ -256,7 +256,7 @@ class MapData:
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
-    def pathfind(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
+    def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                  grid: Optional[ndarray] = None,
                  allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
         """
@@ -302,8 +302,8 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
-                 initial_default_weights: int = 0) -> ndarray:
+    def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100, safe: bool = True,
+                 initial_default_weights: float = 0) -> ndarray:
         """
         :rtype: numpy.ndarray
 
@@ -350,7 +350,7 @@ class MapData:
     @staticmethod
     def indices_to_points(
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
-    ) -> Set[Union[Tuple[int, int], Point2]]:
+    ) -> Set[Union[Tuple[float, float], Point2]]:
         """
         :rtype: :class:`.set` (Union[:class:`.tuple` (:class:`.int`, :class:`.int`), :class:`sc2.position.Point2`)
 
@@ -360,10 +360,10 @@ class MapData:
 
         """
 
-        return set([(int(indices[0][i]), int(indices[1][i])) for i in range(len(indices[0]))])
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
 
     @staticmethod
-    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[np.ndarray, np.ndarray]:
+    def points_to_indices(points: Set[Tuple[float, float]]) -> Tuple[np.ndarray, np.ndarray]:
         """
         :rtype: Tuple[numpy.ndarray, numpy.ndarray]
 
@@ -816,8 +816,8 @@ class MapData:
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path(self,
-                             start: Union[Tuple[int, int], Point2],
-                             goal: Union[Tuple[int, int], Point2],
+                             start: Union[Tuple[float, float], Point2],
+                             goal: Union[Tuple[float, float], Point2],
                              weight_array: ndarray,
                              allow_diagonal=False,
                              name: Optional[str] = None,
