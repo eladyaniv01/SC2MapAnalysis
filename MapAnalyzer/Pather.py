@@ -96,7 +96,8 @@ class MapAnalyzerPather:
         return grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
-        ri, ci = skdraw.disk(center=(from_pos[0], from_pos[1]), radius=radius, shape=grid.shape)
+        # Add 0.01 to radius to find a closed disk
+        ri, ci = skdraw.disk(center=(from_pos[0], from_pos[1]), radius=radius + 0.01, shape=grid.shape)
         if len(ri) == 0 or len(ci) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.debug(OutOfBoundsException(from_pos))
