@@ -209,6 +209,54 @@ class MapAnalyzerDebugger:
             tick.label1.set_fontweight("bold")
         plt.grid()
 
+
+    def plot_influenced_path_test(self, start: Union[Tuple[int, int], Point2],
+                             goal: Union[Tuple[int, int], Point2],
+                             weight_array: ndarray,
+                             name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        from matplotlib.cm import ScalarMappable
+        if not fontdict:
+            fontdict = {"family": "serif", "weight": "bold", "size": 20}
+        plt.style.use(["ggplot", "bmh"])
+        org = "lower"
+        if name is None:
+            name = self.map_data.map_name
+        arr = weight_array.copy()
+        path = self.map_data.pathfind_test(start, goal,
+                                      grid=arr,
+                                      sensitivity=1)
+        ax: plt.Axes = plt.subplot(1, 1, 1)
+        if path is not None:
+            path = np.flipud(path)  # for plot align
+            logger.info("Found")
+            x, y = zip(*path)
+            ax.scatter(x, y, s=3, c='green')
+        else:
+            logger.info("Not Found")
+
+            x, y = zip(*[start, goal])
+            ax.scatter(x, y)
+
+        influence_cmap = plt.cm.get_cmap("afmhot")
+        ax.text(start[0], start[1], f"Start {start}")
+        ax.text(goal[0], goal[1], f"Goal {goal}")
+        ax.imshow(self.map_data.path_arr, alpha=0.5, origin=org)
+        ax.imshow(self.map_data.terrain_height, alpha=0.5, origin=org, cmap='bone')
+        arr = np.where(arr == np.inf, 0, arr).T
+        ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        sc = ScalarMappable(cmap=influence_cmap)
+        sc.set_array(arr)
+        sc.autoscale()
+        cbar = plt.colorbar(sc, cax=cax)
+        cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
+        plt.title(f"{name}", fontdict=fontdict, loc='right')
+        plt.grid()
+
     def plot_influenced_path(self, start: Union[Tuple[int, int], Point2],
                              goal: Union[Tuple[int, int], Point2],
                              weight_array: ndarray,

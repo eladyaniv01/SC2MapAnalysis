@@ -302,6 +302,11 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
+    def pathfind_test(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
+                 grid: Optional[ndarray] = None, sensitivity: int = 1) -> Optional[List[Point2]]:
+        return self.pather.pathfind_test(start=start, goal=goal, grid=grid,
+                                    sensitivity=sensitivity)
+
     def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
                  initial_default_weights: int = 0) -> ndarray:
         """
@@ -834,6 +839,24 @@ class MapData:
                                            name=name,
                                            fontdict=fontdict,
                                            allow_diagonal=allow_diagonal)
+
+    def plot_influenced_path_test(self,
+                             start: Union[Tuple[int, int], Point2],
+                             goal: Union[Tuple[int, int], Point2],
+                             weight_array: ndarray,
+                             name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
+        """
+
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+
+        """
+
+        self.debugger.plot_influenced_path_test(start=start,
+                                           goal=goal,
+                                           weight_array=weight_array,
+                                           name=name,
+                                           fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)

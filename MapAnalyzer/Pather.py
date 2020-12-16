@@ -2,6 +2,7 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import pyastar.astar_wrapper as pyastar
+
 from loguru import logger
 from numpy import ndarray
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
@@ -12,6 +13,7 @@ from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTO
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from .sc2pathlibp import Sc2Map
+from .cext import astar_path
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -165,6 +167,38 @@ class MapAnalyzerPather:
             grid = self.get_pyastar_grid()
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
+        if path is not None:
+            path = list(map(Point2, path))[::sensitivity]
+            """
+            Edge case
+            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
+            """
+            # `if point` is checking with burnysc2 that the point is in map bounds
+            if 'everdream' in self.map_data.map_name.lower():
+                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
+            else:  # normal case
+                legal_path = [point for point in path if point]
+
+            legal_path.pop(0)
+            return legal_path
+        else:
+            logger.debug(f"No Path found s{start}, g{goal}")
+            return None
+
+    def pathfind_test(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
+                  sensitivity: int = 1) -> ndarray:
+        if start is not None and goal is not None:
+            start = int(start[0]), int(start[1])
+            goal = int(goal[0]), int(goal[1])
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+        if grid is None:
+            logger.warning("Using the default pyastar grid as no grid was provided.")
+            grid = self.get_pyastar_grid()
+
+        path = astar_path(grid, start, goal)
+
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
             """
