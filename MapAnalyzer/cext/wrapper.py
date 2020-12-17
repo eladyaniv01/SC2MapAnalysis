@@ -1,6 +1,7 @@
 import numpy as np
 import mapanalyzerext as ext
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union, List
+from sc2.position import Point2
 
 
 def astar_path(
@@ -27,3 +28,18 @@ def astar_path(
         weights.flatten(), height, width, start_idx, goal_idx
     )
     return path
+
+
+class CMapInfo:
+    climber_grid: np.ndarray
+    overlord_spots: Optional[List[Point2]]
+
+    def __init__(self, walkable_grid: np.ndarray, height_map: np.ndarray):
+        self.climber_grid, overlord_data = self._get_map_data(walkable_grid, height_map)
+        self.overlord_spots = list(map(Point2, overlord_data))
+
+    @staticmethod
+    def _get_map_data(walkable_grid: np.ndarray, height_map: np.ndarray):
+        height, width = walkable_grid.shape
+        return ext.get_map_data(walkable_grid.flatten(), height_map.flatten(), height, width)
+

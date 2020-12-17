@@ -2,6 +2,9 @@
 #include <Python.h> // includes stdlib.h
 #include <numpy/arrayobject.h>
 #include <math.h>
+#include "stretchy_buffer.h"
+
+#define LEVEL_DIFFERENCE 16
 
 typedef struct Node {
     int idx;
@@ -15,19 +18,19 @@ typedef struct PriorityQueue {
     int size;
 } PriorityQueue;
 
-static inline int queue_parent(int i) 
+static inline int tree_parent(int i) 
 { 
   
     return (i - 1) / 2; 
 } 
   
-static inline int queue_left_child(int i) 
+static inline int tree_left_child(int i) 
 { 
   
     return ((2 * i) + 1); 
 } 
   
-static inline int queue_right_child(int i) 
+static inline int tree_right_child(int i) 
 { 
   
     return ((2 * i) + 2); 
@@ -45,10 +48,10 @@ static void queue_swap(PriorityQueue *queue, int i, int j)
 static void queue_up(PriorityQueue *queue, int index)
 {
     Node* nodes = queue->nodes;
-    while (index > 0 && nodes[queue_parent(index)].cost > nodes[index].cost)
-    { 
-        queue_swap(queue, queue_parent(index), index); 
-        index = queue_parent(index); 
+    while (index > 0 && nodes[tree_parent(index)].cost > nodes[index].cost)
+    {
+        queue_swap(queue, tree_parent(index), index); 
+        index = tree_parent(index); 
     } 
 }
 
@@ -59,13 +62,14 @@ static void queue_down(PriorityQueue *queue, int index)
 
     for (;;)
     {
-        int l = queue_left_child(index); 
+        int l = tree_left_child(index); 
   
-        if (l < queue->size && nodes[l].cost < nodes[min_index].cost) { 
+        if (l < queue->size && nodes[l].cost < nodes[min_index].cost)
+        { 
             min_index = l; 
         } 
     
-        int r = queue_right_child(index); 
+        int r = tree_right_child(index); 
     
         if (r < queue->size && nodes[r].cost < nodes[min_index].cost)
         { 
@@ -272,16 +276,357 @@ static PyObject* astar(PyObject *self, PyObject *args)
     return return_val;
 }
 
-static PyMethodDef astar_methods[] = {
+typedef struct BSTNode {
+    int key;
+    struct BSTNode *left;
+    struct BSTNode *right;
+} BSTNode;
+
+typedef struct BSTContainer {
+    BSTNode *root;
+    int* keys;
+} BSTContainer;
+ 
+static BSTNode* bst_create(int key)
+{    
+    BSTNode* node = (BSTNode*) malloc(sizeof(BSTNode));
+    node->key = key;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+ 
+static BSTNode* bst_add(BSTNode* root, int key)
+{
+    if (!root)
+    {
+        root = bst_create(key);
+        return root;
+    }
+    else
+    {
+        BSTNode* node = bst_create(key);
+        BSTNode* temp = root;
+        while (temp)
+        {
+            if (!temp->left  && !temp->right)
+            {
+                if (temp->key > key)
+                {
+                    temp->left = node;
+                    break;
+                }
+                else
+                {
+                    temp->right = node;
+                    break;
+                }
+            }
+            else
+            {
+                if (temp->key > key)
+                {
+                    if (!temp->left)
+                    {
+                        temp->left = node;
+                        break;
+                    }
+                    temp = temp->left;
+                }
+                else
+                {
+                    if (!temp->right)
+                    {
+                        temp->right = node;
+                        break;
+                    }
+                    temp = temp->right;
+                }
+            }
+        }
+    }
+    return root;
+}
+ 
+static int bst_contains(BSTNode* root, int key)
+{
+    if (!root) return 0;
+    if (root->key == key)
+    {
+        return 1;
+    }
+    else if (root->key > key)
+    {
+        return bst_contains(root->left, key);
+    }
+    else
+    {
+        return bst_contains(root->right, key);
+    }
+}
+ 
+static void bst_delete(BSTNode* root)
+{
+    if (!root) return;
+    bst_delete(root->left);
+    bst_delete(root->right);
+    free(root);
+}
+
+typedef struct KeyContainer
+{
+    int* keys;
+} KeyContainer;
+
+static void bst_collect_keys(BSTNode* root, KeyContainer *c)
+{
+    if (!root) return;
+
+    sb_push(c->keys, root->key);
+    bst_collect_keys(root->left, c);
+    bst_collect_keys(root->right, c);
+}
+
+static int flood_fill_overlord(uint8_t *heights, uint8_t *overlord_spots, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, BSTContainer* bst_cont)
+{
+    int key = y*grid_width + x;
+    
+    if (bst_contains(bst_cont->root, key) == 1) return 1;
+
+    bst_cont->root = bst_add(bst_cont->root, key);
+
+    if (target_height != heights[key])
+    {
+        return target_height >= heights[key] + LEVEL_DIFFERENCE;
+    }
+
+    int result = 1;
+    overlord_spots[key] = replacement;
+
+    if (y > 0)
+    {
+        result &= flood_fill_overlord(heights, overlord_spots, grid_width, grid_height, x, y - 1, target_height, replacement, bst_cont);
+    }
+    if (x > 0)
+    {
+        result &= flood_fill_overlord(heights, overlord_spots, grid_width, grid_height, x - 1, y, target_height, replacement, bst_cont);
+    }
+    if (y < grid_height - 1)
+    {
+        result &= flood_fill_overlord(heights, overlord_spots, grid_width, grid_height, x, y + 1, target_height, replacement, bst_cont);
+    }
+    if (x < grid_width - 1)
+    {
+        result &= flood_fill_overlord(heights, overlord_spots, grid_width, grid_height, x + 1, y, target_height, replacement, bst_cont);
+    }
+    return result;
+}
+
+static PyObject* get_map_data(PyObject *self, PyObject *args)
+{
+    PyArrayObject* pathable_object;
+    PyArrayObject* heights_object;
+    int h, w;
+    
+    if (!PyArg_ParseTuple(args, "OOii", &pathable_object, &heights_object, &h, &w))
+    {
+        return NULL;
+    }
+
+    uint8_t *pathable = (uint8_t *)pathable_object->data;
+    uint8_t *heights = (uint8_t *)heights_object->data;
+
+    uint8_t *climbable_points = (uint8_t *)calloc(w*h, sizeof(uint8_t));
+    uint8_t *overlord_spots = (uint8_t *)calloc(w*h, sizeof(uint8_t));
+
+    int dirs[8] = { -1, -1, 1, -1, 1, 0, 0, 1 };
+
+    for (int y = 2; y < h - 2; ++y)
+    {
+        for (int x = 2; x < w - 2; ++x)
+        {
+            if (pathable[w*y + x] == 0)
+            {
+                uint8_t h0 = heights[w*(y + 1) + x];
+                uint8_t h1 = heights[w*(y - 1) + x];
+                uint8_t hxy = heights[w*y + x];
+
+                if ((hxy >= h0 + LEVEL_DIFFERENCE && h0 > 0) || (hxy >= h1 + LEVEL_DIFFERENCE && h1 > 0))
+                {
+                    overlord_spots[w*y + x] = 1;
+                }
+
+                continue;
+            }
+            
+            for (int d = 0; d < 4; ++d)
+            {
+                int xdir = dirs[2*d];
+                int ydir = dirs[2*d + 1];
+
+                int x0 = x;
+                int y0 = y;
+                int x1 = x + xdir;
+                int y1 = y + ydir;
+                int x2 = x + xdir * 2;
+                int y2 = y + ydir * 2;
+
+                if (pathable[w*y1 + x1] == 1 || pathable[w*y2 + x2] == 0) continue;
+
+                uint8_t h0 = heights[w*(y1 + 1) + x1];
+                uint8_t h1 = heights[w*(y1 + 1) + x1 + 1];
+                uint8_t h2 = heights[w*y1 + x1];
+                uint8_t h3 = heights[w*y1 + x1 + 1];
+
+                if (xdir != 0 && ydir != 0)
+                {
+                    if (xdir == ydir)
+                    {
+                        if ((h0 == h1 || h0 == h2) && h2 == h1 + LEVEL_DIFFERENCE && h0 == h3)
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                        else if ((h0 == h1 && h0 == h3 && h0 == h2 + LEVEL_DIFFERENCE) || (h0 == h2 && h0 == h3 && h1 == h2 + LEVEL_DIFFERENCE))
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                    }
+                    else
+                    {
+                        if ((h1 == h2 && h1 == h3 && h1 == h0 + LEVEL_DIFFERENCE) || (h0 == h1 && h0 == h2 && h3 == h0 + LEVEL_DIFFERENCE))
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                        else if((h0 == h1 && h0 == h2 && h0 == h3 + LEVEL_DIFFERENCE) || (h1 == h2 && h1 == h3 && h0 == h3 + LEVEL_DIFFERENCE))
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                    }
+                }
+                else
+                {
+                    if (xdir != 0)
+                    {
+                        if (h0 == h2 && h1 == h3 && h0 + LEVEL_DIFFERENCE == h1)
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                        else if(h0 == h2 && h1 == h3 && h0 == h1 + LEVEL_DIFFERENCE)
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                    }   
+                    else if(ydir != 0)
+                    {
+                        if (h0 == h1 && h2 == h3 && h0 + LEVEL_DIFFERENCE == h2)
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                        else if (h0 == h1 && h2 == h3 && h0 == h2 + LEVEL_DIFFERENCE)
+                        {
+                            climbable_points[w*y1 + x1] = 1;
+                        }
+                    }    
+                }
+            }
+        }
+    }
+
+    BSTNode *handled_overlord_spots = NULL;
+    float* overlord_spot_arr = NULL;
+
+    npy_intp climber_dims[2] = {h, w};
+    PyArrayObject *climber_mat = (PyArrayObject*) PyArray_ZEROS(2, climber_dims, NPY_FLOAT32, 0);
+
+    for (int y = 1; y < h - 1; ++y)
+    {
+        for (int x = 1; x < w - 1; ++x)
+        {
+            if (climbable_points[w*y + x] == 1
+                && (climbable_points[w*y + x + 1] == 1
+                    || climbable_points[w*y + x - 1] == 1
+                    || climbable_points[w*(y + 1) + x] == 1
+                    || climbable_points[w*(y - 1) + x] == 1))
+            {
+                npy_float32 *ptr = (npy_float32*) (climber_mat->data + y * climber_mat->strides[0] + x * climber_mat->strides[1]);
+                *ptr = 1.0f;
+            }
+
+            int key = w*y + x;
+
+            if (bst_contains(handled_overlord_spots, key) == 0 && overlord_spots[key] == 1)
+            {
+                uint8_t target_height = heights[key];
+                BSTContainer current_set = { NULL, NULL };
+                if (flood_fill_overlord(heights, overlord_spots, w, h, x, y, target_height, 1, &current_set) == 1)
+                {
+                    float spot[2] = { 0.0f, 0.0f };
+                    KeyContainer c = { NULL };
+                    bst_collect_keys(current_set.root, &c);
+
+                    for(int i = 0; i < sb_count(c.keys); ++i)
+                    {
+                        handled_overlord_spots = bst_add(handled_overlord_spots, c.keys[i]);
+                        int cx = c.keys[i] % w;
+                        int cy = c.keys[i] / w;
+                        spot[0] += cy;
+                        spot[1] += cx;
+                    }
+
+                    spot[0] = spot[0] / (float)sb_count(c.keys);
+                    spot[1] = spot[1] / (float)sb_count(c.keys);
+                    sb_push(overlord_spot_arr, spot[0]);
+                    sb_push(overlord_spot_arr, spot[1]);
+                    sb_free(c.keys);
+                }
+                else
+                {
+                    bst_delete(current_set.root);
+                    current_set.root = NULL;
+                    flood_fill_overlord(heights, overlord_spots, w, h, x, y, target_height, 0, &current_set);
+                }
+
+                if(current_set.root) bst_delete(current_set.root);
+            }
+        }
+    }
+
+    npy_intp overlord_dims[2] = {sb_count(overlord_spot_arr) / 2, 2};
+
+    PyArrayObject *overlord_mat = (PyArrayObject*) PyArray_SimpleNew(2, overlord_dims, NPY_FLOAT32);
+
+    float *overlord_mat_data = (float*)overlord_mat->data;
+    for(int i = 0; i < sb_count(overlord_spot_arr); ++i)
+    {
+        overlord_mat_data[i] = overlord_spot_arr[i];
+    }
+
+    sb_free(overlord_spot_arr);
+    bst_delete(handled_overlord_spots);
+    free(climbable_points);
+    free(overlord_spots);
+
+    PyObject *return_tuple = PyTuple_New(2);
+    PyObject *return_climber = PyArray_Return(climber_mat);
+    PyObject *return_overlords = PyArray_Return(overlord_mat);
+
+    PyTuple_SetItem(return_tuple, 0, return_climber);
+    PyTuple_SetItem(return_tuple, 1, return_overlords);
+
+    return return_tuple;
+}
+
+static PyMethodDef cext_methods[] = {
     {"astar", (PyCFunction)astar, METH_VARARGS, "astar"},
+    {"get_map_data", (PyCFunction)get_map_data, METH_VARARGS, "get_map_data"},
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef astar_module = {
-    PyModuleDef_HEAD_INIT,"astar", NULL, -1, astar_methods
+static struct PyModuleDef cext_module = {
+    PyModuleDef_HEAD_INIT,"mapanalyzer_cext", NULL, -1, cext_methods
 };
 
 PyMODINIT_FUNC PyInit_mapanalyzerext(void) {
   import_array();
-  return PyModule_Create(&astar_module);
+  return PyModule_Create(&cext_module);
 }

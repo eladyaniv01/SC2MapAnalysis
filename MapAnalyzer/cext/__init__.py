@@ -1,1 +1,1 @@
-from .wrapper import astar_path
+from .wrapper import astar_path, CMapInfo
