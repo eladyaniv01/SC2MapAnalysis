@@ -20,6 +20,7 @@ from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, M
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
 from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
+from .cext import CMapInfo
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -63,6 +64,7 @@ class MapData:
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
+        self.overlord_spots: list = []
         self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
                                   any(x in m.name.lower() for x in {"rich", "450"})]
         self.pathlib_to_local_chokes = None
@@ -72,6 +74,11 @@ class MapData:
         self.log_level = loglevel
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
         self.pather = MapAnalyzerPather(self)
+
+        pathing_grid = np.fmax(self.path_arr, self.placement_arr)
+        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T)
+        self.overlord_spots = self.c_ext_map.overlord_spots
+
         self.connectivity_graph = None  # set by pather
         self.pathlib_map = self.pather.pathlib_map
         self.pyastar = self.pather.pyastar
