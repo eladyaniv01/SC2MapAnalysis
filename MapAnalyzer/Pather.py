@@ -136,6 +136,14 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
+    def get_climber_grid_test(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
+        """Grid for units like reaper / colossus """
+        grid = self.get_pyastar_grid(default_weight=default_weight, include_destructables=False)
+        grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
+        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
+
+        return grid
+
     def get_clean_air_grid(self, default_weight: int = 1) -> ndarray:
         clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
         if default_weight == 1:
