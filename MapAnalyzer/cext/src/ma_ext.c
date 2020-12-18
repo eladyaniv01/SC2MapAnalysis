@@ -284,7 +284,6 @@ typedef struct BSTNode {
 
 typedef struct BSTContainer {
     BSTNode *root;
-    int* keys;
 } BSTContainer;
  
 static BSTNode* bst_create(int key)
@@ -397,7 +396,14 @@ static int flood_fill_overlord(uint8_t *heights, uint8_t *overlord_spots, int gr
 
     if (target_height != heights[key])
     {
-        return target_height >= heights[key] + LEVEL_DIFFERENCE;
+        if (target_height < heights[key] + LEVEL_DIFFERENCE)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     int result = 1;
@@ -557,7 +563,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
             if (bst_contains(handled_overlord_spots, key) == 0 && overlord_spots[key] == 1)
             {
                 uint8_t target_height = heights[key];
-                BSTContainer current_set = { NULL, NULL };
+                BSTContainer current_set = { NULL };
                 if (flood_fill_overlord(heights, overlord_spots, w, h, x, y, target_height, 1, &current_set) == 1)
                 {
                     float spot[2] = { 0.0f, 0.0f };
@@ -595,7 +601,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
 
     PyArrayObject *overlord_mat = (PyArrayObject*) PyArray_SimpleNew(2, overlord_dims, NPY_FLOAT32);
 
-    float *overlord_mat_data = (float*)overlord_mat->data;
+    npy_float32 *overlord_mat_data = (npy_float32*)overlord_mat->data;
     for(int i = 0; i < sb_count(overlord_spot_arr); ++i)
     {
         overlord_mat_data[i] = overlord_spot_arr[i];
