@@ -76,7 +76,7 @@ class MapData:
         self.pather = MapAnalyzerPather(self)
 
         pathing_grid = np.fmax(self.path_arr, self.placement_arr)
-        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T)
+        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area)
         self.overlord_spots = self.c_ext_map.overlord_spots
 
         self.connectivity_graph = None  # set by pather
@@ -612,7 +612,8 @@ class MapData:
 
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated
-        raw_chokes = self.pathlib_map.chokes
+        #raw_chokes = self.pathlib_map.chokes
+        raw_chokes = self.c_ext_map.chokes
         self.pathlib_to_local_chokes = []
         for i, c in enumerate(raw_chokes):
             self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
