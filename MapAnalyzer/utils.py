@@ -27,7 +27,7 @@ def get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
     for c in list_mdchokes:
         s2 = c.pixels
         s3 = s1 ^ s2
-        if len(s3) != (len(s1) + len(s2)):
+        if len(s3) <= 0.95*(len(s1) + len(s2)):
             li.append(c.id)
     return li
 
