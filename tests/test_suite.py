@@ -2,17 +2,17 @@ from random import randint
 
 from _pytest.python import Metafunc
 from hypothesis import given, settings
+from loguru import logger
 from sc2.position import Point2
 
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_file_list, mock_map_data
-from tests.mocksetup import get_map_datas, logger, random, st
-
-logger = logger
+from tests.mocksetup import get_map_datas, random, st
 
 
 # From https://docs.pytest.org/en/latest/example/parametrize.html#a-quick-port-of-testscenarios
 def pytest_generate_tests(metafunc: Metafunc) -> None:
+    # noinspection PyGlobalUndefined
     global argnames
     idlist = []
     argvalues = []
@@ -75,7 +75,6 @@ class TestSanity:
             assert (polygon.area > 0)
             assert (polygon.is_inside_point(polygon.center))
 
-
             extended_pts = polygon.points.union(polygon.perimeter_points)
             assert (polygon.points == extended_pts)
 
@@ -83,7 +82,7 @@ class TestSanity:
                 assert (polygon.is_inside_point(point) is True)
 
                 # https://github.com/BurnySc2/python-sc2/issues/62
-                assert (point is not None)
+                assert isinstance(point, Point2)
                 assert (type(point[0] == int))
 
             for point in polygon.corner_points:
@@ -107,8 +106,10 @@ class TestSanity:
         for choke in map_data.map_chokes:
             for p in choke.points:
                 assert (choke in map_data.where_all(p)), \
-                    map_data.logger.error(f"<Map : {map_data}, Choke : {choke},"
-                                         f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+                    logger.error(f"<Map : {map_data}, Choke : {choke},"
+                                 f" where :  {map_data.where(choke.center)} point : {choke.center}>")
+            assert (choke.side_a in choke.points), f"Choke {choke}, side a {choke.side_a} is not in choke points"
+            assert (choke.side_b in choke.points), f"Choke {choke}, side b {choke.side_b} is not in choke points"
 
     def test_vision_blockers(self, map_data: MapData) -> None:
         all_chokes = map_data.map_chokes
@@ -116,5 +117,5 @@ class TestSanity:
             assert (vb in all_chokes)
             for p in vb.points:
                 assert (vb in map_data.where_all(p)), \
-                    map_data.logger.error(f"<Map : {map_data}, Choke : {vb},"
-                                          f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")
+                    logger.error(f"<Map : {map_data}, Choke : {vb},"
+                                 f" where_all :  {map_data.where_all(vb.center)} point : {vb.center}>")

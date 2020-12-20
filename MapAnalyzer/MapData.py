@@ -2,24 +2,24 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from loguru import logger
 from numpy import float64, int64, ndarray
+from pkg_resources import DistributionNotFound, get_distribution
 from sc2.bot_ai import BotAI
 from sc2.position import Point2
 from scipy.ndimage import binary_fill_holes, center_of_mass, generate_binary_structure, label as ndlabel
 from scipy.spatial import distance
 
-
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import get_sets_with_mutual_elements
-from .constants import BINARY_STRUCTURE, MAX_REGION_AREA, MIN_REGION_AREA, CORNER_MIN_DISTANCE
-from .constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
+
+from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
+
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
-
-from pkg_resources import get_distribution, DistributionNotFound
-
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -55,7 +55,7 @@ class MapData:
         self.min_region_area = MIN_REGION_AREA
         self.max_region_area = MAX_REGION_AREA
         self.regions: dict = {}  # set later
-        self.region_grid: Union[ndarray, None] = None
+        self.region_grid: Optional[ndarray] = None
         self.corners: list = []  # set later
         self.polygons: list = []  # set later
         self.map_chokes: list = []  # set later  on compile
@@ -71,7 +71,6 @@ class MapData:
         # plugins
         self.log_level = loglevel
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
-        self.logger = self.debugger.logger
         self.pather = MapAnalyzerPather(self)
         self.connectivity_graph = None  # set by pather
         self.pathlib_map = self.pather.pathlib_map
@@ -82,10 +81,10 @@ class MapData:
         if not self.arcade:
             self.base_locations: list = bot.expansion_locations_list
         else:
-            self.logger.info(f" {__version__} Starting in Arcade mode")
+            logger.info(f" {__version__} Starting in Arcade mode")
             self.base_locations: list = []
 
-        self.logger.info(f"{__version__} Compiling {self.map_name} " + WHITE)
+        logger.info(f"{__version__} Compiling {self.map_name} " + WHITE)
         self._compile_map()
 
     """Properties"""
@@ -105,13 +104,14 @@ class MapData:
 
     # dont cache this
     def get_pyastar_grid(self,
-                         default_weight: int = 1,
-                         include_destructables: bool = True,
-                         air_pathing: Optional[bool] = None) -> ndarray:
+                         default_weight: float = 1,
+                         include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Warning:
-            ``air_pathing`` is deprecated, use :meth:`.MapData.get_clean_air_grid` or :meth:`.MapData.get_air_vs_ground_grid`
+        Note:
+            To query what is the cost in a certain point, simple do ``my_grid[certain_point]`` where `certain_point`
+
+            is a :class:`tuple` or a :class:`sc2.position.Point2`
 
 
         Requests a new pathing grid.
@@ -150,13 +150,11 @@ class MapData:
             * :meth:`.MapData.find_lowest_cost_points`
 
         """
-        if air_pathing is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='air_pathing', newarg='self.get_clean_air_grid()'))
         return self.pather.get_pyastar_grid(default_weight=default_weight,
                                             include_destructables=include_destructables,
                                             )
 
-    def find_lowest_cost_points(self, from_pos: Point2, radius: int, grid: np.ndarray) -> List[Point2]:
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         """
         :rtype:  Union[List[:class:`sc2.position.Point2`], None]
 
@@ -164,11 +162,21 @@ class MapData:
         (if there are more than one)
 
         Example:
-             >>> grid = self.get_air_vs_ground_grid()
+             >>> my_grid = self.get_air_vs_ground_grid()
              >>> position = (100, 80)
-             >>> radius = 10
-             >>> self.find_lowest_cost_points(from_pos=position, radius=radius, grid=grid)
-             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80), (108, 83), (106, 78), (107, 84), (109, 82), (107, 79), (107, 80), (106, 75), (107, 75), (91, 78), (106, 81), (109, 77), (108, 76), (91, 80), (106, 79), (109, 81), (107, 78), (108, 80), (105, 82), (107, 83), (107, 74), (108, 84), (102, 71), (109, 76), (105, 79), (108, 77), (106, 76), (107, 86), (106, 82), (109, 80), (108, 81), (105, 81), (107, 82), (109, 84), (106, 73), (107, 77), (108, 85), (105, 78), (108, 78), (106, 77), (107, 73), (106, 83), (108, 82), (105, 80), (108, 75), (107, 85), (109, 83), (107, 76)]
+             >>> my_radius = 10
+             >>> self.find_lowest_cost_points(from_pos=position, radius=my_radius, grid=my_grid)
+             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80),
+             (108, 83), (106, 78), (107, 84), (109, 82), (107, 79),
+             (107, 80), (106, 75), (107, 75), (91, 78), (106, 81),
+             (109, 77), (108, 76), (91, 80), (106, 79), (109, 81),
+             (107, 78), (108, 80), (105, 82), (107, 83), (107, 74),
+             (108, 84), (102, 71), (109, 76), (105, 79), (108, 77),
+             (106, 76), (107, 86), (106, 82), (109, 80), (108, 81),
+             (105, 81), (107, 82), (109, 84), (106, 73), (107, 77),
+             (108, 85), (105, 78), (108, 78), (106, 77), (107, 73),
+             (106, 83), (108, 82), (105, 80), (108, 75), (107, 85),
+             (109, 83), (107, 76)]
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -181,7 +189,7 @@ class MapData:
         """
         return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
 
-    def get_climber_grid(self, default_weight: int = 1) -> ndarray:
+    def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
         Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
@@ -207,9 +215,9 @@ class MapData:
             * :meth:`.MapData.pathfind`
             * :meth:`.MapData.find_lowest_cost_points`
         """
-        return self.pather.get_climber_grid(default_weight)
+        return self.pather.get_climber_grid(default_weight, include_destructables=include_destructables)
 
-    def get_air_vs_ground_grid(self, default_weight: int = 100) -> ndarray:
+    def get_air_vs_ground_grid(self, default_weight: float = 100) -> ndarray:
         """
         :rtype: numpy.ndarray
         ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,
@@ -217,7 +225,9 @@ class MapData:
          making air units naturally "drawn" to it.
 
         Caution:
-            Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`
+            Requesting a grid with a ``default_weight`` of 1 is pointless,
+
+            and  will result in a :meth:`.MapData.get_clean_air_grid`
 
         Example:
                 >>> air_vs_ground_grid = self.get_air_vs_ground_grid()
@@ -233,7 +243,7 @@ class MapData:
         """
         return self.pather.get_air_vs_ground_grid(default_weight=default_weight)
 
-    def get_clean_air_grid(self, default_weight: int = 1):
+    def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
         """
 
         :rtype: numpy.ndarray
@@ -246,9 +256,9 @@ class MapData:
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
-    def pathfind(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
+    def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                  grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> Union[List[Point2], None]:
+                 allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
@@ -280,9 +290,9 @@ class MapData:
             more examples for different usages available
 
         Example:
-            >>> grid = self.get_pyastar_grid()
+            >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)
+            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -292,8 +302,8 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
-                 initial_default_weights: int = 0) -> ndarray:
+    def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100, safe: bool = True,
+                 initial_default_weights: float = 0) -> ndarray:
         """
         :rtype: numpy.ndarray
 
@@ -309,14 +319,6 @@ class MapData:
                                     initial_default_weights=initial_default_weights)
 
     """Utility methods"""
-
-    def log(self, msg):
-        """
-
-         Lazy logging
-
-         """
-        self.logger.debug(f"{msg}")
 
     def save(self, filename):
         """
@@ -348,7 +350,7 @@ class MapData:
     @staticmethod
     def indices_to_points(
             indices: Union[ndarray, Tuple[ndarray, ndarray]]
-    ) -> Set[Union[Tuple[int, int], Point2]]:
+    ) -> Set[Union[Tuple[float, float], Point2]]:
         """
         :rtype: :class:`.set` (Union[:class:`.tuple` (:class:`.int`, :class:`.int`), :class:`sc2.position.Point2`)
 
@@ -358,10 +360,10 @@ class MapData:
 
         """
 
-        return set([(int(indices[0][i]), int(indices[1][i])) for i in range(len(indices[0]))])
+        return set([(indices[0][i], indices[1][i]) for i in range(len(indices[0]))])
 
     @staticmethod
-    def points_to_indices(points: Set[Tuple[int, int]]) -> Tuple[np.ndarray, np.ndarray]:
+    def points_to_indices(points: Set[Tuple[float, float]]) -> Tuple[np.ndarray, np.ndarray]:
         """
         :rtype: Tuple[numpy.ndarray, numpy.ndarray]
 
@@ -386,16 +388,16 @@ class MapData:
         if isinstance(points, set):
             points = list(points)
 
-        def in_bounds_x(x):
+        def in_bounds_x(x_):
             width = arr.shape[0] - 1
-            if 0 < x < width:
-                return x
+            if 0 < x_ < width:
+                return x_
             return 0
 
-        def in_bounds_y(y):
+        def in_bounds_y(y_):
             height = arr.shape[1] - 1
-            if 0 < y < height:
-                return y
+            if 0 < y_ < height:
+                return y_
             return 0
 
         x_vec = np.vectorize(in_bounds_x)
@@ -414,7 +416,7 @@ class MapData:
         Euclidean distance
 
         """
-        return abs(p2[0] - p1[0]) + abs(p2[1] - p1[1])
+        return (pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2)) ** 0.5
 
     @staticmethod
     def closest_node_idx(
@@ -455,7 +457,7 @@ class MapData:
         if isinstance(points, list):
             return points[self.closest_node_idx(node=target, nodes=points)]
         else:
-            self.logger.warning(type(points))
+            logger.warning(type(points))
             return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
@@ -494,7 +496,8 @@ class MapData:
         If a :class:`.Region` exists in that list, it will be the first item
 
         Caution:
-                Not all points on the map belong to a :class:`.Region` , some are in ``border`` polygons such as :class:`.MDRamp`
+                Not all points on the map belong to a :class:`.Region` ,
+                some are in ``border`` polygons such as :class:`.MDRamp`
 
 
         Example:
@@ -508,7 +511,8 @@ class MapData:
                 Region 0
 
                 >>> # now it is very easy to know which region is the enemy's natural
-                >>> enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region
+                >>> # connected_regions is a property of a Region
+                >>> enemy_natural_region = enemy_main_base_region.connected_regions[0]
                 >>> enemy_natural_region
                 Region 3
 
@@ -635,9 +639,10 @@ class MapData:
         self._calc_regions()
         self._calc_vision_blockers()
         self._set_map_ramps()
-        self._calc_chokes()
+
         self._clean_polys()
 
+        self._calc_chokes()
         for poly in self.polygons:
             poly.calc_areas()
         for ramp in self.map_ramps:
@@ -728,10 +733,16 @@ class MapData:
 
                     if isinstance(area, Region):
                         area.region_chokes.append(new_choke)
-                    new_choke.areas.append(area)
-                self.map_chokes.append(new_choke)
+                        new_choke.areas.append(area)
+                    if area.is_choke and not area.is_ramp and not area.is_vision_blocker:
+                        self.polygons.remove(new_choke)
+                        area.points.update(new_choke.points)
+                        new_choke = None
+
+                if new_choke:
+                    self.map_chokes.append(new_choke)
             else:  # pragma: no cover
-                self.logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
+                logger.debug(f" [{self.map_name}] Cant add {choke} with 0 points")
 
     def _calc_regions(self) -> None:
         # compute Region
@@ -801,23 +812,21 @@ class MapData:
 
         """
         if save is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+            logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path(self,
-                             start: Union[Tuple[int, int], Point2],
-                             goal: Union[Tuple[int, int], Point2],
+                             start: Union[Tuple[float, float], Point2],
+                             goal: Union[Tuple[float, float], Point2],
                              weight_array: ndarray,
                              allow_diagonal=False,
-                             plot: Optional[bool] = None, save: Optional[bool] = None, name: Optional[str] = None,
+                             name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         """
 
         A useful debug utility method for experimenting with the :mod:`.Pather` module
 
         """
-        if plot is not None:
-            self.logger.warning(CustomDeprecationWarning(oldarg='plot', newarg='self.show()'))
 
         self.debugger.plot_influenced_path(start=start,
                                            goal=goal,

@@ -5,7 +5,6 @@ import warnings
 from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
 
 import numpy as np
-import sc2
 from loguru import logger
 from numpy import ndarray
 from sc2 import BotAI
@@ -35,7 +34,9 @@ class LogFilter:
 
     def __call__(self, record: Dict[str, Any]) -> bool:
         levelno = logger.level(self.level).no
-        return record["level"].no >= levelno
+        if 'sc2.' not in record["name"].lower():
+            return record["level"].no >= levelno
+        return False
 
 
 class MapAnalyzerDebugger:
@@ -45,20 +46,13 @@ class MapAnalyzerDebugger:
 
     def __init__(self, map_data: "MapData", loglevel: str = "ERROR") -> None:
         self.map_data = map_data
-        if not self.map_data.arcade:
-            self.logger = sc2.main.logger
-        else:
-            self.logger = logger
         self.warnings = warnings
         self.warnings.filterwarnings('ignore', category=DeprecationWarning)
         self.warnings.filterwarnings('ignore', category=RuntimeWarning)
-
-        self.logger.remove()
         self.local_log_filter = LocalLogFilter(module_name=LOG_MODULE, level=loglevel)
-        self.log_filter = LogFilter(level=loglevel)
         self.log_format = LOG_FORMAT
-        self.logger.add(sys.stderr, format=self.log_format, filter=self.local_log_filter)
-        self.logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
+        self.log_filter = LogFilter(level=loglevel)
+        logger.add(sys.stderr, format=self.log_format, filter=self.log_filter)
 
     @staticmethod
     def scatter(*args, **kwargs):
@@ -75,17 +69,18 @@ class MapAnalyzerDebugger:
         import matplotlib.pyplot as plt
         plt.close(fig='all')
 
-    def save(self, filename: str) -> bool:
+    @staticmethod
+    def save(filename: str) -> bool:
 
         for i in inspect.stack():
             if 'test_suite.py' in str(i):
-                self.logger.info(f"Skipping save operation on test runs")
-                self.logger.debug(f"index = {inspect.stack().index(i)}  {i}")
+                logger.info(f"Skipping save operation on test runs")
+                logger.debug(f"index = {inspect.stack().index(i)}  {i}")
                 return True
         import matplotlib.pyplot as plt
         full_path = os.path.join(os.path.abspath("."), f"{filename}")
         plt.savefig(f"{filename}.png")
-        self.logger.debug(f"Plot Saved to {full_path}")
+        logger.debug(f"Plot Saved to {full_path}")
 
     def plot_regions(self,
                      fontdict: Dict[str, Union[str, int]]) -> None:
@@ -164,6 +159,20 @@ class MapAnalyzerDebugger:
                 plt.text(cm[0], cm[1], f"C<{choke.id}>", fontdict=fontdict,
                          bbox=dict(fill=True, alpha=0.3, edgecolor="red", linewidth=2))
                 plt.scatter(x, y, marker=r"$\heartsuit$", s=100, edgecolors="r", alpha=0.3)
+            walls = [choke.side_a, choke.side_b]
+            x, y = zip(*walls)
+            fontdict = {"family": "serif", "size": 5}
+            if 'unregistered' not in str(choke.id).lower():
+                plt.text(choke.side_a[0], choke.side_a[1], f"C<{choke.id}sA>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.5, edgecolor="green", linewidth=2))
+                plt.text(choke.side_b[0], choke.side_b[1], f"C<{choke.id}sB>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2))
+            else:
+                plt.text(choke.side_a[0], choke.side_a[1], f"sA>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.5, edgecolor="green", linewidth=2))
+                plt.text(choke.side_b[0], choke.side_b[1], f"sB>", fontdict=fontdict,
+                         bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2))
+            plt.scatter(x, y, marker=r"$\spadesuit$", s=50, edgecolors="b", alpha=0.5)
 
     def plot_map(
             self, fontdict: dict = None, figsize: int = 20
@@ -223,11 +232,11 @@ class MapAnalyzerDebugger:
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
             path = np.flipud(path)  # for plot align
-            self.map_data.logger.info("Found")
+            logger.info("Found")
             x, y = zip(*path)
             ax.scatter(x, y, s=3, c='green')
         else:
-            self.map_data.logger.info("Not Found")
+            logger.info("Not Found")
 
             x, y = zip(*[start, goal])
             ax.scatter(x, y)
@@ -249,7 +258,8 @@ class MapAnalyzerDebugger:
         plt.title(f"{name}", fontdict=fontdict, loc='right')
         plt.grid()
 
-    def draw_influence_in_game(self, bot: BotAI,
+    @staticmethod
+    def draw_influence_in_game(bot: BotAI,
                                grid: np.ndarray,
                                lower_threshold: int,
                                upper_threshold: int,

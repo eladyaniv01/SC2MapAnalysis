@@ -35,6 +35,8 @@ check out his work
 
 More Examples reside in the [Documentation](https://eladyaniv01.github.io/SC2MapAnalysis/)
 
+Example bot usage can be found in `dummybot.py`
+
 Example:
 ```python
 import pickle

@@ -1,6 +1,8 @@
+from functools import lru_cache
 from typing import Optional, TYPE_CHECKING
 
 import numpy as np
+from loguru import logger
 from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
@@ -19,6 +21,7 @@ class PathLibChoke:
     with a bit of added fields / data type for convenience
 
     """
+
     # noinspection PyProtectedMember
     def __init__(self, pathlib_choke: "Choke", pk: int):
         self.id = pk
@@ -49,9 +52,39 @@ class ChokeArea(Polygon):
             self.id = pathlibchoke.id
             self.md_pl_choke = pathlibchoke
         self.is_choke = True
+        self.ramp = None
+        self.side_a = None
+        self.side_b = None
+        self._set_sides()
+
+    def _set_sides(self):
+        org = self.top
+        pts = [self.bottom, self.right, self.left]
+        res = self.map_data.closest_towards_point(points=pts, target=org)
+        self.side_a = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        if res != self.bottom:
+            org = self.bottom
+            pts = [self.top, self.right, self.left]
+            res = self.map_data.closest_towards_point(points=pts, target=org)
+            self.side_b = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        else:
+            self.side_b = int(round((self.right[0] + self.left[0]) / 2)), int(round((self.right[1] + self.left[1]) / 2))
+        points = list(self.points)
+        points.append(self.side_a)
+        points.append(self.side_b)
+        self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
+        self.indices = self.map_data.points_to_indices(self.points)
+
+    @property
+    def corner_walloff(self):
+        return sorted(list(self.points), key=lambda x: x.distance_to_point2(self.center), reverse=True)[:2]
+
+    @lru_cache()
+    def same_height(self, p1, p2):
+        return self.map_data.terrain_height[p1] == self.map_data.terrain_height[p2]
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<[{self.id}]ChokeArea[size={self.area}]> of  {self.areas}"
+        return f"<[{self.id}]ChokeArea[size={self.area}]>"
 
 
 class MDRamp(ChokeArea):
@@ -66,6 +99,26 @@ class MDRamp(ChokeArea):
         super().__init__(map_data=map_data, array=array)
         self.is_ramp = True
         self.ramp = ramp
+        self.offset = Point2((0.5, 0.5))
+        self.points.add(Point2(self.middle_walloff_depot.rounded))
+
+    @property
+    def corner_walloff(self):
+        raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)[:2]
+        offset_points = [p.offset(self.offset) for p in raw_points]
+        offset_points.extend(raw_points)
+        return offset_points
+
+    @property
+    def middle_walloff_depot(self):
+        raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
+        # TODO  its white board time,  need to figure out some geometric intuition here
+        r = max(self.map_data.distance(raw_points[0], raw_points[1]) ** 0.5,
+                self.map_data.distance(raw_points[0], raw_points[1]) / 2)
+        intersects = raw_points[0].circle_intersection(p=raw_points[1], r=r)
+        # p = self.map_data.closest_towards_point(points=self.buildables.points, target=self.top_center)
+        pt = max(intersects, key=lambda p: p.distance_to_point2(self.bottom_center))
+        return pt.offset(self.offset)
 
     def closest_region(self, region_list):
         """
@@ -123,7 +176,7 @@ class MDRamp(ChokeArea):
         if self.ramp.top_center is not None:
             return self.ramp.top_center
         else:
-            self.map_data.logger.debug(f"No top_center found for {self}, falling back to `center`")
+            logger.debug(f"No top_center found for {self}, falling back to `center`")
             return self.center
 
     @property
@@ -136,11 +189,11 @@ class MDRamp(ChokeArea):
         if self.ramp.bottom_center is not None:
             return self.ramp.bottom_center
         else:
-            self.map_data.logger.debug(f"No bottom_center found for {self}, falling back to `center`")
+            logger.debug(f"No bottom_center found for {self}, falling back to `center`")
             return self.center
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<MDRamp[size={self.area}]: {self.areas}>"
+        return f"<MDRamp[size={self.area}] {str(self.regions)}>"
 
     def __str__(self):
         return f"R[{self.area}]"
