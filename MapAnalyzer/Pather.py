@@ -136,7 +136,7 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
-    def get_climber_grid_test(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
+    def get_climber_grid_c(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self.get_pyastar_grid(default_weight=default_weight, include_destructables=False)
         grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
@@ -193,7 +193,7 @@ class MapAnalyzerPather:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    def pathfind_test(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
+    def pathfind_c(self, start: Tuple[int, int], goal: Tuple[int, int], grid: Optional[ndarray] = None,
                       smoothing: bool = False,
                       sensitivity: int = 1) -> ndarray:
         if start is not None and goal is not None:

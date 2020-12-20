@@ -309,9 +309,9 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
                                     sensitivity=sensitivity)
 
-    def pathfind_test(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
+    def pathfind_c(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
                  grid: Optional[ndarray] = None, sensitivity: int = 1) -> Optional[List[Point2]]:
-        return self.pather.pathfind_test(start=start, goal=goal, grid=grid,
+        return self.pather.pathfind_c(start=start, goal=goal, grid=grid,
                                     sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
@@ -848,7 +848,7 @@ class MapData:
                                            fontdict=fontdict,
                                            allow_diagonal=allow_diagonal)
 
-    def plot_influenced_path_test(self,
+    def plot_influenced_path_c(self,
                              start: Union[Tuple[int, int], Point2],
                              goal: Union[Tuple[int, int], Point2],
                              weight_array: ndarray,
@@ -860,7 +860,7 @@ class MapData:
 
         """
 
-        self.debugger.plot_influenced_path_test(start=start,
+        self.debugger.plot_influenced_path_c(start=start,
                                            goal=goal,
                                            weight_array=weight_array,
                                            name=name,

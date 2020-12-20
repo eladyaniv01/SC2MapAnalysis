@@ -210,11 +210,11 @@ class MapAnalyzerDebugger:
         plt.grid()
 
 
-    def plot_influenced_path_test(self, start: Union[Tuple[int, int], Point2],
-                             goal: Union[Tuple[int, int], Point2],
-                             weight_array: ndarray,
-                             name: Optional[str] = None,
-                             fontdict: dict = None) -> None:
+    def plot_influenced_path_c(self, start: Union[Tuple[int, int], Point2],
+                               goal: Union[Tuple[int, int], Point2],
+                               weight_array: ndarray,
+                               name: Optional[str] = None,
+                               fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         from matplotlib.cm import ScalarMappable
@@ -225,7 +225,7 @@ class MapAnalyzerDebugger:
         if name is None:
             name = self.map_data.map_name
         arr = weight_array.copy()
-        path = self.map_data.pathfind_test(start, goal,
+        path = self.map_data.pathfind_c(start, goal,
                                       grid=arr,
                                       sensitivity=1)
         ax: plt.Axes = plt.subplot(1, 1, 1)
