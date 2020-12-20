@@ -154,6 +154,11 @@ static inline float distance_heuristic(int x0, int y0, int x1, int y1, float bas
     return baseline*(max(abs(x0 - x1), abs(y0 - y1)) + (SQRT2 - 1) * min(abs(x0 - x1), abs(y0 - y1)));
 }
 
+static inline float euclidean_distance(int x0, int y0, int x1, int y1)
+{
+    return sqrtf((float)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
+}
+
 static int run_pathfind(float *weights, int* paths, int w, int h, int start, int goal)
 {
     float weight_baseline = find_min(weights, w*h);
@@ -235,6 +240,55 @@ static int run_pathfind(float *weights, int* paths, int w, int h, int start, int
     return path_length;
 }
 
+static float calculate_line_weight(float* weights, int w, int x0, int y0, int x1, int y1)
+{
+    int* line_coords = NULL;
+    float flight_distance = euclidean_distance(x0, y0, x1, y1);
+
+    int step_constant = 5;
+    float step_constant_inverse = (float) 1 / step_constant;
+
+    int dots = step_constant*(int)flight_distance;
+
+    float dir_vec[2] = { (x1 - x0) / flight_distance, (y1 - y0) / flight_distance };
+
+    for (int i = 0; i < dots; ++i)
+    {
+        int current_x = (int)(x0 + dir_vec[0]*i*step_constant_inverse);
+        int current_y = (int)(y0 + dir_vec[1]*i*step_constant_inverse);
+
+        int added_already = 0;
+        for (int j = 0; j < sb_count(line_coords); ++j)
+        {
+            if (line_coords[j] == w*current_y + current_x)
+            {
+                added_already = 1;
+            }
+        }
+
+        if (!added_already)
+        {
+            sb_push(line_coords, w*current_y + current_x);
+        }
+    }
+
+    float norm = 0.0f;
+    if (sb_count(line_coords) > 0)
+    {
+        norm = flight_distance / sb_count(line_coords); 
+    }
+
+    float weight_sum = 0.0f;
+    for (int i = 0; i < sb_count(line_coords); ++i)
+    {
+        weight_sum += weights[line_coords[i]];
+        if(weight_sum >= HUGE_VALF) break;
+    }
+
+    sb_free(line_coords);
+    return weight_sum*norm;
+}
+
 static PyObject* astar(PyObject *self, PyObject *args)
 {
     PyArrayObject* weights_object;
@@ -253,21 +307,71 @@ static PyObject* astar(PyObject *self, PyObject *args)
     PyObject *return_val;
     if (path_length >= 0)
     {
-        npy_intp dims[2] = {path_length, 2};
-        PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
-        npy_int32 *xptr, *yptr;
-        npy_int32 *path_data = (npy_int32*)path->data;
-
-        int idx = goal;
-
-        for (npy_intp i = dims[0] - 1; i >= 0; --i)
+        if (!smoothing || path_length < 3)
         {
-            path_data[2*i] = idx / w;
-            path_data[2*i + 1] = idx % w;
+            npy_intp dims[2] = {path_length, 2};
+            PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
+            npy_int32 *path_data = (npy_int32*)path->data;
 
-            idx = paths[idx];
+            int idx = goal;
+
+            for (npy_intp i = dims[0] - 1; i >= 0; --i)
+            {
+                path_data[2*i] = idx / w;
+                path_data[2*i + 1] = idx % w;
+
+                idx = paths[idx];
+            }
+            return_val = PyArray_Return(path);
         }
-        return_val = PyArray_Return(path);
+        else
+        {
+            int* smoothed_path_inverted = NULL;
+            sb_push(smoothed_path_inverted, goal);
+
+            int current_node = paths[goal];
+            float step_weight = 0;
+            float segment_total_weight = 0;
+            for(int i = 1; i < path_length - 1; ++i)
+            {
+                int next_node = paths[current_node];
+                step_weight = weights[next_node] * euclidean_distance(current_node % w, current_node / w, next_node % w, next_node / w);
+                segment_total_weight += step_weight;
+
+                int last_added_new_path_node = smoothed_path_inverted[sb_count(smoothed_path_inverted) - 1];
+                int x0 = last_added_new_path_node % w;
+                int y0 = last_added_new_path_node / w;
+                int x1 = next_node % w;
+                int y1 = next_node / w;
+                if (calculate_line_weight(weights, w, x0, y0, x1, y1) > segment_total_weight * 1.002f)
+                {
+                    segment_total_weight = step_weight;
+                    sb_push(smoothed_path_inverted, current_node);
+                }
+
+                current_node = next_node;
+            }
+            sb_push(smoothed_path_inverted, start);
+
+            npy_intp dims[2] = {sb_count(smoothed_path_inverted), 2};
+            PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
+            npy_int32 *path_data = (npy_int32*)path->data;
+
+            int idx = goal;
+
+            for (npy_intp i = dims[0] - 1; i >= 0; --i)
+            {
+                path_data[2*i] = smoothed_path_inverted[dims[0] - 1 - i] / w;
+                path_data[2*i + 1] = smoothed_path_inverted[dims[0] - 1 - i] % w;
+
+                idx = paths[idx];
+            }
+            return_val = PyArray_Return(path);
+
+            sb_free(smoothed_path_inverted);
+        }
+        
+        
     }
     else
     {
@@ -429,11 +533,6 @@ static int flood_fill_overlord(uint8_t *heights, uint8_t *overlord_spots, int gr
         result &= flood_fill_overlord(heights, overlord_spots, grid_width, grid_height, x + 1, y, target_height, replacement, bst_cont);
     }
     return result;
-}
-
-static inline float euclidean_distance(int x0, int y0, int x1, int y1)
-{
-    return sqrtf((float)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
 }
 
 typedef struct FloatLine {

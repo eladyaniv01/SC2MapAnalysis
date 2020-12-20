@@ -213,6 +213,7 @@ class MapAnalyzerDebugger:
     def plot_influenced_path_c(self, start: Union[Tuple[int, int], Point2],
                                goal: Union[Tuple[int, int], Point2],
                                weight_array: ndarray,
+                               smoothing: bool = False,
                                name: Optional[str] = None,
                                fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
@@ -226,8 +227,9 @@ class MapAnalyzerDebugger:
             name = self.map_data.map_name
         arr = weight_array.copy()
         path = self.map_data.pathfind_c(start, goal,
-                                      grid=arr,
-                                      sensitivity=1)
+                                        grid=arr,
+                                        smoothing=smoothing,
+                                        sensitivity=1)
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if path is not None:
             path = np.flipud(path)  # for plot align

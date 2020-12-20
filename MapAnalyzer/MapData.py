@@ -310,9 +310,10 @@ class MapData:
                                     sensitivity=sensitivity)
 
     def pathfind_c(self, start: Union[Tuple[int, int], Point2], goal: Union[Tuple[int, int], Point2],
-                 grid: Optional[ndarray] = None, sensitivity: int = 1) -> Optional[List[Point2]]:
-        return self.pather.pathfind_c(start=start, goal=goal, grid=grid,
-                                    sensitivity=sensitivity)
+                   grid: Optional[ndarray] = None, smoothing: bool = False,
+                   sensitivity: int = 1) -> Optional[List[Point2]]:
+        return self.pather.pathfind_c(start=start, goal=goal, grid=grid, smoothing=smoothing,
+                                      sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[int, int], radius: int, grid: ndarray, weight: int = 100, safe: bool = True,
                  initial_default_weights: int = 0) -> ndarray:
@@ -849,11 +850,12 @@ class MapData:
                                            allow_diagonal=allow_diagonal)
 
     def plot_influenced_path_c(self,
-                             start: Union[Tuple[int, int], Point2],
-                             goal: Union[Tuple[int, int], Point2],
-                             weight_array: ndarray,
-                             name: Optional[str] = None,
-                             fontdict: dict = None) -> None:
+                               start: Union[Tuple[int, int], Point2],
+                               goal: Union[Tuple[int, int], Point2],
+                               weight_array: ndarray,
+                               smoothing: bool = False,
+                               name: Optional[str] = None,
+                               fontdict: dict = None) -> None:
         """
 
         A useful debug utility method for experimenting with the :mod:`.Pather` module
@@ -861,10 +863,11 @@ class MapData:
         """
 
         self.debugger.plot_influenced_path_c(start=start,
-                                           goal=goal,
-                                           weight_array=weight_array,
-                                           name=name,
-                                           fontdict=fontdict)
+                                             goal=goal,
+                                             weight_array=weight_array,
+                                             smoothing=smoothing,
+                                             name=name,
+                                             fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)
