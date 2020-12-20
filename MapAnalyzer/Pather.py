@@ -12,7 +12,6 @@ from skimage import draw as skdraw
 from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
-from .sc2pathlibp import Sc2Map
 from .cext import astar_path
 
 if TYPE_CHECKING:
@@ -25,13 +24,7 @@ class MapAnalyzerPather:
     def __init__(self, map_data: "MapData") -> None:
         self.map_data = map_data
         self.pyastar = pyastar
-        self.pathlib_map = None
-        self._set_pathlib_map()
-        if self.pathlib_map:
-            # noinspection PyProtectedMember
-            self._climber_grid = np.array(self.pathlib_map._map.reaper_pathing).astype(np.float32)
-        else:
-            logger.error('Could not set Pathlib Map')
+
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
                 (nonpathable_indices[1], nonpathable_indices[0])
@@ -64,17 +57,6 @@ class MapAnalyzerPather:
                 for newpath in newpaths:
                     paths.append(newpath)
         return paths
-
-    def _set_pathlib_map(self) -> None:
-        """
-        Will initialize the sc2pathlib `SC2Map` object for future use
-        """
-        self.pathlib_map = Sc2Map(
-                self.map_data.path_arr,
-                self.map_data.placement_arr,
-                self.map_data.terrain_height,
-                self.map_data.bot.game_info.playable_area,
-        )
 
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
         nonpathables = self.map_data.bot.structures.not_flying
@@ -131,14 +113,8 @@ class MapAnalyzerPather:
 
     def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
-        grid = self._climber_grid.copy()
+        grid = self.map_data.pather.get_base_pathing_grid().copy()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
-        return grid
-
-    def get_climber_grid_c(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
-        """Grid for units like reaper / colossus """
-        grid = self.get_pyastar_grid(default_weight=default_weight, include_destructables=False)
         grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
 

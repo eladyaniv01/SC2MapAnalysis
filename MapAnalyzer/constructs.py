@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class PathLibChoke:
     """
 
-    wrapper to the data returned by :mod:`.sc2pathlibp`
+    wrapper to the data returned by the c extension
 
     with a bit of added fields / data type for convenience
 

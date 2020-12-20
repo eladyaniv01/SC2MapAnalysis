@@ -70,14 +70,14 @@ class MapData:
         self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
 
+        pathing_grid = np.fmax(self.path_arr, self.placement_arr)
+        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area)
+        self.overlord_spots = self.c_ext_map.overlord_spots
+
         # plugins
         self.log_level = loglevel
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
         self.pather = MapAnalyzerPather(self)
-
-        pathing_grid = np.fmax(self.path_arr, self.placement_arr)
-        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area)
-        self.overlord_spots = self.c_ext_map.overlord_spots
 
         self.connectivity_graph = None  # set by pather
         self.pathlib_map = self.pather.pathlib_map
@@ -199,7 +199,7 @@ class MapData:
     def get_climber_grid(self, default_weight: int = 1, include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
+        Climber grid is a grid modified by the c extension, and is used for units that can climb,
 
         such as Reaper, Colossus
 
