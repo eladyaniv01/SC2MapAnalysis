@@ -238,9 +238,9 @@ static int run_pathfind(float *weights, int* paths, int w, int h, int start, int
 static PyObject* astar(PyObject *self, PyObject *args)
 {
     PyArrayObject* weights_object;
-    int h, w, start, goal;
+    int h, w, start, goal, smoothing;
     
-    if (!PyArg_ParseTuple(args, "Oiiii", &weights_object, &h, &w, &start, &goal))
+    if (!PyArg_ParseTuple(args, "Oiiiii", &weights_object, &h, &w, &start, &goal, &smoothing))
     {
         return NULL;
     }
@@ -256,16 +256,14 @@ static PyObject* astar(PyObject *self, PyObject *args)
         npy_intp dims[2] = {path_length, 2};
         PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
         npy_int32 *xptr, *yptr;
+        npy_int32 *path_data = (npy_int32*)path->data;
 
         int idx = goal;
 
         for (npy_intp i = dims[0] - 1; i >= 0; --i)
         {
-            xptr = (npy_int32*) (path->data + i * path->strides[0]);
-            yptr = (npy_int32*) (path->data + i * path->strides[0] + path->strides[1]);
-
-            *xptr = idx / w;
-            *yptr = idx % w;
+            path_data[2*i] = idx / w;
+            path_data[2*i + 1] = idx % w;
 
             idx = paths[idx];
         }
@@ -438,7 +436,6 @@ static inline float euclidean_distance(int x0, int y0, int x1, int y1)
     return sqrtf((float)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
 }
 
-
 typedef struct FloatLine {
     float start[2];
     float end[2];
@@ -523,7 +520,7 @@ static int* get_nodes_within_distance(float* weights, int w, int h, int x, int y
                 {
                     costs[nbrs[i]] = new_cost;
                     
-                    if (costs[nbrs[i]] < max_distance)
+                    if (costs[nbrs[i]] <= max_distance)
                     {
                         Node new_node = { nbrs[i], new_cost, cur.path_length + 1};
                         queue_push_or_update(nodes_to_visit, new_node);
@@ -631,7 +628,7 @@ static void chokes_solve(uint8_t *border_points, float* border_weights, uint8_t 
                 if (border_points[w*ynew + xnew] == 0) continue;
 
                 float flight_distance = euclidean_distance(x, y, xnew, ynew);
-
+                
                 if (flight_distance > choke_distance || flight_distance < 2.0f) continue;
                 
                 int found = 0;
@@ -776,7 +773,7 @@ static void choke_set_pixels(Choke* choke)
         int dots = (int)flight_distance;
         float unit_vector[2] = { (line.end[0] - line.start[0]) / flight_distance, (line.end[1] - line.start[1]) / flight_distance };
         
-        for (int i = 1; i < dots * 2; ++i)
+        for (int i = 1; i < dots*2; ++i)
         {
             int draw_x = (int)(line.start[0] + unit_vector[0]* i * 0.5f);
             int draw_y = (int)(line.start[1] + unit_vector[1]* i * 0.5f);
@@ -788,7 +785,7 @@ static void choke_set_pixels(Choke* choke)
 
             int contained = 0;
 
-            for(int j = 0; j < sb_count(choke->pixels) / 2; j++)
+            for(int j = 0; j < sb_count(choke->pixels) / 2; ++j)
             {
                 if (choke->pixels[2*j] == draw_x && choke->pixels[2*j + 1] == draw_y)
                 {
@@ -838,14 +835,14 @@ static ChokeList* chokes_group(ChokeLines* choke_lines)
 
                     int added = 0;
 
-                    if (distance_heuristic(check_line.start[0], check_line.start[1], point_x, point_y, 1) <= SQRT2 + 0.05f)
+                    if (distance_heuristic(check_line.start[0], check_line.start[1], point_x, point_y, 1) <= SQRT2)
                     {
                         for (int l = 0; l < sb_count(current_choke.side2) / 2; ++l)
                         {
                             int point2_x = current_choke.side2[2*l];
                             int point2_y = current_choke.side2[2*l + 1];
 
-                            if (distance_heuristic(check_line.end[0], check_line.end[1], point2_x, point2_y, 1) <= SQRT2 + 0.05f)
+                            if (distance_heuristic(check_line.end[0], check_line.end[1], point2_x, point2_y, 1) <= SQRT2)
                             {
                                 used_indices[j] = 1;
 
@@ -876,8 +873,8 @@ static ChokeList* chokes_group(ChokeLines* choke_lines)
                                     IntLine line_to_add = { { check_line.end[0], check_line.end[1] }, { check_line.start[0], check_line.start[1] }};
                                     choke_add_line(&current_choke, line_to_add);
                                     added = 1;
-                                    break;
                                 }
+                                break;
                             }
                         }
                     }
@@ -902,6 +899,7 @@ static ChokeList* chokes_group(ChokeLines* choke_lines)
 
         choke_remove_excess_lines(&list->chokes[i]);
         choke_calc_final_line(&list->chokes[i]);
+
         if (sb_count(list->chokes[i].lines) < 4)
         {
             list->chokes[i].valid = 0;
@@ -1203,14 +1201,14 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                         handled_overlord_spots = bst_add(handled_overlord_spots, c.keys[i]);
                         int cx = c.keys[i] % w;
                         int cy = c.keys[i] / w;
-                        spot[0] += cy;
-                        spot[1] += cx;
+                        spot[0] += cx;
+                        spot[1] += cy;
                     }
 
                     spot[0] = spot[0] / (float)sb_count(c.keys);
                     spot[1] = spot[1] / (float)sb_count(c.keys);
-                    sb_push(overlord_spot_arr, spot[0]);
                     sb_push(overlord_spot_arr, spot[1]);
+                    sb_push(overlord_spot_arr, spot[0]);
                     sb_free(c.keys);
                 }
                 else

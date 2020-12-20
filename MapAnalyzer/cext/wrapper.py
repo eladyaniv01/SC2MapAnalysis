@@ -24,7 +24,8 @@ class CMapChoke:
 def astar_path(
         weights: np.ndarray,
         start: Tuple[int, int],
-        goal: Tuple[int, int]) -> Union[np.ndarray, None]:
+        goal: Tuple[int, int],
+        smoothing: bool) -> Union[np.ndarray, None]:
     # For the heuristic to be valid, each move must have a positive cost.
     if weights.min(axis=None) <= 0:
         raise ValueError("Minimum cost to move must be above 0, but got %f" % (
@@ -42,7 +43,7 @@ def astar_path(
     start_idx = np.ravel_multi_index(start, (height, width))
     goal_idx = np.ravel_multi_index(goal, (height, width))
     path = ext.astar(
-        weights.flatten(), height, width, start_idx, goal_idx
+        weights.flatten(), height, width, start_idx, goal_idx, smoothing
     )
     return path
 
@@ -54,17 +55,18 @@ class CMapInfo:
 
     def __init__(self, walkable_grid: np.ndarray, height_map: np.ndarray, playable_area: Rect):
 
-        # grids are transposed so switch around the playable area limits
-        start_y = int(playable_area.x)
-        end_y = int(playable_area.x + playable_area.width)
-        start_x = int(playable_area.y)
-        end_x = int(playable_area.y + playable_area.height)
+        # grids are transposed and the c extension atm calls the y axis the x axis and vice versa
+        # so switch the playable area limits around
+        c_start_y = int(playable_area.x)
+        c_end_y = int(playable_area.x + playable_area.width)
+        c_start_x = int(playable_area.y)
+        c_end_x = int(playable_area.y + playable_area.height)
 
         self.climber_grid, overlord_data, choke_data = self._get_map_data(walkable_grid, height_map,
-                                                              start_y,
-                                                              end_y,
-                                                              start_x,
-                                                              end_x)
+                                                                          c_start_y,
+                                                                          c_end_y,
+                                                                          c_start_x,
+                                                                          c_end_x)
 
         self.overlord_spots = list(map(Point2, overlord_data))
         self.chokes = []
