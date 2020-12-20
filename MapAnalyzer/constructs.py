@@ -10,7 +10,7 @@ from .Polygon import Polygon
 
 if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
-    from .sc2pathlibp.choke import Choke
+    from .cext import CMapChoke
 
 
 class PathLibChoke:
@@ -23,7 +23,7 @@ class PathLibChoke:
     """
 
     # noinspection PyProtectedMember
-    def __init__(self, pathlib_choke: "Choke", pk: int):
+    def __init__(self, pathlib_choke: "CMapChoke", pk: int):
         self.id = pk
         self.pixels = set(pathlib_choke.pixels)
         self.main_line = pathlib_choke.pixels
