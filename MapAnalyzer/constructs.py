@@ -29,6 +29,8 @@ class ChokeArea(Polygon):
         self.md_pl_choke = None
         self.is_choke = True
         self.ramp = None
+        self.side_a = None
+        self.side_b = None
 
         if pathlibchoke:
             self.main_line = pathlibchoke.main_line
@@ -37,28 +39,6 @@ class ChokeArea(Polygon):
 
             self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
             self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
-        else:
-            self.side_a = None
-            self.side_b = None
-            self._set_sides()
-
-    def _set_sides(self):
-        org = self.top
-        pts = [self.bottom, self.right, self.left]
-        res = self.map_data.closest_towards_point(points=pts, target=org)
-        self.side_a = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
-        if res != self.bottom:
-            org = self.bottom
-            pts = [self.top, self.right, self.left]
-            res = self.map_data.closest_towards_point(points=pts, target=org)
-            self.side_b = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
-        else:
-            self.side_b = int(round((self.right[0] + self.left[0]) / 2)), int(round((self.right[1] + self.left[1]) / 2))
-        points = list(self.points)
-        points.append(self.side_a)
-        points.append(self.side_b)
-        self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
-        self.indices = self.map_data.points_to_indices(self.points)
 
     @property
     def corner_walloff(self):
@@ -86,6 +66,28 @@ class MDRamp(ChokeArea):
         self.ramp = ramp
         self.offset = Point2((0.5, 0.5))
         self.points.add(Point2(self.middle_walloff_depot.rounded))
+        self._set_sides()
+
+    def _set_sides(self):
+        ramp_dir = self.ramp.bottom_center - self.ramp.top_center
+        perpendicular_dir = Point2((-ramp_dir[1], ramp_dir[0])).normalized
+        step_size = 1
+
+        current = self.ramp.top_center.offset(ramp_dir / 2)
+        side_a = current.rounded
+        while side_a in self.points:
+            current = current.offset(perpendicular_dir*step_size)
+            side_a = current.rounded
+
+        self.side_a = side_a
+
+        current = self.ramp.top_center.offset(ramp_dir / 2)
+        side_b = current.rounded
+        while side_b in self.points:
+            current = current.offset(-perpendicular_dir * step_size)
+            side_b = current.rounded
+
+        self.side_b = side_b
 
     @property
     def corner_walloff(self):
@@ -199,6 +201,25 @@ class VisionBlockerArea(ChokeArea):
     def __init__(self, map_data: "MapData", array: np.ndarray) -> None:
         super().__init__(map_data=map_data, array=array)
         self.is_vision_blocker = True
+        self._set_sides()
+
+    def _set_sides(self):
+        org = self.top
+        pts = [self.bottom, self.right, self.left]
+        res = self.map_data.closest_towards_point(points=pts, target=org)
+        self.side_a = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        if res != self.bottom:
+            org = self.bottom
+            pts = [self.top, self.right, self.left]
+            res = self.map_data.closest_towards_point(points=pts, target=org)
+            self.side_b = int(round((res[0] + org[0]) / 2)), int(round((res[1] + org[1]) / 2))
+        else:
+            self.side_b = int(round((self.right[0] + self.left[0]) / 2)), int(round((self.right[1] + self.left[1]) / 2))
+        points = list(self.points)
+        points.append(self.side_a)
+        points.append(self.side_b)
+        self.points = set([Point2((int(p[0]), int(p[1]))) for p in points])
+        self.indices = self.map_data.points_to_indices(self.points)
 
     def __repr__(self):  # pragma: no cover
         return f"<VisionBlockerArea[size={self.area}]: {self.regions}>"
