@@ -210,8 +210,8 @@ class MapAnalyzerDebugger:
         plt.grid()
 
 
-    def plot_influenced_path_c(self, start: Union[Tuple[int, int], Point2],
-                               goal: Union[Tuple[int, int], Point2],
+    def plot_influenced_path_c(self, start: Union[Tuple[float, float], Point2],
+                               goal: Union[Tuple[float, float], Point2],
                                weight_array: ndarray,
                                smoothing: bool = False,
                                name: Optional[str] = None,
