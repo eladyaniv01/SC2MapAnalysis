@@ -4,15 +4,27 @@
 #include <math.h>
 #include "stretchy_buffer.h"
 
+//The difference between levels of terrain in height maps
 #define LEVEL_DIFFERENCE 16
+
 #define SQRT2 1.41421f
 
+/*
+idx The index of the node in weight array (w*y+x)
+cost Cost this far + estimate cost from here to finish
+path_length The path length this far
+*/
 typedef struct Node {
     int idx;
     float cost;
     int path_length;
 } Node;
 
+/*
+nodes Array of nodes in the queue. Atm set to the length of the pathing grid so we don't run out of space 
+index_map Array for saving where in the queue each index is, used for faster updates
+size Current number of nodes in the array
+*/
 typedef struct PriorityQueue {
     Node* nodes;
     int* index_map;
@@ -43,6 +55,10 @@ static void queue_swap(PriorityQueue *queue, int i, int j)
     queue->index_map[queue->nodes[j].idx] = j;
 }
 
+/*
+Move a node up the priority queue.
+Used when adding a node or updating a cost of one
+*/
 static void queue_up(PriorityQueue *queue, int index)
 {
     Node* nodes = queue->nodes;
@@ -53,6 +69,11 @@ static void queue_up(PriorityQueue *queue, int index)
     } 
 }
 
+/*
+Move a node down the priority queue.
+Used when the top node has been removed,
+the last node of the queue replaces it and then moves down.
+*/
 static void queue_down(PriorityQueue *queue, int index)
 {
     int min_index = index;
@@ -149,6 +170,11 @@ static inline float find_min(float *arr, int length)
     return minimum;
 }
 
+/*
+Calculate the estimated cost of moving to a point along a grid.
+Baseline should be the minimum weight in the grid so the
+heuristic remains consistent.
+*/
 static inline float distance_heuristic(int x0, int y0, int x1, int y1, float baseline)
 {
     return baseline*(max(abs(x0 - x1), abs(y0 - y1)) + (SQRT2 - 1) * min(abs(x0 - x1), abs(y0 - y1)));
@@ -159,6 +185,11 @@ static inline float euclidean_distance(int x0, int y0, int x1, int y1)
     return sqrtf((float)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
 }
 
+/*
+Run the astar algorithm. The resulting path is saved in paths
+so each node knows the previous node and the path can be traced back.
+Returns the path length.
+*/
 static int run_pathfind(float *weights, int* paths, int w, int h, int start, int goal)
 {
     float weight_baseline = find_min(weights, w*h);
@@ -240,6 +271,11 @@ static int run_pathfind(float *weights, int* paths, int w, int h, int start, int
     return path_length;
 }
 
+/*
+Estimating a straight line weight over multiple nodes.
+Used in path smoothing where we remove nodes if we can jump
+ahead some nodes in a straight line with a lower cost.
+*/
 static float calculate_line_weight(float* weights, int w, int x0, int y0, int x1, int y1)
 {
     int* line_coords = NULL;
@@ -289,6 +325,11 @@ static float calculate_line_weight(float* weights, int w, int x0, int y0, int x1
     return weight_sum*norm;
 }
 
+/*
+Exported function to run astar from python.
+Takes in grid weights, dimensions of the grid, requested start and end
+and whether to smooth the final path.
+*/
 static PyObject* astar(PyObject *self, PyObject *args)
 {
     PyArrayObject* weights_object;
@@ -383,6 +424,9 @@ static PyObject* astar(PyObject *self, PyObject *args)
     return return_val;
 }
 
+/*
+Binary search tree
+*/
 typedef struct BSTNode {
     int key;
     struct BSTNode *left;
@@ -649,6 +693,9 @@ static void choke_list_delete(ChokeList* choke_list)
     free(choke_list);
 }
 
+/*
+Initialize a choke based on a single line
+*/
 static Choke choke_create_based_on_line(IntLine line)
 {
     Choke choke = { 0 };
@@ -817,7 +864,7 @@ static void choke_remove_excess_lines(Choke* choke)
 
     IntLine* new_lines = NULL;
 
-    for(int i = sb_count(choke->lines) - 1; i >= 0; --i)
+    for(int i = 0; i < sb_count(choke->lines); ++i)
     {
         if (distances[i] <= min_distance + 2.5f)
         {
@@ -974,6 +1021,7 @@ static ChokeList* chokes_group(ChokeLines* choke_lines)
                                     added = 1;
                                 }
                                 break;
+
                             }
                         }
                     }
@@ -1114,6 +1162,11 @@ static PyObject* choke_list_to_pyobject(ChokeList *list)
     return return_list;
 }
 
+/*
+Calculate choke points, overlord spots and spots that are
+pathable for reapers and other climber units but aren't for regular ones
+Based on https://github.com/DrInfy/sc2-pathlib
+*/
 static PyObject* get_map_data(PyObject *self, PyObject *args)
 {
     PyArrayObject* walkable_object;
@@ -1284,7 +1337,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
             }
 
             int key = w*y + x;
-
+            
             if (bst_contains(handled_overlord_spots, key) == 0 && overlord_spots[key] == 1)
             {
                 uint8_t target_height = heights[key];
