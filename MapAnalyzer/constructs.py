@@ -44,7 +44,7 @@ class ChokeArea(Polygon):
 
 class RawChoke(ChokeArea):
     """
-    Chokes found in the C extension where the terrain geneerates a choke point
+    Chokes found in the C extension where the terrain generates a choke point
     """
 
     def __init__(self, array: np.ndarray, map_data: "MapData", pathlibchoke: CMapChoke) -> None:
