@@ -114,7 +114,7 @@ class MapAnalyzerPather:
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
-        grid = self.map_data.pather.get_base_pathing_grid()
+        grid = self.get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
@@ -134,7 +134,7 @@ class MapAnalyzerPather:
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
-        grid = self.map_data.pather.get_base_pathing_grid()
+        grid = self.get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
