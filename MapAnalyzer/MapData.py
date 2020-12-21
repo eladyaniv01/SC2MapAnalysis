@@ -80,7 +80,6 @@ class MapData:
         self.pather = MapAnalyzerPather(self)
 
         self.connectivity_graph = None  # set by pather
-        self.pathlib_map = self.pather.pathlib_map
         self.pyastar = self.pather.pyastar
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
 
