@@ -37,8 +37,6 @@ class ChokeArea(Polygon):
 
             self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
             self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
-            self.points = set([Point2((int(p[0]), int(p[1]))) for p in pathlibchoke.pixels])
-            self.indices = self.map_data.points_to_indices(self.points)
         else:
             self.side_a = None
             self.side_b = None
