@@ -1,1 +1,1 @@
-from .wrapper import astar_path, CMapInfo
+from .wrapper import astar_path, CMapInfo, CMapChoke
