@@ -9,16 +9,17 @@ from sc2.game_data import GameData
 from sc2.game_info import GameInfo
 from sc2.game_state import GameState
 
-from MapAnalyzer.constructs import MDRamp, PathLibChoke, VisionBlockerArea
+from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
+from .cext import CMapChoke
 from .settings import ROOT_DIR
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
 
-def get_sets_with_mutual_elements(list_mdchokes: List[PathLibChoke],
+def get_sets_with_mutual_elements(list_mdchokes: List[CMapChoke],
                                   area: Optional[Union[MDRamp, VisionBlockerArea]] = None,
-                                  base_choke: PathLibChoke = None) -> List[List]:
+                                  base_choke: CMapChoke = None) -> List[List]:
     li = []
     if area:
         s1 = area.points

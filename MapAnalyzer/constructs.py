@@ -7,30 +7,10 @@ from sc2.game_info import Ramp as sc2Ramp
 from sc2.position import Point2
 
 from .Polygon import Polygon
+from .cext import CMapChoke
 
 if TYPE_CHECKING:  # pragma: no cover
     from .MapData import MapData
-    from .cext import CMapChoke
-
-
-class PathLibChoke:
-    """
-
-    wrapper to the data returned by the c extension
-
-    with a bit of added fields / data type for convenience
-
-    """
-
-    # noinspection PyProtectedMember
-    def __init__(self, pathlib_choke: "CMapChoke", pk: int):
-        self.id = pk
-        self.pixels = set(pathlib_choke.pixels)
-        self.main_line = pathlib_choke.pixels
-        self.pathlib_choke = pathlib_choke
-
-    def __repr__(self) -> str:
-        return f"[{self.id}]PathLibChoke; {len(self.pixels)}"
 
 
 class ChokeArea(Polygon):
@@ -41,21 +21,28 @@ class ChokeArea(Polygon):
     """
 
     def __init__(
-            self, array: np.ndarray, map_data: "MapData", pathlibchoke: Optional[PathLibChoke] = None
+            self, array: np.ndarray, map_data: "MapData", pathlibchoke: Optional[CMapChoke] = None
     ) -> None:
         super().__init__(map_data=map_data, array=array)
         self.main_line = None
         self.id = 'Unregistered'
         self.md_pl_choke = None
+        self.is_choke = True
+        self.ramp = None
+
         if pathlibchoke:
             self.main_line = pathlibchoke.main_line
             self.id = pathlibchoke.id
             self.md_pl_choke = pathlibchoke
-        self.is_choke = True
-        self.ramp = None
-        self.side_a = None
-        self.side_b = None
-        self._set_sides()
+
+            self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
+            self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
+            self.points = set([Point2((int(p[0]), int(p[1]))) for p in pathlibchoke.pixels])
+            self.indices = self.map_data.points_to_indices(self.points)
+        else:
+            self.side_a = None
+            self.side_b = None
+            self._set_sides()
 
     def _set_sides(self):
         org = self.top

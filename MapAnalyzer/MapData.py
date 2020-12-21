@@ -19,8 +19,8 @@ from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, M
 
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
-from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
-from .cext import CMapInfo
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
+from .cext import CMapInfo, CMapChoke
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -67,7 +67,6 @@ class MapData:
         self.overlord_spots: list = []
         self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
                                   any(x in m.name.lower() for x in {"rich", "450"})]
-        self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
 
         pathing_grid = np.fmax(self.path_arr, self.placement_arr)
@@ -613,17 +612,13 @@ class MapData:
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated
         #raw_chokes = self.pathlib_map.chokes
-        raw_chokes = self.c_ext_map.chokes
-        self.pathlib_to_local_chokes = []
-        for i, c in enumerate(raw_chokes):
-            self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
         areas = self.map_ramps.copy()
         areas.extend(self.map_vision_blockers)
-        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.pathlib_to_local_chokes,
+        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.c_ext_map.chokes,
                                                                   areas=areas)
 
     @staticmethod
-    def _get_overlapping_chokes(local_chokes: List[PathLibChoke],
+    def _get_overlapping_chokes(local_chokes: List[CMapChoke],
                                 areas: Union[List[MDRamp], List[Union[MDRamp, VisionBlockerArea]]]) -> Set[int]:
         li = []
         for area in areas:
@@ -726,7 +721,7 @@ class MapData:
         # compute ChokeArea
 
         self._clean_plib_chokes()
-        chokes = [c for c in self.pathlib_to_local_chokes if c.id not in self.overlapping_choke_ids]
+        chokes = [c for c in self.c_ext_map.chokes if c.id not in self.overlapping_choke_ids]
         self.map_chokes = self.map_ramps.copy()
         self.map_chokes.extend(self.map_vision_blockers)
 

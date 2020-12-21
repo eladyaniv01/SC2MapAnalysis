@@ -1,6 +1,6 @@
 import numpy as np
 import mapanalyzerext as ext
-from typing import Optional, Tuple, Union, List
+from typing import Optional, Tuple, Union, List, Set
 from sc2.position import Point2, Rect
 
 
@@ -9,16 +9,21 @@ class CMapChoke:
     lines: List[Tuple[Tuple[int, int], Tuple[int, int]]]
     side1: List[Tuple[int, int]]
     side2: List[Tuple[int, int]]
-    pixels: List[Tuple[int, int]]
+    pixels: Set[Tuple[int, int]]
     min_length: float
+    id: int
 
-    def __init__(self, main_line, lines, side1, side2, pixels, min_length):
+    def __init__(self, choke_id, main_line, lines, side1, side2, pixels, min_length):
+        self.id = choke_id
         self.main_line = main_line
         self.lines = lines
         self.side1 = side1
         self.side2 = side2
-        self.pixels = pixels
+        self.pixels = set(pixels)
         self.min_length = min_length
+
+    def __repr__(self) -> str:
+        return f"[{self.id}]CMapChoke; {len(self.pixels)}"
 
 
 def astar_path(
@@ -70,8 +75,10 @@ class CMapInfo:
 
         self.overlord_spots = list(map(Point2, overlord_data))
         self.chokes = []
+        id_counter = 0
         for c in choke_data:
-            self.chokes.append(CMapChoke(c[0], c[1], c[2], c[3], c[4], c[5]))
+            self.chokes.append(CMapChoke(id_counter, c[0], c[1], c[2], c[3], c[4], c[5]))
+            id_counter += 1
 
     @staticmethod
     def _get_map_data(walkable_grid: np.ndarray, height_map: np.ndarray,
