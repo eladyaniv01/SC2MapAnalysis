@@ -20,9 +20,7 @@ class ChokeArea(Polygon):
 
     """
 
-    def __init__(
-            self, array: np.ndarray, map_data: "MapData", pathlibchoke: Optional[CMapChoke] = None
-    ) -> None:
+    def __init__(self, array: np.ndarray, map_data: "MapData") -> None:
         super().__init__(map_data=map_data, array=array)
         self.main_line = None
         self.id = 'Unregistered'
@@ -31,14 +29,6 @@ class ChokeArea(Polygon):
         self.ramp = None
         self.side_a = None
         self.side_b = None
-
-        if pathlibchoke:
-            self.main_line = pathlibchoke.main_line
-            self.id = pathlibchoke.id
-            self.md_pl_choke = pathlibchoke
-
-            self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
-            self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
 
     @property
     def corner_walloff(self):
@@ -50,6 +40,25 @@ class ChokeArea(Polygon):
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<[{self.id}]ChokeArea[size={self.area}]>"
+
+
+class RawChoke(ChokeArea):
+    """
+    Chokes found in the C extension where the terrain geneerates a choke point
+    """
+
+    def __init__(self, array: np.ndarray, map_data: "MapData", pathlibchoke: CMapChoke) -> None:
+        super().__init__(map_data=map_data, array=array)
+
+        self.main_line = pathlibchoke.main_line
+        self.id = pathlibchoke.id
+        self.md_pl_choke = pathlibchoke
+
+        self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
+        self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<[{self.id}]RawChoke[size={self.area}]>"
 
 
 class MDRamp(ChokeArea):

@@ -19,7 +19,7 @@ from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, M
 
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
-from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, RawChoke
 from .cext import CMapInfo, CMapChoke
 
 try:
@@ -611,7 +611,6 @@ class MapData:
 
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated
-        #raw_chokes = self.pathlib_map.chokes
         areas = self.map_ramps.copy()
         areas.extend(self.map_vision_blockers)
         self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.c_ext_map.chokes,
@@ -734,7 +733,7 @@ class MapData:
                 cm = int(cm[0]), int(cm[1])
                 areas = self.where_all(cm)
 
-                new_choke = ChokeArea(
+                new_choke = RawChoke(
                         map_data=self, array=new_choke_array, pathlibchoke=choke
                 )
                 for area in areas:
