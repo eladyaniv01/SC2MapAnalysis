@@ -13,7 +13,7 @@ from scipy.spatial import distance
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
-from MapAnalyzer.utils import get_sets_with_mutual_elements
+from MapAnalyzer.utils import get_sets_with_mutual_elements, fix_map_ramps
 
 from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
 
@@ -41,6 +41,11 @@ class MapData:
                  corner_distance: int = CORNER_MIN_DISTANCE) -> None:
         # store relevant data from api
         self.bot = bot
+        # temporary fix to set ramps correctly if they are broken in burnysc2 due to having
+        # destructables on them. ramp sides don't consider the destructables now,
+        # should update them during the game
+        self.bot.game_info.map_ramps, self.bot.game_info.vision_blockers = fix_map_ramps(self.bot)
+
         self.corner_distance = corner_distance  # the lower this value is,  the sharper the corners will be
         self.arcade = arcade
         self.version = __version__
@@ -691,6 +696,9 @@ class MapData:
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
     def _set_map_ramps(self):
+        # some ramps coming from burnysc2 have broken data and the bottom_center and top_center
+        # may even be the same. by removing them they should be tagged as chokes in the c extension
+        # if they really are ones
         viable_ramps = list(filter(lambda x: x.bottom_center.distance_to(x.top_center) >= 1,
                             self.bot.game_info.map_ramps))
         self.map_ramps = [MDRamp(map_data=self,

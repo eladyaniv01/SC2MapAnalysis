@@ -1,13 +1,17 @@
 import lzma
 import os
 import pickle
+import numpy as np
+from skimage import draw as skdraw
+
 from typing import List, Optional, TYPE_CHECKING, Union
 
 from s2clientprotocol.sc2api_pb2 import Response, ResponseObservation
 from sc2.bot_ai import BotAI
 from sc2.game_data import GameData
-from sc2.game_info import GameInfo
+from sc2.game_info import GameInfo, Ramp
 from sc2.game_state import GameState
+from sc2.position import Point2
 
 from MapAnalyzer.constructs import MDRamp, VisionBlockerArea
 from .cext import CMapChoke
@@ -15,6 +19,34 @@ from .settings import ROOT_DIR
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
+
+# following https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246
+# to fix burnysc2 ramp objects by removing destructables
+def fix_map_ramps(bot: BotAI):
+    pathing_grid = bot.game_info.pathing_grid.data_numpy.T
+    for dest in bot.destructables:
+        ri, ci = skdraw.disk(center=dest.position, radius=dest.radius, shape=pathing_grid.shape)
+        pathing_grid[ri, ci] = 1
+
+    pathing = np.ndenumerate(pathing_grid.T)
+
+    def equal_height_around(tile):
+        sliced = bot.game_info.terrain_height.data_numpy[tile[1] - 1: tile[1] + 2, tile[0] - 1: tile[0] + 2]
+        return len(np.unique(sliced)) == 1
+
+    map_area = bot.game_info.playable_area
+    points = [
+        Point2((a, b))
+        for (b, a), value in pathing
+        if value == 1
+           and map_area.x <= a < map_area.x + map_area.width
+           and map_area.y <= b < map_area.y + map_area.height
+           and bot.game_info.placement_grid[(a, b)] == 0
+    ]
+    ramp_points = [point for point in points if not equal_height_around(point)]
+    vision_blockers = set(point for point in points if equal_height_around(point))
+    ramps = [Ramp(group, bot.game_info) for group in bot.game_info._find_groups(ramp_points)]
+    return ramps, vision_blockers
 
 
 def get_sets_with_mutual_elements(list_mdchokes: List[CMapChoke],
