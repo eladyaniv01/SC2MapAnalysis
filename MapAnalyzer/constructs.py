@@ -54,8 +54,12 @@ class RawChoke(ChokeArea):
         self.id = pathlibchoke.id
         self.md_pl_choke = pathlibchoke
 
-        self.side_a = int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))
-        self.side_b = int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))
+        self.side_a = Point2((int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))))
+        self.side_b = Point2((int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))))
+
+        self.points.add(self.side_a)
+        self.points.add(self.side_b)
+        self.indices = self.map_data.points_to_indices(self.points)
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<[{self.id}]RawChoke[size={self.area}]>"
@@ -97,6 +101,10 @@ class MDRamp(ChokeArea):
             side_b = current.rounded
 
         self.side_b = side_b
+
+        self.points.add(self.side_a)
+        self.points.add(self.side_b)
+        self.indices = self.map_data.points_to_indices(self.points)
 
     @property
     def corner_walloff(self):

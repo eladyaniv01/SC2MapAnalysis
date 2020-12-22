@@ -691,10 +691,12 @@ class MapData:
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
     def _set_map_ramps(self):
+        viable_ramps = list(filter(lambda x: x.bottom_center.distance_to(x.top_center) >= 1,
+                            self.bot.game_info.map_ramps))
         self.map_ramps = [MDRamp(map_data=self,
                                  ramp=r,
                                  array=self.points_to_numpy_array(r.points))
-                          for r in self.bot.game_info.map_ramps]
+                          for r in viable_ramps]
 
     def _calc_vision_blockers(self) -> None:
         # compute VisionBlockerArea
