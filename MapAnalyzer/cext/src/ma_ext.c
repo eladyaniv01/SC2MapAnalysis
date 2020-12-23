@@ -1014,7 +1014,7 @@ static ChokeList* chokes_group(ChokeLines* choke_lines)
                             {
                                 used_indices[j] = 1;
 
-                                if (distance_heuristic(check_line.end[0], check_line.end[1], point_x, point_y, 1) > 0 || distance_heuristic(check_line.start[0], check_line.start[1], point2_x, point2_y, 1) > 0)
+                                if (distance_heuristic(check_line.end[0], check_line.end[1], point_x, point_y, 1) > 0 && distance_heuristic(check_line.start[0], check_line.start[1], point2_x, point2_y, 1) > 0)
                                 {
                                     IntLine line_to_add = { { check_line.end[0], check_line.end[1] }, { check_line.start[0], check_line.start[1] }};
                                     choke_add_line(&current_choke, line_to_add);
@@ -1203,6 +1203,8 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 choke_weights[w*y + x] = 1.0f;
             }
 
+            if (y < 2 || x < 2 || y >= h - 2 || x >= w - 2) continue;
+
             if (walkable[w*y + x] == 0)
             {
                 uint8_t h0 = heights[w*y + x + 1];
@@ -1238,8 +1240,6 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
 
                 continue;
             }
-
-            if (y < 2 || x < 2 || y >= h - 2 || x >= w - 2) continue;
             
             for (int d = 0; d < 4; ++d)
             {
