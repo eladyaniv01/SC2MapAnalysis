@@ -1,5 +1,7 @@
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> // includes stdlib.h
+#include <Python.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <numpy/arrayobject.h>
 #include <math.h>
 
@@ -9,6 +11,27 @@
 #define SQRT2 1.41421f
 
 #define HEADER_SIZE sizeof(size_t)
+
+static inline int max_int(int i, int j)
+{
+    return i < j ? j : i;
+}
+
+static inline int min_int(int i, int j)
+{
+    return i >= j ? j : i;
+}
+
+static inline float max_float(float i, float j)
+{
+    return i < j ? j : i;
+}
+
+static inline float min_float(float i, float j)
+{
+    return i >= j ? j : i;
+}
+
 
 /*
 These bitflags are used in an array of 8 bit integers
@@ -530,7 +553,7 @@ static inline float find_min(float *arr, int length)
     float minimum = HUGE_VALF;
     for (int i = 0; i < length; ++i)
     {
-        minimum = min(arr[i], minimum);
+        minimum = min_float(arr[i], minimum);
     }
     return minimum;
 }
@@ -542,12 +565,12 @@ heuristic remains consistent.
 */
 static inline float distance_heuristic(int x0, int y0, int x1, int y1, float baseline)
 {
-    return baseline*(max(abs(x0 - x1), abs(y0 - y1)) + (SQRT2 - 1) * min(abs(x0 - x1), abs(y0 - y1)));
+    return baseline*(max_int(abs(x0 - x1), abs(y0 - y1)) + (SQRT2 - 1) * min_int(abs(x0 - x1), abs(y0 - y1)));
 }
 
 static inline float euclidean_distance(int x0, int y0, int x1, int y1)
 {
-    return sqrtf((float)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
+    return (float)sqrt((double)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
 }
 
 /*
@@ -706,6 +729,7 @@ static PyObject* astar(PyObject *self, PyObject *args)
 {
     PyArrayObject* weights_object;
     int h, w, start, goal, smoothing;
+    
     
     if (!PyArg_ParseTuple(args, "Oiiiii", &weights_object, &h, &w, &start, &goal, &smoothing))
     {
@@ -869,7 +893,7 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
 
     int nbrs[8];
 
-    VecInt *nodes_within_reach = InitVecInt(arena, (int)(min(200, max_distance * max_distance)));
+    VecInt *nodes_within_reach = InitVecInt(arena, min_int(200, (int)(max_distance * max_distance)));
 
     while (nodes_to_visit->size > 0)
     {
@@ -1002,9 +1026,9 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
         VecInt* reachable_borders = get_nodes_within_distance(&state.temp_arena, border_weights, w, h, x, y, choke_border_distance);
 
         int xmin = x;
-        int xmax = min(x + (int)choke_distance, x_end);
-        int ymin = max(y - (int)choke_distance, y_start);
-        int ymax = min(y + (int)choke_distance, y_end);
+        int xmax = min_int(x + (int)choke_distance, x_end);
+        int ymin = max_int(y - (int)choke_distance, y_start);
+        int ymax = min_int(y + (int)choke_distance, y_end);
 
         for (int ynew = ymin; ynew < ymax; ++ynew)
         {
