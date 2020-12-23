@@ -795,8 +795,8 @@ static void chokes_solve(uint8_t *border_points, float* border_weights, uint8_t 
 
                 for (int i = 1; i < dots; ++i)
                 {
-                    int draw_x = x + (int)unit_vector[0]*i;
-                    int draw_y = y + (int)unit_vector[1]*i;
+                    int draw_x = (int)(x + unit_vector[0]*i);
+                    int draw_y = (int)(y + unit_vector[1]*i);
 
                     if ((draw_x == x && draw_y == y) || (draw_x == xnew && draw_y == ynew))
                     {
