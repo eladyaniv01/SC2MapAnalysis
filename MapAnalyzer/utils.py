@@ -20,10 +20,13 @@ from .settings import ROOT_DIR
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
-# following https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246
-# to fix burnysc2 ramp objects by removing destructables
+
 def fix_map_ramps(bot: BotAI):
-    pathing_grid = bot.game_info.pathing_grid.data_numpy.T
+    """
+    following https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246
+    to fix burnysc2 ramp objects by removing destructables
+    """
+    pathing_grid = bot.game_info.pathing_grid.data_numpy.T.copy()
     for dest in bot.destructables:
         ri, ci = skdraw.disk(center=dest.position, radius=dest.radius, shape=pathing_grid.shape)
         pathing_grid[ri, ci] = 1

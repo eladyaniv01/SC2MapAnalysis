@@ -41,6 +41,9 @@ def astar_path(
         start: Tuple[int, int],
         goal: Tuple[int, int],
         smoothing: bool) -> Union[np.ndarray, None]:
+    """
+    weights should have positive float32 values
+    """
     # For the heuristic to be valid, each move must have a positive cost.
     if weights.min(axis=None) <= 0:
         raise ValueError("Minimum cost to move must be above 0, but got %f" % (
@@ -69,6 +72,9 @@ class CMapInfo:
     chokes: List[CMapChoke]
 
     def __init__(self, walkable_grid: np.ndarray, height_map: np.ndarray, playable_area: Rect):
+        """
+        walkable_grid and height_map are matrices of type uint8
+        """
 
         # grids are transposed and the c extension atm calls the y axis the x axis and vice versa
         # so switch the playable area limits around

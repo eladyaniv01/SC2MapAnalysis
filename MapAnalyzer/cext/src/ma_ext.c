@@ -1203,12 +1203,10 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 choke_weights[w*y + x] = 1.0f;
             }
 
-            if (y < 2 || x < 2 || y >= h - 2 || x >= w - 2) continue;
-
             if (walkable[w*y + x] == 0)
             {
-                uint8_t h0 = heights[w*(y + 1) + x];
-                uint8_t h1 = heights[w*(y - 1) + x];
+                uint8_t h0 = heights[w*y + x + 1];
+                uint8_t h1 = heights[w*y + x - 1];
                 uint8_t hxy = heights[w*y + x];
 
                 if ((hxy >= h0 + LEVEL_DIFFERENCE && h0 > 0) || (hxy >= h1 + LEVEL_DIFFERENCE && h1 > 0))
@@ -1240,6 +1238,8 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
 
                 continue;
             }
+
+            if (y < 2 || x < 2 || y >= h - 2 || x >= w - 2) continue;
             
             for (int d = 0; d < 4; ++d)
             {
@@ -1322,9 +1322,9 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
 
     ChokeLines choke_lines = { NULL };
 
-    for (int y = 1; y < h - 1; ++y)
+    for (int y = y_start; y < y_end; ++y)
     {
-        for (int x = 1; x < w - 1; ++x)
+        for (int x = x_start; x < x_end; ++x)
         {
             if (climbable_points[w*y + x] == 1
                 && (climbable_points[w*y + x + 1] == 1

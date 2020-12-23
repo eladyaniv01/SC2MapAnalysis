@@ -88,23 +88,23 @@ class MDRamp(ChokeArea):
 
         current = self.ramp.top_center.offset(ramp_dir / 2)
         side_a = current.rounded
-        while side_a in self.points:
+        next_point = current.rounded
+        while next_point in self.points:
+            side_a = next_point
             current = current.offset(perpendicular_dir*step_size)
-            side_a = current.rounded
+            next_point = current.rounded
 
         self.side_a = side_a
 
         current = self.ramp.top_center.offset(ramp_dir / 2)
         side_b = current.rounded
-        while side_b in self.points:
+        next_point = current.rounded
+        while next_point in self.points:
+            side_b = next_point
             current = current.offset(-perpendicular_dir * step_size)
-            side_b = current.rounded
+            next_point = current.rounded
 
         self.side_b = side_b
-
-        self.points.add(self.side_a)
-        self.points.add(self.side_b)
-        self.indices = self.map_data.points_to_indices(self.points)
 
     @property
     def corner_walloff(self):
