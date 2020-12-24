@@ -77,9 +77,11 @@ class MapAnalyzerPather:
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
         nonpathables = self.map_data.bot.structures.not_flying
         nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
+        nonpathables = nonpathables.filter(
+            lambda x: (x.type_id != UnitID.SUPPLYDEPOTLOWERED or x.is_active)
+                  and (x.type_id != UnitID.CREEPTUMOR or not x.is_ready))
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
-        nonpathables = nonpathables.exclude_type(UnitID.SUPPLYDEPOTLOWERED)
         for obj in nonpathables:
             radius = NONPATHABLE_RADIUS_FACTOR
             if 'geyser' in obj.name.lower():
@@ -89,8 +91,7 @@ class MapAnalyzerPather:
             radius = RESOURCE_BLOCKER_RADIUS_FACTOR
             grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf, safe=False)
         if include_destructables:
-            destructables_filtered = [d for d in self.map_data.bot.destructables if "plates" not in d.name.lower()]
-            for rock in destructables_filtered:
+            for rock in self.map_data.bot.destructables:
                 if "plates" not in rock.name.lower():
                     self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
         return grid
