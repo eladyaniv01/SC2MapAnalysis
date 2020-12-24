@@ -164,7 +164,7 @@ class TestPathing:
                                      f"influence_grid[p] = {influence_grid[p]}, expected cost = {cost}"
             assert (map_data.distance(cost_point, p) < expected_max_distance)
 
-    def test_clean_air_grid_allow_diagonal_true(self, map_data: MapData) -> None:
+    def test_clean_air_grid_smoothing(self, map_data: MapData) -> None:
         default_weight = 2
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where_all(base.position_tuple)[0]
@@ -176,10 +176,10 @@ class TestPathing:
         cost_points = list(map(Point2, cost_points))
         for cost_point in cost_points:
             grid = map_data.add_cost(position=cost_point, radius=7, grid=grid)
-        path = map_data.pathfind(start=p0, goal=p1, grid=grid, allow_diagonal=True)
-        assert (len(path) < 200)
+        path = map_data.pathfind(start=p0, goal=p1, grid=grid, smoothing=True)
+        assert (len(path) < 50)
 
-    def test_clean_air_grid_allow_diagonal_false(self, map_data: MapData) -> None:
+    def test_clean_air_grid_no_smoothing(self, map_data: MapData) -> None:
         """
         non diagonal path should be longer,  but still below 250
         """
@@ -194,7 +194,7 @@ class TestPathing:
         cost_points = list(map(Point2, cost_points))
         for cost_point in cost_points:
             grid = map_data.add_cost(position=cost_point, radius=7, grid=grid)
-        path = map_data.pathfind(start=p0, goal=p1, grid=grid, allow_diagonal=False)
+        path = map_data.pathfind(start=p0, goal=p1, grid=grid, smoothing=False)
         assert (len(path) < 250)
 
     def test_air_vs_ground(self, map_data: MapData) -> None:

@@ -13,13 +13,14 @@ from scipy.spatial import distance
 from MapAnalyzer.Debugger import MapAnalyzerDebugger
 from MapAnalyzer.Pather import MapAnalyzerPather
 from MapAnalyzer.Region import Region
-from MapAnalyzer.utils import get_sets_with_mutual_elements
+from MapAnalyzer.utils import get_sets_with_mutual_elements, fix_map_ramps
 
 from .constants import BINARY_STRUCTURE, CORNER_MIN_DISTANCE, MAX_REGION_AREA, MIN_REGION_AREA
 
 from .decorators import progress_wrapped
 from .exceptions import CustomDeprecationWarning
-from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, PathLibChoke
+from MapAnalyzer.constructs import ChokeArea, MDRamp, VisionBlockerArea, RawChoke
+from .cext import CMapInfo, CMapChoke
 
 try:
     __version__ = get_distribution('sc2mapanalyzer')
@@ -40,6 +41,11 @@ class MapData:
                  corner_distance: int = CORNER_MIN_DISTANCE) -> None:
         # store relevant data from api
         self.bot = bot
+        # temporary fix to set ramps correctly if they are broken in burnysc2 due to having
+        # destructables on them. ramp sides don't consider the destructables now,
+        # should update them during the game
+        self.bot.game_info.map_ramps, self.bot.game_info.vision_blockers = fix_map_ramps(self.bot)
+
         self.corner_distance = corner_distance  # the lower this value is,  the sharper the corners will be
         self.arcade = arcade
         self.version = __version__
@@ -63,17 +69,21 @@ class MapData:
         self.map_vision_blockers: list = []  # set later  on compile
         self.vision_blockers_labels: list = []  # set later  on compile
         self.vision_blockers_grid: list = []  # set later  on compile
+        self.overlord_spots: list = []
         self.resource_blockers = [Point2((m.position[0], m.position[1])) for m in self.bot.all_units if
                                   any(x in m.name.lower() for x in {"rich", "450"})]
-        self.pathlib_to_local_chokes = None
         self.overlapping_choke_ids = None
+
+        pathing_grid = np.fmax(self.path_arr, self.placement_arr)
+        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area)
+        self.overlord_spots = self.c_ext_map.overlord_spots
 
         # plugins
         self.log_level = loglevel
         self.debugger = MapAnalyzerDebugger(self, loglevel=self.log_level)
         self.pather = MapAnalyzerPather(self)
+
         self.connectivity_graph = None  # set by pather
-        self.pathlib_map = self.pather.pathlib_map
         self.pyastar = self.pather.pyastar
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
 
@@ -192,7 +202,7 @@ class MapData:
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """
         :rtype: numpy.ndarray
-        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,
+        Climber grid is a grid modified by the c extension, and is used for units that can climb,
 
         such as Reaper, Colossus
 
@@ -256,9 +266,9 @@ class MapData:
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
-    def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
-                 grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
+    def pathfind_pyastar(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
+                         grid: Optional[ndarray] = None,
+                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
@@ -299,7 +309,45 @@ class MapData:
             * :meth:`.MapData.find_lowest_cost_points`
 
         """
-        return self.pather.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
+        return self.pather.pathfind_pyastar(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
+                                            sensitivity=sensitivity)
+
+    def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
+                 grid: Optional[ndarray] = None, smoothing: bool = False,
+                 sensitivity: int = 1) -> Optional[List[Point2]]:
+        """
+        :rtype: Union[List[:class:`sc2.position.Point2`], None]
+        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
+
+
+        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
+
+        If no path is possible, will return ``None``
+
+        ``sensitivity`` indicates how to slice the path,
+        just like doing: ``result_path = path[::sensitivity]``
+            where ``path`` is the return value from this function
+
+        this is useful since in most use cases you wouldn't want
+        to get each and every single point,
+
+        getting every  n-``th`` point works better in practice
+
+        ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.
+        it will skip all the waypoints it can if taking the straight line forward is better
+        according to the influence grid
+
+        Example:
+            >>> my_grid = self.get_pyastar_grid()
+            >>> # start / goal could be any tuple / Point2
+            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.find_lowest_cost_points`
+
+        """
+        return self.pather.pathfind(start=start, goal=goal, grid=grid, smoothing=smoothing,
                                     sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100, safe: bool = True,
@@ -600,17 +648,13 @@ class MapData:
 
     def _clean_plib_chokes(self) -> None:
         # needs to be called AFTER MDramp and VisionBlocker are populated
-        raw_chokes = self.pathlib_map.chokes
-        self.pathlib_to_local_chokes = []
-        for i, c in enumerate(raw_chokes):
-            self.pathlib_to_local_chokes.append(PathLibChoke(pathlib_choke=c, pk=i))
         areas = self.map_ramps.copy()
         areas.extend(self.map_vision_blockers)
-        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.pathlib_to_local_chokes,
+        self.overlapping_choke_ids = self._get_overlapping_chokes(local_chokes=self.c_ext_map.chokes,
                                                                   areas=areas)
 
     @staticmethod
-    def _get_overlapping_chokes(local_chokes: List[PathLibChoke],
+    def _get_overlapping_chokes(local_chokes: List[CMapChoke],
                                 areas: Union[List[MDRamp], List[Union[MDRamp, VisionBlockerArea]]]) -> Set[int]:
         li = []
         for area in areas:
@@ -684,10 +728,15 @@ class MapData:
             self.vision_blockers_labels = np.unique(vb_labeled_array)
 
     def _set_map_ramps(self):
+        # some ramps coming from burnysc2 have broken data and the bottom_center and top_center
+        # may even be the same. by removing them they should be tagged as chokes in the c extension
+        # if they really are ones
+        viable_ramps = list(filter(lambda x: x.bottom_center.distance_to(x.top_center) >= 1,
+                            self.bot.game_info.map_ramps))
         self.map_ramps = [MDRamp(map_data=self,
                                  ramp=r,
                                  array=self.points_to_numpy_array(r.points))
-                          for r in self.bot.game_info.map_ramps]
+                          for r in viable_ramps]
 
     def _calc_vision_blockers(self) -> None:
         # compute VisionBlockerArea
@@ -713,7 +762,7 @@ class MapData:
         # compute ChokeArea
 
         self._clean_plib_chokes()
-        chokes = [c for c in self.pathlib_to_local_chokes if c.id not in self.overlapping_choke_ids]
+        chokes = [c for c in self.c_ext_map.chokes if c.id not in self.overlapping_choke_ids]
         self.map_chokes = self.map_ramps.copy()
         self.map_chokes.extend(self.map_vision_blockers)
 
@@ -726,7 +775,7 @@ class MapData:
                 cm = int(cm[0]), int(cm[1])
                 areas = self.where_all(cm)
 
-                new_choke = ChokeArea(
+                new_choke = RawChoke(
                         map_data=self, array=new_choke_array, pathlibchoke=choke
                 )
                 for area in areas:
@@ -815,7 +864,7 @@ class MapData:
             logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
-    def plot_influenced_path(self,
+    def plot_influenced_path_pyastar(self,
                              start: Union[Tuple[float, float], Point2],
                              goal: Union[Tuple[float, float], Point2],
                              weight_array: ndarray,
@@ -828,12 +877,32 @@ class MapData:
 
         """
 
-        self.debugger.plot_influenced_path(start=start,
+        self.debugger.plot_influenced_path_pyastar(start=start,
                                            goal=goal,
                                            weight_array=weight_array,
                                            name=name,
                                            fontdict=fontdict,
                                            allow_diagonal=allow_diagonal)
+
+    def plot_influenced_path(self,
+                               start: Union[Tuple[float, float], Point2],
+                               goal: Union[Tuple[float, float], Point2],
+                               weight_array: ndarray,
+                               smoothing: bool = False,
+                               name: Optional[str] = None,
+                               fontdict: dict = None) -> None:
+        """
+
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+
+        """
+
+        self.debugger.plot_influenced_path(start=start,
+                                             goal=goal,
+                                             weight_array=weight_array,
+                                             smoothing=smoothing,
+                                             name=name,
+                                             fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)
