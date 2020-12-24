@@ -139,8 +139,8 @@ class MapAnalyzerPather:
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
-    def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
-                 allow_diagonal: bool = False, sensitivity: int = 1) -> ndarray:
+    def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
+                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
         if start is not None and goal is not None:
             start = int(round(start[0])), int(round(start[1]))
             goal = int(round(goal[0])), int(round(goal[1]))
@@ -170,9 +170,9 @@ class MapAnalyzerPather:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    def pathfind_c(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
+    def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                    smoothing: bool = False,
-                   sensitivity: int = 1) -> ndarray:
+                   sensitivity: int = 1) -> Optional[List[Point2]]:
         if start is not None and goal is not None:
             start = int(round(start[0])), int(round(start[1]))
             goal = int(round(goal[0])), int(round(goal[1]))

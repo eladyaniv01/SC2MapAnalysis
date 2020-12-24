@@ -51,21 +51,21 @@ r = 10
 for i in range(50):
     pts.append(get_random_point(0, 200, 0, 200))
 
-arr = map_data.get_pyastar_grid(1)
+arr = map_data.get_pyastar_grid(100)
 for p in pts:
     arr = map_data.add_cost(p, r, arr)
 
 start = time.clock()
-path = map_data.pathfind(p0, p1, grid=arr, allow_diagonal=True)
+path = map_data.pathfind_pyastar(p0, p1, grid=arr, allow_diagonal=True)
 pyastar_time = time.clock() - start
 print("pyastar time: {}".format(pyastar_time))
 
-map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr, allow_diagonal=True)
+map_data.plot_influenced_path_pyastar(start=p0, goal=p1, weight_array=arr, allow_diagonal=True)
 
 start = time.clock()
-path2 = map_data.pathfind_c(p0, p1, grid=arr)
+path2 = map_data.pathfind(p0, p1, grid=arr)
 ext_time = time.clock() - start
 print("extension astar time: {}".format(ext_time))
 print("div: {}".format(ext_time / pyastar_time))
 
-map_data.plot_influenced_path_c(start=p0, goal=p1, weight_array=arr)
+map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr)
