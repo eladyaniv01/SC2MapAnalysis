@@ -115,7 +115,7 @@ class MDRamp(ChokeArea):
         # TODO  its white board time,  need to figure out some geometric intuition here
         dist = self.map_data.distance(raw_points[0], raw_points[1])
         r = dist ** 0.5
-        if dist / 2 > r:
+        if dist / 2 >= r:
             intersect = (raw_points[0] + raw_points[1]) / 2
             return intersect.offset(self.offset)
 
