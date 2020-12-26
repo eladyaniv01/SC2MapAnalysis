@@ -45,7 +45,7 @@ def astar_path(
     # Demand costs above 1 so floating point inaccuracies aren't a problem
     # when comparing costs
     if weights.min(axis=None) < 1:
-        raise ValueError("Minimum cost to move must be above 1, but got %f" % (
+        raise ValueError("Minimum cost to move must be above or equal to 1, but got %f" % (
             weights.min(axis=None)))
     # Ensure start is within bounds.
     if (start[0] < 0 or start[0] >= weights.shape[0] or
