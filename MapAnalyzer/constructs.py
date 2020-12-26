@@ -117,8 +117,12 @@ class MDRamp(ChokeArea):
     def middle_walloff_depot(self):
         raw_points = sorted(list(self.points), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
         # TODO  its white board time,  need to figure out some geometric intuition here
-        r = max(self.map_data.distance(raw_points[0], raw_points[1]) ** 0.5,
-                self.map_data.distance(raw_points[0], raw_points[1]) / 2)
+        dist = self.map_data.distance(raw_points[0], raw_points[1])
+        r = dist ** 0.5
+        if dist / 2 >= r:
+            intersect = (raw_points[0] + raw_points[1]) / 2
+            return intersect.offset(self.offset)
+
         intersects = raw_points[0].circle_intersection(p=raw_points[1], r=r)
         # p = self.map_data.closest_towards_point(points=self.buildables.points, target=self.top_center)
         pt = max(intersects, key=lambda p: p.distance_to_point2(self.bottom_center))
