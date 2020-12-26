@@ -603,6 +603,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     queue_push_or_update(nodes_to_visit, start_node);
 
     int nbrs[8];
+    float nbr_costs[8] = { SQRT2, 1.0f, SQRT2, 1.0f, 1.0f, SQRT2, 1.0f, SQRT2 };
 
     while (nodes_to_visit->size > 0)
     {
@@ -616,34 +617,29 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
         int row = cur.idx / w;
         int col = cur.idx % w;
 
-        nbrs[0] = (row > 0) ? cur.idx - w : -1;
-        nbrs[1] = (col > 0) ? cur.idx - 1 : -1;
-        nbrs[2] = (col + 1 < w) ? cur.idx + 1 : -1;
-        nbrs[3] = (row + 1 < h) ? cur.idx + w : -1;
-        nbrs[4] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[0] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[1] = (row > 0) ? cur.idx - w : -1;
+        nbrs[2] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[3] = (col > 0) ? cur.idx - 1 : -1;
+        nbrs[4] = (col + 1 < w) ? cur.idx + 1 : -1;
         nbrs[5] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
-        nbrs[6] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[6] = (row + 1 < h) ? cur.idx + w : -1;
         nbrs[7] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
 
         float heuristic_cost;
+        float cur_cost = costs[cur.idx];
 
         for (int i = 0; i < 8; ++i)
         {
             if (nbrs[i] >= 0)
             {
-                float new_cost = costs[cur.idx];
-                if (i < 4)
-                {
-                    new_cost += weights[nbrs[i]];
-                }
-                else
-                {
-                    new_cost += weights[nbrs[i]] * SQRT2;
-                }
-                if (new_cost < costs[nbrs[i]])
+                float new_cost = cur_cost + weights[nbrs[i]] * nbr_costs[i];
+            
+                //Small threshold to not update when the difference is just due to floating point inaccuracy
+                if (new_cost + 0.03f < costs[nbrs[i]])
                 {
                     
-                    heuristic_cost = distance_heuristic(nbrs[i] / w, nbrs[i] % w, goal / w, goal % w, weight_baseline);
+                    heuristic_cost = distance_heuristic(nbrs[i] % w, nbrs[i] / w, goal % w, goal / w, weight_baseline);
                     
                     float estimated_cost = new_cost + heuristic_cost;
                     Node new_node = { nbrs[i], estimated_cost, cur.path_length + 1};
@@ -895,6 +891,8 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
 
     VecInt *nodes_within_reach = InitVecInt(arena, min_int(200, (int)(max_distance * max_distance)));
 
+    float nbr_costs[8] = { SQRT2, 1.0f, SQRT2, 1.0f, 1.0f, SQRT2, 1.0f, SQRT2 };
+
     while (nodes_to_visit->size > 0)
     {
         Node cur = queue_pop(nodes_to_visit);
@@ -903,28 +901,23 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
         int row = cur.idx / w;
         int col = cur.idx % w;
 
-        nbrs[0] = (row > 0) ? cur.idx - w : -1;
-        nbrs[1] = (col > 0) ? cur.idx - 1 : -1;
-        nbrs[2] = (col + 1 < w) ? cur.idx + 1 : -1;
-        nbrs[3] = (row + 1 < h) ? cur.idx + w : -1;
-        nbrs[4] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[0] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[1] = (row > 0) ? cur.idx - w : -1;
+        nbrs[2] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[3] = (col > 0) ? cur.idx - 1 : -1;
+        nbrs[4] = (col + 1 < w) ? cur.idx + 1 : -1;
         nbrs[5] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
-        nbrs[6] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[6] = (row + 1 < h) ? cur.idx + w : -1;
         nbrs[7] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
+
+        float cur_cost = costs[cur.idx];
 
         for (int i = 0; i < 8; ++i)
         {
             if (nbrs[i] >= 0)
             {
-                float new_cost = costs[cur.idx];
-                if (i < 4)
-                {
-                    new_cost += weights[nbrs[i]];
-                }
-                else
-                {
-                    new_cost += weights[nbrs[i]] * SQRT2;
-                }
+                float new_cost = cur_cost + weights[nbrs[i]]*nbr_costs[i];
+                
                 if (new_cost < costs[nbrs[i]])
                 {
                     costs[nbrs[i]] = new_cost;
