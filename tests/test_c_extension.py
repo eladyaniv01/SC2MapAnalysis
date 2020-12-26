@@ -51,3 +51,7 @@ def test_c_extension():
     assert(len(map_info.overlord_spots) == 2)
     assert(len(map_info.chokes) == 5)
 
+    # testing that the main line actually exists, was a previous bug
+    for choke in map_info.chokes:
+        assert(choke.main_line[0] != choke.main_line[1])
+

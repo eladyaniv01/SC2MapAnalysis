@@ -41,12 +41,11 @@ def astar_path(
         start: Tuple[int, int],
         goal: Tuple[int, int],
         smoothing: bool) -> Union[np.ndarray, None]:
-    """
-    weights should have positive float32 values
-    """
     # For the heuristic to be valid, each move must have a positive cost.
-    if weights.min(axis=None) <= 0:
-        raise ValueError("Minimum cost to move must be above 0, but got %f" % (
+    # Demand costs above 1 so floating point inaccuracies aren't a problem
+    # when comparing costs
+    if weights.min(axis=None) < 1:
+        raise ValueError("Minimum cost to move must be above or equal to 1, but got %f" % (
             weights.min(axis=None)))
     # Ensure start is within bounds.
     if (start[0] < 0 or start[0] >= weights.shape[0] or
