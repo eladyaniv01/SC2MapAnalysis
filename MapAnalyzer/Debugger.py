@@ -174,6 +174,11 @@ class MapAnalyzerDebugger:
                          bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2))
             plt.scatter(x, y, marker=r"$\spadesuit$", s=50, edgecolors="b", alpha=0.5)
 
+    def plot_overlord_spots(self):
+        import matplotlib.pyplot as plt
+        for spot in self.map_data.overlord_spots:
+            plt.scatter(spot[0], spot[1], marker="X", color="black")
+
     def plot_map(
             self, fontdict: dict = None, figsize: int = 20
     ) -> None:
