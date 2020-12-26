@@ -52,6 +52,6 @@ def test_c_extension():
     assert(len(map_info.chokes) == 5)
 
     # testing that the main line actually exists, was a previous bug
-    for line in map_info.chokes:
-        assert(line.main_line[0] != line.main_line[1])
+    for choke in map_info.chokes:
+        assert(choke.main_line[0] != choke.main_line[1])
 
