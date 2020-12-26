@@ -955,8 +955,8 @@ static Choke choke_create_based_on_line(IntLine line)
     choke.side1 = PushToVecInt(choke.side1, line.start[1]);
 
     choke.side2 = InitVecInt(&state.function_arena, 50);
-    choke.side2 = PushToVecInt(choke.side1, line.end[0]);
-    choke.side2 = PushToVecInt(choke.side1, line.end[1]);
+    choke.side2 = PushToVecInt(choke.side2, line.end[0]);
+    choke.side2 = PushToVecInt(choke.side2, line.end[1]);
 
     choke.pixels = InitVecInt(&state.function_arena, 100);
 
