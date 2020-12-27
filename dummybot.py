@@ -43,7 +43,7 @@ class MATester(sc2.BotAI):
         self.p1 = reg_end.center
         self.influence_grid = self.map_data.get_pyastar_grid()
         ramps = reg_end.region_ramps
-        logger.error(ramps)
+        logger.info(ramps)
         if len(ramps) > 1:
             if self.map_data.distance(ramps[0].top_center, reg_end.center) < self.map_data.distance(ramps[1].top_center,
                                                                                                     reg_end.center):
@@ -62,8 +62,7 @@ class MATester(sc2.BotAI):
         #     r = tup[1]
         #     self.map_data.add_cost(p, r=r, arr=self.influence_grid)
 
-        self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens,
-                                           allow_diagonal=True)
+        self.path = self.map_data.pathfind(start=self.p0, goal=self.p1, grid=self.influence_grid, sensitivity=self.sens)
         self.hero_tag = self.workers[0].tag
 
     def get_random_point(self, minx, maxx, miny, maxy):
@@ -114,20 +113,22 @@ class MATester(sc2.BotAI):
         logger.debug(list_points)  # uncomment this to log the region points
         hero = self.workers.by_tag(self.hero_tag)
         dist = 1.5 * hero.calculate_speed() * 1.4
-        if self.target is None:
-            self.target = self.path.pop(0)
-        logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
-        if self.map_data.distance(hero.position, self.target) > 1:
-            hero.move(self.target)
-
-        if self.map_data.distance(hero.position, self.target) <= dist:
-            if len(self.path) > 0:
-                self.target = self.path.pop(0)
-            else:
-                logger.info("Path Complete")
-
+        # if self.target is None:
+        #     self.target = self.path.pop(0)
+        # logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
+        # if self.map_data.distance(hero.position, self.target) > 1:
+        #     hero.move(self.target)
+        #
+        # if self.map_data.distance(hero.position, self.target) <= dist:
+        #     if len(self.path) > 0:
+        #         self.target = self.path.pop(0)
+        #     else:
+        #         logger.info("Path Complete")
+        # self._draw_path_box(p=self.target, color=RED)  # draw scouting SCV next move point in the path
         self._draw_path_box(p=hero.position, color=GREEN)  # draw scouting SCV position
-        self._draw_path_box(p=self.target, color=RED)  # draw scouting SCV next move point in the path
+        self.client.debug_text_world(
+                "\n".join([f"{hero.position}", ]), hero.position, color=BLUE, size=30,
+        )
 
         self.client.debug_text_world(
                 "\n".join([f"start {self.p0}", ]), Point2(self.p0), color=BLUE, size=30,
