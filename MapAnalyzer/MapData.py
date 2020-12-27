@@ -777,7 +777,7 @@ class MapData:
                 areas = self.where_all(cm)
 
                 new_choke = RawChoke(
-                        map_data=self, array=new_choke_array, pathlibchoke=choke
+                        map_data=self, array=new_choke_array, raw_choke=choke
                 )
                 for area in areas:
 
