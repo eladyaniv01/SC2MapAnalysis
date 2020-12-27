@@ -1,5 +1,5 @@
-import re
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -69,18 +69,20 @@ def gv():
 
 @vb.command(help='Bump Minor')
 def bumpminor():
-    setup_parsed = parse_setup()
-    old_version_regex = r"version=\"(\d*[.]\d*[.]\d*)"
-    old_version = re.findall(old_version_regex, setup_parsed)[0]
-    minor = re.findall(r"([.]\d*)", old_version)[-1]
-    minor = minor.replace('.', '')
-    click.echo(f"Current Version: " + click.style(old_version, fg='green'))
-    click.echo(f"Minor Found: " + click.style(minor, fg='green'))
-    bump = str(int(minor) + 1)
-    click.echo(f"Bumping to : " + click.style(bump, fg='blue'))
-    new_version = str(old_version).replace(minor, bump)
-    click.echo(f"Updated Version: " + click.style(new_version, fg='red'))
-    b_minor(new_version)
+    # fixme
+    pass
+    # setup_parsed = parse_setup()
+    # old_version_regex = r"version=\"(\d*[.]\d*[.]\d*)"
+    # old_version = re.findall(old_version_regex, setup_parsed)[0]
+    # minor = re.findall(r"([.]\d*)", old_version)[-1]
+    # minor = minor.replace('.', '')
+    # click.echo(f"Current Version: " + click.style(old_version, fg='green'))
+    # click.echo(f"Minor Found: " + click.style(minor, fg='green'))
+    # bump = str(int(minor) + 1)
+    # click.echo(f"Bumping to : " + click.style(bump, fg='blue'))
+    # new_version = str(old_version).replace(minor, bump)
+    # click.echo(f"Updated Version: " + click.style(new_version, fg='red'))
+    # b_minor(new_version)
 
 
 def b_minor(new_version):
