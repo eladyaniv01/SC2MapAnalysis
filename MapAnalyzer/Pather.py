@@ -82,20 +82,18 @@ class MapAnalyzerPather:
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         # Add 0.01 to radius to find a closed disk
-        ri, ci = skdraw.disk(center=(from_pos[0], from_pos[1]), radius=radius + 0.01, shape=grid.shape)
-        if len(ri) == 0 or len(ci) == 0:
+        ri, ci = skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape)
+        if len(ri) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
             return None
-        points = self.map_data.indices_to_points((ci, ri))
-        arr = self.map_data.points_to_numpy_array(points)
-        # Transpose must be done here on the newly generated array,
-        # since the original grid can use this function many times per frame,
-        # and we dont want to transpose it more than once
-        arr = np.where(arr.T == 1, grid, np.inf)
-        lowest_points = self.map_data.indices_to_points(np.where(arr == np.min(arr)))
-        return list(map(Point2, lowest_points))
+
+        arrmin = np.min(grid[ri, ci])
+        values = np.column_stack((ri, ci, grid[ri, ci].astype(int)))
+        lowest = values[np.where(values[:, 2] == arrmin)][:, :2]
+
+        return list(map(Point2, lowest))
 
     def get_base_pathing_grid(self) -> ndarray:
 
