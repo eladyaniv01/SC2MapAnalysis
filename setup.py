@@ -1,7 +1,7 @@
 import logging
-from setuptools import setup
 from distutils.core import Extension
 
+from setuptools import setup
 from setuptools.command.build_ext import build_ext as _build_ext
 
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
-        "numpy==0.0.78",
+        "numpy==1.19.3",
         "Cython",
         "pyastar@git+git://github.com/eladyaniv01/pyastar.git@master#egg=pyastar",
         "burnysc2",
@@ -37,7 +37,7 @@ setup(  # pragma: no cover
         # version=f"{__version__}",
         version="0.0.77",
         install_requires=requirements,
-        setup_requires=["wheel", "numpy==0.0.78"],
+        setup_requires=["wheel", "numpy==1.19.3"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
         extras_require={
