@@ -8,6 +8,7 @@ from MapAnalyzer import Region
 from MapAnalyzer.MapData import MapData
 from MapAnalyzer.utils import get_map_files_folder, mock_map_data
 from tests.mocksetup import get_map_datas, get_random_point, logger
+import numpy as np
 
 logger = logger
 
@@ -121,6 +122,11 @@ class TestPathing:
         influence_grid = map_data.add_cost(position=cost_point, radius=cr, grid=influence_grid)
         safe_points = map_data.find_lowest_cost_points(from_pos=cost_point, radius=safe_query_radius,
                                                        grid=influence_grid)
+        assert (
+                safe_points[0][0],
+                np.integer), f"safe_points[0][0] = {safe_points[0][0]}, type {type(safe_points[0][0])}"
+        assert isinstance(safe_points[0][1],
+                          np.integer), f"safe_points[0][1] = {safe_points[0][1]}, type {type(safe_points[0][1])}"
         cost = influence_grid[safe_points[0]]
         for p in safe_points:
             assert (influence_grid[

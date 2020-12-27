@@ -93,7 +93,7 @@ class MapAnalyzerPather:
 
         arrmin = np.min(grid[ri, ci])
         values = np.column_stack((ri, ci, grid[ri, ci]))
-        lowest = values[np.where(values[:, 2] == arrmin)][:, :2]
+        lowest = values[np.where(values[:, 2] == arrmin)][:, :2].astype(int)
 
         return list(map(Point2, lowest))
 
