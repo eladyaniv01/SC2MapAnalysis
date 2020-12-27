@@ -174,6 +174,11 @@ class MapAnalyzerDebugger:
                          bbox=dict(fill=True, alpha=0.5, edgecolor="red", linewidth=2))
             plt.scatter(x, y, marker=r"$\spadesuit$", s=50, edgecolors="b", alpha=0.5)
 
+    def plot_overlord_spots(self):
+        import matplotlib.pyplot as plt
+        for spot in self.map_data.overlord_spots:
+            plt.scatter(spot[0], spot[1], marker="X", color="black")
+
     def plot_map(
             self, fontdict: dict = None, figsize: int = 20
     ) -> None:
@@ -209,7 +214,57 @@ class MapAnalyzerDebugger:
             tick.label1.set_fontweight("bold")
         plt.grid()
 
-    def plot_influenced_path(self, start: Union[Tuple[int, int], Point2],
+
+    def plot_influenced_path(self, start: Union[Tuple[float, float], Point2],
+                               goal: Union[Tuple[float, float], Point2],
+                               weight_array: ndarray,
+                               smoothing: bool = False,
+                               name: Optional[str] = None,
+                               fontdict: dict = None) -> None:
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        from matplotlib.cm import ScalarMappable
+        if not fontdict:
+            fontdict = {"family": "serif", "weight": "bold", "size": 20}
+        plt.style.use(["ggplot", "bmh"])
+        org = "lower"
+        if name is None:
+            name = self.map_data.map_name
+        arr = weight_array.copy()
+        path = self.map_data.pathfind(start, goal,
+                                        grid=arr,
+                                        smoothing=smoothing,
+                                        sensitivity=1)
+        ax: plt.Axes = plt.subplot(1, 1, 1)
+        if path is not None:
+            path = np.flipud(path)  # for plot align
+            logger.info("Found")
+            x, y = zip(*path)
+            ax.scatter(x, y, s=3, c='green')
+        else:
+            logger.info("Not Found")
+
+            x, y = zip(*[start, goal])
+            ax.scatter(x, y)
+
+        influence_cmap = plt.cm.get_cmap("afmhot")
+        ax.text(start[0], start[1], f"Start {start}")
+        ax.text(goal[0], goal[1], f"Goal {goal}")
+        ax.imshow(self.map_data.path_arr, alpha=0.5, origin=org)
+        ax.imshow(self.map_data.terrain_height, alpha=0.5, origin=org, cmap='bone')
+        arr = np.where(arr == np.inf, 0, arr).T
+        ax.imshow(arr, origin=org, alpha=0.3, cmap=influence_cmap)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        sc = ScalarMappable(cmap=influence_cmap)
+        sc.set_array(arr)
+        sc.autoscale()
+        cbar = plt.colorbar(sc, cax=cax)
+        cbar.ax.set_ylabel('Pathing Cost', rotation=270, labelpad=25, fontdict=fontdict)
+        plt.title(f"{name}", fontdict=fontdict, loc='right')
+        plt.grid()
+
+    def plot_influenced_path_pyastar(self, start: Union[Tuple[int, int], Point2],
                              goal: Union[Tuple[int, int], Point2],
                              weight_array: ndarray,
                              allow_diagonal=False,
@@ -225,7 +280,7 @@ class MapAnalyzerDebugger:
         if name is None:
             name = self.map_data.map_name
         arr = weight_array.copy()
-        path = self.map_data.pathfind(start, goal,
+        path = self.map_data.pathfind_pyastar(start, goal,
                                       grid=arr,
                                       sensitivity=1,
                                       allow_diagonal=allow_diagonal)

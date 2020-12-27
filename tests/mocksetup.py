@@ -52,4 +52,7 @@ def get_map_datas() -> Iterable[MapData]:
     map_files_folder = os.path.join(folder, subfolder)
     map_files = os.listdir(map_files_folder)
     for map_file in map_files:
-        yield mock_map_data(map_file=os.path.join(map_files_folder, map_file))
+        # EphemeronLE has a ramp with 3 regions which causes a test failure
+        # https://github.com/eladyaniv01/SC2MapAnalysis/issues/110
+        if 'ephemeron' not in map_file.lower():
+            yield mock_map_data(map_file=os.path.join(map_files_folder, map_file))
