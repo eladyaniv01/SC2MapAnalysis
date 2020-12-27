@@ -113,18 +113,18 @@ class MATester(sc2.BotAI):
         logger.debug(list_points)  # uncomment this to log the region points
         hero = self.workers.by_tag(self.hero_tag)
         dist = 1.5 * hero.calculate_speed() * 1.4
-        # if self.target is None:
-        #     self.target = self.path.pop(0)
-        # logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
-        # if self.map_data.distance(hero.position, self.target) > 1:
-        #     hero.move(self.target)
-        #
-        # if self.map_data.distance(hero.position, self.target) <= dist:
-        #     if len(self.path) > 0:
-        #         self.target = self.path.pop(0)
-        #     else:
-        #         logger.info("Path Complete")
-        # self._draw_path_box(p=self.target, color=RED)  # draw scouting SCV next move point in the path
+        if self.target is None:
+            self.target = self.path.pop(0)
+        logger.info(f"Distance to next step : {self.map_data.distance(hero.position, self.target)}")
+        if self.map_data.distance(hero.position, self.target) > 1:
+            hero.move(self.target)
+
+        if self.map_data.distance(hero.position, self.target) <= dist:
+            if len(self.path) > 0:
+                self.target = self.path.pop(0)
+            else:
+                logger.info("Path Complete")
+        self._draw_path_box(p=self.target, color=RED)  # draw scouting SCV next move point in the path
         self._draw_path_box(p=hero.position, color=GREEN)  # draw scouting SCV position
         self.client.debug_text_world(
                 "\n".join([f"{hero.position}", ]), hero.position, color=BLUE, size=30,
