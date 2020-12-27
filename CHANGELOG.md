@@ -1,43 +1,58 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file.
+See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ### [0.0.78](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.78) (2020-12-27)
 
+### A* pathfinding is now implemented within the library, in C(default) [#111](https://github.com/eladyaniv01/SC2MapAnalysis/pull/111)
+
+* Implementing pathfinding and map analysis in C, allowing to remove pyastar and sc2pathlib as dependencies
+* Implementing smoothed pathfinding
+* Fixing choke objects in the mapanalyzer, so they have sides etc that better reflect reality
+* Fixing ramp objects that come from burnysc2 if the info is broken due to
+  destructables ([a8ad54a](https://github.com/spudde123/SC2MapAnalysis/commit/a8ad54aeb17a5e0dab919b18cfd72d888e7c3624))
+* overlord spots +
+  drawing ([bfac2bb](https://github.com/spudde123/SC2MapAnalysis/commit/bfac2bb742f35ea33a5286670b0d4b4b271c11dc))
+
+  ### Refactoring
+  * moving raw chokes into their own class(
+    RawChoke) ([bf9aebb](https://github.com/spudde123/SC2MapAnalysis/commit/bf9aebbb160367f74c8dc34ed76c11ef66c2b6f5))
+
+  ### Tests
+  * test that for each choke a main line actually
+    exists ([dcef428](https://github.com/spudde123/SC2MapAnalysis/commit/dcef4280722dd758a5fd4c0cb04c42fe833fe4bc))
+  * testing the choke sides are included in choke
+    points ([308cf29](https://github.com/eladyaniv01/SC2MapAnalysis/commit/308cf29a36115c29fc5fa7b96d86b9a77cfaf337))
+
+  ### ⚠ BREAKING CHANGES
+  * remove
+    sc2pathlib ([787c6b8](https://github.com/spudde123/SC2MapAnalysis/commit/787c6b8844c24f58d0ea75a1d295b44821b2cc4b))
+  * pyastar is now deprecated, yet still supported (and can be accessed via `pathfind_pyastar`)
+  * RawChoke objects from C ext insteald of PathlibChokes from former sc2pathlib
 
 ### Features
 
-* Debugger now plots choke side a and side b with text indicators (sA, sB) ([595a964](https://github.com/eladyaniv01/SC2MapAnalysis/commit/595a96441c2ed1ae6fc528e88efb64423ae8fcac))
-* fix pyastar ref in requirements ([c0d98f0](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c0d98f007467b80bac319262ef1d660dd9b85979))
-* Polygon now has top,bottom,right,left properties ([a43a283](https://github.com/eladyaniv01/SC2MapAnalysis/commit/a43a283a5a50cb43bbd125098efdfb253671d76a))
-* use custom implementation ofr pyastar ([2b1e9ef](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2b1e9ef152f34fd74485be224d6433ae733ada11))
-
+* Improve find_lowest_cost_efficiency ([#114](https://github.com/eladyaniv01/SC2MapAnalysis/pull/114))
 
 ### Bug Fixes
 
-* int cast bug ([b055bf4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b055bf4fb5fcd82e6d8e45025451f6ced8edc2b3))
-* scout now walks the path ([2f04b03](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2f04b035baae8eacceaa7d5d127fe7acf7315d11))
-* temp fix for climber grid test ([1f8f611](https://github.com/eladyaniv01/SC2MapAnalysis/commit/1f8f611ccb843ec903a8cf777a6b0879659d3b0d))
-* temp fix for climber grid test ([e46ed3a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e46ed3ad8d38545f8311af2b338af28c40b0dede))
+* int cast
+  bug ([b055bf4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b055bf4fb5fcd82e6d8e45025451f6ced8edc2b3))
+* scout now walks the
+  path ([2f04b03](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2f04b035baae8eacceaa7d5d127fe7acf7315d11))
+* temp fix for climber grid
+  test ([1f8f611](https://github.com/eladyaniv01/SC2MapAnalysis/commit/1f8f611ccb843ec903a8cf777a6b0879659d3b0d))
+* Fix crash on python3.9 ([#112](https://github.com/eladyaniv01/SC2MapAnalysis/pull/112))
 
+### Issues Closed:
 
-### Refactoring
+* [#104 float based position & radius should be better for functions like add_cost](https://github.com/eladyaniv01/SC2MapAnalysis/issues/104)
+* [#97 Bug: Geysers too small on pathing grid (EternalEmpire 3oclock base)](https://github.com/eladyaniv01/SC2MapAnalysis/issues/97)
+* [#94 Bug: choke.left and choke.right don't take account the orientation of the choke](https://github.com/eladyaniv01/SC2MapAnalysis/issues/94)
 
-* left right of choke are now side_a and side_b,   sides are computed accuratly now ([10e8dca](https://github.com/eladyaniv01/SC2MapAnalysis/commit/10e8dcae335ff6d700def798538747c8d9b8300f))
-
-
-### Tests
-
-* testing the choke sides are included in choke points ([308cf29](https://github.com/eladyaniv01/SC2MapAnalysis/commit/308cf29a36115c29fc5fa7b96d86b9a77cfaf337))
-
-
-### Documentation
-
-* **release:** pretty up changelog ([c8a697f](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c8a697fc8c341212c4e5242568c308bc998fc65c))
-* **release:** pretty up changelog ([731bd04](https://github.com/eladyaniv01/SC2MapAnalysis/commit/731bd042c1912a9bf357f37b2df9fe315dea1343))
 
 ### [0.0.77](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.77) (2020-12-13)
-
 
 ### Features
 
