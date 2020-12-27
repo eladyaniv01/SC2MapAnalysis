@@ -2,14 +2,16 @@ import re
 import os
 import subprocess
 from pathlib import Path
+
 __author__ = "Elad Yaniv"
+
 import click
 
 
-
-@click.group(help='Commands marked with (LIVE) require SC launch and windows environment.')
+@click.group(help='Version Bump CLI')
 def vb():
     pass
+
 
 def update_readme_to_sphinx():
     import re
@@ -24,10 +26,12 @@ def update_readme_to_sphinx():
     with open("README.md", 'w') as f:
         f.write(r_result)
 
+
 def parse_setup():
     with open("setup.py", 'r') as f:
         setup_parsed = f.read()
     return setup_parsed
+
 
 @vb.command(help='sphinx make for gh pages')
 def makedocs():
@@ -49,7 +53,7 @@ def mt(apply):
     click.echo(click.style("This could take a few seconds", fg='blue'))
     encoded_modules = subprocess.check_output("monkeytype list-modules", shell=True)
     list_modules = encoded_modules.decode().split('\r\n')
-    to_exclude = {'mocksetup', 'sc2pathlibp'}
+    to_exclude = {'mocksetup'}
     if apply:
         for m in list_modules:
             if [x for x in to_exclude if x in m] == []:
@@ -66,7 +70,7 @@ def gv():
 @vb.command(help='Bump Minor')
 def bumpminor():
     setup_parsed = parse_setup()
-    old_version_regex = r"(\d*[.]\d*[.]\d*)"
+    old_version_regex = r"version=\"(\d*[.]\d*[.]\d*)"
     old_version = re.findall(old_version_regex, setup_parsed)[0]
     minor = re.findall(r"([.]\d*)", old_version)[-1]
     minor = minor.replace('.', '')
@@ -105,6 +109,7 @@ def gh(days):
                                                                                                   fg='blue'))
     subprocess.check_call('git fetch', shell=True)
     subprocess.check_call(f'git log --oneline --decorate --graph --all -{days}', shell=True)
+
 
 if __name__ == '__main__':
     vb(prog_name='python -m vb')
