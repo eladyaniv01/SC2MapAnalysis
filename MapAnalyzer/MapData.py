@@ -269,6 +269,7 @@ class MapData:
     def pathfind_pyastar(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                          grid: Optional[ndarray] = None,
                          allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
+
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
@@ -865,6 +866,7 @@ class MapData:
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path_pyastar(self,
+
                              start: Union[Tuple[float, float], Point2],
                              goal: Union[Tuple[float, float], Point2],
                              weight_array: ndarray,

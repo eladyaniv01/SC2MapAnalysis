@@ -82,8 +82,10 @@ class MapAnalyzerPather:
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         # Add 0.01 to radius to find a closed disk
+
         ri, ci = skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape)
         if len(ri) == 0:
+
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
@@ -133,6 +135,7 @@ class MapAnalyzerPather:
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
+
         grid = self.get_base_pathing_grid()
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
@@ -140,6 +143,7 @@ class MapAnalyzerPather:
 
     def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                          allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
+
         if start is not None and goal is not None:
             start = int(round(start[0])), int(round(start[1]))
             goal = int(round(goal[0])), int(round(goal[1]))
