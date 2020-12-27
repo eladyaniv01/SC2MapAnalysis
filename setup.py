@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
-        "numpy==1.19.3",
+        "numpy==0.0.78",
         "Cython",
         "pyastar@git+git://github.com/eladyaniv01/pyastar.git@master#egg=pyastar",
         "burnysc2",
@@ -37,7 +37,7 @@ setup(  # pragma: no cover
         # version=f"{__version__}",
         version="0.0.77",
         install_requires=requirements,
-        setup_requires=["wheel", "numpy==1.19.3"],
+        setup_requires=["wheel", "numpy==0.0.78"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
         extras_require={
