@@ -29,7 +29,7 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
   * remove
     sc2pathlib ([787c6b8](https://github.com/spudde123/SC2MapAnalysis/commit/787c6b8844c24f58d0ea75a1d295b44821b2cc4b))
   * pyastar is now deprecated, yet still supported (and can be accessed via `pathfind_pyastar`)
-  * RawChoke objects from C ext insteald of PathlibChokes from former sc2pathlib
+  * RawChoke objects from C ext instead of PathlibChokes from former sc2pathlib
 
 ### Features
 
