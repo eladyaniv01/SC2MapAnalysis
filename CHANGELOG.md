@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.4](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v1.19.4) (2020-12-27)
+
+
+### Features
+
+* Debugger now plots choke side a and side b with text indicators (sA, sB) ([595a964](https://github.com/eladyaniv01/SC2MapAnalysis/commit/595a96441c2ed1ae6fc528e88efb64423ae8fcac))
+* fix pyastar ref in requirements ([c0d98f0](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c0d98f007467b80bac319262ef1d660dd9b85979))
+* Polygon now has top,bottom,right,left properties ([a43a283](https://github.com/eladyaniv01/SC2MapAnalysis/commit/a43a283a5a50cb43bbd125098efdfb253671d76a))
+* use custom implementation ofr pyastar ([2b1e9ef](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2b1e9ef152f34fd74485be224d6433ae733ada11))
+
+
+### Bug Fixes
+
+* int cast bug ([b055bf4](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b055bf4fb5fcd82e6d8e45025451f6ced8edc2b3))
+* scout now walks the path ([2f04b03](https://github.com/eladyaniv01/SC2MapAnalysis/commit/2f04b035baae8eacceaa7d5d127fe7acf7315d11))
+* temp fix for climber grid test ([1f8f611](https://github.com/eladyaniv01/SC2MapAnalysis/commit/1f8f611ccb843ec903a8cf777a6b0879659d3b0d))
+* temp fix for climber grid test ([e46ed3a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e46ed3ad8d38545f8311af2b338af28c40b0dede))
+
+
+### Refactoring
+
+* left right of choke are now side_a and side_b,   sides are computed accuratly now ([10e8dca](https://github.com/eladyaniv01/SC2MapAnalysis/commit/10e8dcae335ff6d700def798538747c8d9b8300f))
+
+
+### Tests
+
+* testing the choke sides are included in choke points ([308cf29](https://github.com/eladyaniv01/SC2MapAnalysis/commit/308cf29a36115c29fc5fa7b96d86b9a77cfaf337))
+
+
+### Documentation
+
+* **release:** pretty up changelog ([c8a697f](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c8a697fc8c341212c4e5242568c308bc998fc65c))
+* **release:** pretty up changelog ([731bd04](https://github.com/eladyaniv01/SC2MapAnalysis/commit/731bd042c1912a9bf357f37b2df9fe315dea1343))
+
 ### [0.0.77](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.77) (2020-12-13)
 
 
