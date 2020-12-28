@@ -40,6 +40,7 @@ setup(  # pragma: no cover
         setup_requires=["wheel", "numpy==1.19.3"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
+        packages=["MapAnalyzer", "MapAnalyzer.cext"],
         extras_require={
                 "dev": [
                         "pytest",
