@@ -33,7 +33,7 @@ requirements = [  # pragma: no cover
         "scikit-image",
 ]
 setup(  # pragma: no cover
-        name="sc2mapanalysis",
+        name="sc2mapanalyzer",
         # version=f"{__version__}",
         version="0.0.78",
         install_requires=requirements,
