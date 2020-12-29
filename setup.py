@@ -4,7 +4,6 @@ from distutils.core import Extension
 from setuptools import setup
 from setuptools.command.build_ext import build_ext as _build_ext
 
-
 # https://stackoverflow.com/a/21621689/
 class build_ext(_build_ext):
     def finalize_options(self):

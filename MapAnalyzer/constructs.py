@@ -54,6 +54,7 @@ class RawChoke(ChokeArea):
         self.id = raw_choke.id
         self.md_pl_choke = raw_choke
 
+
         self.side_a = Point2((int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))))
         self.side_b = Point2((int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))))
 
