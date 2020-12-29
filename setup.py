@@ -1,9 +1,8 @@
 import logging
-from setuptools import setup
 from distutils.core import Extension
 
+from setuptools import setup
 from setuptools.command.build_ext import build_ext as _build_ext
-
 
 # https://stackoverflow.com/a/21621689/
 class build_ext(_build_ext):
@@ -35,11 +34,12 @@ requirements = [  # pragma: no cover
 setup(  # pragma: no cover
         name="sc2mapanalyzer",
         # version=f"{__version__}",
-        version="0.0.77",
+        version="0.0.78",
         install_requires=requirements,
         setup_requires=["wheel", "numpy==1.19.3"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
+        packages=["MapAnalyzer", "MapAnalyzer.cext"],
         extras_require={
                 "dev": [
                         "pytest",

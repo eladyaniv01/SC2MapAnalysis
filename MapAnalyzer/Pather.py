@@ -83,17 +83,16 @@ class MapAnalyzerPather:
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         # Add 0.01 to radius to find a closed disk
 
-        ri, ci = skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape)
-        if len(ri) == 0:
-
+        disk = tuple(skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape))
+        if len(disk[0]) == 0:
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()
             return None
 
-        arrmin = np.min(grid[ri, ci])
-        values = np.column_stack((ri, ci, grid[ri, ci].astype(int)))
-        lowest = values[np.where(values[:, 2] == arrmin)][:, :2]
+        arrmin = np.min(grid[disk])
+        cond = grid[disk] == arrmin
+        lowest = np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
 
         return list(map(Point2, lowest))
 

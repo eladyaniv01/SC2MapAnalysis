@@ -47,12 +47,13 @@ class RawChoke(ChokeArea):
     Chokes found in the C extension where the terrain generates a choke point
     """
 
-    def __init__(self, array: np.ndarray, map_data: "MapData", pathlibchoke: CMapChoke) -> None:
+    def __init__(self, array: np.ndarray, map_data: "MapData", raw_choke: CMapChoke) -> None:
         super().__init__(map_data=map_data, array=array)
 
-        self.main_line = pathlibchoke.main_line
-        self.id = pathlibchoke.id
-        self.md_pl_choke = pathlibchoke
+        self.main_line = raw_choke.main_line
+        self.id = raw_choke.id
+        self.md_pl_choke = raw_choke
+
 
         self.side_a = Point2((int(round(self.main_line[0][0])), int(round(self.main_line[0][1]))))
         self.side_b = Point2((int(round(self.main_line[1][0])), int(round(self.main_line[1][1]))))
