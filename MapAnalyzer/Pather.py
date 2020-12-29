@@ -85,7 +85,6 @@ class MapAnalyzerPather:
 
         disk = tuple(skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape))
         if len(disk[0]) == 0:
-
             # this happens when the center point is near map edge, and the radius added goes beyond the edge
             logger.debug(OutOfBoundsException(from_pos))
             # self.map_data.logger.trace()

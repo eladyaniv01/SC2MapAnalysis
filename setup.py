@@ -3,7 +3,6 @@ import logging
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 
-
 # https://stackoverflow.com/a/21621689/
 class build_ext(_build_ext):
     def finalize_options(self):
