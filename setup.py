@@ -1,7 +1,6 @@
 import logging
-from distutils.core import Extension
 
-from setuptools import setup
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 
 # https://stackoverflow.com/a/21621689/
