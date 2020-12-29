@@ -1,5 +1,10 @@
 import numpy as np
-import mapanalyzerext as ext
+
+try:
+    from .mapanalyzerext import astar as ext_astar, get_map_data as ext_get_map_data
+except ImportError:
+    from mapanalyzerext import astar as ext_astar, get_map_data as ext_get_map_data
+
 from typing import Optional, Tuple, Union, List, Set
 from sc2.position import Point2, Rect
 
@@ -59,7 +64,7 @@ def astar_path(
     height, width = weights.shape
     start_idx = np.ravel_multi_index(start, (height, width))
     goal_idx = np.ravel_multi_index(goal, (height, width))
-    path = ext.astar(
+    path = ext_astar(
         weights.flatten(), height, width, start_idx, goal_idx, smoothing
     )
     return path
@@ -102,6 +107,6 @@ class CMapInfo:
                       start_x: int,
                       end_x: int):
         height, width = walkable_grid.shape
-        return ext.get_map_data(walkable_grid.flatten(), height_map.flatten(), height, width,
-                                start_y, end_y, start_x, end_x)
+        return ext_get_map_data(walkable_grid.flatten(), height_map.flatten(), height, width,
+                            start_y, end_y, start_x, end_x)
 
