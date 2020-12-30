@@ -63,6 +63,13 @@ def test_minerals_walls() -> None:
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
     assert (path is None)
 
+    # remove the mineral wall that is blocking pathing from the left player's base to the bottom
+    # side of the map
+    map_data.bot.destructables = map_data.bot.destructables.filter(lambda x: x.distance_to((46, 41)) > 5)
+    grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is not None)
+
     # attempting to path through tight pathways near destructables should work
     path = os.path.join(get_map_files_folder(), 'AbyssalReefLE.xz')
     map_data = mock_map_data(path)
