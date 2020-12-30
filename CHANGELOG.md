@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * CLI version parse
-  error ([47b4471](https://github.com/eladyaniv01/SC2MapAnalysis/commit/47b44715e82487f8b36086a337dd8cb0c228cdf6))
+  error ([c133b7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c133b7d9141a1fc6ca59dd91ceaceacd1a547aae))
 
 ### [0.0.78](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.78) (2020-12-27)
 
