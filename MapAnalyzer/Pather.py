@@ -206,7 +206,7 @@ class MapAnalyzerPather:
             return None
 
     @staticmethod
-    def add_cost(position: Tuple[float, float], radius: float, arr=ndarray, weight: float = 100,
+    def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
         # Add 0.01 to change from open to closed disk
         ri, ci = skdraw.disk(center=position, radius=radius + 0.01, shape=arr.shape)
