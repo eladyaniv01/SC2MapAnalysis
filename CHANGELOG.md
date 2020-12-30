@@ -1,7 +1,43 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.0.79](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.78...v0.0.79) (2020-12-30)
+
+
+### Features
+
+* add ladder compatible version of the c extension in the repo ([500a900](https://github.com/eladyaniv01/SC2MapAnalysis/commit/500a900d4d5ae22ab5d1391a23dd45ca129e43f7))
+* Debugger now plots choke side a and side b with text indicators (sA, sB) ([d9fe997](https://github.com/eladyaniv01/SC2MapAnalysis/commit/d9fe9971b8d056bf02840d1391dd862530c93e54))
+* fix pyastar ref in requirements ([c29e50a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c29e50a8d98b4fc27ea546938cca0b9d174c49a2))
+* MapData now accepts a `corner_distance` variable that will determin the corner distance calculation ([29fe16e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/29fe16eda055a3c2fe0fe2c01927b1ddfbdb1a4f))
+* Polygon now has top,bottom,right,left properties ([da01077](https://github.com/eladyaniv01/SC2MapAnalysis/commit/da01077dbabba77e4d7e94fa49c71bb3324b2f75))
+* use custom implementation ofr pyastar ([1c6b74c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/1c6b74ccc472de698db0a95a6b2baef433b92465))
+
+
+### Bug Fixes
+
+* reverts version parse error ([47b4471](https://github.com/eladyaniv01/SC2MapAnalysis/commit/47b44715e82487f8b36086a337dd8cb0c228cdf6))
+* reverts version parse error ([d69e37d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/d69e37d91b7d1f5ef0a42a0df698812b6009f76c))
+* reverts version parse error ([411e72e](https://github.com/eladyaniv01/SC2MapAnalysis/commit/411e72e6d6c52865aaa2ae7e8099e2dd9c40c694))
+* reverts version parse error ([69cf447](https://github.com/eladyaniv01/SC2MapAnalysis/commit/69cf447918bf302aa74886bd412351c7eecc85a8))
+* temp fix for climber grid test ([b75c1c6](https://github.com/eladyaniv01/SC2MapAnalysis/commit/b75c1c6bba5a0fac2640808cc1c86f3d4609274a))
+
+
+### Refactoring
+
+* left right of choke are now side_a and side_b,   sides are computed accuratly now ([fd6a3a6](https://github.com/eladyaniv01/SC2MapAnalysis/commit/fd6a3a6752485a605edb1c16e07676031b802d87))
+
+
+### Tests
+
+* testing the choke sides are included in choke points ([4fd46d5](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4fd46d5810191e09062b30b9e57816cdc2c969da))
+
+
+### Documentation
+
+* **release:** pretty up changelog ([171d772](https://github.com/eladyaniv01/SC2MapAnalysis/commit/171d772fb6deba51291e0abc1d13c8f83632110b))
+* **release:** pretty up changelog ([cc066b9](https://github.com/eladyaniv01/SC2MapAnalysis/commit/cc066b9d6b23ce1b53712339b94329f625018ca7))
 
 ### [0.0.78](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.78) (2020-12-27)
 
