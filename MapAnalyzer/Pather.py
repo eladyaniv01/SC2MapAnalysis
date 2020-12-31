@@ -67,17 +67,18 @@ class MapAnalyzerPather:
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
         for obj in nonpathables:
-            radius = NONPATHABLE_RADIUS_FACTOR
             if 'geyser' in obj.name.lower():
                 radius = GEYSER_RADIUS_FACTOR
-            grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf, safe=False)
+            else:
+                radius = NONPATHABLE_RADIUS_FACTOR
+            grid = self.add_cost(position=obj.position, radius=radius * obj.radius, arr=grid, weight=np.inf, safe=False)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS_FACTOR
-            grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf, safe=False)
+            grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf, safe=False)
         if include_destructables:
             for rock in self.map_data.bot.destructables:
                 if "plates" not in rock.name.lower():
-                    self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
+                    self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
         return grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
@@ -97,46 +98,33 @@ class MapAnalyzerPather:
         return list(map(Point2, lowest))
 
     def get_base_pathing_grid(self) -> ndarray:
-
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-
-        #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
-        if len(self.map_data.bot.game_info.vision_blockers) > 0:
-            vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
-            # faster way to do :
-            # for point in self.map_data.bot.game_info.vision_blockers:
-            #         #     grid[point] = 1
-
-            # some maps dont have vbs
-            grid[tuple(vbs.T)] = 1  # <-
-
-        return grid
+        return self.map_data.bot.game_info.pathing_grid.data_numpy.T.copy()
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self.get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
+        grid = np.where(grid != 0, np.float32(default_weight), np.float32(np.inf))
+        grid = np.where(self.map_data.c_ext_map.climber_grid != 0, np.float32(default_weight), grid)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
 
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
-        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+        clean_air_grid = np.ones(shape=self.map_data.path_arr.T.shape, dtype=np.float32)
         if default_weight == 1:
-            return clean_air_grid.copy()
+            return clean_air_grid
         else:
-            return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
+            return np.where(clean_air_grid == 1, np.float32(default_weight), np.float32(np.inf))
 
     def get_air_vs_ground_grid(self, default_weight: float) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-        air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
+        air_vs_ground_grid = np.where(grid == 0, np.float32(1), np.float32(default_weight))
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
 
         grid = self.get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, np.float32(default_weight), np.float32(np.inf))
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
