@@ -34,7 +34,7 @@ class MapAnalyzerPather:
         self._set_default_grids()
 
     def _set_default_grids(self):
-        self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+        self.default_grid = self.map_data.path_arr.T.copy()
         self.default_grid_nodestr = self.default_grid.copy()
 
         self.destructables_included = {}
@@ -44,8 +44,8 @@ class MapAnalyzerPather:
         # these will be set nonpathable when updating grids for the destructables
         # that still exist
         for dest in self.map_data.bot.destructables:
-            ri, ci = skdraw.disk(center=dest.position, radius=dest.radius, shape=self.default_grid.shape)
-            if "plates" not in dest.name.lower() and "unbuildable" not in dest.name.lower():
+            ri, ci = skdraw.disk(center=dest.position, radius=dest.radius + 0.01, shape=self.default_grid.shape)
+            if "unbuildable" not in dest.name.lower():
                 self.default_grid_nodestr[ri, ci] = 1
                 self.default_grid[ri, ci] = 0
                 self.destructables_included[dest.tag] = (dest.position, dest.radius)
@@ -56,15 +56,20 @@ class MapAnalyzerPather:
 
         # set each geyser as non pathable, these don't update during the game
         for geyser in self.map_data.bot.vespene_geyser:
-            ri, ci = skdraw.disk(center=geyser.position, radius=geyser.radius, shape=self.default_grid.shape)
+            ri, ci = skdraw.disk(center=geyser.position, radius=geyser.radius + 0.01, shape=self.default_grid.shape)
             self.default_grid[ri, ci] = 0
             self.default_grid_nodestr[ri, ci] = 0
 
         for mineral in self.map_data.bot.mineral_field:
             self.minerals_included[mineral.tag] = (mineral.position, mineral.radius)
-            ri, ci = skdraw.disk(center=mineral.position, radius=mineral.radius, shape=self.default_grid.shape)
-            self.default_grid[ri, ci] = 0
-            self.default_grid_nodestr[ri, ci] = 0
+            x1 = int(mineral.position[0])
+            x2 = x1 - 1
+            y = int(mineral.position[1])
+
+            self.default_grid[x1, y] = 0
+            self.default_grid[x2, y] = 0
+            self.default_grid_nodestr[x1, y] = 0
+            self.default_grid_nodestr[x2, y] = 0
 
     def set_connectivity_graph(self):
         connectivity_graph = {}
@@ -101,8 +106,13 @@ class MapAnalyzerPather:
                       and (x.type_id != UnitID.CREEPTUMOR or not x.is_ready))
 
         for obj in nonpathables:
-            ri, ci = skdraw.disk(center=obj.position, radius=NONPATHABLE_RADIUS_FACTOR*obj.radius + 0.01, shape=grid.shape)
-            grid[ri, ci] = 0
+            footprint = obj.footprint_radius
+            left_bottom = obj.position.offset((-footprint, -footprint))
+            x_start = int(left_bottom[0])
+            y_start = int(left_bottom[1])
+            x_end = int(x_start + 2*footprint + 1)
+            y_end = int(y_start + 2*footprint + 1)
+            grid[x_start:x_end, y_start:y_end] = 1
 
         if len(self.minerals_included) != self.map_data.bot.mineral_field.amount:
             new_tags = self.map_data.bot.mineral_field.tags
@@ -111,12 +121,17 @@ class MapAnalyzerPather:
             missing_tags = old_mf_tags - new_tags
             for mf_tag in missing_tags:
                 mf_position, mf_radius = self.minerals_included[mf_tag]
-                ri, ci = skdraw.disk(center=mf_position, radius=mf_radius + 0.01, shape=grid.shape)
-                grid[ri, ci] = 1
-                del self.minerals_included[mf_tag]
+                x1 = int(mf_position[0])
+                x2 = x1 - 1
+                y = int(mf_position[1])
 
-                self.default_grid[ri, ci] = 1
-                self.default_grid_nodestr[ri, ci] = 1
+                self.default_grid[x1, y] = 1
+                self.default_grid[x2, y] = 1
+
+                self.default_grid_nodestr[x1, y] = 1
+                self.default_grid_nodestr[x2, y] = 1
+
+                del self.minerals_included[mf_tag]
 
         if include_destructables and len(self.destructables_included) != self.map_data.bot.destructables.amount:
 
