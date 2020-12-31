@@ -9,9 +9,9 @@ from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.position import Point2
 from skimage import draw as skdraw
 
-from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
+from MapAnalyzer.utils import change_destructable_status_in_grid
 from .cext import astar_path
 
 if TYPE_CHECKING:
@@ -34,7 +34,10 @@ class MapAnalyzerPather:
         self._set_default_grids()
 
     def _set_default_grids(self):
-        self.default_grid = self.map_data.path_arr.T.copy()
+        # need to consider the placement arr because our base minerals, geysers and townhall
+        # are not pathable in the pathing grid
+        # we manage those manually so they are accurate through the game
+        self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
         self.default_grid_nodestr = self.default_grid.copy()
 
         self.destructables_included = {}
@@ -44,24 +47,23 @@ class MapAnalyzerPather:
         # these will be set nonpathable when updating grids for the destructables
         # that still exist
         for dest in self.map_data.bot.destructables:
-            ri, ci = skdraw.disk(center=dest.position, radius=dest.radius + 0.01, shape=self.default_grid.shape)
-            if "unbuildable" not in dest.name.lower():
-                self.default_grid_nodestr[ri, ci] = 1
-                self.default_grid[ri, ci] = 0
-                self.destructables_included[dest.tag] = (dest.position, dest.radius)
-            else:
-                self.default_grid_nodestr[ri, ci] = 1
-                self.default_grid[ri, ci] = 1
-                self.destructables_included[dest.tag] = (dest.position, dest.radius)
+            self.destructables_included[dest.tag] = dest
+            if "unbuildable" not in dest.name.lower() and "acceleration" not in dest.name.lower():
+                change_destructable_status_in_grid(self.default_grid, dest, 0)
+                change_destructable_status_in_grid(self.default_grid_nodestr, dest, 1)
 
         # set each geyser as non pathable, these don't update during the game
         for geyser in self.map_data.bot.vespene_geyser:
-            ri, ci = skdraw.disk(center=geyser.position, radius=geyser.radius + 0.01, shape=self.default_grid.shape)
-            self.default_grid[ri, ci] = 0
-            self.default_grid_nodestr[ri, ci] = 0
+            left_bottom = geyser.position.offset((-1.5, -1.5))
+            x_start = int(left_bottom[0])
+            y_start = int(left_bottom[1])
+            x_end = int(x_start + 3)
+            y_end = int(y_start + 3)
+            self.default_grid[x_start:x_end, y_start:y_end] = 0
+            self.default_grid_nodestr[x_start:x_end, y_start:y_end] = 0
 
         for mineral in self.map_data.bot.mineral_field:
-            self.minerals_included[mineral.tag] = (mineral.position, mineral.radius)
+            self.minerals_included[mineral.tag] = mineral
             x1 = int(mineral.position[0])
             x2 = x1 - 1
             y = int(mineral.position[1])
@@ -99,6 +101,7 @@ class MapAnalyzerPather:
         return paths
 
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
+        ret_grid = grid.copy()
         nonpathables = self.map_data.bot.structures.not_flying
         nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
         nonpathables = nonpathables.filter(
@@ -110,9 +113,17 @@ class MapAnalyzerPather:
             left_bottom = obj.position.offset((-footprint, -footprint))
             x_start = int(left_bottom[0])
             y_start = int(left_bottom[1])
-            x_end = int(x_start + 2*footprint + 1)
-            y_end = int(y_start + 2*footprint + 1)
-            grid[x_start:x_end, y_start:y_end] = 1
+            x_end = int(x_start + 2*footprint)
+            y_end = int(y_start + 2*footprint)
+
+            ret_grid[x_start:x_end, y_start:y_end] = 0
+
+            # townhall sized buildings should have their corner spots pathable
+            if footprint == 2.5:
+                ret_grid[x_start, y_start] = 1
+                ret_grid[x_start, y_end - 1] = 1
+                ret_grid[x_end - 1, y_start] = 1
+                ret_grid[x_end - 1, y_end - 1] = 1
 
         if len(self.minerals_included) != self.map_data.bot.mineral_field.amount:
             new_tags = self.map_data.bot.mineral_field.tags
@@ -120,10 +131,13 @@ class MapAnalyzerPather:
 
             missing_tags = old_mf_tags - new_tags
             for mf_tag in missing_tags:
-                mf_position, mf_radius = self.minerals_included[mf_tag]
-                x1 = int(mf_position[0])
+                mf = self.minerals_included[mf_tag]
+                x1 = int(mf.position[0])
                 x2 = x1 - 1
-                y = int(mf_position[1])
+                y = int(mf.position[1])
+
+                ret_grid[x1, y] = 1
+                ret_grid[x2, y] = 1
 
                 self.default_grid[x1, y] = 1
                 self.default_grid[x2, y] = 1
@@ -140,14 +154,13 @@ class MapAnalyzerPather:
             missing_tags = old_dest_tags - new_tags
 
             for dest_tag in missing_tags:
-                dest_position, dest_radius = self.destructables_included[dest_tag]
-                ri, ci = skdraw.disk(center=dest_position, radius=dest_radius + 0.01, shape=grid.shape)
-                grid[ri, ci] = 1
+                dest = self.destructables_included[dest_tag]
+                change_destructable_status_in_grid(ret_grid, dest, 1)
+                change_destructable_status_in_grid(self.default_grid, dest, 1)
 
                 del self.destructables_included[dest_tag]
-                self.default_grid[ri, ci] = 1
 
-        return grid
+        return ret_grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         # Add 0.01 to radius to find a closed disk
