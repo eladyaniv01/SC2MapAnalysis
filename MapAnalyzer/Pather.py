@@ -116,12 +116,12 @@ class MapAnalyzerPather:
         return np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
-        lowest_np = self.lowest_cost_points_np(from_pos, radius, grid)
+        lowest = self.lowest_cost_points_np(from_pos, radius, grid)
 
-        if not lowest_np:
+        if not lowest:
             return None
 
-        return list(map(Point2, lowest_np))
+        return list(map(Point2, lowest))
 
     def get_base_pathing_grid(self) -> ndarray:
 
@@ -161,6 +161,7 @@ class MapAnalyzerPather:
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
+
         grid = self.get_base_pathing_grid()
         grid = np.where(grid != 0, np.float32(default_weight), np.float32(np.inf))
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
@@ -168,6 +169,7 @@ class MapAnalyzerPather:
 
     def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                          allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
+
         if start is not None and goal is not None:
             start = int(round(start[0])), int(round(start[1]))
             goal = int(round(goal[0])), int(round(goal[1]))
