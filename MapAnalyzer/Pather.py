@@ -124,40 +124,27 @@ class MapAnalyzerPather:
         return list(map(Point2, lowest))
 
     def get_base_pathing_grid(self) -> ndarray:
-
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-
-        #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
-        if len(self.map_data.bot.game_info.vision_blockers) > 0:
-            vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
-            # faster way to do :
-            # for point in self.map_data.bot.game_info.vision_blockers:
-            #         #     grid[point] = 1
-
-            # some maps dont have vbs
-            grid[tuple(vbs.T)] = 1  # <-
-
-        return grid
+        return self.map_data.bot.game_info.pathing_grid.data_numpy.T.copy()
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self.get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, np.float32(default_weight), np.float32(np.inf))
         grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
 
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
-        clean_air_grid = np.ones(shape=reversed(self.map_data.path_arr.shape), dtype=np.float32)
+        clean_air_grid = np.ones(shape=self.map_data.path_arr.T.shape, dtype=np.float32)
         if default_weight == 1:
             return clean_air_grid
         else:
-            return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
+            return np.where(clean_air_grid == 1, np.float32(default_weight), np.float32(np.inf))
 
     def get_air_vs_ground_grid(self, default_weight: float) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-        air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
+        air_vs_ground_grid = np.where(grid == 0, np.float32(1), np.float32(default_weight))
         return air_vs_ground_grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
