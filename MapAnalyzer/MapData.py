@@ -512,11 +512,6 @@ class MapData:
                 >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
                 (57,120)
         """
-        if isinstance(points[0], Point2):
-            # Converting to ndarray from List[Point2] is ~10x slower for any amount of points
-            return sorted(points,
-                          key=lambda p: self.distance_squared(p, target))[0]
-
         if not isinstance(points, (list, ndarray)):
             logger.warning(type(points))
 
