@@ -74,11 +74,11 @@ class MapAnalyzerPather:
             grid = self.add_cost(position=obj.position, radius=radius * obj.radius, arr=grid, weight=np.inf, safe=False)
         for pos in self.map_data.resource_blockers:
             radius = RESOURCE_BLOCKER_RADIUS_FACTOR
-            grid = self.add_cost(position=pos, radius=radius, arr=grid, weight=np.inf, safe=False)
+            grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf, safe=False)
         if include_destructables:
             for rock in self.map_data.bot.destructables:
                 if "plates" not in rock.name.lower():
-                    self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
+                    self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
         return grid
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
