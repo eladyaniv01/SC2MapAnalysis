@@ -233,7 +233,7 @@ class MapAnalyzerPather:
     @staticmethod
     def add_cost(position: Tuple[float, float], radius: float, arr=ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
-        disk = tuple(draw_circle(position, radius, arr.shape)
+        disk = tuple(draw_circle(position, radius, arr.shape))
 
         if initial_default_weights > 0:
             arr[rdisk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
