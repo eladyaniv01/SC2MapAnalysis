@@ -27,15 +27,15 @@ def bounded_circle(center, radius, shape):
 def draw_circle(c, radius, shape=None):
     center = np.array(c)
     upper_left = np.ceil(center - radius).astype(int)
-    lower_right = np.floor(center + radius).astype(int)
+    lower_right = np.floor(center + radius).astype(int) - 1
 
     if shape is not None:
         # Constrain upper_left and lower_right by shape boundary.
-        upper_left = np.maximum(upper_left, np.array([0, 0]))
-        lower_right = np.minimum(lower_right, np.array(shape[:2]) - 1)
+        upper_left = np.maximum(upper_left, 0)
+        lower_right = np.minimum(lower_right, np.array(shape))
 
     shifted_center = center - upper_left
-    bounding_shape = lower_right - upper_left + 1
+    bounding_shape = lower_right - upper_left
 
     rr, cc = bounded_circle(shifted_center, radius, bounding_shape)
     return rr + upper_left[0], cc + upper_left[1]
@@ -90,19 +90,6 @@ class MapAnalyzerPather:
         nonpathables.extend(self.map_data.mineral_fields)
         nonpathables.extend(self.map_data.normal_geysers)
         for obj in nonpathables:
-            '''# Add centered buildings
-            if obj.footprint_radius and obj.footprint_radius % 1 == 0.5:
-                offset = (obj.footprint_radius, obj.footprint_radius)
-                grid[np.array(skdraw.rectangle(obj.position - offset,
-                    obj.position + offset)).astype(int)] = np.inf
-
-            # Add Mineral Lines
-            elif 'mineral' in obj.name.lower():
-                offsets = np.array([[-1, -0.5], [-1, 0.5], [0, -0.5], [0, 0.5],
-                        [1, -0.5], [1, 0.5]])
-                grid[np.array(obj.position + offsets, dtype=int)] = np.inf
-            # Add others
-            else:'''
             if 'geyser' in obj.name.lower():
                 radius = GEYSER_RADIUS_FACTOR
             else:
@@ -118,20 +105,23 @@ class MapAnalyzerPather:
                     self.add_cost(position=rock.position, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
         return grid
 
-    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
+    def lowest_cost_points_np(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
         disk = tuple(draw_circle(from_pos, radius, shape=grid.shape))
-        if len(disk[0]) == 0:
 
-            # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            logger.debug(OutOfBoundsException(from_pos))
-            # self.map_data.logger.trace()
+        if len(disk[0]) == 0:
             return None
 
         arrmin = np.min(grid[disk])
         cond = grid[disk] == arrmin
-        lowest = np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
+        return np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
 
-        return list(map(Point2, lowest))
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
+        lowest_np = self.lowest_cost_points_np(from_pos, radius, grid)
+
+        if not lowest_np:
+            return None
+
+        return list(map(Point2, lowest_np))
 
     def get_base_pathing_grid(self) -> ndarray:
 
@@ -159,9 +149,9 @@ class MapAnalyzerPather:
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
-        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
+        clean_air_grid = np.ones(shape=reversed(self.map_data.path_arr.shape), dtype=np.float32)
         if default_weight == 1:
-            return clean_air_grid.copy()
+            return clean_air_grid
         else:
             return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
 
@@ -172,7 +162,7 @@ class MapAnalyzerPather:
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         grid = self.get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        grid = np.where(grid != 0, np.float32(default_weight), np.float32(np.inf))
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         return grid
 
@@ -243,7 +233,6 @@ class MapAnalyzerPather:
     @staticmethod
     def add_cost(position: Tuple[float, float], radius: float, arr=ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
-        # Add 0.01 to change from open to closed disk
         disk = tuple(draw_circle(position, radius, shape=arr.shape))
 
         if initial_default_weights > 0:
@@ -251,7 +240,7 @@ class MapAnalyzerPather:
                     arr[disk])
 
         arr[disk] += weight
-        if safe and np.any(arr < 1):
+        if safe and np.any(arr[disk] < 1):
             logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
             arr = np.where(arr < 1, 1, arr)

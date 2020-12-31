@@ -469,7 +469,7 @@ class MapData:
 
     @staticmethod
     def closest_node_idx(
-            node: Union[Point2, ndarray], nodes: Union[List[Tuple[int, int]], ndarray]
+            node: Union[Point2, ndarray], nodes: ndarray
     ) -> int:
         """
         :rtype: int
@@ -483,7 +483,7 @@ class MapData:
         return closest_index
 
     def closest_towards_point(
-            self, points: List[Point2], target: Union[Point2, tuple]
+            self, points: Union[List[Point2], ndarray], target: Union[Point2, tuple]
     ) -> Point2:
         """
         :rtype: :class:`sc2.position.Point2`
@@ -503,11 +503,15 @@ class MapData:
                 >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
                 (57,120)
         """
-        if isinstance(points, list):
+        if isinstance(points, np.ndarray):
             return points[self.closest_node_idx(node=target, nodes=points)]
         else:
-            logger.warning(type(points))
-            return points[self.closest_node_idx(node=target, nodes=points)]
+            if not isinstance(points, list):
+                logger.warning(type(points))
+            # Converting to ndarray is much slower
+            return sorted(points,
+                          key=lambda p:
+                          (p[0] - target[0]) ** 2 + (p[1] - target[1]) ** 2)[0]
 
     """Query methods"""
 
