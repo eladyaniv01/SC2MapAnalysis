@@ -341,7 +341,7 @@ class MapData:
         Example:
             >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
+            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,smoothing=False, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
