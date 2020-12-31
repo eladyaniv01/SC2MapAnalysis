@@ -104,7 +104,7 @@ class MapAnalyzerPather:
         return grid
     
     def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
-        """For use with evaluations that use numpy arrays; example:
+        """For use with evaluations that use numpy arrays
                 example: # Closest point to unit furthest from target
                         distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean")
                         lowest_points[(distances[0] - distances[1]).argmin()]
