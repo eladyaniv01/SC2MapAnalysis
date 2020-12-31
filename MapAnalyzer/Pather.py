@@ -13,6 +13,7 @@ from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import change_destructable_status_in_grid
 from .cext import astar_path
+from .destructibles import *
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -109,17 +110,23 @@ class MapAnalyzerPather:
                       and (x.type_id != UnitID.CREEPTUMOR or not x.is_ready))
 
         for obj in nonpathables:
-            footprint = obj.footprint_radius
-            left_bottom = obj.position.offset((-footprint, -footprint))
+            size = 1
+            if obj.type_id in buildings_2x2:
+                size = 2
+            elif obj.type_id in buildings_3x3:
+                size = 3
+            elif obj.type_id in buildings_5x5:
+                size = 5
+            left_bottom = obj.position.offset((-size / 2, -size / 2))
             x_start = int(left_bottom[0])
             y_start = int(left_bottom[1])
-            x_end = int(x_start + 2*footprint)
-            y_end = int(y_start + 2*footprint)
+            x_end = int(x_start + size)
+            y_end = int(y_start + size)
 
             ret_grid[x_start:x_end, y_start:y_end] = 0
 
             # townhall sized buildings should have their corner spots pathable
-            if footprint == 2.5:
+            if size == 5:
                 ret_grid[x_start, y_start] = 1
                 ret_grid[x_start, y_end - 1] = 1
                 ret_grid[x_end - 1, y_start] = 1
