@@ -118,7 +118,7 @@ class MapAnalyzerPather:
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         lowest = self.lowest_cost_points_np(from_pos, radius, grid)
 
-        if not lowest:
+        if lowest is None:
             return None
 
         return list(map(Point2, lowest))
