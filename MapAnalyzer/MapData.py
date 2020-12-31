@@ -513,7 +513,7 @@ class MapData:
                 (57,120)
         """
         if isinstance(points[0], Point2):
-            # Converting to ndarray from List[Point2] is much slower
+            # Converting to ndarray from List[Point2] is ~10x slower for any amount of points
             return sorted(points,
                           key=lambda p: self.distance_squared(p, target))[0]
 
