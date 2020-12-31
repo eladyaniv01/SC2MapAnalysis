@@ -198,6 +198,15 @@ class MapData:
 
         """
         return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
+    
+    def lowest_cost_points_array(self, from_pos: Point2, radius: float, grid: np.ndarray) -> ndarray:
+        """
+        :rtype:    Union[:class:`numpy.ndarray`, None]
+        Same as find_lowest_cost_points, but returns points in ndarray for use
+        
+        with methods such as .closest_towards_point
+        """
+        return self.pather.lowest_cost_points_array(from_pos=from_pos, radius=radius, grid=grid)
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """
