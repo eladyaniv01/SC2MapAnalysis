@@ -105,7 +105,9 @@ class MapAnalyzerPather:
     
     def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
         """For use with evaluations that use numpy arrays; example: For point closest to unit and farthest to target:
-        distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean"); lowest_points[(distances[0] - distances[1]).argmin()]
+                example: # Closest point to unit furthest from target
+                        distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean")
+                        lowest_points[(distances[0] - distances[1]).argmin()]
             - 140 µs per loop
             - find_lowest_cost_points: 1.75 ms per loop
         """
