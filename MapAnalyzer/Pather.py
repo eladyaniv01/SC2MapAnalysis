@@ -8,10 +8,11 @@ from numpy import ndarray
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.position import Point2
 
-from MapAnalyzer.constants import GEYSER_RADIUS_FACTOR, NONPATHABLE_RADIUS_FACTOR, RESOURCE_BLOCKER_RADIUS_FACTOR
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
+from MapAnalyzer.utils import change_destructable_status_in_grid
 from .cext import astar_path
+from .destructibles import *
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
@@ -53,6 +54,49 @@ class MapAnalyzerPather:
         )
         self.connectivity_graph = None  # set later by MapData
 
+        self._set_default_grids()
+        self.terrain_height = self.map_data.terrain_height.copy().T
+
+    def _set_default_grids(self):
+        # need to consider the placement arr because our base minerals, geysers and townhall
+        # are not pathable in the pathing grid
+        # we manage those manually so they are accurate through the game
+        self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+        self.default_grid_nodestr = self.default_grid.copy()
+
+        self.destructables_included = {}
+        self.minerals_included = {}
+
+        # set rocks and mineral walls to pathable in the beginning
+        # these will be set nonpathable when updating grids for the destructables
+        # that still exist
+        for dest in self.map_data.bot.destructables:
+            self.destructables_included[dest.position] = dest
+            if "unbuildable" not in dest.name.lower() and "acceleration" not in dest.name.lower():
+                change_destructable_status_in_grid(self.default_grid, dest, 0)
+                change_destructable_status_in_grid(self.default_grid_nodestr, dest, 1)
+
+        # set each geyser as non pathable, these don't update during the game
+        for geyser in self.map_data.bot.vespene_geyser:
+            left_bottom = geyser.position.offset((-1.5, -1.5))
+            x_start = int(left_bottom[0])
+            y_start = int(left_bottom[1])
+            x_end = int(x_start + 3)
+            y_end = int(y_start + 3)
+            self.default_grid[x_start:x_end, y_start:y_end] = 0
+            self.default_grid_nodestr[x_start:x_end, y_start:y_end] = 0
+
+        for mineral in self.map_data.bot.mineral_field:
+            self.minerals_included[mineral.position] = mineral
+            x1 = int(mineral.position[0])
+            x2 = x1 - 1
+            y = int(mineral.position[1])
+
+            self.default_grid[x1, y] = 0
+            self.default_grid[x2, y] = 0
+            self.default_grid_nodestr[x1, y] = 0
+            self.default_grid_nodestr[x2, y] = 0
+
     def set_connectivity_graph(self):
         connectivity_graph = {}
         for region in self.map_data.regions.values():
@@ -81,28 +125,103 @@ class MapAnalyzerPather:
         return paths
 
     def _add_non_pathables_ground(self, grid: ndarray, include_destructables: bool = True) -> ndarray:
+        ret_grid = grid.copy()
         nonpathables = self.map_data.bot.structures.not_flying
         nonpathables.extend(self.map_data.bot.enemy_structures.not_flying)
         nonpathables = nonpathables.filter(
             lambda x: (x.type_id != UnitID.SUPPLYDEPOTLOWERED or x.is_active)
-                  and (x.type_id != UnitID.CREEPTUMOR or not x.is_ready))
-        nonpathables.extend(self.map_data.mineral_fields)
-        nonpathables.extend(self.map_data.normal_geysers)
+                      and (x.type_id != UnitID.CREEPTUMOR or not x.is_ready))
+
         for obj in nonpathables:
-            radius = NONPATHABLE_RADIUS_FACTOR
-            if 'geyser' in obj.name.lower():
-                radius = GEYSER_RADIUS_FACTOR
-            grid = self.add_cost(position=obj.position.rounded, radius=radius * obj.radius, arr=grid, weight=np.inf, safe=False)
-        for pos in self.map_data.resource_blockers:
-            radius = RESOURCE_BLOCKER_RADIUS_FACTOR
-            grid = self.add_cost(position=pos.rounded, radius=radius, arr=grid, weight=np.inf, safe=False)
-        if include_destructables:
-            for rock in self.map_data.bot.destructables:
-                if "plates" not in rock.name.lower():
-                    self.add_cost(position=rock.position.rounded, radius=1 * rock.radius, arr=grid, weight=np.inf, safe=False)
-        return grid
-    
-    def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
+            size = 1
+            if obj.type_id in buildings_2x2:
+                size = 2
+            elif obj.type_id in buildings_3x3:
+                size = 3
+            elif obj.type_id in buildings_5x5:
+                size = 5
+            left_bottom = obj.position.offset((-size / 2, -size / 2))
+            x_start = int(left_bottom[0])
+            y_start = int(left_bottom[1])
+            x_end = int(x_start + size)
+            y_end = int(y_start + size)
+
+            ret_grid[x_start:x_end, y_start:y_end] = 0
+
+            # townhall sized buildings should have their corner spots pathable
+            if size == 5:
+                ret_grid[x_start, y_start] = 1
+                ret_grid[x_start, y_end - 1] = 1
+                ret_grid[x_end - 1, y_start] = 1
+                ret_grid[x_end - 1, y_end - 1] = 1
+
+        if len(self.minerals_included) != self.map_data.bot.mineral_field.amount:
+
+            new_positions = set(m.position for m in self.map_data.bot.mineral_field)
+            old_mf_positions = set(self.minerals_included)
+
+            missing_positions = old_mf_positions - new_positions
+            for mf_position in missing_positions:
+                x1 = int(mf_position[0])
+                x2 = x1 - 1
+                y = int(mf_position[1])
+
+                ret_grid[x1, y] = 1
+                ret_grid[x2, y] = 1
+
+                self.default_grid[x1, y] = 1
+                self.default_grid[x2, y] = 1
+
+                self.default_grid_nodestr[x1, y] = 1
+                self.default_grid_nodestr[x2, y] = 1
+
+                del self.minerals_included[mf_position]
+
+        if include_destructables and len(self.destructables_included) != self.map_data.bot.destructables.amount:
+            new_positions = set(d.position for d in self.map_data.bot.destructables)
+            old_dest_positions = set(self.destructables_included)
+            missing_positions = old_dest_positions - new_positions
+
+            for dest_position in missing_positions:
+                dest = self.destructables_included[dest_position]
+                change_destructable_status_in_grid(ret_grid, dest, 1)
+                change_destructable_status_in_grid(self.default_grid, dest, 1)
+
+                del self.destructables_included[dest_position]
+
+        return ret_grid
+
+    def find_eligible_point(self, point: Tuple[float, float], grid: np.ndarray, terrain_height: np.ndarray, max_distance: float) -> Optional[Tuple[int, int]]:
+        """
+        User may give a point that is in a nonpathable grid cell, for example inside a building or
+        inside rocks. The desired behavior is to move the point a bit so for example we can start or finish
+        next to the building the original point was inside of.
+        To make sure that we don't accidentally for example offer a point that is on low ground when the
+        first target was on high ground, we first try to find a point that maintains the terrain height.
+        After that we check for points on other terrain heights.
+        """
+        point = (int(point[0]), int(point[1]))
+
+        if grid[point] == np.inf:
+            target_height = terrain_height[point]
+            disk = tuple(draw_circle(point, max_distance, shape=grid.shape))
+            same_height_cond = np.logical_and(terrain_height[disk] == target_height, grid[disk] < np.inf)
+
+            if np.any(same_height_cond):
+                possible_points = np.column_stack((disk[0][same_height_cond], disk[1][same_height_cond]))
+                closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
+                return tuple(possible_points[closest_point_index])
+            else:
+                diff_height_cond = np.logical_and(terrain_height[disk] != target_height, grid[disk] < np.inf)
+                if np.any(diff_height_cond):
+                    possible_points = np.column_stack((disk[0][diff_height_cond], disk[1][diff_height_cond]))
+                    closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
+                    return tuple(possible_points[closest_point_index])
+                else:
+                    return None
+        return point
+
+    def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> Optional[np.ndarray]:
         """For use with evaluations that use numpy arrays
                 example: # Closest point to unit furthest from target
                         distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean")
@@ -111,7 +230,6 @@ class MapAnalyzerPather:
         """
         
         disk = tuple(draw_circle(from_pos, radius, shape=grid.shape))
-
         if len(disk[0]) == 0:
             return None
 
@@ -119,7 +237,7 @@ class MapAnalyzerPather:
         cond = grid[disk] == arrmin
         return np.column_stack((disk[0][cond], disk[1][cond]))
 
-    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> Optional[List[Point2]]:
         lowest = self.lowest_cost_points_array(from_pos, radius, grid)
 
         if lowest is None:
@@ -127,122 +245,114 @@ class MapAnalyzerPather:
 
         return list(map(Point2, lowest))
 
-    def get_base_pathing_grid(self) -> ndarray:
-
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-
-        #  steps  - convert list of coords to np array ,  then do grid[[*converted.T]] = val
-        if len(self.map_data.bot.game_info.vision_blockers) > 0:
-            vbs = np.array(list(self.map_data.bot.game_info.vision_blockers))
-            # faster way to do :
-            # for point in self.map_data.bot.game_info.vision_blockers:
-            #         #     grid[point] = 1
-
-            # some maps dont have vbs
-            grid[tuple(vbs.T)] = 1  # <-
-
-        return grid
+    def get_base_pathing_grid(self, include_destructables: bool = True) -> ndarray:
+        if include_destructables:
+            return self.default_grid.copy()
+        else:
+            return self.default_grid_nodestr.copy()
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
-        grid = self.get_base_pathing_grid()
+        grid = self.get_base_pathing_grid(include_destructables)
+        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
-        grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
-
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
-        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
-        if default_weight == 1:
-            return clean_air_grid.copy()
-        else:
-            return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
+        clean_air_grid = np.zeros(shape=self.default_grid.shape).astype(np.float32)
+        area = self.map_data.bot.game_info.playable_area
+        clean_air_grid[area.x:(area.x + area.width), area.y:(area.y + area.height)] = 1
+        return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
 
     def get_air_vs_ground_grid(self, default_weight: float) -> ndarray:
-        grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
-        air_vs_ground_grid = np.where(grid == 0, 1, default_weight).astype(np.float32)
-        return air_vs_ground_grid
+        grid = self.get_pyastar_grid(default_weight=default_weight, include_destructables=True)
+        # set non pathable points inside map bounds to value 1
+        area = self.map_data.bot.game_info.playable_area
+        start_x = area.x
+        end_x = area.x + area.width
+        start_y = area.y
+        end_y = area.y + area.height
+        grid[start_x:end_x, start_y:end_y] = np.where(grid[start_x:end_x, start_y:end_y] == np.inf, 1, default_weight)
+
+        return grid
 
     def get_pyastar_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
-
-        grid = self.get_base_pathing_grid()
-        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
+        grid = self.get_base_pathing_grid(include_destructables)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
+
+        grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         return grid
 
     def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                          allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
 
-        if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
-            goal = int(round(goal[0])), int(round(goal[1]))
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
         if grid is None:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
+        if start is not None and goal is not None:
+            start = int(round(start[0])), int(round(start[1]))
+            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
+            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+
+        # find_eligible_point didn't find any pathable nodes nearby
+        if start is None or goal is None:
+            return None
+
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
-            """
-            Edge case
-            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
-            """
-            # `if point` is checking with burnysc2 that the point is in map bounds
-            if 'everdream' in self.map_data.map_name.lower():
-                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
-            else:  # normal case
-                legal_path = [point for point in path if point]
 
-            legal_path.pop(0)
-            return legal_path
+            path.pop(0)
+            return path
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
     def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
-                   smoothing: bool = False,
-                   sensitivity: int = 1) -> Optional[List[Point2]]:
-        if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
-            goal = int(round(goal[0])), int(round(goal[1]))
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
+                 large: bool = False,
+                 smoothing: bool = False,
+                 sensitivity: int = 1) -> Optional[List[Point2]]:
         if grid is None:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
-        path = astar_path(grid, start, goal, smoothing)
+        if start is not None and goal is not None:
+            start = int(round(start[0])), int(round(start[1]))
+            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
+            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+
+        # find_eligible_point didn't find any pathable nodes nearby
+        if start is None or goal is None:
+            return None
+
+        path = astar_path(grid, start, goal, large, smoothing)
 
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
-            """
-            Edge case
-            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
-            """
-            # `if point` is checking with burnysc2 that the point is in map bounds
-            if 'everdream' in self.map_data.map_name.lower():
-                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
-            else:  # normal case
-                legal_path = [point for point in path if point]
+            path.pop(0)
 
-            legal_path.pop(0)
-            return legal_path
+            return path
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
     @staticmethod
-    def add_cost(position: Tuple[float, float], radius: float, arr=ndarray, weight: float = 100,
+    def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
         disk = tuple(draw_circle(position, radius, arr.shape))
 
         if initial_default_weights > 0:
-            arr[rdisk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
+            arr[disk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
 
         arr[disk] += weight
         if safe and np.any(arr < 1):

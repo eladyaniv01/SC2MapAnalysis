@@ -6,7 +6,8 @@ from sc2.position import Point2
 
 from MapAnalyzer import Region
 from MapAnalyzer.MapData import MapData
-from MapAnalyzer.utils import get_map_files_folder, mock_map_data
+from MapAnalyzer.destructibles import *
+from MapAnalyzer.utils import get_map_files_folder, mock_map_data, get_map_file_list
 from tests.mocksetup import get_map_datas, get_random_point, logger
 import numpy as np
 
@@ -28,12 +29,48 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
 
+def test_destructable_types() -> None:
+    map_list = get_map_file_list()
+    dest_types = set()
+    for map in map_list:
+        map_data = mock_map_data(map)
+        for dest in map_data.bot.destructables:
+            dest_types.add((dest.type_id, dest.name))
+
+    rock_types = set()
+    rock_types.update(destructable_ULBR)
+    rock_types.update(destructable_BLUR)
+    rock_types.update(destructable_6x2)
+    rock_types.update(destructable_4x4)
+    rock_types.update(destructable_2x4)
+    rock_types.update(destructable_2x2)
+    rock_types.update(destructable_2x6)
+    rock_types.update(destructable_4x2)
+    rock_types.update(destructable_4x12)
+    rock_types.update(destructable_6x6)
+    rock_types.update(destructable_12x4)
+
+    for dest in dest_types:
+        handled = False
+        type_id = dest[0]
+        name = dest[1].lower()
+        if 'mineralfield450' in name:
+            handled = True
+        elif 'unbuildable' in name:
+            handled = True
+        elif 'acceleration' in name:
+            handled = True
+        elif type_id in rock_types:
+            handled = True
+
+        assert handled, f"Destructable {type_id} with name {name} is not handled"
+
+
 def test_climber_grid() -> None:
     """assert that we can path through climb cells with climber grid,
     but not with normal grid"""
-    import pathlib
-    li = sorted(pathlib.Path('..').glob('**/*GoldenWallLE.xz'))
-    path = li[0].absolute()
+    path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
+
     map_data = mock_map_data(path)
     start = (150, 95)
     goal = (110, 40)
@@ -47,10 +84,7 @@ def test_climber_grid() -> None:
 
 def test_minerals_walls() -> None:
     # attempting to path through mineral walls in goldenwall should fail
-    import pathlib
-    li = sorted(pathlib.Path('..').glob('**/*GoldenWallLE.xz'))
-    # path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
-    path = li[0].absolute()
+    path = os.path.join(get_map_files_folder(), 'GoldenWallLE.xz')
     # logger.info(path)
     map_data = mock_map_data(path)
     start = (110, 95)
@@ -62,6 +96,13 @@ def test_minerals_walls() -> None:
     grid = map_data.get_climber_grid()
     path = map_data.pathfind(start=start, goal=goal, grid=grid)
     assert (path is None)
+
+    # remove the mineral wall that is blocking pathing from the left player's base to the bottom
+    # side of the map
+    map_data.bot.destructables = map_data.bot.destructables.filter(lambda x: x.distance_to((46, 41)) > 5)
+    grid = map_data.get_pyastar_grid()
+    path = map_data.pathfind(start=start, goal=goal, grid=grid)
+    assert (path is not None)
 
     # attempting to path through tight pathways near destructables should work
     path = os.path.join(get_map_files_folder(), 'AbyssalReefLE.xz')
@@ -207,7 +248,7 @@ class TestPathing:
         default_weight = 99
         grid = map_data.get_air_vs_ground_grid(default_weight=default_weight)
         ramps = map_data.map_ramps
-        path_array = map_data.path_arr.T
+        path_array = map_data.pather.default_grid
         for ramp in ramps:
             for point in ramp.points:
                 if path_array[point.x][point.y] == 1:
