@@ -34,12 +34,12 @@ def test_c_extension():
     walkable_grid = load_pathing_grid(abs_file_path)
 
     pathing_grid = np.where(walkable_grid == 0, np.inf, walkable_grid).astype(np.float32)
-    path = astar_path(pathing_grid, (3, 3), (33, 38), False)
+    path = astar_path(pathing_grid, (3, 3), (33, 38), False, False)
     assert(path is not None and path.shape[0] == 54)
 
     influenced_grid = pathing_grid.copy()
     influenced_grid[23:24, 5:20] = 100
-    path2 = astar_path(influenced_grid, (3, 3), (33, 38), False)
+    path2 = astar_path(influenced_grid, (3, 3), (33, 38), False, False)
 
     assert(path2 is not None and path2.shape[0] == 55)
 
