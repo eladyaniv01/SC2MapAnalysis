@@ -7,7 +7,6 @@ from loguru import logger
 from numpy import ndarray
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.position import Point2
-from skimage import draw as skdraw
 
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
@@ -17,6 +16,29 @@ from .destructibles import *
 
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
+    
+    
+def _bounded_circle(center, radius, shape):
+    xx, yy = np.ogrid[:shape[0], :shape[1]]
+    circle = (xx - center[0]) ** 2 + (yy - center[1]) ** 2
+    return np.nonzero(circle <= radius ** 2)
+
+
+def draw_circle(c, radius, shape=None):
+    center = np.array(c)
+    upper_left = np.ceil(center - radius).astype(int)
+    lower_right = np.floor(center + radius).astype(int) - 1
+
+    if shape is not None:
+        # Constrain upper_left and lower_right by shape boundary.
+        upper_left = np.maximum(upper_left, 0)
+        lower_right = np.minimum(lower_right, np.array(shape))
+
+    shifted_center = center - upper_left
+    bounding_shape = lower_right - upper_left
+
+    rr, cc = _bounded_circle(shifted_center, radius, bounding_shape)
+    return rr + upper_left[0], cc + upper_left[1]
 
 class MapAnalyzerPather:
     """"""
@@ -166,20 +188,28 @@ class MapAnalyzerPather:
                 del self.destructables_included[dest_position]
 
         return ret_grid
-
-    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
-        # Add 0.01 to radius to find a closed disk
-
-        disk = tuple(skdraw.disk(center=from_pos, radius=radius + 0.01, shape=grid.shape))
+		
+    def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
+        """For use with evaluations that use numpy arrays
+                example: # Closest point to unit furthest from target
+                        distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean")
+                        lowest_points[(distances[0] - distances[1]).argmin()]
+            - 140 µs per loop
+        """
+        
+        disk = tuple(draw_circle(from_pos, radius, shape=grid.shape))
         if len(disk[0]) == 0:
-            # this happens when the center point is near map edge, and the radius added goes beyond the edge
-            logger.debug(OutOfBoundsException(from_pos))
-            # self.map_data.logger.trace()
             return None
 
         arrmin = np.min(grid[disk])
         cond = grid[disk] == arrmin
-        lowest = np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
+        return np.column_stack((disk[0][cond], disk[1][cond]))
+
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
+        lowest = self.lowest_cost_points_array(from_pos, radius, grid)
+
+        if lowest is None:
+            return None
 
         return list(map(Point2, lowest))
 
@@ -285,16 +315,15 @@ class MapAnalyzerPather:
     @staticmethod
     def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
-        # Add 0.01 to change from open to closed disk
-        ri, ci = skdraw.disk(center=position, radius=radius + 0.01, shape=arr.shape)
+        disk = tuple(draw_circle(position, radius, arr.shape))
 
         if initial_default_weights > 0:
-            arr[ri, ci] = np.where(arr[ri, ci] == 1, initial_default_weights, arr[ri, ci])
+            arr[rdisk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
 
-        arr[ri, ci] += weight
+        arr[disk] += weight
         if safe and np.any(arr < 1):
             logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
-            arr = np.where(arr < 1, 1, arr)
+            arr = np.where(arr[disk] < 1, 1, arr[disk])
 
         return arr
