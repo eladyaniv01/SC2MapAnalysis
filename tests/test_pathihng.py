@@ -248,7 +248,7 @@ class TestPathing:
         default_weight = 99
         grid = map_data.get_air_vs_ground_grid(default_weight=default_weight)
         ramps = map_data.map_ramps
-        path_array = map_data.path_arr.T
+        path_array = map_data.pather.default_grid
         for ramp in ramps:
             for point in ramp.points:
                 if path_array[point.x][point.y] == 1:
