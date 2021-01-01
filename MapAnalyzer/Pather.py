@@ -188,8 +188,8 @@ class MapAnalyzerPather:
                 del self.destructables_included[dest_position]
 
         return ret_grid
-		
-    def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> np.ndarray:
+
+    def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> Optional[np.ndarray]:
         """For use with evaluations that use numpy arrays
                 example: # Closest point to unit furthest from target
                         distances = cdist([[unitpos, targetpos]], lowest_points, "sqeuclidean")
@@ -205,7 +205,7 @@ class MapAnalyzerPather:
         cond = grid[disk] == arrmin
         return np.column_stack((disk[0][cond], disk[1][cond]))
 
-    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
+    def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> Optional[List[Point2]]:
         lowest = self.lowest_cost_points_array(from_pos, radius, grid)
 
         if lowest is None:
