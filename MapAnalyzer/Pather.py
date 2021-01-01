@@ -117,7 +117,7 @@ class MapAnalyzerPather:
 
         arrmin = np.min(grid[disk])
         cond = grid[disk] == arrmin
-        return np.column_stack((disk[0][cond], disk[1][cond])).astype(int)
+        return np.column_stack((disk[0][cond], disk[1][cond]))
 
     def find_lowest_cost_points(self, from_pos: Point2, radius: float, grid: np.ndarray) -> List[Point2]:
         lowest = self.lowest_cost_points_array(from_pos, radius, grid)
