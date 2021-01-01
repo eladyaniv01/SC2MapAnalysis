@@ -18,7 +18,6 @@ from .destructibles import *
 if TYPE_CHECKING:
     from MapAnalyzer.MapData import MapData
 
-
 class MapAnalyzerPather:
     """"""
 
@@ -48,7 +47,7 @@ class MapAnalyzerPather:
         # these will be set nonpathable when updating grids for the destructables
         # that still exist
         for dest in self.map_data.bot.destructables:
-            self.destructables_included[dest.tag] = dest
+            self.destructables_included[dest.position] = dest
             if "unbuildable" not in dest.name.lower() and "acceleration" not in dest.name.lower():
                 change_destructable_status_in_grid(self.default_grid, dest, 0)
                 change_destructable_status_in_grid(self.default_grid_nodestr, dest, 1)
@@ -64,7 +63,7 @@ class MapAnalyzerPather:
             self.default_grid_nodestr[x_start:x_end, y_start:y_end] = 0
 
         for mineral in self.map_data.bot.mineral_field:
-            self.minerals_included[mineral.tag] = mineral
+            self.minerals_included[mineral.position] = mineral
             x1 = int(mineral.position[0])
             x2 = x1 - 1
             y = int(mineral.position[1])
@@ -133,15 +132,15 @@ class MapAnalyzerPather:
                 ret_grid[x_end - 1, y_end - 1] = 1
 
         if len(self.minerals_included) != self.map_data.bot.mineral_field.amount:
-            new_tags = self.map_data.bot.mineral_field.tags
-            old_mf_tags = set(self.minerals_included)
 
-            missing_tags = old_mf_tags - new_tags
-            for mf_tag in missing_tags:
-                mf = self.minerals_included[mf_tag]
-                x1 = int(mf.position[0])
+            new_positions = set(m.position for m in self.map_data.bot.mineral_field)
+            old_mf_positions = set(self.minerals_included)
+
+            missing_positions = old_mf_positions - new_positions
+            for mf_position in missing_positions:
+                x1 = int(mf_position[0])
                 x2 = x1 - 1
-                y = int(mf.position[1])
+                y = int(mf_position[1])
 
                 ret_grid[x1, y] = 1
                 ret_grid[x2, y] = 1
@@ -152,20 +151,19 @@ class MapAnalyzerPather:
                 self.default_grid_nodestr[x1, y] = 1
                 self.default_grid_nodestr[x2, y] = 1
 
-                del self.minerals_included[mf_tag]
+                del self.minerals_included[mf_position]
 
         if include_destructables and len(self.destructables_included) != self.map_data.bot.destructables.amount:
+            new_positions = set(d.position for d in self.map_data.bot.destructables)
+            old_dest_positions = set(self.destructables_included)
+            missing_positions = old_dest_positions - new_positions
 
-            new_tags = self.map_data.bot.destructables.tags
-            old_dest_tags = set(self.destructables_included)
-            missing_tags = old_dest_tags - new_tags
-
-            for dest_tag in missing_tags:
-                dest = self.destructables_included[dest_tag]
+            for dest_position in missing_positions:
+                dest = self.destructables_included[dest_position]
                 change_destructable_status_in_grid(ret_grid, dest, 1)
                 change_destructable_status_in_grid(self.default_grid, dest, 1)
 
-                del self.destructables_included[dest_tag]
+                del self.destructables_included[dest_position]
 
         return ret_grid
 
