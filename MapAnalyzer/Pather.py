@@ -340,7 +340,7 @@ class MapAnalyzerPather:
         disk = tuple(draw_circle(position, radius, arr.shape))
 
         if initial_default_weights > 0:
-            arr[rdisk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
+            arr[disk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
 
         arr[disk] += weight
         if safe and np.any(arr < 1):
