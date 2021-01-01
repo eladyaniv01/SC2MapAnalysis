@@ -640,12 +640,12 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
 
         for (int i = 0; i < 8; ++i)
         {
-            nbr_fits[i] = nbrs[i] != -1 ? 1 : 0;
+            nbr_fits[i] = (nbrs[i] != -1 && weights[nbrs[i]] < HUGE_VALF) ? 1 : 0;
         }
 
         if (large)
         {
-            if (nbrs[UP] != -1)
+            if (nbr_fits[UP])
             {
                 float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
                 float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
@@ -653,7 +653,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
                 nbr_fits[UP] = (up_left_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
             }
 
-            if (nbrs[LEFT] != -1)
+            if (nbr_fits[LEFT])
             {
                 float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
                 float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
@@ -661,7 +661,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
                 nbr_fits[LEFT] = (up_left_weight < HUGE_VALF || down_left_weight < HUGE_VALF) ? 1 : 0;
             }
 
-            if (nbrs[RIGHT] != -1)
+            if (nbr_fits[RIGHT])
             {
                 float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
                 float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
@@ -669,7 +669,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
                 nbr_fits[RIGHT] = (down_right_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
             }
 
-            if (nbrs[DOWN] != -1)
+            if (nbr_fits[DOWN])
             {
                 float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
                 float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
@@ -678,7 +678,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
             }
         }
         
-        if (nbrs[UP_LEFT] != -1)
+        if (nbr_fits[UP_LEFT])
         {
             float up_weight = weights[nbrs[UP]];
             float left_weight = weights[nbrs[LEFT]];
@@ -686,7 +686,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
             nbr_fits[UP_LEFT] = (up_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
         }
 
-        if (nbrs[UP_RIGHT] != -1)
+        if (nbr_fits[UP_RIGHT])
         {
             float up_weight = weights[nbrs[UP]];
             float right_weight = weights[nbrs[RIGHT]];
@@ -694,7 +694,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
             nbr_fits[UP_RIGHT] = (up_weight < HUGE_VALF && right_weight < HUGE_VALF) ? 1 : 0;
         }
 
-        if (nbrs[DOWN_LEFT] != -1)
+        if (nbr_fits[DOWN_LEFT])
         {
             float down_weight = weights[nbrs[DOWN]];
             float left_weight = weights[nbrs[LEFT]];
@@ -702,7 +702,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
             nbr_fits[DOWN_LEFT] = (down_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
         }
 
-        if (nbrs[DOWN_RIGHT] != -1)
+        if (nbr_fits[DOWN_RIGHT])
         {
             float down_weight = weights[nbrs[DOWN]];
             float right_weight = weights[nbrs[RIGHT]];
