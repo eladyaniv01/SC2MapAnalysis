@@ -491,7 +491,7 @@ class MapData:
         """
         if isinstance(nodes, list):
             iter = chain.from_iterable(nodes)
-            nodes = np.fromiter(iter, dtype=type(nodes[0][0], count=len(nodes) * 2).reshape((-1, 2))
+            nodes = np.fromiter(iter, dtype=type(nodes[0][0]), count=len(nodes) * 2).reshape((-1, 2))
             
         closest_index = distance.cdist([node], nodes, "sqeuclidean").argmin()
         return closest_index
