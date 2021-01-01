@@ -292,22 +292,12 @@ class MapAnalyzerPather:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
 
-
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
-            """
-            Edge case
-            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
-            """
-            # `if point` is checking with burnysc2 that the point is in map bounds
-            if 'everdream' in self.map_data.map_name.lower():
-                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
-            else:  # normal case
-                legal_path = [point for point in path if point]
 
-            legal_path.pop(0)
-            return legal_path
+            path.pop(0)
+            return path
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
@@ -333,18 +323,9 @@ class MapAnalyzerPather:
 
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
-            """
-            Edge case
-            EverDreamLE,  (81, 29) is considered in map bounds,  but it is not.
-            """
-            # `if point` is checking with burnysc2 that the point is in map bounds
-            if 'everdream' in self.map_data.map_name.lower():
-                legal_path = [point for point in path if point and point.x != 81 and point.y != 29]
-            else:  # normal case
-                legal_path = [point for point in path if point]
+            path.pop(0)
 
-            legal_path.pop(0)
-            return legal_path
+            return path
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
