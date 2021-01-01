@@ -192,6 +192,14 @@ class MapAnalyzerPather:
         return ret_grid
 
     def find_eligible_point(self, point: Tuple[float, float], grid: np.ndarray, terrain_height: np.ndarray, max_distance: float) -> Optional[Tuple[int, int]]:
+        """
+        User may give a point that is in a nonpathable grid cell, for example inside a building or
+        inside rocks. The desired behavior is to move the point a bit so for example we can start or finish
+        next to the building the original point was inside of.
+        To make sure that we don't accidentally for example offer a point that is on low ground when the
+        first target was on high ground, we first try to find a point that maintains the terrain height.
+        After that we check for points on other terrain heights.
+        """
         point = (int(point[0]), int(point[1]))
 
         if grid[point] == np.inf:
