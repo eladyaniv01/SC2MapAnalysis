@@ -1,3 +1,5 @@
+import math
+from itertools import chain
 from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
@@ -463,9 +465,17 @@ class MapData:
         :rtype: float64
 
         Euclidean distance
-
         """
-        return (pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2)) ** 0.5
+        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2)
+
+    @staticmethod
+    def distance_squared(p1: Point2, p2: Point2) -> float64:
+        """
+        :rtype: float64
+
+        Euclidean distance squared
+        """
+        return (p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2
 
     @staticmethod
     def closest_node_idx(
@@ -479,7 +489,11 @@ class MapData:
         will return the index of the closest node in the list to ``node``
 
         """
-        closest_index = distance.cdist([node], nodes).argmin()
+        if isinstance(nodes, list):
+            iter = chain.from_iterable(nodes)
+            nodes = np.fromiter(iter, dtype=type(nodes[0][0], count=len(nodes) * 2).reshape((-1, 2))
+            
+        closest_index = distance.cdist([node], nodes, "sqeuclidean").argmin()
         return closest_index
 
     def closest_towards_point(
@@ -503,11 +517,10 @@ class MapData:
                 >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
                 (57,120)
         """
-        if isinstance(points, list):
-            return points[self.closest_node_idx(node=target, nodes=points)]
-        else:
+        if not isinstance(points, (list, ndarray)):
             logger.warning(type(points))
-            return points[self.closest_node_idx(node=target, nodes=points)]
+
+        return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
 
