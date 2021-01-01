@@ -189,6 +189,28 @@ class MapAnalyzerPather:
 
         return ret_grid
 
+    def find_eligible_point(self, point: tuple, grid: np.ndarray, terrain_height: np.ndarray, max_distance: float) -> Optional[tuple]:
+        point = (int(point[0]), int(point[1]))
+
+        if grid[point] == np.inf:
+            target_height = terrain_height[point]
+            disk = tuple(draw_circle(point, max_distance, shape=grid.shape))
+            same_height_cond = np.logical_and(terrain_height[disk] == target_height, grid[disk] < np.inf)
+
+            if np.any(same_height_cond):
+                possible_points = np.column_stack((disk[0][same_height_cond], disk[1][same_height_cond]))
+                closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
+                return tuple(possible_points[closest_point_index])
+            else:
+                diff_height_cond = np.logical_and(terrain_height[disk] != target_height, grid[disk] < np.inf)
+                if np.any(diff_height_cond):
+                    possible_points = np.column_stack((disk[0][diff_height_cond], disk[1][diff_height_cond]))
+                    closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
+                    return tuple(possible_points[closest_point_index])
+                else:
+                    return None
+        return point
+
     def lowest_cost_points_array(self, from_pos: tuple, radius: float, grid: np.ndarray) -> Optional[np.ndarray]:
         """For use with evaluations that use numpy arrays
                 example: # Closest point to unit furthest from target
