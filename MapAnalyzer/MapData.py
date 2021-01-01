@@ -1,4 +1,5 @@
 import math
+from itertools import chain
 from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
@@ -488,6 +489,10 @@ class MapData:
         will return the index of the closest node in the list to ``node``
 
         """
+        if isinstance(nodes, list):
+            iter = chain.from_iterable(nodes)
+            nodes = np.fromiter(iter, dtype=type(nodes[0][0], count=len(nodes) * 2).reshape((-1, 2))
+            
         closest_index = distance.cdist([node], nodes, "sqeuclidean").argmin()
         return closest_index
 
