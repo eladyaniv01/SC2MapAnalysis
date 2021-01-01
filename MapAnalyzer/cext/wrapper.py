@@ -45,7 +45,8 @@ def astar_path(
         weights: np.ndarray,
         start: Tuple[int, int],
         goal: Tuple[int, int],
-        smoothing: bool) -> Union[np.ndarray, None]:
+        large: bool = False,
+        smoothing: bool = False) -> Union[np.ndarray, None]:
     # For the heuristic to be valid, each move must have a positive cost.
     # Demand costs above 1 so floating point inaccuracies aren't a problem
     # when comparing costs
@@ -65,7 +66,7 @@ def astar_path(
     start_idx = np.ravel_multi_index(start, (height, width))
     goal_idx = np.ravel_multi_index(goal, (height, width))
     path = ext_astar(
-        weights.flatten(), height, width, start_idx, goal_idx, smoothing
+        weights.flatten(), height, width, start_idx, goal_idx, large, smoothing
     )
     return path
 

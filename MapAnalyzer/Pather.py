@@ -251,8 +251,9 @@ class MapAnalyzerPather:
             return None
 
     def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
-                   smoothing: bool = False,
-                   sensitivity: int = 1) -> Optional[List[Point2]]:
+                 large: bool = False,
+                 smoothing: bool = False,
+                 sensitivity: int = 1) -> Optional[List[Point2]]:
         if start is not None and goal is not None:
             start = int(round(start[0])), int(round(start[1]))
             goal = int(round(goal[0])), int(round(goal[1]))
@@ -263,7 +264,7 @@ class MapAnalyzerPather:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
 
-        path = astar_path(grid, start, goal, smoothing)
+        path = astar_path(grid, start, goal, large, smoothing)
 
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]

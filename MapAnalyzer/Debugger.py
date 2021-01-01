@@ -218,6 +218,7 @@ class MapAnalyzerDebugger:
     def plot_influenced_path(self, start: Union[Tuple[float, float], Point2],
                                goal: Union[Tuple[float, float], Point2],
                                weight_array: ndarray,
+                               large: bool = False,
                                smoothing: bool = False,
                                name: Optional[str] = None,
                                fontdict: dict = None) -> None:
@@ -233,6 +234,7 @@ class MapAnalyzerDebugger:
         arr = weight_array.copy()
         path = self.map_data.pathfind(start, goal,
                                         grid=arr,
+                                        large=large,
                                         smoothing=smoothing,
                                         sensitivity=1)
         ax: plt.Axes = plt.subplot(1, 1, 1)

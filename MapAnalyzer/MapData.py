@@ -303,7 +303,7 @@ class MapData:
         Example:
             >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
+            >>> path = self.pathfind_pyastar(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -314,7 +314,7 @@ class MapData:
                                             sensitivity=sensitivity)
 
     def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
-                 grid: Optional[ndarray] = None, smoothing: bool = False,
+                 grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
                  sensitivity: int = 1) -> Optional[List[Point2]]:
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
@@ -334,6 +334,10 @@ class MapData:
 
         getting every  n-``th`` point works better in practice
 
+        `` large`` is a boolean that determines whether we are doing pathing with large unit sizes
+        like Thor and Ultralisk. When it's false the pathfinding is using unit size 1, so if
+        you want to a guarantee that a unit with size > 1 fits through the path then large should be True.
+
         ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.
         it will skip all the waypoints it can if taking the straight line forward is better
         according to the influence grid
@@ -341,14 +345,14 @@ class MapData:
         Example:
             >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,smoothing=False, sensitivity=3)
+            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid, large=False, smoothing=False, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
             * :meth:`.MapData.find_lowest_cost_points`
 
         """
-        return self.pather.pathfind(start=start, goal=goal, grid=grid, smoothing=smoothing,
+        return self.pather.pathfind(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
                                     sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100, safe: bool = True,
@@ -887,12 +891,13 @@ class MapData:
                                            allow_diagonal=allow_diagonal)
 
     def plot_influenced_path(self,
-                               start: Union[Tuple[float, float], Point2],
-                               goal: Union[Tuple[float, float], Point2],
-                               weight_array: ndarray,
-                               smoothing: bool = False,
-                               name: Optional[str] = None,
-                               fontdict: dict = None) -> None:
+                             start: Union[Tuple[float, float], Point2],
+                             goal: Union[Tuple[float, float], Point2],
+                             weight_array: ndarray,
+                             large: bool = False,
+                             smoothing: bool = False,
+                             name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
         """
 
         A useful debug utility method for experimenting with the :mod:`.Pather` module
@@ -900,11 +905,12 @@ class MapData:
         """
 
         self.debugger.plot_influenced_path(start=start,
-                                             goal=goal,
-                                             weight_array=weight_array,
-                                             smoothing=smoothing,
-                                             name=name,
-                                             fontdict=fontdict)
+                                           goal=goal,
+                                           weight_array=weight_array,
+                                           large=large,
+                                           smoothing=smoothing,
+                                           name=name,
+                                           fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)
