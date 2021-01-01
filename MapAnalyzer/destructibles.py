@@ -76,6 +76,7 @@ BUILDING_IDS = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
 
 destructable_2x2 = {
     UnitTypeId.ROCKS2X2NONCONJOINED,
+    UnitTypeId.DEBRIS2X2NONCONJOINED
 }
 
 destructable_4x4 = {
