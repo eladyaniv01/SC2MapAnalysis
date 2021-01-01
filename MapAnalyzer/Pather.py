@@ -40,6 +40,7 @@ def draw_circle(c, radius, shape=None):
     rr, cc = _bounded_circle(shifted_center, radius, bounding_shape)
     return rr + upper_left[0], cc + upper_left[1]
 
+
 class MapAnalyzerPather:
     """"""
 
@@ -54,6 +55,7 @@ class MapAnalyzerPather:
         self.connectivity_graph = None  # set later by MapData
 
         self._set_default_grids()
+        self.terrain_height = self.map_data.terrain_height.copy().T
 
     def _set_default_grids(self):
         # need to consider the placement arr because our base minerals, geysers and townhall
@@ -189,7 +191,7 @@ class MapAnalyzerPather:
 
         return ret_grid
 
-    def find_eligible_point(self, point: tuple, grid: np.ndarray, terrain_height: np.ndarray, max_distance: float) -> Optional[tuple]:
+    def find_eligible_point(self, point: Tuple[float, float], grid: np.ndarray, terrain_height: np.ndarray, max_distance: float) -> Optional[Tuple[int, int]]:
         point = (int(point[0]), int(point[1]))
 
         if grid[point] == np.inf:
@@ -271,15 +273,19 @@ class MapAnalyzerPather:
     def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                          allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
 
-        if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
-            goal = int(round(goal[0])), int(round(goal[1]))
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
         if grid is None:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
+
+        if start is not None and goal is not None:
+            start = int(round(start[0])), int(round(start[1]))
+            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
+            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+
 
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
@@ -304,15 +310,18 @@ class MapAnalyzerPather:
                  large: bool = False,
                  smoothing: bool = False,
                  sensitivity: int = 1) -> Optional[List[Point2]]:
-        if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
-            goal = int(round(goal[0])), int(round(goal[1]))
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
         if grid is None:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
+
+        if start is not None and goal is not None:
+            start = int(round(start[0])), int(round(start[1]))
+            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
+            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
 
         path = astar_path(grid, start, goal, large, smoothing)
 
