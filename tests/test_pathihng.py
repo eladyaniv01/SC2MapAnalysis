@@ -6,7 +6,8 @@ from sc2.position import Point2
 
 from MapAnalyzer import Region
 from MapAnalyzer.MapData import MapData
-from MapAnalyzer.utils import get_map_files_folder, mock_map_data
+from MapAnalyzer.destructibles import *
+from MapAnalyzer.utils import get_map_files_folder, mock_map_data, get_map_file_list
 from tests.mocksetup import get_map_datas, get_random_point, logger
 import numpy as np
 
@@ -26,6 +27,43 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
             argnames = [x[0] for x in items]
             argvalues.append(([x[1] for x in items]))
         metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
+
+
+def test_destructable_types() -> None:
+    map_list = get_map_file_list()
+    dest_types = set()
+    for map in map_list:
+        map_data = mock_map_data(map)
+        for dest in map_data.bot.destructables:
+            dest_types.add((dest.type_id, dest.name))
+
+    rock_types = set()
+    rock_types.update(destructable_ULBR)
+    rock_types.update(destructable_BLUR)
+    rock_types.update(destructable_6x2)
+    rock_types.update(destructable_4x4)
+    rock_types.update(destructable_2x4)
+    rock_types.update(destructable_2x2)
+    rock_types.update(destructable_2x6)
+    rock_types.update(destructable_4x2)
+    rock_types.update(destructable_4x12)
+    rock_types.update(destructable_6x6)
+    rock_types.update(destructable_12x4)
+
+    for dest in dest_types:
+        handled = False
+        type_id = dest[0]
+        name = dest[1].lower()
+        if 'mineralfield450' in name:
+            handled = True
+        elif 'unbuildable' in name:
+            handled = True
+        elif 'acceleration' in name:
+            handled = True
+        elif type_id in rock_types:
+            handled = True
+
+        assert handled, f"Destructable {type_id} with name {name} is not handled"
 
 
 def test_climber_grid() -> None:
