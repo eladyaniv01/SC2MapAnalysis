@@ -640,10 +640,6 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
 
         for (int i = 0; i < 8; ++i)
         {
-            if (nbrs[i] != -1)
-            {
-                nbrs[i] = (weights[nbrs[i]] < HUGE_VALF) ? nbrs[i] : -1;
-            }
             nbr_fits[i] = nbrs[i] != -1 ? 1 : 0;
         }
 
