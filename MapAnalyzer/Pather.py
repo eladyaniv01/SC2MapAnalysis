@@ -292,6 +292,10 @@ class MapAnalyzerPather:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
             return None
 
+        # find_eligible_point didn't find any pathable nodes nearby
+        if start is None or goal is None:
+            return None
+
         path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
         if path is not None:
             path = list(map(Point2, path))[::sensitivity]
@@ -317,6 +321,10 @@ class MapAnalyzerPather:
             goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
         else:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+
+        # find_eligible_point didn't find any pathable nodes nearby
+        if start is None or goal is None:
             return None
 
         path = astar_path(grid, start, goal, large, smoothing)
