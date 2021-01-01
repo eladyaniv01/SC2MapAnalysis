@@ -252,11 +252,10 @@ class MapAnalyzerPather:
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
-        clean_air_grid = np.ones(shape=self.map_data.path_arr.shape).astype(np.float32).T
-        if default_weight == 1:
-            return clean_air_grid.copy()
-        else:
-            return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
+        clean_air_grid = np.zeros(shape=self.default_grid.shape).astype(np.float32)
+        area = self.map_data.bot.game_info.playable_area
+        clean_air_grid[area.x:(area.x + area.width), area.y:(area.y + area.height)] = 1
+        return np.where(clean_air_grid == 1, default_weight, np.inf).astype(np.float32)
 
     def get_air_vs_ground_grid(self, default_weight: float) -> ndarray:
         grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
