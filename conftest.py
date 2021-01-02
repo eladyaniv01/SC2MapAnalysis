@@ -1,5 +1,7 @@
-from tests.mocksetup import get_map_datas
 import pytest
+
+from tests.test_docs import map_data
+
 #
 # def pytest_collection_finish(session):
 #     """Handle the pytest collection finish hook: configure pyannotate.
@@ -25,9 +27,6 @@ import pytest
 #     from pyannotate_runtime import collect_types
 #
 #     collect_types.dump_stats("type_info.json")
-
-from tests.test_docs import map_data
-collect_ignore = ["setup.py"]
 
 
 @pytest.fixture(autouse=True)
