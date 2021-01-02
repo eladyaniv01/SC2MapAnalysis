@@ -27,6 +27,7 @@ import pytest
 #     collect_types.dump_stats("type_info.json")
 
 from tests.test_docs import map_data
+collect_ignore = ["setup.py"]
 
 
 @pytest.fixture(autouse=True)
