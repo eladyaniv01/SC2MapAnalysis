@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.constructs &mdash; Sc2MapAnalyzer 0.0.73 documentation</title>
+  <title>MapAnalyzer.constructs &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
   
 
   
@@ -152,36 +152,19 @@
            <div itemprop="articleBody">
             
   <h1>Source code for MapAnalyzer.constructs</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">sc2.game_info</span> <span class="kn">import</span> <span class="n">Ramp</span> <span class="k">as</span> <span class="n">sc2Ramp</span>
 <span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span>
 
 <span class="kn">from</span> <span class="nn">.Polygon</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">from</span> <span class="nn">.cext</span> <span class="kn">import</span> <span class="n">CMapChoke</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">.MapData</span> <span class="kn">import</span> <span class="n">MapData</span>
-    <span class="kn">from</span> <span class="nn">.sc2pathlibp.choke</span> <span class="kn">import</span> <span class="n">Choke</span>
-
-
-<span class="k">class</span> <span class="nc">PathLibChoke</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    wrapper to the data returned by :mod:`.sc2pathlibp`</span>
-
-<span class="sd">    with a bit of added fields / data type for convenience</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># noinspection PyProtectedMember</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pathlib_choke</span><span class="p">:</span> <span class="s2">&quot;Choke&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pk</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pathlib_choke</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">pathlib_choke</span><span class="o">.</span><span class="n">pixels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_choke</span> <span class="o">=</span> <span class="n">pathlib_choke</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]PathLibChoke; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <div class="viewcode-block" id="ChokeArea"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.ChokeArea">[docs]</a><span class="k">class</span> <span class="nc">ChokeArea</span><span class="p">(</span><span class="n">Polygon</span><span class="p">):</span>
@@ -191,21 +174,50 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">pathlibchoke</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;Unregistered&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">md_pl_choke</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">pathlibchoke</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">pathlibchoke</span><span class="o">.</span><span class="n">main_line</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pathlibchoke</span><span class="o">.</span><span class="n">id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md_pl_choke</span> <span class="o">=</span> <span class="n">pathlibchoke</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_choke</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_a</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_b</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corner_walloff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance_to_point2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">same_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">terrain_height</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]ChokeArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&gt; of  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]ChokeArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&gt;&quot;</span></div>
+
+
+<span class="k">class</span> <span class="nc">RawChoke</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Chokes found in the C extension where the terrain generates a choke point</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">raw_choke</span><span class="p">:</span> <span class="n">CMapChoke</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">raw_choke</span><span class="o">.</span><span class="n">main_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">raw_choke</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md_pl_choke</span> <span class="o">=</span> <span class="n">raw_choke</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_a</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_line</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_line</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_b</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_line</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_line</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]))))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">side_a</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">side_b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]RawChoke[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&gt;&quot;</span>
 
 
 <div class="viewcode-block" id="MDRamp"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp">[docs]</a><span class="k">class</span> <span class="nc">MDRamp</span><span class="p">(</span><span class="n">ChokeArea</span><span class="p">):</span>
@@ -220,6 +232,56 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_ramp</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span> <span class="o">=</span> <span class="n">ramp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Point2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middle_walloff_depot</span><span class="o">.</span><span class="n">rounded</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_sides</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ramp_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span>
+        <span class="n">perpendicular_dir</span> <span class="o">=</span> <span class="n">Point2</span><span class="p">((</span><span class="o">-</span><span class="n">ramp_dir</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ramp_dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">normalized</span>
+        <span class="n">step_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">ramp_dir</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">side_a</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="n">next_point</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">while</span> <span class="n">next_point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+            <span class="n">side_a</span> <span class="o">=</span> <span class="n">next_point</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">perpendicular_dir</span><span class="o">*</span><span class="n">step_size</span><span class="p">)</span>
+            <span class="n">next_point</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_a</span> <span class="o">=</span> <span class="n">side_a</span>
+
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">ramp_dir</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">side_b</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="n">next_point</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+        <span class="k">while</span> <span class="n">next_point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+            <span class="n">side_b</span> <span class="o">=</span> <span class="n">next_point</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="o">-</span><span class="n">perpendicular_dir</span> <span class="o">*</span> <span class="n">step_size</span><span class="p">)</span>
+            <span class="n">next_point</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">rounded</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_b</span> <span class="o">=</span> <span class="n">side_b</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corner_walloff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">raw_points</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance_to_point2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom_center</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">offset_points</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">raw_points</span><span class="p">]</span>
+        <span class="n">offset_points</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">raw_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">offset_points</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">middle_walloff_depot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">raw_points</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance_to_point2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom_center</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># TODO  its white board time,  need to figure out some geometric intuition here</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">raw_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">raw_points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">:</span>
+            <span class="n">intersect</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">raw_points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="k">return</span> <span class="n">intersect</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
+
+        <span class="n">intersects</span> <span class="o">=</span> <span class="n">raw_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">circle_intersection</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">raw_points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="c1"># p = self.map_data.closest_towards_point(points=self.buildables.points, target=self.top_center)</span>
+        <span class="n">pt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">intersects</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">distance_to_point2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom_center</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pt</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MDRamp.closest_region"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.constructs.MDRamp.closest_region">[docs]</a>    <span class="k">def</span> <span class="nf">closest_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -277,7 +339,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">top_center</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No top_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No top_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span></div>
 
     <span class="nd">@property</span>
@@ -290,11 +352,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">bottom_center</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No bottom_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No bottom_center found for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">, falling back to `center`&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MDRamp[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;MDRamp[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;R[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]&quot;</span></div>
@@ -315,6 +377,25 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_data</span><span class="p">:</span> <span class="s2">&quot;MapData&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="n">map_data</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_vision_blocker</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_sides</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">org</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">org</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side_a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">org</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">org</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">:</span>
+            <span class="n">org</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">]</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">closest_towards_point</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">org</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">side_b</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">org</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">org</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">side_b</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">side_a</span><span class="p">)</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">side_b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Point2</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;VisionBlockerArea[size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>

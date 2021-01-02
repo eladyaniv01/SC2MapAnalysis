@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.73 documentation</title>
+  <title>MapAnalyzer.MapData &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
   
 
   
@@ -152,7 +152,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for MapAnalyzer.MapData</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -167,11 +169,14 @@
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Debugger</span> <span class="kn">import</span> <span class="n">MapAnalyzerDebugger</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Pather</span> <span class="kn">import</span> <span class="n">MapAnalyzerPather</span>
 <span class="kn">from</span> <span class="nn">MapAnalyzer.Region</span> <span class="kn">import</span> <span class="n">Region</span>
-<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.utils</span> <span class="kn">import</span> <span class="n">get_sets_with_mutual_elements</span><span class="p">,</span> <span class="n">fix_map_ramps</span>
+
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">BINARY_STRUCTURE</span><span class="p">,</span> <span class="n">CORNER_MIN_DISTANCE</span><span class="p">,</span> <span class="n">MAX_REGION_AREA</span><span class="p">,</span> <span class="n">MIN_REGION_AREA</span>
-<span class="kn">from</span> <span class="nn">.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">PathLibChoke</span><span class="p">,</span> <span class="n">VisionBlockerArea</span>
+
 <span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">progress_wrapped</span>
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">CustomDeprecationWarning</span>
+<span class="kn">from</span> <span class="nn">MapAnalyzer.constructs</span> <span class="kn">import</span> <span class="n">ChokeArea</span><span class="p">,</span> <span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">,</span> <span class="n">RawChoke</span>
+<span class="kn">from</span> <span class="nn">.cext</span> <span class="kn">import</span> <span class="n">CMapInfo</span><span class="p">,</span> <span class="n">CMapChoke</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">__version__</span> <span class="o">=</span> <span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;sc2mapanalyzer&#39;</span><span class="p">)</span>
@@ -192,6 +197,11 @@
                  <span class="n">corner_distance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CORNER_MIN_DISTANCE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># store relevant data from api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="c1"># temporary fix to set ramps correctly if they are broken in burnysc2 due to having</span>
+        <span class="c1"># destructables on them. ramp sides don&#39;t consider the destructables now,</span>
+        <span class="c1"># should update them during the game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">vision_blockers</span> <span class="o">=</span> <span class="n">fix_map_ramps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">corner_distance</span> <span class="o">=</span> <span class="n">corner_distance</span>  <span class="c1"># the lower this value is,  the sharper the corners will be</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arcade</span> <span class="o">=</span> <span class="n">arcade</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">__version__</span>
@@ -207,7 +217,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">min_region_area</span> <span class="o">=</span> <span class="n">MIN_REGION_AREA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_region_area</span> <span class="o">=</span> <span class="n">MAX_REGION_AREA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># set later</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corners</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
@@ -215,17 +225,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_grid</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># set later  on compile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlord_spots</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resource_blockers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point2</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">all_units</span> <span class="k">if</span>
                                   <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;rich&quot;</span><span class="p">,</span> <span class="s2">&quot;450&quot;</span><span class="p">})]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">pathing_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">placement_arr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ext_map</span> <span class="o">=</span> <span class="n">CMapInfo</span><span class="p">(</span><span class="n">pathing_grid</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">terrain_height</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">playable_area</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlord_spots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ext_map</span><span class="o">.</span><span class="n">overlord_spots</span>
 
         <span class="c1"># plugins</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">loglevel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span> <span class="o">=</span> <span class="n">MapAnalyzerDebugger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pather</span> <span class="o">=</span> <span class="n">MapAnalyzerPather</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_graph</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by pather</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathlib_map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pyastar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pyastar</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">nonpathable_indices_stacked</span>
 
@@ -256,7 +270,7 @@
 
     <span class="c1"># dont cache this</span>
 <div class="viewcode-block" id="MapData.get_pyastar_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_pyastar_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pyastar_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                         <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                         <span class="n">default_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                          <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
@@ -287,9 +301,7 @@
 
 <span class="sd">            so we treat destructables as if they were pathable</span>
 
-<span class="sd">            &gt;&gt;&gt; # 1</span>
 <span class="sd">            &gt;&gt;&gt; no_destructables_grid = self.get_pyastar_grid(default_weight = 1, include_destructables= False)</span>
-
 <span class="sd">            &gt;&gt;&gt; # 2 set up a grid with default weight of 300</span>
 <span class="sd">            &gt;&gt;&gt; custom_weight_grid = self.get_pyastar_grid(default_weight = 300)</span>
 
@@ -306,7 +318,7 @@
                                             <span class="n">include_destructables</span><span class="o">=</span><span class="n">include_destructables</span><span class="p">,</span></div>
                                             <span class="p">)</span>
 
-<div class="viewcode-block" id="MapData.find_lowest_cost_points"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.find_lowest_cost_points">[docs]</a>    <span class="k">def</span> <span class="nf">find_lowest_cost_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_pos</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
+<div class="viewcode-block" id="MapData.find_lowest_cost_points"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.find_lowest_cost_points">[docs]</a>    <span class="k">def</span> <span class="nf">find_lowest_cost_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_pos</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype:  Union[List[:class:`sc2.position.Point2`], None]</span>
 
@@ -314,11 +326,12 @@
 <span class="sd">        (if there are more than one)</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">             &gt;&gt;&gt; grid = self.get_air_vs_ground_grid()</span>
+
+<span class="sd">             &gt;&gt;&gt; my_grid = self.get_air_vs_ground_grid()</span>
 <span class="sd">             &gt;&gt;&gt; position = (100, 80)</span>
-<span class="sd">             &gt;&gt;&gt; radius = 10</span>
-<span class="sd">             &gt;&gt;&gt; self.find_lowest_cost_points(from_pos=position, radius=radius, grid=grid)</span>
-<span class="sd">             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80), (108, 83), (106, 78), (107, 84), (109, 82), (107, 79), (107, 80), (106, 75), (107, 75), (91, 78), (106, 81), (109, 77), (108, 76), (91, 80), (106, 79), (109, 81), (107, 78), (108, 80), (105, 82), (107, 83), (107, 74), (108, 84), (102, 71), (109, 76), (105, 79), (108, 77), (106, 76), (107, 86), (106, 82), (109, 80), (108, 81), (105, 81), (107, 82), (109, 84), (106, 73), (107, 77), (108, 85), (105, 78), (108, 78), (106, 77), (107, 73), (106, 83), (108, 82), (105, 80), (108, 75), (107, 85), (109, 83), (107, 76)]</span>
+<span class="sd">             &gt;&gt;&gt; my_radius = 10</span>
+<span class="sd">             &gt;&gt;&gt; self.find_lowest_cost_points(from_pos=position, radius=my_radius, grid=my_grid)</span>
+<span class="sd">             [(90, 80), (91, 76), (91, 77), (91, 78), (91, 79), (91, 80), (91, 81), (92, 74), (92, 75), (92, 76), (92, 77), (92, 78), (92, 79), (92, 80), (92, 81), (93, 73), (93, 74), (93, 75), (93, 76), (93, 77), (93, 78), (93, 79), (93, 80), (93, 81), (94, 72), (94, 73), (94, 74), (94, 75), (94, 76), (94, 77), (95, 73), (95, 74), (95, 75), (95, 76), (96, 74), (96, 75), (97, 74), (97, 75), (98, 74), (98, 75), (99, 74), (99, 75), (100, 74), (100, 75), (101, 74), (101, 75), (102, 74), (102, 75), (103, 74), (103, 75), (104, 74), (104, 75), (105, 74), (105, 75), (106, 74), (106, 75), (107, 74), (107, 75), (108, 74), (108, 75)]</span>
 
 <span class="sd">        See Also:</span>
 <span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
@@ -331,10 +344,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">find_lowest_cost_points</span><span class="p">(</span><span class="n">from_pos</span><span class="o">=</span><span class="n">from_pos</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.lowest_cost_points_array"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.lowest_cost_points_array">[docs]</a>    <span class="k">def</span> <span class="nf">lowest_cost_points_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_pos</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype:    Union[:class:`numpy.ndarray`, None]</span>
+<span class="sd">        Same as find_lowest_cost_points, but returns points in ndarray for use</span>
+<span class="sd">        </span>
+<span class="sd">        with numpy/scipy/etc</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">lowest_cost_points_array</span><span class="p">(</span><span class="n">from_pos</span><span class="o">=</span><span class="n">from_pos</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.get_climber_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_climber_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_climber_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">include_destructables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
-<span class="sd">        Climber grid is a grid modified by :mod:`sc2pathlibp`, and is used for units that can climb,</span>
+<span class="sd">        Climber grid is a grid modified by the c extension, and is used for units that can climb,</span>
 
 <span class="sd">        such as Reaper, Colossus</span>
 
@@ -357,9 +379,9 @@
 <span class="sd">            * :meth:`.MapData.pathfind`</span>
 <span class="sd">            * :meth:`.MapData.find_lowest_cost_points`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_climber_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_climber_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="p">,</span> <span class="n">include_destructables</span><span class="o">=</span><span class="n">include_destructables</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.get_air_vs_ground_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_air_vs_ground_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_air_vs_ground_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
 <span class="sd">        ``air_vs_ground`` grid is computed in a way that lowers the cost of nonpathable terrain,</span>
@@ -367,7 +389,9 @@
 <span class="sd">         making air units naturally &quot;drawn&quot; to it.</span>
 
 <span class="sd">        Caution:</span>
-<span class="sd">            Requesting a grid with a ``default_weight`` of 1 is pointless, and  will result in a :meth:`.MapData.get_clean_air_grid`</span>
+<span class="sd">            Requesting a grid with a ``default_weight`` of 1 is pointless,</span>
+
+<span class="sd">            and  will result in a :meth:`.MapData.get_clean_air_grid`</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">                &gt;&gt;&gt; air_vs_ground_grid = self.get_air_vs_ground_grid()</span>
@@ -383,7 +407,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_air_vs_ground_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.get_clean_air_grid"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.get_clean_air_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_clean_air_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: numpy.ndarray</span>
@@ -396,9 +420,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">get_clean_air_grid</span><span class="p">(</span><span class="n">default_weight</span><span class="o">=</span><span class="n">default_weight</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.pathfind"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.pathfind">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
-                 <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<div class="viewcode-block" id="MapData.pathfind_pyastar"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.pathfind_pyastar">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind_pyastar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                         <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">allow_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]]:</span>
+
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: Union[List[:class:`sc2.position.Point2`], None]</span>
 <span class="sd">        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.</span>
@@ -430,20 +455,65 @@
 <span class="sd">            more examples for different usages available</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">            &gt;&gt;&gt; grid = self.get_pyastar_grid()</span>
+<span class="sd">            &gt;&gt;&gt; my_grid = self.get_pyastar_grid()</span>
 <span class="sd">            &gt;&gt;&gt; # start / goal could be any tuple / Point2</span>
-<span class="sd">            &gt;&gt;&gt; path = self.pathfind(start=start,goal=goal,grid=grid,allow_diagonal=True, sensitivity=3)</span>
+<span class="sd">            &gt;&gt;&gt; st, gl = (50,75) , (100,100)</span>
+<span class="sd">            &gt;&gt;&gt; path = self.pathfind_pyastar(start=st,goal=gl,grid=my_grid,allow_diagonal=True, sensitivity=3)</span>
 
 <span class="sd">        See Also:</span>
 <span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
 <span class="sd">            * :meth:`.MapData.find_lowest_cost_points`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind_pyastar</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">,</span>
+                                            <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapData.pathfind"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.pathfind">[docs]</a>    <span class="k">def</span> <span class="nf">pathfind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span> <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                 <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">large</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">smoothing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">sensitivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: Union[List[:class:`sc2.position.Point2`], None]</span>
+<span class="sd">        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.</span>
+
+
+<span class="sd">        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`</span>
+
+<span class="sd">        If no path is possible, will return ``None``</span>
+
+<span class="sd">        ``sensitivity`` indicates how to slice the path,</span>
+<span class="sd">        just like doing: ``result_path = path[::sensitivity]``</span>
+<span class="sd">            where ``path`` is the return value from this function</span>
+
+<span class="sd">        this is useful since in most use cases you wouldn&#39;t want</span>
+<span class="sd">        to get each and every single point,</span>
+
+<span class="sd">        getting every  n-``th`` point works better in practice</span>
+
+<span class="sd">        `` large`` is a boolean that determines whether we are doing pathing with large unit sizes</span>
+<span class="sd">        like Thor and Ultralisk. When it&#39;s false the pathfinding is using unit size 1, so if</span>
+<span class="sd">        you want to a guarantee that a unit with size &gt; 1 fits through the path then large should be True.</span>
+
+<span class="sd">        ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.</span>
+<span class="sd">        it will skip all the waypoints it can if taking the straight line forward is better</span>
+<span class="sd">        according to the influence grid</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; my_grid = self.get_pyastar_grid()</span>
+<span class="sd">            &gt;&gt;&gt; # start / goal could be any tuple / Point2</span>
+<span class="sd">            &gt;&gt;&gt; st, gl = (50,75) , (100,100)</span>
+<span class="sd">            &gt;&gt;&gt; path = self.pathfind(start=st,goal=gl,grid=my_grid, large=False, smoothing=False, sensitivity=3)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
+<span class="sd">            * :meth:`.MapData.find_lowest_cost_points`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pather</span><span class="o">.</span><span class="n">pathfind</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="n">large</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span>
                                     <span class="n">sensitivity</span><span class="o">=</span><span class="n">sensitivity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapData.add_cost"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.add_cost">[docs]</a>    <span class="k">def</span> <span class="nf">add_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">initial_default_weights</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MapData.add_cost"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.add_cost">[docs]</a>    <span class="k">def</span> <span class="nf">add_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                 <span class="n">safe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">initial_default_weights</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: numpy.ndarray</span>
 
@@ -459,14 +529,6 @@
                                     <span class="n">initial_default_weights</span><span class="o">=</span><span class="n">initial_default_weights</span><span class="p">)</span></div>
 
     <span class="sd">&quot;&quot;&quot;Utility methods&quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="MapData.log"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">         Lazy logging</span>
-
-<span class="sd">         &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MapData.save"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -498,7 +560,7 @@
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MapData.indices_to_points"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.indices_to_points">[docs]</a>    <span class="k">def</span> <span class="nf">indices_to_points</span><span class="p">(</span>
             <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: :class:`.set` (Union[:class:`.tuple` (:class:`.int`, :class:`.int`), :class:`sc2.position.Point2`)</span>
 
@@ -508,10 +570,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="nb">set</span><span class="p">([(</span><span class="nb">int</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]))])</span></div>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">([(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]))])</span></div>
 
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="MapData.points_to_indices"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.points_to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">points_to_indices</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<div class="viewcode-block" id="MapData.points_to_indices"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.points_to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">points_to_indices</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :rtype: Tuple[numpy.ndarray, numpy.ndarray]</span>
 
@@ -536,16 +598,16 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
             <span class="n">points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">in_bounds_x</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">in_bounds_x</span><span class="p">(</span><span class="n">x_</span><span class="p">):</span>
             <span class="n">width</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">x</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">x_</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">x_</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="k">def</span> <span class="nf">in_bounds_y</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">in_bounds_y</span><span class="p">(</span><span class="n">y_</span><span class="p">):</span>
             <span class="n">height</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">y</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">y_</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">y_</span>
             <span class="k">return</span> <span class="mi">0</span>
 
         <span class="n">x_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">in_bounds_x</span><span class="p">)</span>
@@ -562,9 +624,17 @@
 <span class="sd">        :rtype: float64</span>
 
 <span class="sd">        Euclidean distance</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MapData.distance_squared"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.distance_squared">[docs]</a>    <span class="k">def</span> <span class="nf">distance_squared</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">float64</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :rtype: float64</span>
+
+<span class="sd">        Euclidean distance squared</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span></div>
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MapData.closest_node_idx"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.closest_node_idx">[docs]</a>    <span class="k">def</span> <span class="nf">closest_node_idx</span><span class="p">(</span>
@@ -578,7 +648,11 @@
 <span class="sd">        will return the index of the closest node in the list to ``node``</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">closest_index</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">([</span><span class="n">node</span><span class="p">],</span> <span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="nb">iter</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="n">count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">closest_index</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">([</span><span class="n">node</span><span class="p">],</span> <span class="n">nodes</span><span class="p">,</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">closest_index</span></div>
 
 <div class="viewcode-block" id="MapData.closest_towards_point"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.closest_towards_point">[docs]</a>    <span class="k">def</span> <span class="nf">closest_towards_point</span><span class="p">(</span>
@@ -595,18 +669,19 @@
 <span class="sd">                Calculate a position for tanks in direction to the enemy forces</span>
 <span class="sd">                passing in the Area&#39;s corners as points and enemy army&#39;s location as target</span>
 
-<span class="sd">                &gt;&gt;&gt; enemy_army_position = Point2((50,50)) # random point for this example</span>
-<span class="sd">                &gt;&gt;&gt; my_base_location = self.bot.townhalls[0]</span>
+<span class="sd">                &gt;&gt;&gt; enemy_army_position = (50,50)</span>
+<span class="sd">                &gt;&gt;&gt; my_base_location = self.bot.townhalls[0].position</span>
 <span class="sd">                &gt;&gt;&gt; my_region = self.where_all(my_base_location)[0]</span>
-<span class="sd">                &gt;&gt;&gt; corners = my_region.corner_points</span>
-<span class="sd">                &gt;&gt;&gt; best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)</span>
-<span class="sd">                (57,120)</span>
+<span class="sd">                &gt;&gt;&gt; best_siege_spot = self.closest_towards_point(points=my_region.corner_points, target=enemy_army_position)</span>
+<span class="sd">                &gt;&gt;&gt; best_siege_spot</span>
+<span class="sd">                (49, 52)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span></div>
+
+        <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">closest_node_idx</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">points</span><span class="p">)]</span></div>
 
     <span class="sd">&quot;&quot;&quot;Query methods&quot;&quot;&quot;</span>
 
@@ -644,23 +719,26 @@
 <span class="sd">        If a :class:`.Region` exists in that list, it will be the first item</span>
 
 <span class="sd">        Caution:</span>
-<span class="sd">                Not all points on the map belong to a :class:`.Region` , some are in ``border`` polygons such as :class:`.MDRamp`</span>
+<span class="sd">                Not all points on the map belong to a :class:`.Region` ,</span>
+<span class="sd">                some are in ``border`` polygons such as :class:`.MDRamp`</span>
 
 
 <span class="sd">        Example:</span>
 <span class="sd">                &gt;&gt;&gt; # query in which region is the enemy main</span>
 <span class="sd">                &gt;&gt;&gt; position = self.bot.enemy_start_locations[0].position</span>
 <span class="sd">                &gt;&gt;&gt; all_polygon_areas_in_position = self.where_all(position)</span>
-<span class="sd">                [Region 0]</span>
+<span class="sd">                &gt;&gt;&gt; all_polygon_areas_in_position</span>
+<span class="sd">                [Region 4]</span>
 
 <span class="sd">                &gt;&gt;&gt; enemy_main_base_region = all_polygon_areas_in_position[0]</span>
 <span class="sd">                &gt;&gt;&gt; enemy_main_base_region</span>
-<span class="sd">                Region 0</span>
+<span class="sd">                Region 4</span>
 
 <span class="sd">                &gt;&gt;&gt; # now it is very easy to know which region is the enemy&#39;s natural</span>
-<span class="sd">                &gt;&gt;&gt; enemy_natural_region = enemy_main_base_region.connected_regions[0] # connected_regions is a property of a Region</span>
-<span class="sd">                &gt;&gt;&gt; enemy_natural_region</span>
-<span class="sd">                Region 3</span>
+<span class="sd">                &gt;&gt;&gt; # connected_regions is a property of a Region</span>
+<span class="sd">                &gt;&gt;&gt; enemy_natural_region = enemy_main_base_region.connected_regions[0]</span>
+<span class="sd">                &gt;&gt;&gt; # will return Region 1 or 6 for goldenwall depending on starting position</span>
+
 
 <span class="sd">        Tip:</span>
 
@@ -746,17 +824,13 @@
 
     <span class="k">def</span> <span class="nf">_clean_plib_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># needs to be called AFTER MDramp and VisionBlocker are populated</span>
-        <span class="n">raw_chokes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_map</span><span class="o">.</span><span class="n">chokes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw_chokes</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PathLibChoke</span><span class="p">(</span><span class="n">pathlib_choke</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">i</span><span class="p">))</span>
         <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">areas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ext_map</span><span class="o">.</span><span class="n">chokes</span><span class="p">,</span>
                                                                   <span class="n">areas</span><span class="o">=</span><span class="n">areas</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PathLibChoke</span><span class="p">],</span>
+    <span class="k">def</span> <span class="nf">_get_overlapping_chokes</span><span class="p">(</span><span class="n">local_chokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CMapChoke</span><span class="p">],</span>
                                 <span class="n">areas</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MDRamp</span><span class="p">,</span> <span class="n">VisionBlockerArea</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="n">li</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
@@ -785,9 +859,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_calc_regions</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calc_vision_blockers</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_map_ramps</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_chokes</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_polys</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_chokes</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">:</span>
             <span class="n">poly</span><span class="o">.</span><span class="n">calc_areas</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ramp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">:</span>
@@ -829,10 +904,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">vision_blockers_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vb_labeled_array</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_map_ramps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># some ramps coming from burnysc2 have broken data and the bottom_center and top_center</span>
+        <span class="c1"># may even be the same. by removing them they should be tagged as chokes in the c extension</span>
+        <span class="c1"># if they really are ones</span>
+        <span class="n">viable_ramps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">bottom_center</span><span class="o">.</span><span class="n">distance_to</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">top_center</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span> <span class="o">=</span> <span class="p">[</span><span class="n">MDRamp</span><span class="p">(</span><span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                  <span class="n">ramp</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
                                  <span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">points_to_numpy_array</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
-                          <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">game_info</span><span class="o">.</span><span class="n">map_ramps</span><span class="p">]</span>
+                          <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">viable_ramps</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_calc_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># compute VisionBlockerArea</span>
@@ -858,7 +938,7 @@
         <span class="c1"># compute ChokeArea</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean_plib_chokes</span><span class="p">()</span>
-        <span class="n">chokes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathlib_to_local_chokes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span><span class="p">]</span>
+        <span class="n">chokes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ext_map</span><span class="o">.</span><span class="n">chokes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlapping_choke_ids</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_ramps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_vision_blockers</span><span class="p">)</span>
 
@@ -871,15 +951,21 @@
                 <span class="n">cm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
 
-                <span class="n">new_choke</span> <span class="o">=</span> <span class="n">ChokeArea</span><span class="p">(</span>
-                        <span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">new_choke_array</span><span class="p">,</span> <span class="n">pathlibchoke</span><span class="o">=</span><span class="n">choke</span>
+                <span class="n">new_choke</span> <span class="o">=</span> <span class="n">RawChoke</span><span class="p">(</span>
+                        <span class="n">map_data</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">new_choke_array</span><span class="p">,</span> <span class="n">raw_choke</span><span class="o">=</span><span class="n">choke</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
 
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">Region</span><span class="p">):</span>
                         <span class="n">area</span><span class="o">.</span><span class="n">region_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
-                    <span class="n">new_choke</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
+                        <span class="n">new_choke</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">area</span><span class="o">.</span><span class="n">is_choke</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">area</span><span class="o">.</span><span class="n">is_ramp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">area</span><span class="o">.</span><span class="n">is_vision_blocker</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
+                        <span class="n">area</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_choke</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                        <span class="n">new_choke</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="n">new_choke</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">map_chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_choke</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="si">}</span><span class="s2">] Cant add </span><span class="si">{</span><span class="n">choke</span><span class="si">}</span><span class="s2"> with 0 points&quot;</span><span class="p">)</span>
 
@@ -928,7 +1014,7 @@
 <span class="sd">        Example:</span>
 <span class="sd">                &gt;&gt;&gt; self.ground_grid = self.get_pyastar_grid(default_weight=1)</span>
 <span class="sd">                &gt;&gt;&gt; self.ground_grid = self.add_cost((100, 100), radius=15, grid=self.ground_grid, weight=50)</span>
-<span class="sd">                &gt;&gt;&gt; self.draw_influence_in_game(self.ground_grid, lower_threshold=1)</span>
+<span class="sd">                &gt;&gt;&gt; # self.draw_influence_in_game(self.ground_grid, lower_threshold=1) # commented out for doctest</span>
 
 <span class="sd">        See Also:</span>
 <span class="sd">            * :meth:`.MapData.get_pyastar_grid`</span>
@@ -952,29 +1038,52 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">save</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.save()&#39;</span><span class="p">))</span>
+        <span class="kn">import</span> <span class="nn">inspect</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="MapData.plot_influenced_path_pyastar"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.plot_influenced_path_pyastar">[docs]</a>    <span class="k">def</span> <span class="nf">plot_influenced_path_pyastar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+
+                                     <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                                     <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                                     <span class="n">weight_array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
+                                     <span class="n">allow_diagonal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        A useful debug utility method for experimenting with the :mod:`.Pather` module</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_influenced_path_pyastar</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                                                   <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
+                                                   <span class="n">weight_array</span><span class="o">=</span><span class="n">weight_array</span><span class="p">,</span>
+                                                   <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                                   <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span>
+                                                   <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="MapData.plot_influenced_path"><a class="viewcode-back" href="../../source/MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData.plot_influenced_path">[docs]</a>    <span class="k">def</span> <span class="nf">plot_influenced_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                             <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
-                             <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                             <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
+                             <span class="n">goal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Point2</span><span class="p">],</span>
                              <span class="n">weight_array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
-                             <span class="n">allow_diagonal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                             <span class="n">plot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">large</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="n">smoothing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                              <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        A useful debug utility method for experimenting with the :mod:`.Pather` module</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">CustomDeprecationWarning</span><span class="p">(</span><span class="n">oldarg</span><span class="o">=</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="s1">&#39;self.show()&#39;</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_influenced_path</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
                                            <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
                                            <span class="n">weight_array</span><span class="o">=</span><span class="n">weight_array</span><span class="p">,</span>
+                                           <span class="n">large</span><span class="o">=</span><span class="n">large</span><span class="p">,</span>
+                                           <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span>
                                            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-                                           <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">,</span>
-                                           <span class="n">allow_diagonal</span><span class="o">=</span><span class="n">allow_diagonal</span><span class="p">)</span></div>
+                                           <span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_plot_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">debugger</span><span class="o">.</span><span class="n">plot_regions</span><span class="p">(</span><span class="n">fontdict</span><span class="o">=</span><span class="n">fontdict</span><span class="p">)</span>
