@@ -1130,15 +1130,18 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
                 if (found) continue;
 
-                int dots = (int)flight_distance;
+                int step_constant = 2;
+                int step_constant_inverse = (float) 1 / step_constant;
+
+                int dots = (int)step_constant*flight_distance;
                 float unit_vector[2] = { (float)(xnew - x) / flight_distance, (float)(ynew - y) / flight_distance };
                 int wall_hit = 0;
 
                 for (int i = 1; i < dots; ++i)
                 {
-                    int draw_x = (int)(x + unit_vector[0]*i);
-                    int draw_y = (int)(y + unit_vector[1]*i);
-
+                    int draw_x = (int)(x + unit_vector[0]*i*step_constant_inverse);
+                    int draw_y = (int)(y + unit_vector[1]*i*step_constant_inverse);
+                    
                     if ((draw_x == x && draw_y == y) || (draw_x == xnew && draw_y == ynew))
                     {
                         continue;
