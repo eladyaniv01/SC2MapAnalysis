@@ -1,9 +1,13 @@
 :orphan:
 
+:mod:`MapAnalyzer.exceptions`
+=============================
+
 .. py:module:: MapAnalyzer.exceptions
 
-Exceptions
-----------
+
+Module Contents
+---------------
 
 .. py:exception:: CustomDeprecationWarning(oldarg=None, newarg=None)
 

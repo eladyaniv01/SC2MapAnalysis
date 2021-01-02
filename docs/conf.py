@@ -67,15 +67,15 @@ autoapi_options =[ 'members',
 autoapi_type = 'python'
 autoapi_dirs = ['D:\proj\SC2MapAnalysis\MapAnalyzer']
 
-autoapi_root = 'technical/api'
+autoapi_root = 'source'
 autoapi_ignore = ["*sc2pathlibp*"]
 
 autoapi_keep_files = True
-autoapi_generate_api_docs = False
+autoapi_generate_api_docs = True
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['technical']
+# exclude_patterns = ['technical']
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True

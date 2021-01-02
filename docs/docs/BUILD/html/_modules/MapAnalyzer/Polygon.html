@@ -87,7 +87,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To - Recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 </ul>
 
             
@@ -136,6 +136,8 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
+          <li><a href="../MapAnalyzer.html">MapAnalyzer</a> &raquo;</li>
+        
       <li>MapAnalyzer.Polygon</li>
     
     
@@ -165,7 +167,7 @@
     <span class="kn">from</span> <span class="nn">MapAnalyzer</span> <span class="kn">import</span> <span class="n">MapData</span><span class="p">,</span> <span class="n">Region</span>
 
 
-<div class="viewcode-block" id="Buildables"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables">[docs]</a><span class="k">class</span> <span class="nc">Buildables</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Buildables">[docs]</a><span class="k">class</span> <span class="nc">Buildables</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Represents the Buildable Points in a :class:`.Polygon`,</span>
@@ -184,7 +186,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Buildables.free_pct"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables.free_pct">[docs]</a>    <span class="k">def</span> <span class="nf">free_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables.free_pct"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Buildables.free_pct">[docs]</a>    <span class="k">def</span> <span class="nf">free_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        A simple method for knowing what % of the points is left available out of the total</span>
@@ -195,7 +197,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Buildables.update"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Buildables.update"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Buildables.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        To be called only by :class:`.Polygon`, this ensures that updates are done in a lazy fashion,</span>
@@ -222,7 +224,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Point2</span><span class="p">,</span> <span class="n">buildable_points</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="Polygon"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon">[docs]</a><span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/index.html#MapAnalyzer.Polygon.Polygon">[docs]</a><span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Base Class for Representing an &quot;Area&quot;</span>
@@ -273,7 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">points_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.buildables"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.buildables">[docs]</a>    <span class="k">def</span> <span class="nf">buildables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Buildables</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.buildables"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.buildables">[docs]</a>    <span class="k">def</span> <span class="nf">buildables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Buildables</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: :class:`.BuildablePoints`</span>
@@ -285,7 +287,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildables</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.regions"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.regions">[docs]</a>    <span class="k">def</span> <span class="nf">regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Region&quot;</span><span class="p">]:</span>
+<div class="viewcode-block" id="Polygon.regions"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.regions">[docs]</a>    <span class="k">def</span> <span class="nf">regions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Region&quot;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: List[:class:`.Region`]</span>
@@ -312,7 +314,7 @@
             <span class="n">areas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_areas</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">areas</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Polygon.plot"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<div class="viewcode-block" id="Polygon.plot"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        plot</span>
@@ -328,7 +330,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.nodes"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
+<div class="viewcode-block" id="Polygon.nodes"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        List of :class:`.Point2`</span>
@@ -338,7 +340,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.corner_array"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.corner_array">[docs]</a>    <span class="k">def</span> <span class="nf">corner_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.corner_array"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.corner_array">[docs]</a>    <span class="k">def</span> <span class="nf">corner_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: :class:`.ndarray`</span>
@@ -353,7 +355,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.width"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.width"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Lazy width calculation,   will be approx 0.5 &lt; x &lt; 1.5 of real width</span>
@@ -368,7 +370,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.corner_points"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.corner_points">[docs]</a>    <span class="k">def</span> <span class="nf">corner_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
+<div class="viewcode-block" id="Polygon.corner_points"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.corner_points">[docs]</a>    <span class="k">def</span> <span class="nf">corner_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :rtype: List[:class:`.Point2`]</span>
@@ -384,7 +386,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean_points</span><span class="p">)</span>  <span class="c1"># needs to be array-like for numpy calculations</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.center"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.center"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point2</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Since the center is always going to be a ``float``,</span>
@@ -399,7 +401,7 @@
         <span class="k">return</span> <span class="n">cm</span></div>
 
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.is_inside_point"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.is_inside_point">[docs]</a>    <span class="k">def</span> <span class="nf">is_inside_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.is_inside_point"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.is_inside_point">[docs]</a>    <span class="k">def</span> <span class="nf">is_inside_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Query via Set(Point2)  &#39;&#39;fast&#39;&#39;</span>
@@ -412,7 +414,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="nd">@lru_cache</span><span class="p">()</span>
-<div class="viewcode-block" id="Polygon.is_inside_indices"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.is_inside_indices">[docs]</a>    <span class="k">def</span> <span class="nf">is_inside_indices</span><span class="p">(</span>
+<div class="viewcode-block" id="Polygon.is_inside_indices"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.is_inside_indices">[docs]</a>    <span class="k">def</span> <span class="nf">is_inside_indices</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Point2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -425,7 +427,7 @@
         <span class="k">return</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.perimeter"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.perimeter"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.perimeter">[docs]</a>    <span class="k">def</span> <span class="nf">perimeter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        The perimeter is interpolated between inner and outer cell-types using broadcasting</span>
@@ -437,7 +439,7 @@
         <span class="k">return</span> <span class="n">edge_indices</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.perimeter_points"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.perimeter_points">[docs]</a>    <span class="k">def</span> <span class="nf">perimeter_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
+<div class="viewcode-block" id="Polygon.perimeter_points"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.perimeter_points">[docs]</a>    <span class="k">def</span> <span class="nf">perimeter_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">int64</span><span class="p">,</span> <span class="n">int64</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Useful method for getting  perimeter points</span>
@@ -447,7 +449,7 @@
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">li</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Polygon.area"><a class="viewcode-back" href="../../source/MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Polygon.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygon.area"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Polygon.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Sum of all points</span>

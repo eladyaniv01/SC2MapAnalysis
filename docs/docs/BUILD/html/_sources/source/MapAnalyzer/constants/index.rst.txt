@@ -1,48 +1,8 @@
 :orphan:
 
+:mod:`MapAnalyzer.constants`
+============================
 
 .. py:module:: MapAnalyzer.constants
-
-Constants
----------
-
-.. data:: MIN_REGION_AREA
-   :annotation: = 25
-
-
-
-.. data:: MAX_REGION_AREA
-   :annotation: = 8500
-
-
-
-.. data:: BINARY_STRUCTURE
-   :annotation: = 2
-
-
-
-.. data:: RESOURCE_BLOCKER_RADIUS
-   :annotation: = 2
-
-
-
-.. data:: NONPATHABLE_RADIUS
-   :annotation: = 0.8
-
-
-
-.. data:: LOG_MODULE
-   :annotation: = MapAnalyzer
-
-
-
-.. data:: COLORS
-
-
-
-
-.. data:: LOG_FORMAT
-   :annotation: = <w><bold>{time:YY:MM:DD:HH:mm:ss}|<level>{level: <8}</level>|<green>{name: ^15}</green>|{function: ^15}|{line: >4}|<level> {level.icon} {message}</level></bold></w>
-
 
 

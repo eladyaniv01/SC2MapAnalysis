@@ -39,7 +39,7 @@
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Package Contents" href="../../MapAnalyzer/index.html" />
+    <link rel="next" title="MapAnalyzer" href="../../MapAnalyzer/index.html" />
     <link rel="prev" title="Pathfinding - Recipes" href="../PathFinding/index.html" /> 
 </head>
 
@@ -98,7 +98,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/index.html">Package Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 </ul>
 
             
@@ -180,7 +180,7 @@
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">self</span></code>  = <a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/bot_ai/index.html#sc2.bot_ai.BotAI" title="(in python-sc2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sc2.bot_ai.BotAI</span></code></a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">map_data</span></code> = <a class="reference internal" href="../../MapAnalyzer/MapData/index.rst.html#MapAnalyzer.MapData.MapData" title="MapAnalyzer.MapData.MapData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapData</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map_data</span></code> = <a class="reference internal" href="../../../technical/api/MapAnalyzer/index.html#MapAnalyzer.MapData" title="MapAnalyzer.MapData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapData</span></code></a></p></li>
 </ul>
 </div></blockquote>
 <p><strong>PathFinding Terminology:</strong></p>
@@ -200,13 +200,13 @@
 <div class="section" id="building-grid-recipes">
 <h1>Building Grid - Recipes<a class="headerlink" href="#building-grid-recipes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="find-wall-off-building-positions-in-a-region">
-<h2>Find wall off building positions in a <a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#find-wall-off-building-positions-in-a-region" title="Permalink to this headline">¶</a></h2>
+<h2>Find wall off building positions in a <a class="reference internal" href="../../../technical/api/MapAnalyzer/index.html#MapAnalyzer.Region" title="MapAnalyzer.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a><a class="headerlink" href="#find-wall-off-building-positions-in-a-region" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables" title="MapAnalyzer.Polygon.Buildables"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon.Buildables</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Buildables" title="MapAnalyzer.Polygon.Buildables"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polygon.Buildables</span></code></a></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Buildables.polygon</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Buildables.points</span></code></p></li>
-<li><p><a class="reference internal" href="../../MapAnalyzer/Polygon/index.rst.html#MapAnalyzer.Polygon.Buildables.free_pct" title="MapAnalyzer.Polygon.Buildables.free_pct"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Buildables.free_pct()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.rst.html#MapAnalyzer.Region.Region.region_ramps" title="MapAnalyzer.Region.Region.region_ramps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.region_ramps()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../technical/api/MapAnalyzer/Polygon/index.html#MapAnalyzer.Polygon.Buildables.free_pct" title="MapAnalyzer.Polygon.Buildables.free_pct"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Buildables.free_pct()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../technical/api/MapAnalyzer/Region/index.html#MapAnalyzer.Region.Region.region_ramps" title="MapAnalyzer.Region.Region.region_ramps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.region_ramps()</span></code></a></p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -265,7 +265,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../../MapAnalyzer/index.html" class="btn btn-neutral float-right" title="Package Contents" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../../MapAnalyzer/index.html" class="btn btn-neutral float-right" title="MapAnalyzer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../PathFinding/index.html" class="btn btn-neutral float-left" title="Pathfinding - Recipes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

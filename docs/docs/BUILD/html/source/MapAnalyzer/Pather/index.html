@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pather &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
+  <title>MapAnalyzer.Pather &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
   
 
   
@@ -38,9 +38,7 @@
 
     
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Debugger" href="../Debugger/index.rst.html" />
-    <link rel="prev" title="Region(Polygon)" href="../Region/index.rst.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,31 +84,10 @@
             
             
               <p class="caption"><span class="caption-text">Contents</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../howto/index.html">How To - Recipes</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Package Contents</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-MapAnalyzer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../MapData/index.rst.html">MapData</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Polygon/index.rst.html">Polygon Variants &amp; Helpers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Region/index.rst.html">Region(Polygon)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Pather</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Pather.MapAnalyzerPather">MapAnalyzerPather</a></li>
-</ul>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#MapAnalyzer.Pather.draw_circle">draw_circle</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../Debugger/index.rst.html">Debugger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../constants/index.rst.html">Constants</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.rst.html">Decorators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/index.rst.html">Exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/index.rst.html">Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#subpackages">Subpackages</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 </ul>
 
             
@@ -157,9 +134,7 @@
     
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../index.html">Package Contents</a> &raquo;</li>
-        
-      <li>Pather</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.Pather</span></code></li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -186,252 +161,8 @@
   $(document).ready(function () {
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
   });
-</script><span class="target" id="module-MapAnalyzer.Pather"></span><div class="section" id="pather">
-<h1>Pather<a class="headerlink" href="#pather" title="Permalink to this headline">¶</a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#MapAnalyzer.Pather.MapAnalyzerPather" title="MapAnalyzer.Pather.MapAnalyzerPather"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapAnalyzerPather</span></code></a>(map_data: MapData)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<span class="target" id="module-0"></span><dl class="py class">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather">
-<em class="property">class </em><code class="sig-prename descclassname">MapAnalyzer.Pather.</code><code class="sig-name descname">MapAnalyzerPather</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.add_cost">
-<em class="property">static </em><code class="sig-name descname">add_cost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">weight</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">safe</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">initial_default_weights</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.add_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.add_cost" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>position</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>arr</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>safe</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-<li><p><strong>initial_default_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.find_all_paths">
-<code class="sig-name descname">find_all_paths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">goal</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.find_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.find_all_paths" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – </p></li>
-<li><p><strong>goal</strong> (<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a>) – </p></li>
-<li><p><strong>path</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region"><em>MapAnalyzer.Region.Region</em></a><em>]</em><em>]</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[List[<a class="reference internal" href="../Region/index.rst.html#MapAnalyzer.Region.Region" title="MapAnalyzer.Region.Region">MapAnalyzer.Region.Region</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.find_eligible_point">
-<code class="sig-name descname">find_eligible_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em>, <em class="sig-param"><span class="n">grid</span></em>, <em class="sig-param"><span class="n">terrain_height</span></em>, <em class="sig-param"><span class="n">max_distance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.find_eligible_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.find_eligible_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>User may give a point that is in a nonpathable grid cell, for example inside a building or
-inside rocks. The desired behavior is to move the point a bit so for example we can start or finish
-next to the building the original point was inside of.
-To make sure that we don’t accidentally for example offer a point that is on low ground when the
-first target was on high ground, we first try to find a point that maintains the terrain height.
-After that we check for points on other terrain heights.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>point</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>terrain_height</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-<li><p><strong>max_distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Optional[Tuple[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.find_lowest_cost_points">
-<code class="sig-name descname">find_lowest_cost_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_pos</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.find_lowest_cost_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.find_lowest_cost_points" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>from_pos</strong> (<a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)"><em>sc2.position.Point2</em></a>) – </p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Optional[List[<a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)">sc2.position.Point2</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_air_vs_ground_grid">
-<code class="sig-name descname">get_air_vs_ground_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_air_vs_ground_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_air_vs_ground_grid" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid">
-<code class="sig-name descname">get_base_pathing_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">include_destructables</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_base_pathing_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_base_pathing_grid" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_clean_air_grid">
-<code class="sig-name descname">get_clean_air_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_clean_air_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_clean_air_grid" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_climber_grid">
-<code class="sig-name descname">get_climber_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_climber_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_climber_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Grid for units like reaper / colossus</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.get_pyastar_grid">
-<code class="sig-name descname">get_pyastar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_weight</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">include_destructables</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.get_pyastar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.get_pyastar_grid" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>default_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>include_destructables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.lowest_cost_points_array">
-<code class="sig-name descname">lowest_cost_points_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_pos</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.lowest_cost_points_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.lowest_cost_points_array" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>For use with evaluations that use numpy arrays</dt><dd><dl class="simple">
-<dt>example: # Closest point to unit furthest from target</dt><dd><p>distances = cdist([[unitpos, targetpos]], lowest_points, “sqeuclidean”)
-lowest_points[(distances[0] - distances[1]).argmin()]</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<ul class="simple">
-<li><p>140 µs per loop</p></li>
-</ul>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>from_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a>) – </p></li>
-<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – </p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Optional[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.pathfind">
-<code class="sig-name descname">pathfind</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">goal</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">large</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">smoothing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sensitivity</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.pathfind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.pathfind" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>goal</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>grid</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
-<li><p><strong>large</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-<li><p><strong>smoothing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-<li><p><strong>sensitivity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Optional[List[<a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)">sc2.position.Point2</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.pathfind_pyastar">
-<code class="sig-name descname">pathfind_pyastar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">goal</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_diagonal</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sensitivity</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.pathfind_pyastar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.pathfind_pyastar" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>goal</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
-<li><p><strong>grid</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>]</em>) – </p></li>
-<li><p><strong>allow_diagonal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
-<li><p><strong>sensitivity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Optional[List[<a class="reference external" href="https://burnysc2.github.io/python-sc2/docs/position/index.html#sc2.position.Point2" title="(in python-sc2)">sc2.position.Point2</a>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MapAnalyzer.Pather.MapAnalyzerPather.set_connectivity_graph">
-<code class="sig-name descname">set_connectivity_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#MapAnalyzerPather.set_connectivity_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.MapAnalyzerPather.set_connectivity_graph" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="MapAnalyzer.Pather.draw_circle">
-<code class="sig-prename descclassname">MapAnalyzer.Pather.</code><code class="sig-name descname">draw_circle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">shape</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/MapAnalyzer/Pather.html#draw_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.Pather.draw_circle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+</script><div class="section" id="module-MapAnalyzer.Pather">
+<span id="mapanalyzer-pather"></span><h1><a class="reference internal" href="../../../technical/api/MapAnalyzer/Pather/index.html#module-MapAnalyzer.Pather" title="MapAnalyzer.Pather"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.Pather</span></code></a><a class="headerlink" href="#module-MapAnalyzer.Pather" title="Permalink to this headline">¶</a></h1>
 <p><strong>Indices and tables</strong></p>
 <blockquote>
 <div><ul class="simple">
@@ -447,15 +178,6 @@ lowest_points[(distances[0] - distances[1]).argmin()]</p>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../Debugger/index.rst.html" class="btn btn-neutral float-right" title="Debugger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../Region/index.rst.html" class="btn btn-neutral float-left" title="Region(Polygon)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

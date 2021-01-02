@@ -87,7 +87,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To - Recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html">Package Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 </ul>
 
             
@@ -136,6 +136,8 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
+          <li><a href="../MapAnalyzer.html">MapAnalyzer</a> &raquo;</li>
+        
       <li>MapAnalyzer.exceptions</li>
     
     
@@ -155,7 +157,7 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 
-<div class="viewcode-block" id="CustomDeprecationWarning"><a class="viewcode-back" href="../../source/MapAnalyzer/exceptions/index.rst.html#MapAnalyzer.exceptions.CustomDeprecationWarning">[docs]</a><span class="k">class</span> <span class="nc">CustomDeprecationWarning</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomDeprecationWarning"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/exceptions/index.html#MapAnalyzer.exceptions.CustomDeprecationWarning">[docs]</a><span class="k">class</span> <span class="nc">CustomDeprecationWarning</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldarg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newarg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old</span> <span class="o">=</span> <span class="n">oldarg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new</span> <span class="o">=</span> <span class="n">newarg</span>
@@ -165,7 +167,7 @@
                <span class="sa">f</span><span class="s2">&quot; and will have no effect,</span><span class="se">\n</span><span class="s2">Use `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="si">}</span><span class="s2">` instead&quot;</span>
 
 
-<div class="viewcode-block" id="PatherNoPointsException"><a class="viewcode-back" href="../../source/MapAnalyzer/exceptions/index.rst.html#MapAnalyzer.exceptions.PatherNoPointsException">[docs]</a><span class="k">class</span> <span class="nc">PatherNoPointsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="PatherNoPointsException"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/exceptions/index.html#MapAnalyzer.exceptions.PatherNoPointsException">[docs]</a><span class="k">class</span> <span class="nc">PatherNoPointsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">goal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
@@ -177,7 +179,7 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Got: Start </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">, Goal </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">goal</span><span class="si">}</span><span class="s2">.&quot;</span>
 
 
-<div class="viewcode-block" id="OutOfBoundsException"><a class="viewcode-back" href="../../source/MapAnalyzer/exceptions/index.rst.html#MapAnalyzer.exceptions.OutOfBoundsException">[docs]</a><span class="k">class</span> <span class="nc">OutOfBoundsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<div class="viewcode-block" id="OutOfBoundsException"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/exceptions/index.html#MapAnalyzer.exceptions.OutOfBoundsException">[docs]</a><span class="k">class</span> <span class="nc">OutOfBoundsException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">point</span> <span class="o">=</span> <span class="n">p</span>

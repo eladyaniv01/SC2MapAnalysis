@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MapAnalyzer.cext.wrapper &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Sc2MapAnalyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gettingstarted/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/howto/index.html">How To - Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sc2MapAnalyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../MapAnalyzer.html">MapAnalyzer</a> &raquo;</li>
+        
+      <li>MapAnalyzer.cext.wrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for MapAnalyzer.cext.wrapper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.mapanalyzerext</span> <span class="kn">import</span> <span class="n">astar</span> <span class="k">as</span> <span class="n">ext_astar</span><span class="p">,</span> <span class="n">get_map_data</span> <span class="k">as</span> <span class="n">ext_get_map_data</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mapanalyzerext</span> <span class="kn">import</span> <span class="n">astar</span> <span class="k">as</span> <span class="n">ext_astar</span><span class="p">,</span> <span class="n">get_map_data</span> <span class="k">as</span> <span class="n">ext_get_map_data</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">sc2.position</span> <span class="kn">import</span> <span class="n">Point2</span><span class="p">,</span> <span class="n">Rect</span>
+
+
+<div class="viewcode-block" id="CMapChoke"><a class="viewcode-back" href="../../../technical/api/MapAnalyzer/cext/wrapper/index.html#MapAnalyzer.cext.CMapChoke">[docs]</a><span class="k">class</span> <span class="nc">CMapChoke</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CMapChoke holds the choke data coming from c extension</span>
+<span class="sd">    main_line pair of floats representing the middle points of the sides of the choke</span>
+<span class="sd">    lines all the lines from side to side</span>
+<span class="sd">    side1 points on side1</span>
+<span class="sd">    side2 points on side2</span>
+<span class="sd">    pixels all the points inside the choke area, should include the sides and the points inside</span>
+<span class="sd">    min_length minimum distance between the sides of the choke</span>
+<span class="sd">    id an integer to represent the choke</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">main_line</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+    <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span>
+    <span class="n">side1</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="n">side2</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="n">pixels</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="n">min_length</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choke_id</span><span class="p">,</span> <span class="n">main_line</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">side1</span><span class="p">,</span> <span class="n">side2</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span> <span class="n">min_length</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">choke_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_line</span> <span class="o">=</span> <span class="n">main_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side1</span> <span class="o">=</span> <span class="n">side1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">side2</span> <span class="o">=</span> <span class="n">side2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_length</span> <span class="o">=</span> <span class="n">min_length</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">]CMapChoke; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<span class="k">def</span> <span class="nf">astar_path</span><span class="p">(</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">goal</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">large</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">smoothing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="c1"># For the heuristic to be valid, each move must have a positive cost.</span>
+    <span class="c1"># Demand costs above 1 so floating point inaccuracies aren&#39;t a problem</span>
+    <span class="c1"># when comparing costs</span>
+    <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Minimum cost to move must be above or equal to 1, but got </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">weights</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)))</span>
+    <span class="c1"># Ensure start is within bounds.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span>
+            <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start of </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> lies outside grid.&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure goal is within bounds.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">goal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">goal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span>
+            <span class="n">goal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">goal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Goal of </span><span class="si">{</span><span class="n">goal</span><span class="si">}</span><span class="s2"> lies outside grid.&quot;</span><span class="p">)</span>
+
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">goal_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">(</span><span class="n">goal</span><span class="p">,</span> <span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">ext_astar</span><span class="p">(</span>
+        <span class="n">weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">goal_idx</span><span class="p">,</span> <span class="n">large</span><span class="p">,</span> <span class="n">smoothing</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span>
+
+
+<span class="k">class</span> <span class="nc">CMapInfo</span><span class="p">:</span>
+    <span class="n">climber_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">overlord_spots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Point2</span><span class="p">]]</span>
+    <span class="n">chokes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CMapChoke</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">walkable_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">height_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">playable_area</span><span class="p">:</span> <span class="n">Rect</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        walkable_grid and height_map are matrices of type uint8</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># grids are transposed and the c extension atm calls the y axis the x axis and vice versa</span>
+        <span class="c1"># so switch the playable area limits around</span>
+        <span class="n">c_start_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">playable_area</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">c_end_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">playable_area</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">playable_area</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">c_start_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">playable_area</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">c_end_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">playable_area</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">playable_area</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">climber_grid</span><span class="p">,</span> <span class="n">overlord_data</span><span class="p">,</span> <span class="n">choke_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_map_data</span><span class="p">(</span><span class="n">walkable_grid</span><span class="p">,</span> <span class="n">height_map</span><span class="p">,</span>
+                                                                          <span class="n">c_start_y</span><span class="p">,</span>
+                                                                          <span class="n">c_end_y</span><span class="p">,</span>
+                                                                          <span class="n">c_start_x</span><span class="p">,</span>
+                                                                          <span class="n">c_end_x</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlord_spots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">Point2</span><span class="p">,</span> <span class="n">overlord_data</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chokes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">id_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">choke_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chokes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CMapChoke</span><span class="p">(</span><span class="n">id_counter</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="n">id_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_map_data</span><span class="p">(</span><span class="n">walkable_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">height_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                      <span class="n">start_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                      <span class="n">end_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                      <span class="n">start_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                      <span class="n">end_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">walkable_grid</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">return</span> <span class="n">ext_get_map_data</span><span class="p">(</span><span class="n">walkable_grid</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">height_map</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span>
+                            <span class="n">start_y</span><span class="p">,</span> <span class="n">end_y</span><span class="p">,</span> <span class="n">start_x</span><span class="p">,</span> <span class="n">end_x</span><span class="p">)</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Elad Yaniv
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

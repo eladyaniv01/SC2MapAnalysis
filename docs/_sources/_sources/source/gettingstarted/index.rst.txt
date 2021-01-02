@@ -4,7 +4,7 @@ Getting Started
 Installation
 ############
 
-**HAAAAAUyou will need to have** `64 bit python <https://www.python.org/downloads/>`_ **installed**
+**you will need to have** `64 bit python <https://www.python.org/downloads/>`_ **installed**
 
 
 Download and Install
