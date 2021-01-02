@@ -1,8 +1,29 @@
+import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
+
 __author__ = "Elad Yaniv"
 import click
+
+
+def recursive_overwrite(src, dest, ignore=None):
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        if ignore is not None:
+            ignored = ignore(src, files)
+        else:
+            ignored = set()
+        for f in files:
+            if f not in ignored:
+                recursive_overwrite(os.path.join(src, f),
+                                    os.path.join(dest, f),
+                                    ignore)
+    else:
+        shutil.copyfile(src, dest)
 
 
 @click.group(help='Commands marked with (LIVE) require SC launch and windows environment.')
@@ -60,6 +81,21 @@ def makedocs():
     path = p.joinpath('docs').absolute()
     click.echo(click.style(f"calling {path}//make github", fg='green'))
     subprocess.check_call(f'{path}//make github', shell=True)
+    click.echo(click.style("Copying Folder", fg='blue'))
+    fp = os.path.join(os.getcwd(), 'docs', 'docs', 'BUILD', 'html')
+    tp = os.path.join(os.getcwd(), 'docs')
+    recursive_overwrite(src=fp, dest=tp)
+    pat = os.path.join(os.getcwd(), 'docs', '_sources')
+    count = 0
+    for root, dir, files in os.walk(pat):
+        for f in files:
+            if '.rst.' in f:
+                newname = f.replace('.rst', '')
+                try:
+                    os.rename(f, newname)
+                except:
+                    count += 1
+    click.echo(click.style(f"Count {count}", fg='blue'))
 
 @vb.command(help='add, commit , push')
 def pushdocs():
