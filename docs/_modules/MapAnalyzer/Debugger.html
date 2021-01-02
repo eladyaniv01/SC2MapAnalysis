@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../source/gettingstarted/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/howto/index.html">How To - Recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/MapAnalyzer/cext/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.cext</span></code></a></li>
 </ul>
 
             
@@ -195,7 +196,7 @@
         <span class="k">return</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="MapAnalyzerDebugger"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger">[docs]</a><span class="k">class</span> <span class="nc">MapAnalyzerDebugger</span><span class="p">:</span>
+<div class="viewcode-block" id="MapAnalyzerDebugger"><a class="viewcode-back" href="../../source/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger">[docs]</a><span class="k">class</span> <span class="nc">MapAnalyzerDebugger</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MapAnalyzerDebugger</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -261,7 +262,7 @@
             <span class="k">for</span> <span class="n">corner</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="n">corner_points</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">corner</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">corner</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MapAnalyzerDebugger.plot_vision_blockers"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_vision_blockers">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="MapAnalyzerDebugger.plot_vision_blockers"><a class="viewcode-back" href="../../source/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_vision_blockers">[docs]</a>    <span class="k">def</span> <span class="nf">plot_vision_blockers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        plot vbs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -273,7 +274,7 @@
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">vision_blockers</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MapAnalyzerDebugger.plot_normal_resources"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_normal_resources">[docs]</a>    <span class="k">def</span> <span class="nf">plot_normal_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="MapAnalyzerDebugger.plot_normal_resources"><a class="viewcode-back" href="../../source/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_normal_resources">[docs]</a>    <span class="k">def</span> <span class="nf">plot_normal_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # todo: account for gold minerals and rich gas</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -290,7 +291,7 @@
                     <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span></div>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="MapAnalyzerDebugger.plot_chokes"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_chokes">[docs]</a>    <span class="k">def</span> <span class="nf">plot_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="MapAnalyzerDebugger.plot_chokes"><a class="viewcode-back" href="../../source/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_chokes">[docs]</a>    <span class="k">def</span> <span class="nf">plot_chokes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        compute Chokes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -335,7 +336,7 @@
         <span class="k">for</span> <span class="n">spot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span><span class="o">.</span><span class="n">overlord_spots</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">spot</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spot</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MapAnalyzerDebugger.plot_map"><a class="viewcode-back" href="../../technical/api/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
+<div class="viewcode-block" id="MapAnalyzerDebugger.plot_map"><a class="viewcode-back" href="../../source/MapAnalyzer/Debugger/index.html#MapAnalyzer.Debugger.MapAnalyzerDebugger.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">fontdict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

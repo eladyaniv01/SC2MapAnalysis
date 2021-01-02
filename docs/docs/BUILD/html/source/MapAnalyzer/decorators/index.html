@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../howto/index.html">How To - Recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cext/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.cext</span></code></a></li>
 </ul>
 
             
@@ -162,7 +163,7 @@
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
   });
 </script><div class="section" id="module-MapAnalyzer.decorators">
-<span id="mapanalyzer-decorators"></span><h1><a class="reference internal" href="../../../technical/api/MapAnalyzer/decorators/index.html#module-MapAnalyzer.decorators" title="MapAnalyzer.decorators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.decorators</span></code></a><a class="headerlink" href="#module-MapAnalyzer.decorators" title="Permalink to this headline">¶</a></h1>
+<span id="mapanalyzer-decorators"></span><h1><a class="reference internal" href="#module-MapAnalyzer.decorators" title="MapAnalyzer.decorators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.decorators</span></code></a><a class="headerlink" href="#module-MapAnalyzer.decorators" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="functions">
@@ -173,10 +174,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../../technical/api/MapAnalyzer/decorators/index.html#MapAnalyzer.decorators.provide_progress_bar" title="MapAnalyzer.decorators.provide_progress_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">provide_progress_bar</span></code></a>(function: Callable, estimated_time: int, tstep: float = 0.2, tqdm_kwargs: Optional[Dict[str, str]] = None, args: Optional[Tuple['MapData']] = None, kwargs: Optional[Dict[Any, Any]] = None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MapAnalyzer.decorators.provide_progress_bar" title="MapAnalyzer.decorators.provide_progress_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">provide_progress_bar</span></code></a>(function: Callable, estimated_time: int, tstep: float = 0.2, tqdm_kwargs: Optional[Dict[str, str]] = None, args: Optional[Tuple['MapData']] = None, kwargs: Optional[Dict[Any, Any]] = None)</p></td>
 <td><p>Tqdm wrapper for a long-running function</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../../technical/api/MapAnalyzer/decorators/index.html#MapAnalyzer.decorators.progress_wrapped" title="MapAnalyzer.decorators.progress_wrapped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_wrapped</span></code></a>(estimated_time: int, desc: str = 'Progress', tstep: float = 0.2, tqdm_kwargs: None = None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#MapAnalyzer.decorators.progress_wrapped" title="MapAnalyzer.decorators.progress_wrapped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_wrapped</span></code></a>(estimated_time: int, desc: str = 'Progress', tstep: float = 0.2, tqdm_kwargs: None = None)</p></td>
 <td><p>Decorate a function to add a progress bar</p></td>
 </tr>
 </tbody>

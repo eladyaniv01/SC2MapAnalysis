@@ -9,5 +9,5 @@ Welcome to Sc2MapAnalyzer's documentation!
     source/gettingstarted/*
     source/howto/*
     source/MapAnalyzer/*
-    technical/*
+    source/MapAnalyzer/cext/*
 
