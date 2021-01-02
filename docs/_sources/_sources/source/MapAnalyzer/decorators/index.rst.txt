@@ -1,9 +1,17 @@
 :orphan:
 
+:mod:`MapAnalyzer.decorators`
+=============================
+
 .. py:module:: MapAnalyzer.decorators
 
-Decorators
-----------
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
 
 .. autoapisummary::
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utils &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
+  <title>MapAnalyzer.utils &mdash; Sc2MapAnalyzer 0.0.78 documentation</title>
   
 
   
@@ -134,7 +134,7 @@
     
       <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Utils</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.utils</span></code></li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -161,14 +161,24 @@
   $(document).ready(function () {
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
   });
-</script><span class="target" id="module-MapAnalyzer.utils"></span><div class="section" id="utils">
-<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+</script><div class="section" id="module-MapAnalyzer.utils">
+<span id="mapanalyzer-utils"></span><h1><a class="reference internal" href="../../../../technical/api/MapAnalyzer/utils/index.html#module-MapAnalyzer.utils" title="MapAnalyzer.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.utils</span></code></a><a class="headerlink" href="#module-MapAnalyzer.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../technical/api/MapAnalyzer/utils/index.html#MapAnalyzer.utils.change_destructable_status_in_grid" title="MapAnalyzer.utils.change_destructable_status_in_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_destructable_status_in_grid</span></code></a>(grid: np.ndarray, unit: Unit, status: int)</p></td>
+<td><p>Set destructable positions to status, modifies the grid in place</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../technical/api/MapAnalyzer/utils/index.html#MapAnalyzer.utils.fix_map_ramps" title="MapAnalyzer.utils.fix_map_ramps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_map_ramps</span></code></a>(bot: BotAI)</p></td>
+<td><p>following <a class="reference external" href="https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246">https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246</a></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../../../technical/api/MapAnalyzer/utils/index.html#MapAnalyzer.utils.import_bot_instance" title="MapAnalyzer.utils.import_bot_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_bot_instance</span></code></a>(raw_game_data: Response, raw_game_info: Response, raw_observation: ResponseObservation)</p></td>
 <td><p>import_bot_instance DocString</p></td>
 </tr>
@@ -177,6 +187,19 @@
 </tr>
 </tbody>
 </table>
+<dl class="py function">
+<dt id="MapAnalyzer.utils.change_destructable_status_in_grid">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">change_destructable_status_in_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">np.ndarray</span></em>, <em class="sig-param"><span class="n">unit</span><span class="p">:</span> <span class="n">Unit</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/utils.html#change_destructable_status_in_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.change_destructable_status_in_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set destructable positions to status, modifies the grid in place</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="MapAnalyzer.utils.fix_map_ramps">
+<code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">fix_map_ramps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bot</span><span class="p">:</span> <span class="n">BotAI</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/MapAnalyzer/utils.html#fix_map_ramps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.fix_map_ramps" title="Permalink to this definition">¶</a></dt>
+<dd><p>following <a class="reference external" href="https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246">https://github.com/BurnySc2/python-sc2/blob/ffb9bd43dcbeb923d848558945a8c59c9662f435/sc2/game_info.py#L246</a>
+to fix burnysc2 ramp objects by removing destructables</p>
+</dd></dl>
+
 <dl class="py function">
 <dt id="MapAnalyzer.utils.import_bot_instance">
 <code class="sig-prename descclassname">MapAnalyzer.utils.</code><code class="sig-name descname">import_bot_instance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_game_data</span><span class="p">:</span> <span class="n">Response</span></em>, <em class="sig-param"><span class="n">raw_game_info</span><span class="p">:</span> <span class="n">Response</span></em>, <em class="sig-param"><span class="n">raw_observation</span><span class="p">:</span> <span class="n">ResponseObservation</span></em><span class="sig-paren">)</span> &#x2192; BotAI<a class="reference internal" href="../../../../_modules/MapAnalyzer/utils.html#import_bot_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#MapAnalyzer.utils.import_bot_instance" title="Permalink to this definition">¶</a></dt>
@@ -197,6 +220,8 @@
 <li><p><a class="reference internal" href="../../../../search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div></blockquote>
+</div>
+</div>
 </div>
 
 
