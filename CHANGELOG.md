@@ -2,17 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.80](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.79...v0.0.80) (2021-01-03)
+
+### Features
+
+* Added support for array output in lowest_cost_points_array  ([06d96e4](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/06d96e4339745df4279846431e940ba5e58ec38a))
+* Pathfinding engine now takes into account unit size (footprint)  ([ec3abaf5](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/ec3abaf5783dd8c716ef82536b26b0155cce40c8))
+* New draw_circle function to replace skdraw.disk  ([072ee6c](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/072ee6c05ccfb3a437324bab98af244bc839d202))
+* Add function to find eligible points nearby in pather  ([5a2e5c7](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/5a2e5c72650554c20301afc6815128e275520327))
+* Add destructable type to grid calculations  ([7495b9b](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/7495b9b110d202dd0ba3b0fcf5d25e91e259fd73))
+
+#### [Updating pathing grid, pathfinding with different sized units, pathing grid fixes #130](https://github.com/eladyaniv01/SC2MapAnalysis/pull/130)
+  * Pathfinding now allows to query with unit sizes x <= 1 and 1 < x <= 2
+  * Pathfinding starting and end points are adjusted if they are inside some nonpathable thing such as a building or rocks. The new start or end point will be the closest pathable point, prioritizing points on the same terrain height level first before looking at other points
+  * Pathing grids update during the game and mostly without much work
+  * Pathing grid is also now much more accurate. The attempt is to represent each unit with precisely the right size instead of circles that are roughly correct
+  * Creating new pathing grids when requested is much faster because we don't need to loop over the destructables
+
+
+
+### Bug Fixes
+
+* air grid generation ([8acbed77](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/8acbed77b947736902b8f8bc1d562bed5e9e8303))
+* air vs ground grid  ([39ca942d](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/39ca942d873a9f161ff756ea4390d9bfdca9a85b))
+* deprecated time.clock() on python version > 3.7 ([e83832d4](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/e83832d43adb89fbb62ef42f6d438a85f0be3ed4))
+* All documentation example now work ([e6073df5](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/e6073df5e9b04607cc7992d9c32182baa1c8ae4e))
+
+
+### Tests
+* Test destructable types ([cafbead](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/cafbead33a096df43e2800a470fc7995a5258e88))
+* fix air vs ground test ([a2f4e27](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/a2f4e2702946d4432f0c25cf5c3b844fcb9d5619))
+* added --doctest-modules flag to pytest.ini.  all doc tests use a Goldenwall MapData mock ([5364a6c3](https://github.com/eladyaniv01/SC2MapAnalysis/pull/134/commits/5364a6c31eeabfa1a6ac5f5d7081f0c9004d7f63))
+
+
+### Issues Closed:
+
+* [#116 Update Readme and Docs branch](https://github.com/eladyaniv01/SC2MapAnalysis/issues/116)
+* [#109 Ramp objects should be updated during the game if they have destructables on them](https://github.com/eladyaniv01/SC2MapAnalysis/issues/109)
+* [#91 pathfind can return pathing outside of playable area.](https://github.com/eladyaniv01/SC2MapAnalysis/issues/91)
+* [#82 add instructions for cpp build tools for windows users](https://github.com/eladyaniv01/SC2MapAnalysis/issues/82) -- not needed 
+
+
 ### [0.0.79](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.78...v0.0.79) (2020-12-30)
 
 
 ### Features
 
-* add ladder compatible version of the c extension in the repo ([500a900](https://github.com/eladyaniv01/SC2MapAnalysis/commit/500a900d4d5ae22ab5d1391a23dd45ca129e43f7))
+* add a ladder compatible version of the c extension in the repo ([500a900](https://github.com/eladyaniv01/SC2MapAnalysis/commit/500a900d4d5ae22ab5d1391a23dd45ca129e43f7))
 
 ### Bug Fixes
 
-* CLI version parse
-  error ([c133b7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c133b7d9141a1fc6ca59dd91ceaceacd1a547aae))
+* CLI version parse error ([c133b7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c133b7d9141a1fc6ca59dd91ceaceacd1a547aae))
 
 ### [0.0.78](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.78) (2020-12-27)
 
