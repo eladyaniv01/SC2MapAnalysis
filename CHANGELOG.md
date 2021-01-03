@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.80](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.79...v0.0.80) (2021-01-03)
+
+
+### Bug Fixes
+
+* CLI version parse error ([c133b7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c133b7d9141a1fc6ca59dd91ceaceacd1a547aae))
+
 ### [0.0.79](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.78...v0.0.79) (2020-12-30)
 
 
