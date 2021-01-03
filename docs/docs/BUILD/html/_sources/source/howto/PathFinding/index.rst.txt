@@ -12,13 +12,15 @@ Pathfinding - from our main to the enemy's main
 
 .. code-block::
 
-        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        >>> my_base_raw_location = self.bot.townhalls[0].position
+        >>> my_region = self.where_all(my_base_raw_location)[0]
+        >>> enemy_main_region = self.where_all(self.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
-        >>> grid = map_data.get_pyastar_grid()
-        >>> path = map_data.pathfind(start=start, goal=goal, grid=grid, allow_diagonal=True, sensitivity=3)
+        >>> grid = self.get_pyastar_grid()
+        >>> path = self.pathfind(start=start, goal=goal, grid=grid, sensitivity=3)
         >>> path
-        [(157, 22), (154, 22), (151, 24), (148, 25), (145, 26), (142, 28), (139, 31), (136, 34), (133, 35), (130, 38), (127, 39), (124, 39), (121, 42), (118, 45), (115, 48), (112, 51), (109, 54), (106, 57), (103, 60), (100, 63), (97, 66), (94, 67), (93, 70), (90, 73), (90, 76), (93, 79), (93, 82), (91, 85), (91, 88), (88, 90), (85, 93), (82, 94), (79, 97), (76, 100), (73, 101), (70, 104), (67, 105), (64, 108), (61, 111), (58, 114), (55, 117), (52, 116), (49, 115), (46, 117), (43, 120)]
+        [(37, 55), (40, 58), (43, 61), (44, 64), (47, 67), (50, 70), (52, 73), (52, 76), (52, 79), (54, 82), (57, 82), (60, 82), (63, 82), (66, 82), (69, 82), (72, 82), (75, 82), (78, 82), (81, 82), (84, 82), (87, 82), (90, 82), (93, 82), (96, 82), (99, 82), (102, 82), (105, 82), (108, 82), (111, 82), (114, 82), (117, 82), (120, 82), (123, 82), (126, 82), (129, 82), (132, 82), (135, 82), (138, 82), (141, 82), (144, 82), (147, 82), (150, 82), (153, 82), (155, 79), (155, 76), (155, 73), (157, 70), (160, 67), (163, 64), (164, 61), (167, 58), (170, 55), (173, 52)]
 
 
 Plot and Debug the Pather - In Game
@@ -28,8 +30,8 @@ Plot and Debug the Pather - In Game
 
 .. code-block::
 
-         >>> grid = map_data.get_air_vs_ground_grid()
-         >>> map_data.draw_influence_in_game(grid)
+         >>> grid = self.get_air_vs_ground_grid()
+         >>> # self.draw_influence_in_game(grid) # commented out to not fail doc tests
 
 Plot and Debug the Pather
 -------------------------
@@ -39,14 +41,15 @@ Plot and Debug the Pather
 
 .. code-block::
 
-        >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where_all(my_base_raw_location)[0]
-        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        >>> my_base_raw_location = self.bot.townhalls[0].position
+        >>> my_region = self.where_all(my_base_raw_location)[0]
+        >>> enemy_main_region = self.where_all(self.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
-        >>> grid = map_data.get_pyastar_grid()
-        >>> path = map_data.plot_influenced_path(start=start, goal=goal, weight_array=grid, allow_diagonal=True, sensitivity=3)
-        >>> map_data.show()
+        >>> grid = self.get_pyastar_grid()
+        >>> # commented out for doc tests
+        >>> # path = self.plot_influenced_path(start=start, goal=goal, weight_array=grid)
+        >>> # self.show()
 
 
 .. image:: pathing_simple.png
@@ -64,16 +67,17 @@ Plotting our custom Cost
 
 .. code-block::
 
-        >>> my_base_raw_location = map_data.bot.townhalls[0].position
-        >>> my_region = map_data.where_all(my_base_raw_location)[0]
-        >>> enemy_main_region = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        >>> my_base_raw_location = self.bot.townhalls[0].position
+        >>> my_region = self.where_all(my_base_raw_location)[0]
+        >>> enemy_main_region = self.where_all(self.bot.enemy_start_locations[0].position)[0]
         >>> start = my_region.center
         >>> goal = enemy_main_region.center
-        >>> grid = map_data.get_pyastar_grid()
+        >>> grid = self.get_pyastar_grid()
         >>> p = (100,60) # the center point of which to add cost
-        >>> grid = map_data.add_cost(position=p,radius=25, grid=grid )
-        >>> path = map_data.plot_influenced_path(start=start, goal=goal, weight_array=grid, allow_diagonal=True)
-        >>> map_data.show()
+        >>> grid = self.add_cost(position=p,radius=25, grid=grid )
+        >>> # commented out for doc tests
+        >>> # path = self.plot_influenced_path(start=start, goal=goal, weight_array=grid)
+        >>> # self.show()
 
 
 .. image:: path_with_cost.png

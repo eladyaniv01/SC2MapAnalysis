@@ -100,7 +100,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../Buildings/index.html">Building Grid - Recipes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/cext/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.cext</span></code></a></li>
 </ul>
 
@@ -207,10 +206,10 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.html#MapAnalyzer.MapData.MapData.where" title="MapAnalyzer.MapData.MapData.where"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.where()</span></code></a></p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
-<span class="go">Region 1</span>
+<span class="go">Region 3</span>
 </pre></div>
 </div>
 </div>
@@ -221,19 +220,20 @@
 <li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># query in which region is the enemy main</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_start_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">all_polygon_areas_in_position</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-<span class="go">[Region 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">enemy_start_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_polygon_areas_in_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_polygon_areas_in_position</span>
+<span class="go">[Region 4]</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span> <span class="o">=</span> <span class="n">all_polygon_areas_in_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_main_base_region</span>
-<span class="go">Region 0</span>
+<span class="go">Region 4</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># now it is very easy to know which region is the enemy&#39;s natural</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># connected_regions is a property of a Region</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span> <span class="o">=</span> <span class="n">enemy_main_base_region</span><span class="o">.</span><span class="n">connected_regions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># connected_regions is a property of a Region</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span>
-<span class="go">Region 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enemy_natural_region</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">or</span> <span class="n">enemy_natural_region</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1"># doctest expects this to be true and it changes based on positions</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </div>
@@ -242,12 +242,14 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="../../MapAnalyzer/Region/index.html#MapAnalyzer.Region.Region.connected_regions" title="MapAnalyzer.Region.Region.connected_regions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Region.connected_regions()</span></code></a></p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span>
-<span class="go">Region 1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span> <span class="c1"># returns a list</span>
-<span class="go">[Region 3]</span>
+<span class="go">Region 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># returns a list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> <span class="c1"># sorting for doctest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">connected_regions</span>
+<span class="go">[Region 0, Region 5]</span>
 </pre></div>
 </div>
 <p><strong>Indices and tables</strong></p>

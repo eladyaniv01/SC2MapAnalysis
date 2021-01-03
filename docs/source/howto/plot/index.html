@@ -100,7 +100,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../Buildings/index.html">Building Grid - Recipes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../MapAnalyzer/cext/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">MapAnalyzer.cext</span></code></a></li>
 </ul>
 
@@ -208,8 +207,8 @@
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.html#MapAnalyzer.MapData.MapData.plot_map" title="MapAnalyzer.MapData.MapData.plot_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.plot_map()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.html#MapAnalyzer.MapData.MapData.show" title="MapAnalyzer.MapData.MapData.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.show()</span></code></a></p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">plot_map</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># map_data.plot_map()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># map_data.show()</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="../../../_images/map_plot.png"><img alt="../../../_images/map_plot.png" src="../../../_images/map_plot.png" style="width: 75%;" /></a>
@@ -220,17 +219,17 @@
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.html#MapAnalyzer.MapData.MapData.plot_map" title="MapAnalyzer.MapData.MapData.plot_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.plot_map()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../MapAnalyzer/MapData/index.html#MapAnalyzer.MapData.MapData.save" title="MapAnalyzer.MapData.MapData.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MapData.save()</span></code></a></p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">plot_map</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;myplot.png&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># map_data.plot_map()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># map_data.save(filename=&#39;myplot.png&#39;)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="plot-any-polygon">
 <h2>Plot any  Polygon<a class="headerlink" href="#plot-any-polygon" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="n">map_data</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">map_data</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_base_raw_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">townhalls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">where_all</span><span class="p">(</span><span class="n">my_base_raw_location</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># my_region.plot()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># map_data.show()</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="../../../_images/region1_plot.png"><img alt="../../../_images/region1_plot.png" src="../../../_images/region1_plot.png" style="width: 75%;" /></a>

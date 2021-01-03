@@ -8,6 +8,6 @@ Welcome to Sc2MapAnalyzer's documentation!
 
     source/gettingstarted/*
     source/howto/*
-    source/MapAnalyzer/*
+    source/MapAnalyzer’*
     source/MapAnalyzer/cext/*
 
