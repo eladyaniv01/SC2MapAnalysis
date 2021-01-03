@@ -1,7 +1,18 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.0.79](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.78...v0.0.79) (2020-12-30)
+
+
+### Features
+
+* add ladder compatible version of the c extension in the repo ([500a900](https://github.com/eladyaniv01/SC2MapAnalysis/commit/500a900d4d5ae22ab5d1391a23dd45ca129e43f7))
+
+### Bug Fixes
+
+* CLI version parse
+  error ([c133b7d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c133b7d9141a1fc6ca59dd91ceaceacd1a547aae))
 
 ### [0.0.78](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.76...v0.0.78) (2020-12-27)
 
