@@ -1,3 +1,5 @@
+import math
+from itertools import chain
 from functools import lru_cache
 from typing import Dict, List, Optional, Set, Tuple, Union
 
@@ -145,9 +147,7 @@ class MapData:
 
             so we treat destructables as if they were pathable
 
-            >>> # 1
             >>> no_destructables_grid = self.get_pyastar_grid(default_weight = 1, include_destructables= False)
-
             >>> # 2 set up a grid with default weight of 300
             >>> custom_weight_grid = self.get_pyastar_grid(default_weight = 300)
 
@@ -172,21 +172,12 @@ class MapData:
         (if there are more than one)
 
         Example:
+
              >>> my_grid = self.get_air_vs_ground_grid()
              >>> position = (100, 80)
              >>> my_radius = 10
              >>> self.find_lowest_cost_points(from_pos=position, radius=my_radius, grid=my_grid)
-             [(105, 77), (108, 79), (107, 81), (91, 79), (106, 80),
-             (108, 83), (106, 78), (107, 84), (109, 82), (107, 79),
-             (107, 80), (106, 75), (107, 75), (91, 78), (106, 81),
-             (109, 77), (108, 76), (91, 80), (106, 79), (109, 81),
-             (107, 78), (108, 80), (105, 82), (107, 83), (107, 74),
-             (108, 84), (102, 71), (109, 76), (105, 79), (108, 77),
-             (106, 76), (107, 86), (106, 82), (109, 80), (108, 81),
-             (105, 81), (107, 82), (109, 84), (106, 73), (107, 77),
-             (108, 85), (105, 78), (108, 78), (106, 77), (107, 73),
-             (106, 83), (108, 82), (105, 80), (108, 75), (107, 85),
-             (109, 83), (107, 76)]
+             [(90, 80), (91, 76), (91, 77), (91, 78), (91, 79), (91, 80), (91, 81), (92, 74), (92, 75), (92, 76), (92, 77), (92, 78), (92, 79), (92, 80), (92, 81), (93, 73), (93, 74), (93, 75), (93, 76), (93, 77), (93, 78), (93, 79), (93, 80), (93, 81), (94, 72), (94, 73), (94, 74), (94, 75), (94, 76), (94, 77), (95, 73), (95, 74), (95, 75), (95, 76), (96, 74), (96, 75), (97, 74), (97, 75), (98, 74), (98, 75), (99, 74), (99, 75), (100, 74), (100, 75), (101, 74), (101, 75), (102, 74), (102, 75), (103, 74), (103, 75), (104, 74), (104, 75), (105, 74), (105, 75), (106, 74), (106, 75), (107, 74), (107, 75), (108, 74), (108, 75)]
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -198,6 +189,15 @@ class MapData:
 
         """
         return self.pather.find_lowest_cost_points(from_pos=from_pos, radius=radius, grid=grid)
+
+    def lowest_cost_points_array(self, from_pos: Point2, radius: float, grid: np.ndarray) -> ndarray:
+        """
+        :rtype:    Union[:class:`numpy.ndarray`, None]
+        Same as find_lowest_cost_points, but returns points in ndarray for use
+        
+        with numpy/scipy/etc
+        """
+        return self.pather.lowest_cost_points_array(from_pos=from_pos, radius=radius, grid=grid)
 
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """
@@ -303,7 +303,8 @@ class MapData:
         Example:
             >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
+            >>> st, gl = (50,75) , (100,100)
+            >>> path = self.pathfind_pyastar(start=st,goal=gl,grid=my_grid,allow_diagonal=True, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -314,7 +315,7 @@ class MapData:
                                             sensitivity=sensitivity)
 
     def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
-                 grid: Optional[ndarray] = None, smoothing: bool = False,
+                 grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
                  sensitivity: int = 1) -> Optional[List[Point2]]:
         """
         :rtype: Union[List[:class:`sc2.position.Point2`], None]
@@ -334,6 +335,10 @@ class MapData:
 
         getting every  n-``th`` point works better in practice
 
+        `` large`` is a boolean that determines whether we are doing pathing with large unit sizes
+        like Thor and Ultralisk. When it's false the pathfinding is using unit size 1, so if
+        you want to a guarantee that a unit with size > 1 fits through the path then large should be True.
+
         ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.
         it will skip all the waypoints it can if taking the straight line forward is better
         according to the influence grid
@@ -341,17 +346,19 @@ class MapData:
         Example:
             >>> my_grid = self.get_pyastar_grid()
             >>> # start / goal could be any tuple / Point2
-            >>> path = self.pathfind(start=start,goal=goal,grid=my_grid,allow_diagonal=True, sensitivity=3)
+            >>> st, gl = (50,75) , (100,100)
+            >>> path = self.pathfind(start=st,goal=gl,grid=my_grid, large=False, smoothing=False, sensitivity=3)
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
             * :meth:`.MapData.find_lowest_cost_points`
 
         """
-        return self.pather.pathfind(start=start, goal=goal, grid=grid, smoothing=smoothing,
+        return self.pather.pathfind(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
                                     sensitivity=sensitivity)
 
-    def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100, safe: bool = True,
+    def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100,
+                 safe: bool = True,
                  initial_default_weights: float = 0) -> ndarray:
         """
         :rtype: numpy.ndarray
@@ -463,9 +470,17 @@ class MapData:
         :rtype: float64
 
         Euclidean distance
-
         """
-        return (pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2)) ** 0.5
+        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2)
+
+    @staticmethod
+    def distance_squared(p1: Point2, p2: Point2) -> float64:
+        """
+        :rtype: float64
+
+        Euclidean distance squared
+        """
+        return (p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2
 
     @staticmethod
     def closest_node_idx(
@@ -479,7 +494,11 @@ class MapData:
         will return the index of the closest node in the list to ``node``
 
         """
-        closest_index = distance.cdist([node], nodes).argmin()
+        if isinstance(nodes, list):
+            iter = chain.from_iterable(nodes)
+            nodes = np.fromiter(iter, dtype=type(nodes[0][0]), count=len(nodes) * 2).reshape((-1, 2))
+
+        closest_index = distance.cdist([node], nodes, "sqeuclidean").argmin()
         return closest_index
 
     def closest_towards_point(
@@ -496,18 +515,19 @@ class MapData:
                 Calculate a position for tanks in direction to the enemy forces
                 passing in the Area's corners as points and enemy army's location as target
 
-                >>> enemy_army_position = Point2((50,50)) # random point for this example
-                >>> my_base_location = self.bot.townhalls[0]
+                >>> enemy_army_position = (50,50)
+                >>> my_base_location = self.bot.townhalls[0].position
                 >>> my_region = self.where_all(my_base_location)[0]
-                >>> corners = my_region.corner_points
-                >>> best_siege_spot = self.closest_towards_point(points=corners, target=enemy_army_position)
-                (57,120)
+                >>> best_siege_spot = self.closest_towards_point(points=my_region.corner_points, target=enemy_army_position)
+                >>> best_siege_spot
+                (49, 52)
+
         """
-        if isinstance(points, list):
-            return points[self.closest_node_idx(node=target, nodes=points)]
-        else:
+
+        if not isinstance(points, (list, ndarray)):
             logger.warning(type(points))
-            return points[self.closest_node_idx(node=target, nodes=points)]
+
+        return points[self.closest_node_idx(node=target, nodes=points)]
 
     """Query methods"""
 
@@ -553,17 +573,18 @@ class MapData:
                 >>> # query in which region is the enemy main
                 >>> position = self.bot.enemy_start_locations[0].position
                 >>> all_polygon_areas_in_position = self.where_all(position)
-                [Region 0]
+                >>> all_polygon_areas_in_position
+                [Region 4]
 
                 >>> enemy_main_base_region = all_polygon_areas_in_position[0]
                 >>> enemy_main_base_region
-                Region 0
+                Region 4
 
                 >>> # now it is very easy to know which region is the enemy's natural
                 >>> # connected_regions is a property of a Region
                 >>> enemy_natural_region = enemy_main_base_region.connected_regions[0]
-                >>> enemy_natural_region
-                Region 3
+                >>> # will return Region 1 or 6 for goldenwall depending on starting position
+
 
         Tip:
 
@@ -733,7 +754,7 @@ class MapData:
         # may even be the same. by removing them they should be tagged as chokes in the c extension
         # if they really are ones
         viable_ramps = list(filter(lambda x: x.bottom_center.distance_to(x.top_center) >= 1,
-                            self.bot.game_info.map_ramps))
+                                   self.bot.game_info.map_ramps))
         self.map_ramps = [MDRamp(map_data=self,
                                  ramp=r,
                                  array=self.points_to_numpy_array(r.points))
@@ -839,7 +860,7 @@ class MapData:
         Example:
                 >>> self.ground_grid = self.get_pyastar_grid(default_weight=1)
                 >>> self.ground_grid = self.add_cost((100, 100), radius=15, grid=self.ground_grid, weight=50)
-                >>> self.draw_influence_in_game(self.ground_grid, lower_threshold=1)
+                >>> # self.draw_influence_in_game(self.ground_grid, lower_threshold=1) # commented out for doctest
 
         See Also:
             * :meth:`.MapData.get_pyastar_grid`
@@ -863,14 +884,37 @@ class MapData:
         """
         if save is not None:
             logger.warning(CustomDeprecationWarning(oldarg='save', newarg='self.save()'))
+        import inspect
+        logger.error(f"{inspect.stack()[1]}")
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
     def plot_influenced_path_pyastar(self,
 
+                                     start: Union[Tuple[float, float], Point2],
+                                     goal: Union[Tuple[float, float], Point2],
+                                     weight_array: ndarray,
+                                     allow_diagonal=False,
+                                     name: Optional[str] = None,
+                                     fontdict: dict = None) -> None:
+        """
+
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+
+        """
+
+        self.debugger.plot_influenced_path_pyastar(start=start,
+                                                   goal=goal,
+                                                   weight_array=weight_array,
+                                                   name=name,
+                                                   fontdict=fontdict,
+                                                   allow_diagonal=allow_diagonal)
+
+    def plot_influenced_path(self,
                              start: Union[Tuple[float, float], Point2],
                              goal: Union[Tuple[float, float], Point2],
                              weight_array: ndarray,
-                             allow_diagonal=False,
+                             large: bool = False,
+                             smoothing: bool = False,
                              name: Optional[str] = None,
                              fontdict: dict = None) -> None:
         """
@@ -879,32 +923,13 @@ class MapData:
 
         """
 
-        self.debugger.plot_influenced_path_pyastar(start=start,
+        self.debugger.plot_influenced_path(start=start,
                                            goal=goal,
                                            weight_array=weight_array,
+                                           large=large,
+                                           smoothing=smoothing,
                                            name=name,
-                                           fontdict=fontdict,
-                                           allow_diagonal=allow_diagonal)
-
-    def plot_influenced_path(self,
-                               start: Union[Tuple[float, float], Point2],
-                               goal: Union[Tuple[float, float], Point2],
-                               weight_array: ndarray,
-                               smoothing: bool = False,
-                               name: Optional[str] = None,
-                               fontdict: dict = None) -> None:
-        """
-
-        A useful debug utility method for experimenting with the :mod:`.Pather` module
-
-        """
-
-        self.debugger.plot_influenced_path(start=start,
-                                             goal=goal,
-                                             weight_array=weight_array,
-                                             smoothing=smoothing,
-                                             name=name,
-                                             fontdict=fontdict)
+                                           fontdict=fontdict)
 
     def _plot_regions(self, fontdict: Dict[str, Union[str, int]]) -> None:
         return self.debugger.plot_regions(fontdict=fontdict)

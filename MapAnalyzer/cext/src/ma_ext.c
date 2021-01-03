@@ -573,12 +573,23 @@ static inline float euclidean_distance(int x0, int y0, int x1, int y1)
     return (float)sqrt((double)((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)));
 }
 
+enum Directions {
+    UP_LEFT = 0,
+    UP = 1,
+    UP_RIGHT = 2,
+    LEFT = 3,
+    RIGHT = 4,
+    DOWN_LEFT = 5,
+    DOWN = 6,
+    DOWN_RIGHT = 7
+};
+
 /*
 Run the astar algorithm. The resulting path is saved in paths
 so each node knows the previous node and the path can be traced back.
 Returns the path length.
 */
-static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, int h, int start, int goal)
+static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, int h, int start, int goal, int large)
 {
     float weight_baseline = find_min(weights, w*h);
     
@@ -603,6 +614,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     queue_push_or_update(nodes_to_visit, start_node);
 
     int nbrs[8];
+    uint8_t nbr_fits[8];
     float nbr_costs[8] = { SQRT2, 1.0f, SQRT2, 1.0f, 1.0f, SQRT2, 1.0f, SQRT2 };
 
     while (nodes_to_visit->size > 0)
@@ -617,21 +629,94 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
         int row = cur.idx / w;
         int col = cur.idx % w;
 
-        nbrs[0] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
-        nbrs[1] = (row > 0) ? cur.idx - w : -1;
-        nbrs[2] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
-        nbrs[3] = (col > 0) ? cur.idx - 1 : -1;
-        nbrs[4] = (col + 1 < w) ? cur.idx + 1 : -1;
-        nbrs[5] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
-        nbrs[6] = (row + 1 < h) ? cur.idx + w : -1;
-        nbrs[7] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
+        nbrs[UP_LEFT] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[UP] = (row > 0) ? cur.idx - w : -1;
+        nbrs[UP_RIGHT] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[LEFT] = (col > 0) ? cur.idx - 1 : -1;
+        nbrs[RIGHT] = (col + 1 < w) ? cur.idx + 1 : -1;
+        nbrs[DOWN_LEFT] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
+        nbrs[DOWN] = (row + 1 < h) ? cur.idx + w : -1;
+        nbrs[DOWN_RIGHT] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
+
+        for (int i = 0; i < 8; ++i)
+        {
+            nbr_fits[i] = (nbrs[i] != -1 && weights[nbrs[i]] < HUGE_VALF) ? 1 : 0;
+        }
+
+        if (large)
+        {
+            if (nbr_fits[UP])
+            {
+                float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
+                float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
+
+                nbr_fits[UP] = (up_left_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[LEFT])
+            {
+                float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
+                float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
+
+                nbr_fits[LEFT] = (up_left_weight < HUGE_VALF || down_left_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[RIGHT])
+            {
+                float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
+                float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
+
+                nbr_fits[RIGHT] = (down_right_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[DOWN])
+            {
+                float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
+                float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
+
+                nbr_fits[DOWN] = (down_left_weight < HUGE_VALF || down_right_weight < HUGE_VALF) ? 1 : 0;
+            }
+        }
+        
+        if (nbr_fits[UP_LEFT])
+        {
+            float up_weight = weights[nbrs[UP]];
+            float left_weight = weights[nbrs[LEFT]];
+
+            nbr_fits[UP_LEFT] = (up_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
+        }
+
+        if (nbr_fits[UP_RIGHT])
+        {
+            float up_weight = weights[nbrs[UP]];
+            float right_weight = weights[nbrs[RIGHT]];
+
+            nbr_fits[UP_RIGHT] = (up_weight < HUGE_VALF && right_weight < HUGE_VALF) ? 1 : 0;
+        }
+
+        if (nbr_fits[DOWN_LEFT])
+        {
+            float down_weight = weights[nbrs[DOWN]];
+            float left_weight = weights[nbrs[LEFT]];
+
+            nbr_fits[DOWN_LEFT] = (down_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
+        }
+
+        if (nbr_fits[DOWN_RIGHT])
+        {
+            float down_weight = weights[nbrs[DOWN]];
+            float right_weight = weights[nbrs[RIGHT]];
+
+            nbr_fits[DOWN_RIGHT] = (down_weight < HUGE_VALF && right_weight < HUGE_VALF) ? 1 : 0;
+        }
+        
 
         float heuristic_cost;
         float cur_cost = costs[cur.idx];
 
         for (int i = 0; i < 8; ++i)
         {
-            if (nbrs[i] >= 0)
+            if (nbr_fits[i])
             {
                 float new_cost = cur_cost + weights[nbrs[i]] * nbr_costs[i];
             
@@ -724,10 +809,10 @@ and whether to smooth the final path.
 static PyObject* astar(PyObject *self, PyObject *args)
 {
     PyArrayObject* weights_object;
-    int h, w, start, goal, smoothing;
+    int h, w, start, goal, large, smoothing;
     
     
-    if (!PyArg_ParseTuple(args, "Oiiiii", &weights_object, &h, &w, &start, &goal, &smoothing))
+    if (!PyArg_ParseTuple(args, "Oiiiiii", &weights_object, &h, &w, &start, &goal, &large, &smoothing))
     {
         return NULL;
     }
@@ -735,7 +820,7 @@ static PyObject* astar(PyObject *self, PyObject *args)
     float *weights = (float *)weights_object->data;
     int *paths = (int*) PushToMemoryArena(&state.function_arena, w*h*sizeof(int));
 
-    int path_length = run_pathfind(&state.function_arena, weights, paths, w, h, start, goal);
+    int path_length = run_pathfind(&state.function_arena, weights, paths, w, h, start, goal, large);
     
     PyObject *return_val;
     if (path_length >= 0)
@@ -901,14 +986,14 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
         int row = cur.idx / w;
         int col = cur.idx % w;
 
-        nbrs[0] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
-        nbrs[1] = (row > 0) ? cur.idx - w : -1;
-        nbrs[2] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
-        nbrs[3] = (col > 0) ? cur.idx - 1 : -1;
-        nbrs[4] = (col + 1 < w) ? cur.idx + 1 : -1;
-        nbrs[5] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
-        nbrs[6] = (row + 1 < h) ? cur.idx + w : -1;
-        nbrs[7] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
+        nbrs[UP_LEFT] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+        nbrs[UP] = (row > 0) ? cur.idx - w : -1;
+        nbrs[UP_RIGHT] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+        nbrs[LEFT] = (col > 0) ? cur.idx - 1 : -1;
+        nbrs[RIGHT] = (col + 1 < w) ? cur.idx + 1 : -1;
+        nbrs[DOWN_LEFT] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
+        nbrs[DOWN] = (row + 1 < h) ? cur.idx + w : -1;
+        nbrs[DOWN_RIGHT] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
 
         float cur_cost = costs[cur.idx];
 
@@ -1045,15 +1130,18 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
                 if (found) continue;
 
-                int dots = (int)flight_distance;
+                int step_constant = 2;
+                int step_constant_inverse = (float) 1 / step_constant;
+
+                int dots = (int)step_constant*flight_distance;
                 float unit_vector[2] = { (float)(xnew - x) / flight_distance, (float)(ynew - y) / flight_distance };
                 int wall_hit = 0;
 
                 for (int i = 1; i < dots; ++i)
                 {
-                    int draw_x = (int)(x + unit_vector[0]*i);
-                    int draw_y = (int)(y + unit_vector[1]*i);
-
+                    int draw_x = (int)(x + unit_vector[0]*i*step_constant_inverse);
+                    int draw_y = (int)(y + unit_vector[1]*i*step_constant_inverse);
+                    
                     if ((draw_x == x && draw_y == y) || (draw_x == xnew && draw_y == ynew))
                     {
                         continue;

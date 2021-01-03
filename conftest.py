@@ -1,4 +1,7 @@
-#
+import pytest
+
+from tests.test_docs import map_data
+
 #
 # def pytest_collection_finish(session):
 #     """Handle the pytest collection finish hook: configure pyannotate.
@@ -24,3 +27,8 @@
 #     from pyannotate_runtime import collect_types
 #
 #     collect_types.dump_stats("type_info.json")
+
+
+@pytest.fixture(autouse=True)
+def add_map_data(doctest_namespace):
+    doctest_namespace["self"] = map_data
