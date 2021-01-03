@@ -1,8 +1,9 @@
 .. important::
         **Recipe Terminology:**
 
-            * ``self``  = :class:`sc2.bot_ai.BotAI`
-            * ``map_data`` = :class:`.MapData`
+            * ``self`` = :class:`.MapData`
+            * ``self.bot``  = :class:`sc2.bot_ai.BotAI`
+
 
         **PathFinding Terminology:**
 
