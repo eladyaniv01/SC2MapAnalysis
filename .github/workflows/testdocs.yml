@@ -1,0 +1,35 @@
+name: TestDocs
+
+on:
+  push:
+    branches: [ gh-pages]
+
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:  [ubuntu-latest] # windows-latest need to figure out how to run on win64
+        python-version: [3.7]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          sc2mapanalyzer @ git+git://github.com/eladyaniv01/SC2MapAnalysis.git#egg==sc2mapanalyzer
+      - name: Test with pytest + Coverage
+        run: |
+          pytest --html=html/${{ matrix.os }}-test-results-${{ matrix.python-version }}.html
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: pytest-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: html/${{ matrix.os }}-test-results-${{ matrix.python-version }}.html
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
