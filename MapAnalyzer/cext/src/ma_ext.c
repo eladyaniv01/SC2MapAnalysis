@@ -844,20 +844,27 @@ static PyObject* astar(PyObject *self, PyObject *args)
         }
         else
         {
-            VecInt *smoothed_path_inverted = InitVecInt(&state.function_arena, path_length);
-
-            smoothed_path_inverted = PushToVecInt(smoothed_path_inverted, goal);
-
-            int current_node = paths[goal];
-            float step_weight = 0;
-            float segment_total_weight = weights[goal] * distance_heuristic(goal % w, goal / w, current_node % w, current_node / w, 1.0f);
-            for(int i = 1; i < path_length - 1; ++i)
+            VecInt *complete_path = InitVecInt(&state.function_arena, path_length);
+            complete_path->size = path_length;
+            int current_node = goal;
+            for (int i = 0; i < path_length; ++i)
             {
-                int next_node = paths[current_node];
-                step_weight = weights[next_node] * distance_heuristic(current_node % w, current_node / w, next_node % w, next_node / w, 1.0f);
+                complete_path->items[path_length - 1 - i] = current_node;
+                current_node = paths[current_node];
+            }
+
+            VecInt *smoothed_path = InitVecInt(&state.function_arena, path_length);
+            smoothed_path = PushToVecInt(smoothed_path, start);
+
+            float segment_total_weight = weights[goal] * distance_heuristic(goal % w, goal / w, current_node % w, current_node / w, 1.0f);
+            for (int i = 1; i < path_length - 1; ++i)
+            {
+                int current_node = complete_path->items[i];
+                int next_node = complete_path->items[i + 1];
+                float step_weight = weights[next_node] * distance_heuristic(current_node % w, current_node / w, next_node % w, next_node / w, 1.0f);
                 segment_total_weight += step_weight;
 
-                int last_added_new_path_node = smoothed_path_inverted->items[smoothed_path_inverted->size - 1];
+                int last_added_new_path_node = smoothed_path->items[smoothed_path->size - 1];
                 int x0 = last_added_new_path_node % w;
                 int y0 = last_added_new_path_node / w;
                 int x1 = next_node % w;
@@ -866,25 +873,20 @@ static PyObject* astar(PyObject *self, PyObject *args)
                 if (calculate_line_weight(&state.function_arena, weights, w, x0, y0, x1, y1) > segment_total_weight * 1.002f)
                 {
                     segment_total_weight = step_weight;
-                    smoothed_path_inverted = PushToVecInt(smoothed_path_inverted, current_node);
+                    smoothed_path = PushToVecInt(smoothed_path, current_node);
                 }
-
-                current_node = next_node;
             }
-            smoothed_path_inverted = PushToVecInt(smoothed_path_inverted, start);
 
-            npy_intp dims[2] = {smoothed_path_inverted->size, 2};
+            smoothed_path = PushToVecInt(smoothed_path, goal);
+
+            npy_intp dims[2] = {smoothed_path->size, 2};
             PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
             npy_int32 *path_data = (npy_int32*)path->data;
 
-            int idx = goal;
-
-            for (npy_intp i = dims[0] - 1; i >= 0; --i)
+            for (npy_intp i = 0; i < dims[0]; ++i)
             {
-                path_data[2*i] = smoothed_path_inverted->items[dims[0] - 1 - i] / w;
-                path_data[2*i + 1] = smoothed_path_inverted->items[dims[0] - 1 - i] % w;
-
-                idx = paths[idx];
+                path_data[2*i] = smoothed_path->items[i] / w;
+                path_data[2*i + 1] = smoothed_path->items[i] % w;
             }
             return_val = PyArray_Return(path);
         }
