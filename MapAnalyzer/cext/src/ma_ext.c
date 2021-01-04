@@ -1132,9 +1132,9 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
                 if (found) continue;
 
                 int step_constant = 2;
-                int step_constant_inverse = (float) 1 / step_constant;
+                float step_constant_inverse = (float) 1 / step_constant;
 
-                int dots = (int)step_constant*flight_distance;
+                int dots = (int)(step_constant*flight_distance);
                 float unit_vector[2] = { (float)(xnew - x) / flight_distance, (float)(ynew - y) / flight_distance };
                 int wall_hit = 0;
 
