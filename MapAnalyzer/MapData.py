@@ -809,6 +809,7 @@ class MapData:
                         self.polygons.remove(new_choke)
                         area.points.update(new_choke.points)
                         new_choke = None
+                        break
 
                 if new_choke:
                     self.map_chokes.append(new_choke)
