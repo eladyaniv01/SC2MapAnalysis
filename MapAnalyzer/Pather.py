@@ -292,9 +292,9 @@ class MapAnalyzerPather:
             grid = self.get_pyastar_grid()
 
         if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
+            start = round(start[0]), round(start[1])
             start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = round(goal[0]), round(goal[1])
             goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
         else:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
@@ -323,9 +323,9 @@ class MapAnalyzerPather:
             grid = self.get_pyastar_grid()
 
         if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
+            start = round(start[0]), round(start[1])
             start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = round(goal[0]), round(goal[1])
             goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
         else:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
