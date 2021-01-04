@@ -850,11 +850,11 @@ static PyObject* astar(PyObject *self, PyObject *args)
 
             int current_node = paths[goal];
             float step_weight = 0;
-            float segment_total_weight = 0;
+            float segment_total_weight = weights[goal] * distance_heuristic(goal % w, goal / w, current_node % w, current_node / w, 1.0f);
             for(int i = 1; i < path_length - 1; ++i)
             {
                 int next_node = paths[current_node];
-                step_weight = weights[next_node] * euclidean_distance(current_node % w, current_node / w, next_node % w, next_node / w);
+                step_weight = weights[next_node] * distance_heuristic(current_node % w, current_node / w, next_node % w, next_node / w, 1.0f);
                 segment_total_weight += step_weight;
 
                 int last_added_new_path_node = smoothed_path_inverted->items[smoothed_path_inverted->size - 1];
@@ -862,6 +862,7 @@ static PyObject* astar(PyObject *self, PyObject *args)
                 int y0 = last_added_new_path_node / w;
                 int x1 = next_node % w;
                 int y1 = next_node / w;
+
                 if (calculate_line_weight(&state.function_arena, weights, w, x0, y0, x1, y1) > segment_total_weight * 1.002f)
                 {
                     segment_total_weight = step_weight;
