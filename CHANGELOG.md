@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.81](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.80...v0.0.81) (2021-01-06)
+
+
+### Features
+
+* add ladder compatible version of the c extension in the repo ([9214a2c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/9214a2c4e476093e022e9e7503782c918c02dce6))
+
+
+### Bug Fixes
+
+* all doc examples now work ([e6073df](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e6073df5e9b04607cc7992d9c32182baa1c8ae4e))
+* deprecated time.clock() on python version > 3.7 ([e83832d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/e83832d43adb89fbb62ef42f6d438a85f0be3ed4))
+
+
+### Tests
+
+*  doc testing can be done without running the entire test suite ([a13331a](https://github.com/eladyaniv01/SC2MapAnalysis/commit/a13331a077af4ee37b6c373f9364f61179ee0ee5))
+* added --doctest-modules flag to pytest.ini ([5364a6c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/5364a6c31eeabfa1a6ac5f5d7081f0c9004d7f63))
+* doctest mocks goldenwall map data ([1ff7f26](https://github.com/eladyaniv01/SC2MapAnalysis/commit/1ff7f26e77e9ad593c76f8f4ac0676dcd54dc0e6))
+* ignore pf_perf.py when collecting test files ([900db28](https://github.com/eladyaniv01/SC2MapAnalysis/commit/900db282cf670a776f59661daee2b1885eb52d84))
+
 ### [0.0.80](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.79...v0.0.80) (2021-01-03)
 
 ### Features
