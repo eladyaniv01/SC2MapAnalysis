@@ -205,14 +205,16 @@ class MapAnalyzerPather:
         if grid[point] == np.inf:
             target_height = terrain_height[point]
             disk = tuple(draw_circle(point, max_distance, shape=grid.shape))
-            same_height_cond = np.logical_and(terrain_height[disk] == target_height, grid[disk] < np.inf)
+            # Using 8 for the threshold in case there is some variance on the same level
+            # Proper levels have a height difference of 16
+            same_height_cond = np.logical_and(np.abs(terrain_height[disk] - target_height) < 8, grid[disk] < np.inf)
 
             if np.any(same_height_cond):
                 possible_points = np.column_stack((disk[0][same_height_cond], disk[1][same_height_cond]))
                 closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
                 return tuple(possible_points[closest_point_index])
             else:
-                diff_height_cond = np.logical_and(terrain_height[disk] != target_height, grid[disk] < np.inf)
+                diff_height_cond = grid[disk] < np.inf
                 if np.any(diff_height_cond):
                     possible_points = np.column_stack((disk[0][diff_height_cond], disk[1][diff_height_cond]))
                     closest_point_index = np.argmin(np.sum((possible_points - point) ** 2, axis=1))
@@ -292,9 +294,9 @@ class MapAnalyzerPather:
             grid = self.get_pyastar_grid()
 
         if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
+            start = round(start[0]), round(start[1])
             start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = round(goal[0]), round(goal[1])
             goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
         else:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
@@ -323,9 +325,9 @@ class MapAnalyzerPather:
             grid = self.get_pyastar_grid()
 
         if start is not None and goal is not None:
-            start = int(round(start[0])), int(round(start[1]))
+            start = round(start[0]), round(start[1])
             start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = int(round(goal[0])), int(round(goal[1]))
+            goal = round(goal[0]), round(goal[1])
             goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
         else:
             logger.warning(PatherNoPointsException(start=start, goal=goal))
