@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.81](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.80...v0.0.81) (2021-01-06)
+
+### Features
+
+* Adjust finding eligible pathing points ([090eed9](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/090eed98b691711d8aa100b9ac992033a48433a0))
+* Break a choke check loop if choke is removed ([9413288](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/941328872671158059f64e778d373c80bb610e5f))
+* Turn path smoothing around, so it works front to back ([9413288](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/941328872671158059f64e778d373c80bb610e5f))
+
+### Bug Fixes
+
+* Fix path smoothing calculations ([0a69a87](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/0a69a8731050b303ca285b3558ff206f47ad13b1))
+* Fix variable having wrong type ([3a663d4](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/3a663d4c9d7b0137674ffc77cff0a94ce20396f9))
+* Fix Crash on cleaning overlapping chokes  ([6aebbc4](https://github.com/eladyaniv01/SC2MapAnalysis/pull/138/commits/6aebbc4d9feafc6162dd0f7dfa1c24b88dfbc53b))
+
+
 ### [0.0.80](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.79...v0.0.80) (2021-01-03)
 
 ### Features
