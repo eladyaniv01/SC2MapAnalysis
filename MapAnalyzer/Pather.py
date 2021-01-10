@@ -62,6 +62,12 @@ class MapAnalyzerPather:
         # are not pathable in the pathing grid
         # we manage those manually so they are accurate through the game
         self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
+
+        # Fixing platforms on Submarine which reapers can climb onto not being pathable
+        if self.map_data.map_name == "Submarine LE":
+            self.default_grid[116, 43] = 1
+            self.default_grid[51, 120] = 1
+
         self.default_grid_nodestr = self.default_grid.copy()
 
         self.destructables_included = {}
