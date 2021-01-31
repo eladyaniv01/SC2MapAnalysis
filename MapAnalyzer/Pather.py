@@ -27,7 +27,7 @@ def _bounded_circle(center, radius, shape):
 def draw_circle(c, radius, shape=None):
     center = np.array(c)
     upper_left = np.ceil(center - radius).astype(int)
-    lower_right = np.floor(center + radius).astype(int) - 1
+    lower_right = np.floor(center + radius).astype(int) + 1
 
     if shape is not None:
         # Constrain upper_left and lower_right by shape boundary.
@@ -358,6 +358,11 @@ class MapAnalyzerPather:
     def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
         disk = tuple(draw_circle(position, radius, arr.shape))
+
+        # if we don't touch any cell origins due to a small radius, add at least the cell
+        # the given position is in
+        if len(disk[0]) == 0 and 0 <= position[0] < arr.shape[0] and 0 <= position[1] < arr.shape[1]:
+            disk = (int(position[0]), int(position[1]))
 
         if initial_default_weights > 0:
             arr[disk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
