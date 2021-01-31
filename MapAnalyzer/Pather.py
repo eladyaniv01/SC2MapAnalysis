@@ -21,21 +21,12 @@ if TYPE_CHECKING:
 def _bounded_circle(center, radius, shape):
     xx, yy = np.ogrid[:shape[0], :shape[1]]
     circle = (xx - center[0]) ** 2 + (yy - center[1]) ** 2
-    rr, cc = np.nonzero(circle <= radius ** 2)
-
-    # if we don't touch any cell origins, add at least the grid cell the center is in
-    if rr.size == 0:
-        floor = np.floor(center)
-        rr = np.array([floor[0]]).astype(np.int64)
-        cc = np.array([floor[1]]).astype(np.int64)
-        return rr, cc
-    else:
-        return rr, cc
+    return np.nonzero(circle <= radius ** 2)
 
 
 def draw_circle(c, radius, shape=None):
     center = np.array(c)
-    upper_left = np.floor(center - radius).astype(int)
+    upper_left = np.ceil(center - radius).astype(int)
     lower_right = np.floor(center + radius).astype(int) + 1
 
     if shape is not None:
@@ -367,6 +358,11 @@ class MapAnalyzerPather:
     def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
                  safe: bool = True, initial_default_weights: float = 0) -> ndarray:
         disk = tuple(draw_circle(position, radius, arr.shape))
+
+        # if we don't touch any cell origins due to a small radius, add at least the cell
+        # the given position is in
+        if len(disk[0]) == 0:
+            disk = (int(position[0]), int(position[1]))
 
         if initial_default_weights > 0:
             arr[disk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
