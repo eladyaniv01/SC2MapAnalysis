@@ -21,13 +21,22 @@ if TYPE_CHECKING:
 def _bounded_circle(center, radius, shape):
     xx, yy = np.ogrid[:shape[0], :shape[1]]
     circle = (xx - center[0]) ** 2 + (yy - center[1]) ** 2
-    return np.nonzero(circle <= radius ** 2)
+    rr, cc = np.nonzero(circle <= radius ** 2)
+
+    # if we don't touch any cell origins, add at least the grid cell the center is in
+    if rr.size == 0:
+        floor = np.floor(center)
+        rr = np.array([floor[0]]).astype(np.int64)
+        cc = np.array([floor[1]]).astype(np.int64)
+        return rr, cc
+    else:
+        return rr, cc
 
 
 def draw_circle(c, radius, shape=None):
     center = np.array(c)
-    upper_left = np.ceil(center - radius).astype(int)
-    lower_right = np.floor(center + radius).astype(int) - 1
+    upper_left = np.floor(center - radius).astype(int)
+    lower_right = np.floor(center + radius).astype(int) + 1
 
     if shape is not None:
         # Constrain upper_left and lower_right by shape boundary.
