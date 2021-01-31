@@ -361,7 +361,7 @@ class MapAnalyzerPather:
 
         # if we don't touch any cell origins due to a small radius, add at least the cell
         # the given position is in
-        if len(disk[0]) == 0:
+        if len(disk[0]) == 0 and 0 <= position[0] < arr.shape[0] and 0 <= position[1] < arr.shape[1]:
             disk = (int(position[0]), int(position[1]))
 
         if initial_default_weights > 0:
