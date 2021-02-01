@@ -41,6 +41,18 @@ class CMapChoke:
         return f"[{self.id}]CMapChoke; {len(self.pixels)}"
 
 
+# each map can have a list of exceptions, each
+# exception should be a type where we can index into a grid
+# grid[ex[0], ex[1]] = ...
+# meshgrid is used to build rectangular areas we can alter
+# in one go
+climber_grid_exceptions = {
+    "DeathAura": [
+        np.meshgrid(range(36, 49), range(118, 127)),
+        np.meshgrid(range(143, 154), range(61, 70))
+    ]
+}
+
 def astar_path(
         weights: np.ndarray,
         start: Tuple[int, int],
@@ -76,7 +88,7 @@ class CMapInfo:
     overlord_spots: Optional[List[Point2]]
     chokes: List[CMapChoke]
 
-    def __init__(self, walkable_grid: np.ndarray, height_map: np.ndarray, playable_area: Rect):
+    def __init__(self, walkable_grid: np.ndarray, height_map: np.ndarray, playable_area: Rect, map_name: str):
         """
         walkable_grid and height_map are matrices of type uint8
         """
@@ -93,6 +105,14 @@ class CMapInfo:
                                                                           c_end_y,
                                                                           c_start_x,
                                                                           c_end_x)
+
+        # some maps may have places where the current method for building the climber grid isn't correct
+        for map_exception in climber_grid_exceptions:
+            if map_exception.lower() in map_name.lower():
+                for exceptions in climber_grid_exceptions[map_exception]:
+                    self.climber_grid[exceptions[0], exceptions[1]] = 0
+
+                break
 
         self.overlord_spots = list(map(Point2, overlord_data))
         self.chokes = []

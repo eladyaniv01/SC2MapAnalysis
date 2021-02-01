@@ -77,7 +77,8 @@ class MapData:
         self.overlapping_choke_ids = None
 
         pathing_grid = np.fmax(self.path_arr, self.placement_arr)
-        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area)
+        self.c_ext_map = CMapInfo(pathing_grid.T, self.terrain_height.T, self.bot.game_info.playable_area,
+                                  self.bot.game_info.map_name)
         self.overlord_spots = self.c_ext_map.overlord_spots
 
         # plugins

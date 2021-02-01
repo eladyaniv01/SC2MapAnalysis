@@ -64,7 +64,9 @@ class MapAnalyzerPather:
         self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
         # Fixing platforms on Submarine which reapers can climb onto not being pathable
-        if self.map_data.map_name == "Submarine LE":
+        # Don't use the entire name because we also use the modified maps
+        # with different names
+        if "Submarine" in self.map_data.map_name:
             self.default_grid[116, 43] = 1
             self.default_grid[51, 120] = 1
 
@@ -262,9 +264,9 @@ class MapAnalyzerPather:
     def get_climber_grid(self, default_weight: float = 1, include_destructables: bool = True) -> ndarray:
         """Grid for units like reaper / colossus """
         grid = self.get_base_pathing_grid(include_destructables)
+        grid = np.where(self.map_data.c_ext_map.climber_grid != 0, 1, grid)
         grid = self._add_non_pathables_ground(grid=grid, include_destructables=include_destructables)
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
-        grid = np.where(self.map_data.c_ext_map.climber_grid != 0, default_weight, grid).astype(np.float32)
         return grid
 
     def get_clean_air_grid(self, default_weight: float = 1) -> ndarray:
