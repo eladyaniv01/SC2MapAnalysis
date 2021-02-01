@@ -48,8 +48,8 @@ class CMapChoke:
 # in one go
 climber_grid_exceptions = {
     "DeathAura": [
-        np.meshgrid(range(36, 49), range(118, 128)),
-        np.meshgrid(range(143, 154), range(60, 70))
+        np.meshgrid(range(36, 49), range(118, 127)),
+        np.meshgrid(range(143, 154), range(61, 70))
     ]
 }
 
