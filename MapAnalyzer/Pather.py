@@ -64,7 +64,9 @@ class MapAnalyzerPather:
         self.default_grid = np.fmax(self.map_data.path_arr, self.map_data.placement_arr).T
 
         # Fixing platforms on Submarine which reapers can climb onto not being pathable
-        if self.map_data.map_name == "Submarine LE":
+        # Don't use the entire name because we also use the modified maps
+        # with different names
+        if "Submarine" in self.map_data.map_name:
             self.default_grid[116, 43] = 1
             self.default_grid[51, 120] = 1
 
