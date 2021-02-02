@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.83](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.82...v0.0.83) (2021-02-02)
 
+### Bug Fixes
+
+* Fix circle drawing  ([be317f54](https://github.com/eladyaniv01/SC2MapAnalysis/pull/145/commits/be317f542703b78d988627960d3ca2360bcbbc0d))
+* Fix climber grid on DeathAura  ([1f1def166](https://github.com/eladyaniv01/SC2MapAnalysis/pull/145/commits/1f1def166c378a5eed8c9a4f7eb8876ec8e66cd8))
+
+
 ### [0.0.82](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.81...v0.0.82) (2021-01-11)
 
 ### Bug Fixes
