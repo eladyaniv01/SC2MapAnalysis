@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.82](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.81...v0.0.82) (2021-01-11)
+
+### Bug Fixes
+
+* Fixed climber grid issue on SubmarineLE ([#140](https://github.com/eladyaniv01/SC2MapAnalysis/pull/140))
+
+
 ### [0.0.81](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.80...v0.0.81) (2021-01-06)
 
 ### Features
