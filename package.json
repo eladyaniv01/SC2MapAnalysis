@@ -1,6 +1,6 @@
 {
   "name": "sc2mapanalyzer",
-  "version": "0.0.82",
+  "version": "0.0.83",
   "dependencies": {
     "update": "^0.7.4"
   }
