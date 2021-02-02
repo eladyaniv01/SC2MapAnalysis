@@ -46,7 +46,7 @@ def test_c_extension():
     height_map = np.where(walkable_grid == 0, 24, 8).astype(np.uint8)
 
     playable_area = Rect([1, 1, 38, 38])
-    map_info = CMapInfo(walkable_grid, height_map, playable_area)
+    map_info = CMapInfo(walkable_grid, height_map, playable_area, "CExtensionTest")
     assert(len(map_info.overlord_spots) == 2)
     assert(len(map_info.chokes) == 5)
 
