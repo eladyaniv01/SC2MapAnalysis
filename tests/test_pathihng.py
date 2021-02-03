@@ -134,7 +134,7 @@ class TestPathing:
                                                              not_through=[destination])
         assert (bad_request == [])
 
-    def test_handle_illegal_values(self, map_data: MapData) -> None:
+    def test_handle_out_of_bounds_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where_all(base.position_tuple)[0]
         assert (isinstance(reg_start,
