@@ -370,9 +370,9 @@ class MapAnalyzerPather:
             arr[disk] = np.where(arr[disk] == 1, initial_default_weights, arr[disk])
 
         arr[disk] += weight
-        if safe and np.any(arr < 1):
+        if safe and np.any(arr[disk] < 1):
             logger.warning(
                     "You are attempting to set weights that are below 1. falling back to the minimum (1)")
-            arr = np.where(arr[disk] < 1, 1, arr[disk])
+            arr[disk] = np.where(arr[disk] < 1, 1, arr[disk])
 
         return arr

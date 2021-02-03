@@ -1,15 +1,15 @@
 import os
 
+import numpy as np
 from _pytest.logging import LogCaptureFixture
 from _pytest.python import Metafunc
 from sc2.position import Point2
 
 from MapAnalyzer import Region
-from MapAnalyzer.MapData import MapData
 from MapAnalyzer.destructibles import *
-from MapAnalyzer.utils import get_map_files_folder, mock_map_data, get_map_file_list
+from MapAnalyzer.MapData import MapData
+from MapAnalyzer.utils import get_map_file_list, get_map_files_folder, mock_map_data
 from tests.mocksetup import get_map_datas, get_random_point, logger
-import numpy as np
 
 logger = logger
 
@@ -134,7 +134,7 @@ class TestPathing:
                                                              not_through=[destination])
         assert (bad_request == [])
 
-    def test_handle_illegal_values(self, map_data: MapData) -> None:
+    def test_handle_out_of_bounds_values(self, map_data: MapData) -> None:
         base = map_data.bot.townhalls[0]
         reg_start = map_data.where_all(base.position_tuple)[0]
         assert (isinstance(reg_start,
@@ -150,6 +150,25 @@ class TestPathing:
         arr = map_data.get_pyastar_grid()
         for p in pts:
             arr = map_data.add_cost(p, r, arr)
+        path = map_data.pathfind(p0, p1, grid=arr)
+        assert (path is not None), f"path = {path}"
+
+    def test_handle_illegal_weights(self, map_data: MapData) -> None:
+        base = map_data.bot.townhalls[0]
+        reg_start = map_data.where_all(base.position_tuple)[0]
+        assert (isinstance(reg_start,
+                           Region)), f"reg_start = {reg_start},  base = {base}, position_tuple = {base.position_tuple}"
+        reg_end = map_data.where_all(map_data.bot.enemy_start_locations[0].position)[0]
+        p0 = reg_start.center
+        p1 = reg_end.center
+        pts = []
+        r = 10
+        for i in range(10):
+            pts.append(get_random_point(20, 180, 20, 180))
+
+        arr = map_data.get_pyastar_grid()
+        for p in pts:
+            arr = map_data.add_cost(p, r, arr, weight=-100)
         path = map_data.pathfind(p0, p1, grid=arr)
         assert (path is not None), f"path = {path}"
 
