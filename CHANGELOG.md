@@ -14,6 +14,18 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **test:** assert that illegal weights are tolerated in Pather ([4c846aa](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4c846aa98144330b21273ec66fdc122fdc1a496d))
 
+### [0.0.84](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.83...v0.0.84) (2021-02-03)
+
+
+### Refactoring
+
+* **test:** renamed test pathing function to be more descriptive of what it does ([778333d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/778333d671a722eee1d4aac06e55c26ae89168b0))
+
+
+### Tests
+
+* **test:** assert that illegal weights are tolerated in Pather ([4c846aa](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4c846aa98144330b21273ec66fdc122fdc1a496d))
+
 ### [0.0.83](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.82...v0.0.83) (2021-02-02)
 
 ### Bug Fixes
