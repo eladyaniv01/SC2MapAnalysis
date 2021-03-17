@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
-        "numpy==1.19.3",
+        "numpy",
         "Cython",
         "pyastar@git+git://github.com/eladyaniv01/pyastar.git@master#egg=pyastar",
         "burnysc2",
