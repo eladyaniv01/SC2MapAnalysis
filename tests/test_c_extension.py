@@ -55,7 +55,7 @@ def test_c_extension():
     paths_nydus = astar_path_with_nyduses(influenced_grid, (3, 3), (33, 38), nydus_positions, False, False)
 
     assert (paths_nydus is not None and len(paths_nydus) == 2
-            and len(paths_nydus[0]) + len(paths_nydus[1]) == 10)
+            and len(paths_nydus[0]) + len(paths_nydus[1]) == 8)
 
     height_map = np.where(walkable_grid == 0, 24, 8).astype(np.uint8)
 

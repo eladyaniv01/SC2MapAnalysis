@@ -1335,13 +1335,13 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 }
                 PyList_SetItem(return_val, 0, PyArray_Return(path1));
 
-                npy_intp dims2[2] = {path_length - nydus_index + 1, 2};
+                npy_intp dims2[2] = {path_length - (nydus_index + 1), 2};
                 PyArrayObject *path2 = (PyArrayObject*) PyArray_SimpleNew(2, dims2, NPY_INT32);
                 npy_int32 *path2_data = (npy_int32*)path2->data;
 
                 for (npy_intp i = nydus_index + 1; i < path_length; ++i)
                 {
-                    int index_to_set = i - nydus_index + 1;
+                    int index_to_set = i - (nydus_index + 1);
                     path2_data[2*index_to_set] = complete_path->items[i] / w;
                     path2_data[2*index_to_set + 1] = complete_path->items[i] % w;
                 }
