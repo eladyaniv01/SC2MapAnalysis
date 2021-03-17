@@ -865,6 +865,8 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
             }
             
             //Giving 8 places units can get out from a nydus on foot
+            //There may be some cases where some big unit like an ultralisk
+            //can't really fit and we should do proper checks
             nbrs[UP_LEFT] = (row > 1 && col > 1) ? cur.idx - 2*w - 2 : -1;
             nbrs[UP] = (row > 1) ? cur.idx - 2*w : -1;
             nbrs[UP_RIGHT] = (row > 1 && col + 2 < w) ? cur.idx - 2*w + 2 : -1;
@@ -963,6 +965,9 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
         }
         
         float cur_cost = costs[cur.idx];
+
+        //Scaling the steps into and from nyduses with 4
+        //Going into a nydus and getting out should take a bit more time than a single step on the grid
 
         for (int i = 0; i < 8; ++i)
         {
