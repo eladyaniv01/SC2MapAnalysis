@@ -90,7 +90,7 @@ def astar_path_with_nyduses(weights: np.ndarray,
         goal: Tuple[int, int],
         nydus_positions: List[Point2],
         large: bool = False,
-        smoothing: bool = False) -> Union[np.ndarray, None]:
+        smoothing: bool = False) -> Union[List[np.ndarray], None]:
     # For the heuristic to be valid, each move must have a positive cost.
     # Demand costs above 1 so floating point inaccuracies aren't a problem
     # when comparing costs
