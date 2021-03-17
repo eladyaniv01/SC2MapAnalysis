@@ -360,11 +360,13 @@ class MapData:
 
     def pathfind_with_nyduses(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                  grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
-                 sensitivity: int = 1) -> Optional[List[Point2]]:
+                 sensitivity: int = 1) -> Optional[List[List[Point2]]]:
         """
-        :rtype: Union[List[:class:`sc2.position.Point2`], None]
+        :rtype: Union[List[List[:class:`sc2.position.Point2`]], None]
         Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
-
+        If one path segment is returned, it is a path from start node to goal node.
+        If two path segments are returned, the first one is from start node to a nydus network entrance,
+        and the second one is from some other nydus network entrance to the goal node.
 
         **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
 
