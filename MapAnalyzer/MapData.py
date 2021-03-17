@@ -358,6 +358,49 @@ class MapData:
         return self.pather.pathfind(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
                                     sensitivity=sensitivity)
 
+    def pathfind_with_nyduses(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
+                 grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
+                 sensitivity: int = 1) -> Optional[List[Point2]]:
+        """
+        :rtype: Union[List[:class:`sc2.position.Point2`], None]
+        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
+
+
+        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
+
+        If no path is possible, will return ``None``
+
+        ``sensitivity`` indicates how to slice the path,
+        just like doing: ``result_path = path[::sensitivity]``
+            where ``path`` is the return value from this function
+
+        this is useful since in most use cases you wouldn't want
+        to get each and every single point,
+
+        getting every  n-``th`` point works better in practice
+
+        `` large`` is a boolean that determines whether we are doing pathing with large unit sizes
+        like Thor and Ultralisk. When it's false the pathfinding is using unit size 1, so if
+        you want to a guarantee that a unit with size > 1 fits through the path then large should be True.
+
+        ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.
+        it will skip all the waypoints it can if taking the straight line forward is better
+        according to the influence grid
+
+        Example:
+            >>> my_grid = self.get_pyastar_grid()
+            >>> # start / goal could be any tuple / Point2
+            >>> st, gl = (50,75) , (100,100)
+            >>> path = self.pathfind(start=st,goal=gl,grid=my_grid, large=False, smoothing=False, sensitivity=3)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.find_lowest_cost_points`
+
+        """
+        return self.pather.pathfind_with_nyduses(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
+                                                 sensitivity=sensitivity)
+
     def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100,
                  safe: bool = True,
                  initial_default_weights: float = 0) -> ndarray:
@@ -926,6 +969,28 @@ class MapData:
         """
 
         self.debugger.plot_influenced_path(start=start,
+                                           goal=goal,
+                                           weight_array=weight_array,
+                                           large=large,
+                                           smoothing=smoothing,
+                                           name=name,
+                                           fontdict=fontdict)
+
+    def plot_influenced_path_nydus(self,
+                             start: Union[Tuple[float, float], Point2],
+                             goal: Union[Tuple[float, float], Point2],
+                             weight_array: ndarray,
+                             large: bool = False,
+                             smoothing: bool = False,
+                             name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
+        """
+
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+
+        """
+
+        self.debugger.plot_influenced_path_nydus(start=start,
                                            goal=goal,
                                            weight_array=weight_array,
                                            large=large,

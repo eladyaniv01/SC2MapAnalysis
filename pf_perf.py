@@ -68,4 +68,11 @@ ext_time = time.perf_counter() - start
 print("extension astar time: {}".format(ext_time))
 print("div: {}".format(ext_time / pyastar_time))
 
+start = time.perf_counter()
+nydus_path = map_data.pathfind_with_nyduses(p0, p1, grid=arr)
+nydus_time = time.perf_counter() - start
+print("nydus astar time: {}".format(nydus_time))
+print("compare to without nydus: {}".format(nydus_time / ext_time))
+
 map_data.plot_influenced_path(start=p0, goal=p1, weight_array=arr)
+map_data.plot_influenced_path_nydus(start=p0, goal=p1, weight_array=arr)

@@ -1,9 +1,9 @@
 import numpy as np
 
 try:
-    from .mapanalyzerext import astar as ext_astar, get_map_data as ext_get_map_data
+    from .mapanalyzerext import astar as ext_astar, astar_with_nydus as ext_astar_nydus, get_map_data as ext_get_map_data
 except ImportError:
-    from mapanalyzerext import astar as ext_astar, get_map_data as ext_get_map_data
+    from mapanalyzerext import astar as ext_astar, astar_with_nydus as ext_astar_nydus, get_map_data as ext_get_map_data
 
 from typing import Optional, Tuple, Union, List, Set
 from sc2.position import Point2, Rect
@@ -53,6 +53,7 @@ climber_grid_exceptions = {
     ]
 }
 
+
 def astar_path(
         weights: np.ndarray,
         start: Tuple[int, int],
@@ -77,9 +78,46 @@ def astar_path(
     height, width = weights.shape
     start_idx = np.ravel_multi_index(start, (height, width))
     goal_idx = np.ravel_multi_index(goal, (height, width))
+
     path = ext_astar(
         weights.flatten(), height, width, start_idx, goal_idx, large, smoothing
     )
+
+    return path
+
+def astar_path_with_nyduses(weights: np.ndarray,
+        start: Tuple[int, int],
+        goal: Tuple[int, int],
+        nydus_positions: List[Point2],
+        large: bool = False,
+        smoothing: bool = False) -> Union[np.ndarray, None]:
+    # For the heuristic to be valid, each move must have a positive cost.
+    # Demand costs above 1 so floating point inaccuracies aren't a problem
+    # when comparing costs
+    if weights.min(axis=None) < 1:
+        raise ValueError("Minimum cost to move must be above or equal to 1, but got %f" % (
+            weights.min(axis=None)))
+    # Ensure start is within bounds.
+    if (start[0] < 0 or start[0] >= weights.shape[0] or
+            start[1] < 0 or start[1] >= weights.shape[1]):
+        raise ValueError(f"Start of {start} lies outside grid.")
+    # Ensure goal is within bounds.
+    if (goal[0] < 0 or goal[0] >= weights.shape[0] or
+            goal[1] < 0 or goal[1] >= weights.shape[1]):
+        raise ValueError(f"Goal of {goal} lies outside grid.")
+
+    height, width = weights.shape
+    start_idx = np.ravel_multi_index(start, (height, width))
+    goal_idx = np.ravel_multi_index(goal, (height, width))
+    nydus_array = np.zeros((len(nydus_positions),), dtype=np.int32)
+
+    for index, pos in enumerate(nydus_positions):
+        nydus_idx = np.ravel_multi_index((int(pos.x), int(pos.y)), (height, width))
+        nydus_array[index] = nydus_idx
+
+    path = ext_astar_nydus(weights.flatten(), height, width, nydus_array.flatten(),
+                           start_idx, goal_idx, large, smoothing)
+
     return path
 
 
