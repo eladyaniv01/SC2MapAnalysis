@@ -1328,8 +1328,6 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 PyArrayObject *path1 = (PyArrayObject*) PyArray_SimpleNew(2, dims1, NPY_INT32);
                 npy_int32 *path1_data = (npy_int32*)path1->data;
 
-                int idx = goal;
-
                 for (npy_intp i = 0; i <= nydus_index; ++i)
                 {
                     path1_data[2*i] = complete_path->items[i] / w;
