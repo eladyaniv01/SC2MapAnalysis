@@ -56,17 +56,9 @@ for p in pts:
     arr = map_data.add_cost(p, r, arr)
 
 start = time.perf_counter()
-path = map_data.pathfind_pyastar(p0, p1, grid=arr, allow_diagonal=True)
-pyastar_time = time.perf_counter() - start
-print("pyastar time: {}".format(pyastar_time))
-
-map_data.plot_influenced_path_pyastar(start=p0, goal=p1, weight_array=arr, allow_diagonal=True)
-
-start = time.perf_counter()
 path2 = map_data.pathfind(p0, p1, grid=arr)
 ext_time = time.perf_counter() - start
 print("extension astar time: {}".format(ext_time))
-print("div: {}".format(ext_time / pyastar_time))
 
 start = time.perf_counter()
 nydus_path = map_data.pathfind_with_nyduses(p0, p1, grid=arr)

@@ -87,7 +87,6 @@ class MapData:
         self.pather = MapAnalyzerPather(self)
 
         self.connectivity_graph = None  # set by pather
-        self.pyastar = self.pather.pyastar
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
 
         # compile
@@ -266,54 +265,6 @@ class MapData:
 
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
-
-    def pathfind_pyastar(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
-                         grid: Optional[ndarray] = None,
-                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
-
-        """
-        :rtype: Union[List[:class:`sc2.position.Point2`], None]
-        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
-
-
-        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
-
-        If no path is possible, will return ``None``
-
-        Tip:
-            ``sensitivity`` indicates how to slice the path,
-            just like doing: ``result_path = path[::sensitivity]``
-                where ``path`` is the return value from this function
-
-            this is useful since in most use cases you wouldn't want
-            to get each and every single point,
-
-            getting every  n-``th`` point works better in practice
-
-
-        Caution:
-            ``allow_diagonal=True`` will result in a slight performance penalty.
-
-            `However`, if you don't over-use it, it will naturally generate shorter paths,
-
-            by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.
-
-        TODO:
-            more examples for different usages available
-
-        Example:
-            >>> my_grid = self.get_pyastar_grid()
-            >>> # start / goal could be any tuple / Point2
-            >>> st, gl = (50,75) , (100,100)
-            >>> path = self.pathfind_pyastar(start=st,goal=gl,grid=my_grid,allow_diagonal=True, sensitivity=3)
-
-        See Also:
-            * :meth:`.MapData.get_pyastar_grid`
-            * :meth:`.MapData.find_lowest_cost_points`
-
-        """
-        return self.pather.pathfind_pyastar(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
-                                            sensitivity=sensitivity)
 
     def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                  grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
@@ -934,27 +885,6 @@ class MapData:
         import inspect
         logger.error(f"{inspect.stack()[1]}")
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
-
-    def plot_influenced_path_pyastar(self,
-
-                                     start: Union[Tuple[float, float], Point2],
-                                     goal: Union[Tuple[float, float], Point2],
-                                     weight_array: ndarray,
-                                     allow_diagonal=False,
-                                     name: Optional[str] = None,
-                                     fontdict: dict = None) -> None:
-        """
-
-        A useful debug utility method for experimenting with the :mod:`.Pather` module
-
-        """
-
-        self.debugger.plot_influenced_path_pyastar(start=start,
-                                                   goal=goal,
-                                                   weight_array=weight_array,
-                                                   name=name,
-                                                   fontdict=fontdict,
-                                                   allow_diagonal=allow_diagonal)
 
     def plot_influenced_path(self,
                              start: Union[Tuple[float, float], Point2],

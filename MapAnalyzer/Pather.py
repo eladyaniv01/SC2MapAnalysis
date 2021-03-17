@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
-import pyastar.astar_wrapper as pyastar
 
 from loguru import logger
 from numpy import ndarray
@@ -46,7 +45,6 @@ class MapAnalyzerPather:
 
     def __init__(self, map_data: "MapData") -> None:
         self.map_data = map_data
-        self.pyastar = pyastar
 
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
@@ -293,36 +291,6 @@ class MapAnalyzerPather:
 
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         return grid
-
-    def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
-                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
-
-        if grid is None:
-            logger.warning("Using the default pyastar grid as no grid was provided.")
-            grid = self.get_pyastar_grid()
-
-        if start is not None and goal is not None:
-            start = round(start[0]), round(start[1])
-            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = round(goal[0]), round(goal[1])
-            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
-
-        # find_eligible_point didn't find any pathable nodes nearby
-        if start is None or goal is None:
-            return None
-
-        path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
-        if path is not None:
-            path = list(map(Point2, path))[::sensitivity]
-
-            path.pop(0)
-            return path
-        else:
-            logger.debug(f"No Path found s{start}, g{goal}")
-            return None
 
     def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                  large: bool = False,
