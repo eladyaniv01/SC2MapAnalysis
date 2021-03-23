@@ -1047,7 +1047,7 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
 
                     queue_push_or_update(nodes_to_visit, nydus_node);
                     
-                    costs[closest_nydus.closest_nydus_index] = cur_cost + 4*weight_baseline;
+                    costs[closest_nydus.closest_nydus_index] = new_cost;
                     paths[closest_nydus.closest_nydus_index] = cur.idx;
                 }
             }
