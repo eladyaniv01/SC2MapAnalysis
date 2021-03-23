@@ -267,12 +267,12 @@ class MapAnalyzerDebugger:
         plt.grid()
 
     def plot_influenced_path_nydus(self, start: Union[Tuple[float, float], Point2],
-                               goal: Union[Tuple[float, float], Point2],
-                               weight_array: ndarray,
-                               large: bool = False,
-                               smoothing: bool = False,
-                               name: Optional[str] = None,
-                               fontdict: dict = None) -> None:
+                                   goal: Union[Tuple[float, float], Point2],
+                                   weight_array: ndarray,
+                                   large: bool = False,
+                                   smoothing: bool = False,
+                                   name: Optional[str] = None,
+                                   fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         from matplotlib.cm import ScalarMappable
@@ -284,14 +284,14 @@ class MapAnalyzerDebugger:
             name = self.map_data.map_name
         arr = weight_array.copy()
         paths = self.map_data.pathfind_with_nyduses(start, goal,
-                                        grid=arr,
-                                        large=large,
-                                        smoothing=smoothing,
-                                        sensitivity=1)
+                                                    grid=arr,
+                                                    large=large,
+                                                    smoothing=smoothing,
+                                                    sensitivity=1)
         ax: plt.Axes = plt.subplot(1, 1, 1)
         if paths is not None:
-            for i in range(len(paths)):
-                path = np.flipud(paths[i])  # for plot align
+            for i in range(len(paths[0])):
+                path = np.flipud(paths[0][i])  # for plot align
                 logger.info("Found")
                 x, y = zip(*path)
                 ax.scatter(x, y, s=3, c='green')

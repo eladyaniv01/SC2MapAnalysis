@@ -316,10 +316,17 @@ class MapAnalyzerPather:
         path = astar_path(grid, start, goal, large, smoothing)
 
         if path is not None:
-            path = list(map(Point2, path))[::sensitivity]
-            path.pop(0)
+            # Remove the starting point from the path.
+            # Make sure the goal node is the last node even if we are
+            # skipping points
+            complete_path = list(map(Point2, path))
+            skipped_path = complete_path[0:-1:sensitivity]
+            if skipped_path:
+                skipped_path.pop(0)
 
-            return path
+            skipped_path.append(complete_path[-1])
+
+            return skipped_path
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
@@ -328,7 +335,7 @@ class MapAnalyzerPather:
                               grid: Optional[ndarray] = None,
                               large: bool = False,
                               smoothing: bool = False,
-                              sensitivity: int = 1) -> Optional[List[List[Point2]]]:
+                              sensitivity: int = 1) -> Optional[Tuple[List[List[Point2]], Optional[List[int]]]]:
         if grid is None:
             logger.warning("Using the default pyastar grid as no grid was provided.")
             grid = self.get_pyastar_grid()
@@ -353,14 +360,36 @@ class MapAnalyzerPather:
                                         nydus_positions,
                                         large, smoothing)
         if paths is not None:
-            returnable_path = []
+            returned_path = []
+            nydus_tags = None
+            if len(paths) == 1:
+                path = list(map(Point2, paths[0]))
+                skipped_path = path[0:-1:sensitivity]
+                if skipped_path:
+                    skipped_path.pop(0)
+                skipped_path.append(path[-1])
+                returned_path.append(skipped_path)
+            else:
+                first_path = list(map(Point2, paths[0]))
+                first_skipped_path = first_path[0:-1:sensitivity]
+                if first_skipped_path:
+                    first_skipped_path.pop(0)
+                first_skipped_path.append(first_path[-1])
+                returned_path.append(first_skipped_path)
 
-            for i in range(len(paths)):
-                path = list(map(Point2, paths[i]))[::sensitivity]
-                path.pop(0)
-                returnable_path.append(path)
+                enter_nydus_unit = nydus_units.filter(lambda x: x.position.rounded == first_path[-1]).first
+                enter_nydus_tag = enter_nydus_unit.tag
 
-            return returnable_path
+                second_path = list(map(Point2, paths[1]))
+                exit_nydus_unit = nydus_units.filter(lambda x: x.position.rounded == second_path[0]).first
+                exit_nydus_tag = exit_nydus_unit.tag
+                nydus_tags = [enter_nydus_tag, exit_nydus_tag]
+
+                second_skipped_path = second_path[0:-1:sensitivity]
+                second_skipped_path.append(second_path[-1])
+                returned_path.append(second_skipped_path)
+
+            return returned_path, nydus_tags
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
