@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
-import pyastar.astar_wrapper as pyastar
 
 from loguru import logger
 from numpy import ndarray
@@ -11,7 +10,7 @@ from sc2.position import Point2
 from MapAnalyzer.exceptions import OutOfBoundsException, PatherNoPointsException
 from MapAnalyzer.Region import Region
 from MapAnalyzer.utils import change_destructable_status_in_grid
-from .cext import astar_path
+from .cext import astar_path, astar_path_with_nyduses
 from .destructibles import *
 
 if TYPE_CHECKING:
@@ -46,7 +45,6 @@ class MapAnalyzerPather:
 
     def __init__(self, map_data: "MapData") -> None:
         self.map_data = map_data
-        self.pyastar = pyastar
 
         nonpathable_indices = np.where(self.map_data.bot.game_info.pathing_grid.data_numpy == 0)
         self.nonpathable_indices_stacked = np.column_stack(
@@ -294,36 +292,6 @@ class MapAnalyzerPather:
         grid = np.where(grid != 0, default_weight, np.inf).astype(np.float32)
         return grid
 
-    def pathfind_pyastar(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
-                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
-
-        if grid is None:
-            logger.warning("Using the default pyastar grid as no grid was provided.")
-            grid = self.get_pyastar_grid()
-
-        if start is not None and goal is not None:
-            start = round(start[0]), round(start[1])
-            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
-            goal = round(goal[0]), round(goal[1])
-            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
-        else:
-            logger.warning(PatherNoPointsException(start=start, goal=goal))
-            return None
-
-        # find_eligible_point didn't find any pathable nodes nearby
-        if start is None or goal is None:
-            return None
-
-        path = self.pyastar.astar_path(grid, start=start, goal=goal, allow_diagonal=allow_diagonal)
-        if path is not None:
-            path = list(map(Point2, path))[::sensitivity]
-
-            path.pop(0)
-            return path
-        else:
-            logger.debug(f"No Path found s{start}, g{goal}")
-            return None
-
     def pathfind(self, start: Tuple[float, float], goal: Tuple[float, float], grid: Optional[ndarray] = None,
                  large: bool = False,
                  smoothing: bool = False,
@@ -348,10 +316,80 @@ class MapAnalyzerPather:
         path = astar_path(grid, start, goal, large, smoothing)
 
         if path is not None:
-            path = list(map(Point2, path))[::sensitivity]
-            path.pop(0)
+            # Remove the starting point from the path.
+            # Make sure the goal node is the last node even if we are
+            # skipping points
+            complete_path = list(map(Point2, path))
+            skipped_path = complete_path[0:-1:sensitivity]
+            if skipped_path:
+                skipped_path.pop(0)
 
-            return path
+            skipped_path.append(complete_path[-1])
+
+            return skipped_path
+        else:
+            logger.debug(f"No Path found s{start}, g{goal}")
+            return None
+
+    def pathfind_with_nyduses(self, start: Tuple[float, float], goal: Tuple[float, float],
+                              grid: Optional[ndarray] = None,
+                              large: bool = False,
+                              smoothing: bool = False,
+                              sensitivity: int = 1) -> Optional[Tuple[List[List[Point2]], Optional[List[int]]]]:
+        if grid is None:
+            logger.warning("Using the default pyastar grid as no grid was provided.")
+            grid = self.get_pyastar_grid()
+
+        if start is not None and goal is not None:
+            start = round(start[0]), round(start[1])
+            start = self.find_eligible_point(start, grid, self.terrain_height, 10)
+            goal = round(goal[0]), round(goal[1])
+            goal = self.find_eligible_point(goal, grid, self.terrain_height, 10)
+        else:
+            logger.warning(PatherNoPointsException(start=start, goal=goal))
+            return None
+
+        # find_eligible_point didn't find any pathable nodes nearby
+        if start is None or goal is None:
+            return None
+
+        nydus_units = self.map_data.bot.structures.of_type([UnitTypeId.NYDUSNETWORK, UnitTypeId.NYDUSCANAL]).ready
+        nydus_positions = [nydus.position for nydus in nydus_units]
+
+        paths = astar_path_with_nyduses(grid, start, goal,
+                                        nydus_positions,
+                                        large, smoothing)
+        if paths is not None:
+            returned_path = []
+            nydus_tags = None
+            if len(paths) == 1:
+                path = list(map(Point2, paths[0]))
+                skipped_path = path[0:-1:sensitivity]
+                if skipped_path:
+                    skipped_path.pop(0)
+                skipped_path.append(path[-1])
+                returned_path.append(skipped_path)
+            else:
+                first_path = list(map(Point2, paths[0]))
+                first_skipped_path = first_path[0:-1:sensitivity]
+                if first_skipped_path:
+                    first_skipped_path.pop(0)
+                first_skipped_path.append(first_path[-1])
+                returned_path.append(first_skipped_path)
+
+                enter_nydus_unit = nydus_units.filter(lambda x: x.position.rounded == first_path[-1]).first
+                enter_nydus_tag = enter_nydus_unit.tag
+
+                second_path = list(map(Point2, paths[1]))
+                exit_nydus_unit = nydus_units.filter(lambda x: x.position.rounded == second_path[0]).first
+                exit_nydus_tag = exit_nydus_unit.tag
+                nydus_tags = [enter_nydus_tag, exit_nydus_tag]
+
+                second_skipped_path = second_path[0:-1:sensitivity]
+                second_skipped_path.append(second_path[-1])
+                returned_path.append(second_skipped_path)
+
+            return returned_path, nydus_tags
         else:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None

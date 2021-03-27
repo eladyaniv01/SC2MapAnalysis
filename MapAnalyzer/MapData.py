@@ -87,7 +87,6 @@ class MapData:
         self.pather = MapAnalyzerPather(self)
 
         self.connectivity_graph = None  # set by pather
-        self.pyastar = self.pather.pyastar
         self.nonpathable_indices_stacked = self.pather.nonpathable_indices_stacked
 
         # compile
@@ -267,54 +266,6 @@ class MapData:
         """
         return self.pather.get_clean_air_grid(default_weight=default_weight)
 
-    def pathfind_pyastar(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
-                         grid: Optional[ndarray] = None,
-                         allow_diagonal: bool = False, sensitivity: int = 1) -> Optional[List[Point2]]:
-
-        """
-        :rtype: Union[List[:class:`sc2.position.Point2`], None]
-        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
-
-
-        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
-
-        If no path is possible, will return ``None``
-
-        Tip:
-            ``sensitivity`` indicates how to slice the path,
-            just like doing: ``result_path = path[::sensitivity]``
-                where ``path`` is the return value from this function
-
-            this is useful since in most use cases you wouldn't want
-            to get each and every single point,
-
-            getting every  n-``th`` point works better in practice
-
-
-        Caution:
-            ``allow_diagonal=True`` will result in a slight performance penalty.
-
-            `However`, if you don't over-use it, it will naturally generate shorter paths,
-
-            by converting(for example) ``move_right + move_up`` into ``move_top_right`` etc.
-
-        TODO:
-            more examples for different usages available
-
-        Example:
-            >>> my_grid = self.get_pyastar_grid()
-            >>> # start / goal could be any tuple / Point2
-            >>> st, gl = (50,75) , (100,100)
-            >>> path = self.pathfind_pyastar(start=st,goal=gl,grid=my_grid,allow_diagonal=True, sensitivity=3)
-
-        See Also:
-            * :meth:`.MapData.get_pyastar_grid`
-            * :meth:`.MapData.find_lowest_cost_points`
-
-        """
-        return self.pather.pathfind_pyastar(start=start, goal=goal, grid=grid, allow_diagonal=allow_diagonal,
-                                            sensitivity=sensitivity)
-
     def pathfind(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
                  grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
                  sensitivity: int = 1) -> Optional[List[Point2]]:
@@ -357,6 +308,56 @@ class MapData:
         """
         return self.pather.pathfind(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
                                     sensitivity=sensitivity)
+
+    def pathfind_with_nyduses(self, start: Union[Tuple[float, float], Point2], goal: Union[Tuple[float, float], Point2],
+                 grid: Optional[ndarray] = None, large: bool = False, smoothing: bool = False,
+                 sensitivity: int = 1) -> Optional[Tuple[List[List[Point2]], Optional[List[int]]]]:
+        """
+        :rtype: Union[List[List[:class:`sc2.position.Point2`]], None]
+        Will return the path with lowest cost (sum) given a weighted array (``grid``), ``start`` , and ``goal``.
+        Returns a tuple where the first part is a list of path segments, second part is list of 2 tags for the
+        nydus network units that were used.
+        If one path segment is returned, it is a path from start node to goal node, no nydus node was used and
+        the second part of the tuple is None.
+        If two path segments are returned, the first one is from start node to a nydus network entrance,
+        and the second one is from some other nydus network entrance to the goal node. The second part of the tuple
+        includes first the tag of the nydus network node you should go into, and then the tag of the node you come
+        out from.
+
+        **IF NO** ``grid`` **has been provided**, will request a fresh grid from :class:`.Pather`
+
+        If no path is possible, will return ``None``
+
+        ``sensitivity`` indicates how to slice the path,
+        just like doing: ``result_path = path[::sensitivity]``
+            where ``path`` is the return value from this function
+
+        this is useful since in most use cases you wouldn't want
+        to get each and every single point,
+
+        getting every  n-``th`` point works better in practice
+
+        `` large`` is a boolean that determines whether we are doing pathing with large unit sizes
+        like Thor and Ultralisk. When it's false the pathfinding is using unit size 1, so if
+        you want to a guarantee that a unit with size > 1 fits through the path then large should be True.
+
+        ``smoothing`` tries to do a similar thing on the c side but to the maximum extent possible.
+        it will skip all the waypoints it can if taking the straight line forward is better
+        according to the influence grid
+
+        Example:
+            >>> my_grid = self.get_pyastar_grid()
+            >>> # start / goal could be any tuple / Point2
+            >>> st, gl = (50,75) , (100,100)
+            >>> path = self.pathfind(start=st,goal=gl,grid=my_grid, large=False, smoothing=False, sensitivity=3)
+
+        See Also:
+            * :meth:`.MapData.get_pyastar_grid`
+            * :meth:`.MapData.find_lowest_cost_points`
+
+        """
+        return self.pather.pathfind_with_nyduses(start=start, goal=goal, grid=grid, large=large, smoothing=smoothing,
+                                                 sensitivity=sensitivity)
 
     def add_cost(self, position: Tuple[float, float], radius: float, grid: ndarray, weight: float = 100,
                  safe: bool = True,
@@ -890,27 +891,6 @@ class MapData:
         logger.error(f"{inspect.stack()[1]}")
         self.debugger.plot_map(fontdict=fontdict, figsize=figsize)
 
-    def plot_influenced_path_pyastar(self,
-
-                                     start: Union[Tuple[float, float], Point2],
-                                     goal: Union[Tuple[float, float], Point2],
-                                     weight_array: ndarray,
-                                     allow_diagonal=False,
-                                     name: Optional[str] = None,
-                                     fontdict: dict = None) -> None:
-        """
-
-        A useful debug utility method for experimenting with the :mod:`.Pather` module
-
-        """
-
-        self.debugger.plot_influenced_path_pyastar(start=start,
-                                                   goal=goal,
-                                                   weight_array=weight_array,
-                                                   name=name,
-                                                   fontdict=fontdict,
-                                                   allow_diagonal=allow_diagonal)
-
     def plot_influenced_path(self,
                              start: Union[Tuple[float, float], Point2],
                              goal: Union[Tuple[float, float], Point2],
@@ -926,6 +906,28 @@ class MapData:
         """
 
         self.debugger.plot_influenced_path(start=start,
+                                           goal=goal,
+                                           weight_array=weight_array,
+                                           large=large,
+                                           smoothing=smoothing,
+                                           name=name,
+                                           fontdict=fontdict)
+
+    def plot_influenced_path_nydus(self,
+                             start: Union[Tuple[float, float], Point2],
+                             goal: Union[Tuple[float, float], Point2],
+                             weight_array: ndarray,
+                             large: bool = False,
+                             smoothing: bool = False,
+                             name: Optional[str] = None,
+                             fontdict: dict = None) -> None:
+        """
+
+        A useful debug utility method for experimenting with the :mod:`.Pather` module
+
+        """
+
+        self.debugger.plot_influenced_path_nydus(start=start,
                                            goal=goal,
                                            weight_array=weight_array,
                                            large=large,

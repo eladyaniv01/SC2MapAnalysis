@@ -20,9 +20,8 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
-        "numpy==1.19.3",
+        "numpy",
         "Cython",
-        "pyastar@git+git://github.com/eladyaniv01/pyastar.git@master#egg=pyastar",
         "burnysc2",
         "matplotlib",
         "scipy",
@@ -33,9 +32,9 @@ requirements = [  # pragma: no cover
 setup(  # pragma: no cover
         name="sc2mapanalyzer",
         # version=f"{__version__}",
-        version="0.0.84",
+        version="0.0.85",
         install_requires=requirements,
-        setup_requires=["wheel", "numpy==1.19.3"],
+        setup_requires=["wheel", "numpy"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
         packages=["MapAnalyzer", "MapAnalyzer.cext"],

@@ -413,6 +413,7 @@ typedef struct Node {
     int idx;
     float cost;
     int path_length;
+    uint8_t is_nydus;
 } Node;
 
 /*
@@ -742,6 +743,322 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     return path_length;
 }
 
+static inline uint8_t is_nydus_node(int *nydus_nodes, int nydus_count, int node, int map_width)
+{
+    for (int i = 0; i < nydus_count; ++i)
+    {
+        int nydus_x = nydus_nodes[i] % map_width;
+        int nydus_y = nydus_nodes[i] / map_width;
+        int node_x = node % map_width;
+        int node_y = node / map_width;
+
+        //Nydus networks are 3x3 buildings
+        if (abs(node_x - nydus_x) <= 1 && abs(node_y - nydus_y) <= 1) return 1;
+    }
+
+    return 0;
+}
+
+typedef struct NydusInfo {
+    float distance_heuristic_to_nydus;
+    int closest_nydus_index;
+    uint8_t can_enter_nydus;
+    uint8_t point_belongs_to_nydus;
+} NydusInfo;
+
+static inline NydusInfo get_node_nydus_info(int *nydus_nodes, int nydus_count, int node, int map_width, float baseline)
+{
+    float min_dist = HUGE_VALF;
+    NydusInfo info = { 0 };
+    for (int i = 0; i < nydus_count; ++i)
+    {
+        int nydus_x = nydus_nodes[i] % map_width;
+        int nydus_y = nydus_nodes[i] / map_width;
+        int node_x = node % map_width;
+        int node_y = node / map_width;
+        float dist = distance_heuristic(node_x, node_y, nydus_x, nydus_y, baseline);
+
+        if (dist < min_dist)
+        {
+            min_dist = dist;
+            info.distance_heuristic_to_nydus = dist;
+            info.closest_nydus_index = nydus_nodes[i];
+            if (abs(node_x - nydus_x) <= 1 && abs(node_y - nydus_y) <= 1)
+            {
+                info.point_belongs_to_nydus = 1;
+                info.can_enter_nydus = 1;
+                break;
+            }
+            else if (abs(node_x - nydus_x) <= 2 && abs(node_y - nydus_y) <= 2)
+            {
+                info.can_enter_nydus = 1;
+            }
+        } 
+    }
+    return info;
+}
+
+typedef struct NydusPath
+{
+    int path_length;
+    int nydus_used_index;
+} NydusPath;
+/*
+Run the astar algorithm. The resulting path is saved in paths
+so each node knows the previous node and the path can be traced back.
+Returns the path length.
+*/
+static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* paths, int w, int h, int start, int goal, int large, int* nydus_nodes, int nydus_count)
+{
+    float weight_baseline = find_min(weights, w*h);
+    
+    int path_length = -1;
+
+    TempAllocation temp_alloc;
+    StartTemporaryAllocation(arena, &temp_alloc);
+
+    PriorityQueue *nodes_to_visit = queue_create(arena, w*h);
+
+    Node start_node = { start, 0.0f, 1 };
+    float *costs = (float*) PushToMemoryArena(arena, w*h*sizeof(float));
+
+    for (int i = 0; i < w*h; ++i)
+    {
+        costs[i] = HUGE_VALF;
+        nodes_to_visit->index_map[i] = -1;
+    }
+    
+    costs[start] = 0;
+
+    queue_push_or_update(nodes_to_visit, start_node);
+
+    int nbrs[8];
+    uint8_t nbr_fits[8];
+    float nbr_costs[8] = { SQRT2, 1.0f, SQRT2, 1.0f, 1.0f, SQRT2, 1.0f, SQRT2 };
+
+    NydusInfo closest_nydus_to_goal = get_node_nydus_info(nydus_nodes, nydus_count, goal, w, weight_baseline);
+
+    int *nydus_nbrs = PushToMemoryArena(arena, max_int(1, nydus_count - 1)*sizeof(int));
+
+    while (nodes_to_visit->size > 0)
+    {
+        Node cur = queue_pop(nodes_to_visit);
+        if (cur.idx == goal)
+        {
+            path_length = cur.path_length;
+            break;
+        }
+
+        int row = cur.idx / w;
+        int col = cur.idx % w;
+
+        if (cur.is_nydus)
+        {
+            int j = 0;
+            for (int i = 0; i < nydus_count; ++i)
+            {
+                if (nydus_nodes[i] != cur.idx)
+                {
+                    nydus_nbrs[j] = nydus_nodes[i];
+                    j++;
+                }
+            }
+            
+            //Giving 8 places units can get out from a nydus on foot
+            //There may be some cases where some big unit like an ultralisk
+            //can't really fit and we should do proper checks
+            nbrs[UP_LEFT] = (row > 1 && col > 1) ? cur.idx - 2*w - 2 : -1;
+            nbrs[UP] = (row > 1) ? cur.idx - 2*w : -1;
+            nbrs[UP_RIGHT] = (row > 1 && col + 2 < w) ? cur.idx - 2*w + 2 : -1;
+            nbrs[LEFT] = (col > 1) ? cur.idx - 2 : -1;
+            nbrs[RIGHT] = (col + 2 < w) ? cur.idx + 2 : -1;
+            nbrs[DOWN_LEFT] = (row + 2 < h && col > 1) ? cur.idx + 2*w - 2 : -1;
+            nbrs[DOWN] = (row + 2 < h) ? cur.idx + 2*w : -1;
+            nbrs[DOWN_RIGHT] = (row + 2 < h && col + 2 < w) ? cur.idx + 2*w + 2 : -1;
+            
+            for (int i = 0; i < 8; ++i)
+            {
+                nbr_fits[i] = (nbrs[i] != -1 && weights[nbrs[i]] < HUGE_VALF) ? 1 : 0;
+            }
+        }
+        else
+        {
+            nbrs[UP_LEFT] = (row > 0 && col > 0) ? cur.idx - w - 1 : -1;
+            nbrs[UP] = (row > 0) ? cur.idx - w : -1;
+            nbrs[UP_RIGHT] = (row > 0 && col + 1 < w) ? cur.idx - w + 1 : -1;
+            nbrs[LEFT] = (col > 0) ? cur.idx - 1 : -1;
+            nbrs[RIGHT] = (col + 1 < w) ? cur.idx + 1 : -1;
+            nbrs[DOWN_LEFT] = (row + 1 < h && col > 0) ? cur.idx + w - 1 : -1;
+            nbrs[DOWN] = (row + 1 < h) ? cur.idx + w : -1;
+            nbrs[DOWN_RIGHT] = (row + 1 < h && col + 1 < w) ? cur.idx + w + 1 : -1;
+
+            for (int i = 0; i < 8; ++i)
+            {
+                nbr_fits[i] = (nbrs[i] != -1 && weights[nbrs[i]] < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (large)
+            {
+                if (nbr_fits[UP])
+                {
+                    float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
+                    float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
+                    nbr_fits[UP] = (up_left_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
+                }
+
+                if (nbr_fits[LEFT])
+                {
+                    float up_left_weight = (nbrs[UP_LEFT] != -1) ? weights[nbrs[UP_LEFT]] : HUGE_VALF;
+                    float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
+
+                    nbr_fits[LEFT] = (up_left_weight < HUGE_VALF || down_left_weight < HUGE_VALF) ? 1 : 0;
+                }
+
+                if (nbr_fits[RIGHT])
+                {
+                    float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
+                    float up_right_weight = (nbrs[UP_RIGHT] != -1) ? weights[nbrs[UP_RIGHT]] : HUGE_VALF;
+
+                    nbr_fits[RIGHT] = (down_right_weight < HUGE_VALF || up_right_weight < HUGE_VALF) ? 1 : 0;
+                }
+
+                if (nbr_fits[DOWN])
+                {
+                    float down_left_weight = (nbrs[DOWN_LEFT] != -1) ? weights[nbrs[DOWN_LEFT]] : HUGE_VALF;
+                    float down_right_weight = (nbrs[DOWN_RIGHT] != -1) ? weights[nbrs[DOWN_RIGHT]] : HUGE_VALF;
+
+                    nbr_fits[DOWN] = (down_left_weight < HUGE_VALF || down_right_weight < HUGE_VALF) ? 1 : 0;
+                }
+            }
+            
+            if (nbr_fits[UP_LEFT])
+            {
+                float up_weight = weights[nbrs[UP]];
+                float left_weight = weights[nbrs[LEFT]];
+
+                nbr_fits[UP_LEFT] = (up_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[UP_RIGHT])
+            {
+                float up_weight = weights[nbrs[UP]];
+                float right_weight = weights[nbrs[RIGHT]];
+
+                nbr_fits[UP_RIGHT] = (up_weight < HUGE_VALF && right_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[DOWN_LEFT])
+            {
+                float down_weight = weights[nbrs[DOWN]];
+                float left_weight = weights[nbrs[LEFT]];
+
+                nbr_fits[DOWN_LEFT] = (down_weight < HUGE_VALF && left_weight < HUGE_VALF) ? 1 : 0;
+            }
+
+            if (nbr_fits[DOWN_RIGHT])
+            {
+                float down_weight = weights[nbrs[DOWN]];
+                float right_weight = weights[nbrs[RIGHT]];
+
+                nbr_fits[DOWN_RIGHT] = (down_weight < HUGE_VALF && right_weight < HUGE_VALF) ? 1 : 0;
+            }
+        }
+        
+        float cur_cost = costs[cur.idx];
+
+        //Scaling the steps into and from nyduses with 4
+        //Going into a nydus and getting out should take a bit more time than a single step on the grid
+
+        for (int i = 0; i < 8; ++i)
+        {
+            if (nbr_fits[i])
+            {
+                float new_cost;
+                if (cur.is_nydus)
+                {
+                    new_cost = cur_cost + 4*weights[nbrs[i]] * nbr_costs[i];
+                }
+                else
+                {
+                    new_cost = cur_cost + weights[nbrs[i]] * nbr_costs[i];
+                }
+            
+                //Small threshold to not update when the difference is just due to floating point inaccuracy
+                if (new_cost + 0.03f < costs[nbrs[i]])
+                {
+                    
+                    float heuristic_cost = distance_heuristic(nbrs[i] % w, nbrs[i] / w, goal % w, goal / w, weight_baseline);
+                    
+                    if (nydus_count > 0)
+                    {
+                        NydusInfo closest_nydus = get_node_nydus_info(nydus_nodes, nydus_count, nbrs[i], w, weight_baseline);
+
+                        float heuristic_via_nydus = 4*weight_baseline + closest_nydus.distance_heuristic_to_nydus + closest_nydus_to_goal.distance_heuristic_to_nydus;
+                        heuristic_cost = heuristic_cost < heuristic_via_nydus ? heuristic_cost : heuristic_via_nydus;
+                    }
+
+                    float estimated_cost = new_cost + heuristic_cost;
+                    Node new_node = { nbrs[i], estimated_cost, cur.path_length + 1, 0};
+                    queue_push_or_update(nodes_to_visit, new_node);
+
+                    costs[nbrs[i]] = new_cost;
+                    paths[nbrs[i]] = cur.idx;
+                }    
+            }
+        }
+
+        if (cur.is_nydus)
+        {
+            for (int i = 0; i < nydus_count - 1; ++i)
+            {
+                float new_cost = cur_cost + 4*weight_baseline;
+                int nydus_nbr = nydus_nbrs[i];
+                //Small threshold to not update when the difference is just due to floating point inaccuracy
+                if (new_cost + 0.03f < costs[nydus_nbr])
+                {
+                    float heuristic_cost = distance_heuristic(nydus_nbr % w, nydus_nbr / w, goal % w, goal / w, weight_baseline);
+                    float heuristic_via_nydus = 4*weight_baseline + closest_nydus_to_goal.distance_heuristic_to_nydus;
+                    heuristic_cost = heuristic_cost < heuristic_via_nydus ? heuristic_cost : heuristic_via_nydus;
+                    
+                    float estimated_cost = new_cost + heuristic_cost;
+                    Node new_node = { nydus_nbr, estimated_cost, cur.path_length + 1, 1};
+                    queue_push_or_update(nodes_to_visit, new_node);
+
+                    costs[nydus_nbr] = new_cost;
+                    paths[nydus_nbr] = cur.idx;
+                }    
+
+            }
+        }
+        else
+        {
+            NydusInfo closest_nydus = get_node_nydus_info(nydus_nodes, nydus_count, cur.idx, w, weight_baseline);
+                    
+            if (nydus_count > 0 && closest_nydus.can_enter_nydus)
+            {
+                float heuristic_via_nydus = 4*weight_baseline + closest_nydus.distance_heuristic_to_nydus + closest_nydus_to_goal.distance_heuristic_to_nydus;
+                
+                float new_cost = cur_cost + 4*weight_baseline;
+                
+                if (new_cost + 0.03f < costs[closest_nydus.closest_nydus_index])
+                {
+                    float estimated_cost = new_cost + heuristic_via_nydus;
+                    Node nydus_node = { closest_nydus.closest_nydus_index, estimated_cost, cur.path_length + 1, 1};
+
+                    queue_push_or_update(nodes_to_visit, nydus_node);
+                    
+                    costs[closest_nydus.closest_nydus_index] = new_cost;
+                    paths[closest_nydus.closest_nydus_index] = cur.idx;
+                }
+            }
+        }
+    }
+    
+    EndTemporaryAllocation(arena, &temp_alloc);
+
+    return path_length;
+}
+
 /*
 Estimating a straight line weight over multiple nodes.
 Used in path smoothing where we remove nodes if we can jump
@@ -801,6 +1118,43 @@ static float calculate_line_weight(MemoryArena *arena, float* weights, int w, in
     return weight_sum*norm;
 }
 
+static VecInt* create_smoothed_path(MemoryArena *arena, float *weights, VecInt *complete_path, int start_index, int end_index, int w)
+{
+    int path_length = end_index - start_index;
+    
+    int start = complete_path->items[start_index];
+    int goal = complete_path->items[end_index - 1];
+
+    VecInt *smoothed_path = InitVecInt(arena, path_length);
+    smoothed_path = PushToVecInt(smoothed_path, start);
+    int current_node = goal;
+
+    float segment_total_weight = weights[goal] * distance_heuristic(goal % w, goal / w, current_node % w, current_node / w, 1.0f);
+    for (int i = 1; i < path_length - 1; ++i)
+    {
+        int current_node = complete_path->items[start_index + i];
+        int next_node = complete_path->items[start_index + i + 1];
+        float step_weight = weights[next_node] * distance_heuristic(current_node % w, current_node / w, next_node % w, next_node / w, 1.0f);
+        segment_total_weight += step_weight;
+
+        int last_added_new_path_node = smoothed_path->items[smoothed_path->size - 1];
+        int x0 = last_added_new_path_node % w;
+        int y0 = last_added_new_path_node / w;
+        int x1 = next_node % w;
+        int y1 = next_node / w;
+
+        if (calculate_line_weight(arena, weights, w, x0, y0, x1, y1) > segment_total_weight * 1.002f)
+        {
+            segment_total_weight = step_weight;
+            smoothed_path = PushToVecInt(smoothed_path, current_node);
+        }
+    }
+
+    smoothed_path = PushToVecInt(smoothed_path, goal);
+    
+    return smoothed_path;
+}
+
 /*
 Exported function to run astar from python.
 Takes in grid weights, dimensions of the grid, requested start and end
@@ -853,31 +1207,7 @@ static PyObject* astar(PyObject *self, PyObject *args)
                 current_node = paths[current_node];
             }
 
-            VecInt *smoothed_path = InitVecInt(&state.function_arena, path_length);
-            smoothed_path = PushToVecInt(smoothed_path, start);
-
-            float segment_total_weight = weights[goal] * distance_heuristic(goal % w, goal / w, current_node % w, current_node / w, 1.0f);
-            for (int i = 1; i < path_length - 1; ++i)
-            {
-                int current_node = complete_path->items[i];
-                int next_node = complete_path->items[i + 1];
-                float step_weight = weights[next_node] * distance_heuristic(current_node % w, current_node / w, next_node % w, next_node / w, 1.0f);
-                segment_total_weight += step_weight;
-
-                int last_added_new_path_node = smoothed_path->items[smoothed_path->size - 1];
-                int x0 = last_added_new_path_node % w;
-                int y0 = last_added_new_path_node / w;
-                int x1 = next_node % w;
-                int y1 = next_node / w;
-
-                if (calculate_line_weight(&state.function_arena, weights, w, x0, y0, x1, y1) > segment_total_weight * 1.002f)
-                {
-                    segment_total_weight = step_weight;
-                    smoothed_path = PushToVecInt(smoothed_path, current_node);
-                }
-            }
-
-            smoothed_path = PushToVecInt(smoothed_path, goal);
+            VecInt *smoothed_path = create_smoothed_path(&state.function_arena, weights, complete_path, 0, path_length, w);
 
             npy_intp dims[2] = {smoothed_path->size, 2};
             PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
@@ -891,6 +1221,167 @@ static PyObject* astar(PyObject *self, PyObject *args)
             return_val = PyArray_Return(path);
         }
     }
+    else
+    {
+        return_val = Py_BuildValue("");
+    }
+
+    ClearMemoryArena(&state.function_arena);
+    ClearMemoryArena(&state.temp_arena);
+
+    return return_val;
+}
+
+
+/*
+Exported function to run astar with nyduses from python.
+Takes in grid weights, dimensions of the grid, array with nydus positions as integer indices, requested start and end
+and whether to smooth the final path.
+*/
+static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
+{
+    PyArrayObject* weights_object;
+    PyArrayObject* nydus_object;
+    int h, w, start, goal, large, smoothing, nydus_count;
+    
+    if (!PyArg_ParseTuple(args, "OiiOiiii", &weights_object, &h, &w, &nydus_object, &start, &goal, &large, &smoothing))
+    {
+        return NULL;
+    }
+
+    nydus_count = (int)nydus_object->dimensions[0];
+
+    float *weights = (float *)weights_object->data;
+    int *paths = (int*) PushToMemoryArena(&state.function_arena, w*h*sizeof(int));
+    int *nydus_positions = (int*)nydus_object->data;
+    int path_length;
+
+    if (nydus_count > 1)
+    {
+        path_length = run_pathfind_with_nydus(&state.function_arena, weights, paths, w, h, start, goal, large, nydus_positions, nydus_count);
+    }
+    else
+    {
+        path_length = run_pathfind(&state.function_arena, weights, paths, w, h, start, goal, large);
+    }
+    
+    PyObject *return_val;
+    if (path_length >= 0)
+    {
+        int current_index = goal;
+        int nydus_index = -1;
+
+        VecInt *complete_path = InitVecInt(&state.function_arena, path_length);
+        complete_path->size = path_length;
+        
+        for (int i = path_length - 1; i >= 0; --i)
+        {
+            for (int j = 0; j < nydus_count; ++j)
+            {
+                if (nydus_positions[j] == current_index)
+                {
+                    nydus_index = i;
+                }
+            }
+            complete_path->items[i] = current_index;
+            current_index = paths[current_index];
+        }
+
+        if (nydus_index == -1)
+        {
+            return_val = PyList_New(1);
+            if (!smoothing || path_length < 3)
+            {
+                npy_intp dims[2] = {path_length, 2};
+                PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
+                npy_int32 *path_data = (npy_int32*)path->data;
+
+                int idx = goal;
+
+                for (npy_intp i = dims[0] - 1; i >= 0; --i)
+                {
+                    path_data[2*i] = idx / w;
+                    path_data[2*i + 1] = idx % w;
+
+                    idx = paths[idx];
+                }
+                PyList_SetItem(return_val, 0, PyArray_Return(path));
+            }
+            else
+            {
+                VecInt *smoothed_path = create_smoothed_path(&state.function_arena, weights, complete_path, 0, path_length, w);
+
+                npy_intp dims[2] = {smoothed_path->size, 2};
+                PyArrayObject *path = (PyArrayObject*) PyArray_SimpleNew(2, dims, NPY_INT32);
+                npy_int32 *path_data = (npy_int32*)path->data;
+
+                for (npy_intp i = 0; i < dims[0]; ++i)
+                {
+                    path_data[2*i] = smoothed_path->items[i] / w;
+                    path_data[2*i + 1] = smoothed_path->items[i] % w;
+                }
+                PyList_SetItem(return_val, 0, PyArray_Return(path));
+            }
+        }
+        else
+        {
+            return_val = PyList_New(2);
+            
+            if (!smoothing)
+            {
+                npy_intp dims1[2] = {nydus_index + 1, 2};
+                PyArrayObject *path1 = (PyArrayObject*) PyArray_SimpleNew(2, dims1, NPY_INT32);
+                npy_int32 *path1_data = (npy_int32*)path1->data;
+
+                for (npy_intp i = 0; i <= nydus_index; ++i)
+                {
+                    path1_data[2*i] = complete_path->items[i] / w;
+                    path1_data[2*i + 1] = complete_path->items[i] % w;
+                }
+                PyList_SetItem(return_val, 0, PyArray_Return(path1));
+
+                npy_intp dims2[2] = {path_length - (nydus_index + 1), 2};
+                PyArrayObject *path2 = (PyArrayObject*) PyArray_SimpleNew(2, dims2, NPY_INT32);
+                npy_int32 *path2_data = (npy_int32*)path2->data;
+
+                for (npy_intp i = nydus_index + 1; i < path_length; ++i)
+                {
+                    int index_to_set = i - (nydus_index + 1);
+                    path2_data[2*index_to_set] = complete_path->items[i] / w;
+                    path2_data[2*index_to_set + 1] = complete_path->items[i] % w;
+                }
+                PyList_SetItem(return_val, 1, PyArray_Return(path2));
+            }
+            else
+            {
+                VecInt *smoothed_path1 = create_smoothed_path(&state.function_arena, weights, complete_path, 0, nydus_index + 1, w);
+
+                npy_intp dims1[2] = {smoothed_path1->size, 2};
+                PyArrayObject *path1 = (PyArrayObject*) PyArray_SimpleNew(2, dims1, NPY_INT32);
+                npy_int32 *path1_data = (npy_int32*)path1->data;
+
+                for (npy_intp i = 0; i < dims1[0]; ++i)
+                {
+                    path1_data[2*i] = smoothed_path1->items[i] / w;
+                    path1_data[2*i + 1] = smoothed_path1->items[i] % w;
+                }
+                PyList_SetItem(return_val, 0, PyArray_Return(path1));
+
+                VecInt *smoothed_path2 = create_smoothed_path(&state.function_arena, weights, complete_path, nydus_index + 1, path_length, w);
+
+                npy_intp dims2[2] = {smoothed_path2->size, 2};
+                PyArrayObject *path2 = (PyArrayObject*) PyArray_SimpleNew(2, dims2, NPY_INT32);
+                npy_int32 *path2_data = (npy_int32*)path2->data;
+
+                for (npy_intp i = 0; i < dims2[0]; ++i)
+                {
+                    path2_data[2*i] = smoothed_path2->items[i] / w;
+                    path2_data[2*i + 1] = smoothed_path2->items[i] % w;
+                }
+                PyList_SetItem(return_val, 1, PyArray_Return(path2));
+            }
+        }
+    }     
     else
     {
         return_val = Py_BuildValue("");
@@ -1758,6 +2249,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
 
 static PyMethodDef cext_methods[] = {
     {"astar", (PyCFunction)astar, METH_VARARGS, "astar"},
+    {"astar_with_nydus", (PyCFunction)astar_with_nydus, METH_VARARGS, "astar_with_nydus"},
     {"get_map_data", (PyCFunction)get_map_data, METH_VARARGS, "get_map_data"},
     {NULL, NULL, 0, NULL}
 };

@@ -266,12 +266,13 @@ class MapAnalyzerDebugger:
         plt.title(f"{name}", fontdict=fontdict, loc='right')
         plt.grid()
 
-    def plot_influenced_path_pyastar(self, start: Union[Tuple[int, int], Point2],
-                             goal: Union[Tuple[int, int], Point2],
-                             weight_array: ndarray,
-                             allow_diagonal=False,
-                             name: Optional[str] = None,
-                             fontdict: dict = None) -> None:
+    def plot_influenced_path_nydus(self, start: Union[Tuple[float, float], Point2],
+                                   goal: Union[Tuple[float, float], Point2],
+                                   weight_array: ndarray,
+                                   large: bool = False,
+                                   smoothing: bool = False,
+                                   name: Optional[str] = None,
+                                   fontdict: dict = None) -> None:
         import matplotlib.pyplot as plt
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         from matplotlib.cm import ScalarMappable
@@ -282,16 +283,18 @@ class MapAnalyzerDebugger:
         if name is None:
             name = self.map_data.map_name
         arr = weight_array.copy()
-        path = self.map_data.pathfind_pyastar(start, goal,
-                                      grid=arr,
-                                      sensitivity=1,
-                                      allow_diagonal=allow_diagonal)
+        paths = self.map_data.pathfind_with_nyduses(start, goal,
+                                                    grid=arr,
+                                                    large=large,
+                                                    smoothing=smoothing,
+                                                    sensitivity=1)
         ax: plt.Axes = plt.subplot(1, 1, 1)
-        if path is not None:
-            path = np.flipud(path)  # for plot align
-            logger.info("Found")
-            x, y = zip(*path)
-            ax.scatter(x, y, s=3, c='green')
+        if paths is not None:
+            for i in range(len(paths[0])):
+                path = np.flipud(paths[0][i])  # for plot align
+                logger.info("Found")
+                x, y = zip(*path)
+                ax.scatter(x, y, s=3, c='green')
         else:
             logger.info("Not Found")
 

@@ -1,6 +1,6 @@
-from MapAnalyzer.cext import CMapInfo, astar_path
+from MapAnalyzer.cext import CMapInfo, astar_path, astar_path_with_nyduses
 import numpy as np
-from sc2.position import Rect
+from sc2.position import Rect, Point2
 import os
 
 
@@ -42,6 +42,23 @@ def test_c_extension():
     path2 = astar_path(influenced_grid, (3, 3), (33, 38), False, False)
 
     assert(path2 is not None and path2.shape[0] == 59)
+
+    paths_no_nydus = astar_path_with_nyduses(influenced_grid, (3, 3), (33, 38), [], False, False)
+
+    assert(paths_no_nydus is not None and paths_no_nydus[0].shape[0] == 59)
+
+    nydus_positions = [
+        Point2((6.5, 6.5)),
+        Point2((29.5, 34.5))
+    ]
+
+    influenced_grid[5:8, 5:8] = np.inf
+    influenced_grid[28:31, 33:36] = np.inf
+
+    paths_nydus = astar_path_with_nyduses(influenced_grid, (3, 3), (33, 38), nydus_positions, False, False)
+
+    assert (paths_nydus is not None and len(paths_nydus) == 2
+            and len(paths_nydus[0]) + len(paths_nydus[1]) == 7)
 
     height_map = np.where(walkable_grid == 0, 24, 8).astype(np.uint8)
 

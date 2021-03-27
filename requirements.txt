@@ -371,7 +371,7 @@ numba== 0.52.0
 # D:\proj\SC2MapAnalysis\MapAnalyzer\utils.py: 4
 # D:\proj\SC2MapAnalysis\setup.py: 14
 # D:\proj\SC2MapAnalysis\tests\test_c_extension.py: 2
-numpy== 1.19.3
+numpy
 
 
 # D:\proj\SC2MapAnalysis\.eggs\numpy-1.19.1-py3.7-win-amd64.egg\numpy\_pytesttester.py: 125
