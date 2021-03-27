@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.84](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.83...v0.0.84) (2021-02-03)
+
+### Refactoring
+
+* **test:** renamed test pathing function to be more descriptive of what it does ([778333d](https://github.com/eladyaniv01/SC2MapAnalysis/commit/778333d671a722eee1d4aac06e55c26ae89168b0))
+
+### Tests
+
+* assert that illegal weights are tolerated in
+  Pather ([4c846aa](https://github.com/eladyaniv01/SC2MapAnalysis/commit/4c846aa98144330b21273ec66fdc122fdc1a496d))
+
+### Bug Fixes
+
+* fix add_cost crashing when a very specific input is
+  present ([bc5052ec](https://github.com/eladyaniv01/SC2MapAnalysis/commit/bc5052ecbb6000f72e872ba7e18027400e90e9f7))
+
+
+### [0.0.83](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.82...v0.0.83) (2021-02-02)
+
+### Bug Fixes
+
+* Fix circle drawing  ([be317f54](https://github.com/eladyaniv01/SC2MapAnalysis/pull/145/commits/be317f542703b78d988627960d3ca2360bcbbc0d))
+* Fix climber grid on DeathAura  ([1f1def166](https://github.com/eladyaniv01/SC2MapAnalysis/pull/145/commits/1f1def166c378a5eed8c9a4f7eb8876ec8e66cd8))
+
+
 ### [0.0.82](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.81...v0.0.82) (2021-01-11)
 
 ### Bug Fixes
