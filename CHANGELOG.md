@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.85](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.84...v0.0.85) (2021-03-27)
 
+* Removed pyastar dependency and the deprecated pathfind_pyastar function completely  (c310ac4c)
+* Added support for using nyduses with pathfinding (636af5ea)
+
 ### [0.0.84](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.83...v0.0.84) (2021-02-03)
 
 ### Refactoring
