@@ -184,7 +184,7 @@ static void* PushToMemoryArena(MemoryArena *arena, size_t size)
 
     location = location + HEADER_SIZE;
     arena->used += size + HEADER_SIZE;
-    
+
     memset(location, 0, size);
     return location;
 }
@@ -1398,53 +1398,91 @@ typedef struct KeyContainer
     VecInt *keys;
 } KeyContainer;
 
-static int flood_fill_overlord(uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
+static int flood_fill_overlord(MemoryArena *arena, uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
 {
-    int key = y*grid_width + x;
-    
-    if (point_status[key] & IN_CURRENT_SET) return 1;
-
-    current_set->keys = PushToVecInt(current_set->keys, key);
-    point_status[key] |= IN_CURRENT_SET;
-
-    if (target_height != heights[key])
+    PriorityQueue *nodes_to_visit = queue_create(arena, grid_width*grid_height);
+    for (int i = 0; i < grid_width*grid_height; ++i)
     {
-        if (target_height < heights[key] + LEVEL_DIFFERENCE)
+        nodes_to_visit->index_map[i] = -1;
+    }
+
+    Node start_node = { 
+        .idx = y*grid_width + x,
+        .cost = 0,
+        .path_length = 1
+    };
+    queue_push_or_update(nodes_to_visit, start_node);
+    int result = 1;
+
+    while (nodes_to_visit->size > 0)
+    {
+        Node cur = queue_pop(nodes_to_visit);
+        int key = cur.idx;
+
+        int row = key / grid_width;
+        int col = key % grid_width;
+
+        if (point_status[key] & IN_CURRENT_SET) continue;
+        
+        current_set->keys = PushToVecInt(current_set->keys, key);
+        point_status[key] |= IN_CURRENT_SET;
+
+        if (target_height != heights[key])
         {
-            return 0;
+            if (target_height < heights[key] + LEVEL_DIFFERENCE)
+            {
+                result = 0;
+            }
+            continue;
+        }
+
+        if (replacement)
+        {
+            point_status[key] |= OVERLORD_SPOT;
         }
         else
         {
-            return 1;
+            point_status[key] &= ~OVERLORD_SPOT;
+        }
+
+        if (row > 0)
+        {
+            Node top_nbr = {
+                .idx = key - grid_width,
+                .cost = cur.cost + 1,
+                .path_length = cur.path_length + 1
+            };
+            queue_push_or_update(nodes_to_visit, top_nbr);
+        }
+        if (col > 0)
+        {
+            Node left_nbr = {
+                .idx = key - 1,
+                .cost = cur.cost + 1,
+                .path_length = cur.path_length + 1
+            };
+            queue_push_or_update(nodes_to_visit, left_nbr);
+        }
+        if (row < grid_height - 1)
+        {
+            Node bottom_nbr = {
+                .idx = key + grid_width,
+                .cost = cur.cost + 1,
+                .path_length = cur.path_length + 1
+            };
+            queue_push_or_update(nodes_to_visit, bottom_nbr);
+        }
+        if (col < grid_width - 1)
+        {
+            Node right_nbr = {
+                .idx = key + 1,
+                .cost = cur.cost + 1,
+                .path_length = cur.path_length + 1
+            };
+            queue_push_or_update(nodes_to_visit, right_nbr);
         }
     }
 
-    int result = 1;
-    if (replacement)
-    {
-        point_status[key] |= OVERLORD_SPOT;
-    }
-    else
-    {
-        point_status[key] &= ~OVERLORD_SPOT;
-    }
-
-    if (y > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y - 1, target_height, replacement, current_set);
-    }
-    if (x > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x - 1, y, target_height, replacement, current_set);
-    }
-    if (y < grid_height - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y + 1, target_height, replacement, current_set);
-    }
-    if (x < grid_width - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x + 1, y, target_height, replacement, current_set);
-    }
     return result;
 }
 
@@ -2174,10 +2212,10 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 TempAllocation temp_alloc;
                 StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
                 c.keys = InitVecInt(&state.temp_arena, 200);
-                if (flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
+                if (flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
                 {
                     float spot[2] = { 0.0f, 0.0f };
-
+                    
                     for(int i = 0; i < c.keys->size; ++i)
                     {
                         point_status[c.keys->items[i]] |= HANDLED_OVERLORD_SPOT;
@@ -2204,7 +2242,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                     }
                     c.keys->size = 0;
 
-                    flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 0, &c);
+                    flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 0, &c);
                 }
 
                
