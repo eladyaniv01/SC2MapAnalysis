@@ -184,7 +184,7 @@ static void* PushToMemoryArena(MemoryArena *arena, size_t size)
 
     location = location + HEADER_SIZE;
     arena->used += size + HEADER_SIZE;
-    
+
     memset(location, 0, size);
     return location;
 }
@@ -545,6 +545,11 @@ static PriorityQueue* queue_create(MemoryArena *arena, int max_size)
     queue->nodes = (Node*) PushToMemoryArena(arena, max_size*sizeof(Node));
     queue->index_map = (int*) PushToMemoryArena(arena, max_size*sizeof(int));
     queue->size = 0;
+
+    for (int i = 0; i < max_size; ++i)
+    {
+        queue->index_map[i] = -1;
+    }
     
     return queue;
 }
@@ -607,7 +612,6 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -825,7 +829,6 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -1333,7 +1336,7 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 PyArrayObject *path1 = (PyArrayObject*) PyArray_SimpleNew(2, dims1, NPY_INT32);
                 npy_int32 *path1_data = (npy_int32*)path1->data;
 
-                for (npy_intp i = 0; i <= nydus_index; ++i)
+                for (int i = 0; i <= nydus_index; ++i)
                 {
                     path1_data[2*i] = complete_path->items[i] / w;
                     path1_data[2*i + 1] = complete_path->items[i] % w;
@@ -1344,7 +1347,7 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 PyArrayObject *path2 = (PyArrayObject*) PyArray_SimpleNew(2, dims2, NPY_INT32);
                 npy_int32 *path2_data = (npy_int32*)path2->data;
 
-                for (npy_intp i = nydus_index + 1; i < path_length; ++i)
+                for (int i = nydus_index + 1; i < path_length; ++i)
                 {
                     int index_to_set = i - (nydus_index + 1);
                     path2_data[2*index_to_set] = complete_path->items[i] / w;
@@ -1398,53 +1401,63 @@ typedef struct KeyContainer
     VecInt *keys;
 } KeyContainer;
 
-static int flood_fill_overlord(uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
+static int flood_fill_overlord(MemoryArena *arena, uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
 {
-    int key = y*grid_width + x;
-    
-    if (point_status[key] & IN_CURRENT_SET) return 1;
+    VecInt *nodes_to_visit = InitVecInt(arena, grid_width*grid_height);
 
-    current_set->keys = PushToVecInt(current_set->keys, key);
-    point_status[key] |= IN_CURRENT_SET;
+    nodes_to_visit = PushToVecInt(nodes_to_visit, y*grid_width + x);
 
-    if (target_height != heights[key])
+    int result = 1;
+
+    while (nodes_to_visit->size > 0)
     {
-        if (target_height < heights[key] + LEVEL_DIFFERENCE)
+        int key = nodes_to_visit->items[nodes_to_visit->size - 1];
+        --nodes_to_visit->size;
+
+        int row = key / grid_width;
+        int col = key % grid_width;
+
+        if (point_status[key] & IN_CURRENT_SET) continue;
+        
+        current_set->keys = PushToVecInt(current_set->keys, key);
+        point_status[key] |= IN_CURRENT_SET;
+
+        if (target_height != heights[key])
         {
-            return 0;
+            if (target_height < heights[key] + LEVEL_DIFFERENCE)
+            {
+                result = 0;
+            }
+            continue;
+        }
+
+        if (replacement)
+        {
+            point_status[key] |= OVERLORD_SPOT;
         }
         else
         {
-            return 1;
+            point_status[key] &= ~OVERLORD_SPOT;
+        }
+
+        if (row > 0)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - grid_width);
+        }
+        if (col > 0)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - 1);
+        }
+        if (row < grid_height - 1)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + grid_width);
+        }
+        if (col < grid_width - 1)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + 1);
         }
     }
 
-    int result = 1;
-    if (replacement)
-    {
-        point_status[key] |= OVERLORD_SPOT;
-    }
-    else
-    {
-        point_status[key] &= ~OVERLORD_SPOT;
-    }
-
-    if (y > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y - 1, target_height, replacement, current_set);
-    }
-    if (x > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x - 1, y, target_height, replacement, current_set);
-    }
-    if (y < grid_height - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y + 1, target_height, replacement, current_set);
-    }
-    if (x < grid_width - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x + 1, y, target_height, replacement, current_set);
-    }
     return result;
 }
 
@@ -1459,7 +1472,6 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -2174,10 +2186,10 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 TempAllocation temp_alloc;
                 StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
                 c.keys = InitVecInt(&state.temp_arena, 200);
-                if (flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
+                if (flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
                 {
                     float spot[2] = { 0.0f, 0.0f };
-
+                    
                     for(int i = 0; i < c.keys->size; ++i)
                     {
                         point_status[c.keys->items[i]] |= HANDLED_OVERLORD_SPOT;
@@ -2204,7 +2216,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                     }
                     c.keys->size = 0;
 
-                    flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 0, &c);
+                    flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 0, &c);
                 }
 
                
