@@ -545,6 +545,11 @@ static PriorityQueue* queue_create(MemoryArena *arena, int max_size)
     queue->nodes = (Node*) PushToMemoryArena(arena, max_size*sizeof(Node));
     queue->index_map = (int*) PushToMemoryArena(arena, max_size*sizeof(int));
     queue->size = 0;
+
+    for (int i = 0; i < max_size; ++i)
+    {
+        queue->index_map[i] = -1;
+    }
     
     return queue;
 }
@@ -607,7 +612,6 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -825,7 +829,6 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -1400,24 +1403,16 @@ typedef struct KeyContainer
 
 static int flood_fill_overlord(MemoryArena *arena, uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
 {
-    PriorityQueue *nodes_to_visit = queue_create(arena, grid_width*grid_height);
-    for (int i = 0; i < grid_width*grid_height; ++i)
-    {
-        nodes_to_visit->index_map[i] = -1;
-    }
+    VecInt *nodes_to_visit = InitVecInt(arena, grid_width*grid_height);
 
-    Node start_node = { 
-        .idx = y*grid_width + x,
-        .cost = 0,
-        .path_length = 1
-    };
-    queue_push_or_update(nodes_to_visit, start_node);
+    nodes_to_visit = PushToVecInt(nodes_to_visit, y*grid_width + x);
+
     int result = 1;
 
     while (nodes_to_visit->size > 0)
     {
-        Node cur = queue_pop(nodes_to_visit);
-        int key = cur.idx;
+        int key = nodes_to_visit->items[nodes_to_visit->size - 1];
+        --nodes_to_visit->size;
 
         int row = key / grid_width;
         int col = key % grid_width;
@@ -1447,39 +1442,19 @@ static int flood_fill_overlord(MemoryArena *arena, uint8_t *heights, uint8_t *po
 
         if (row > 0)
         {
-            Node top_nbr = {
-                .idx = key - grid_width,
-                .cost = cur.cost + 1,
-                .path_length = cur.path_length + 1
-            };
-            queue_push_or_update(nodes_to_visit, top_nbr);
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - grid_width);
         }
         if (col > 0)
         {
-            Node left_nbr = {
-                .idx = key - 1,
-                .cost = cur.cost + 1,
-                .path_length = cur.path_length + 1
-            };
-            queue_push_or_update(nodes_to_visit, left_nbr);
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - 1);
         }
         if (row < grid_height - 1)
         {
-            Node bottom_nbr = {
-                .idx = key + grid_width,
-                .cost = cur.cost + 1,
-                .path_length = cur.path_length + 1
-            };
-            queue_push_or_update(nodes_to_visit, bottom_nbr);
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + grid_width);
         }
         if (col < grid_width - 1)
         {
-            Node right_nbr = {
-                .idx = key + 1,
-                .cost = cur.cost + 1,
-                .path_length = cur.path_length + 1
-            };
-            queue_push_or_update(nodes_to_visit, right_nbr);
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + 1);
         }
     }
 
@@ -1497,7 +1472,6 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
