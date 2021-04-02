@@ -1039,9 +1039,9 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
                     
             if (nydus_count > 0 && closest_nydus.can_enter_nydus)
             {
-                float heuristic_via_nydus = 4*weight_baseline + closest_nydus.distance_heuristic_to_nydus + closest_nydus_to_goal.distance_heuristic_to_nydus;
+                float heuristic_via_nydus = 4*weight_baseline + closest_nydus_to_goal.distance_heuristic_to_nydus;
                 
-                float new_cost = cur_cost + 4*weight_baseline;
+                float new_cost = cur_cost + 4*weights[cur.idx];
                 
                 if (new_cost + 0.03f < costs[closest_nydus.closest_nydus_index])
                 {
@@ -1273,8 +1273,9 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
     {
         int current_index = goal;
         int nydus_index = -1;
+        int nyduses_used = 0;
 
-        VecInt *complete_path = InitVecInt(&state.function_arena, path_length);
+        VecInt *complete_path = InitVecInt(&state.function_arena, path_length + 1);
         complete_path->size = path_length;
         
         for (int i = path_length - 1; i >= 0; --i)
@@ -1284,10 +1285,25 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 if (nydus_positions[j] == current_index)
                 {
                     nydus_index = i;
+                    nyduses_used++;
                 }
             }
             complete_path->items[i] = current_index;
             current_index = paths[current_index];
+        }
+
+        //If we got into a nydus and got out on the other side,
+        //let's add the same nydus node to the path a second time
+        //so it gets handled properly later
+        if (nyduses_used == 1)
+        {
+            complete_path->size++;
+
+            for(int i = path_length; i > nydus_index; --i)
+            {
+                complete_path->items[i] = complete_path->items[i - 1];
+            }
+            path_length++;
         }
 
         if (nydus_index == -1)
