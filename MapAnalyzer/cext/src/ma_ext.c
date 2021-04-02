@@ -65,15 +65,15 @@ in a loop and it happens often enough that we
 need to take care of it somehow.
 This can be accomplished with
 
-TempAllocation alloc;
-StartTemporaryAllocation(&state.function_arena, &alloc);
+TempAllocation alloc = StartTemporaryAllocation(&state.function_arena);
 ...
-EndTemporaryAllocation(&state.function_arena, &alloc);
+EndTemporaryAllocation(alloc);
 
 This way the arena is reset to the state where it was before
 the allocation.
 */
 typedef struct TempAllocation {
+    MemoryArena *arena;
     size_t previously_used;
 } TempAllocation;
 
@@ -238,14 +238,19 @@ static void* ReallocInMemoryArena(MemoryArena *arena, uint8_t *current_base, siz
     }
 }
 
-static void StartTemporaryAllocation(MemoryArena *arena, TempAllocation *temp)
+static TempAllocation StartTemporaryAllocation(MemoryArena *arena)
 {
-    temp->previously_used = arena->used;
+    TempAllocation temp_alloc = {
+        .arena = arena,
+        .previously_used = arena->used
+    };
+
+    return temp_alloc;
 }
 
-static void EndTemporaryAllocation(MemoryArena *arena, TempAllocation *temp)
+static void EndTemporaryAllocation(TempAllocation temp)
 {
-    arena->used = temp->previously_used;
+    temp.arena->used = temp.previously_used;
 }
 
 
@@ -601,8 +606,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     
     int path_length = -1;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     PriorityQueue *nodes_to_visit = queue_create(arena, w*h);
 
@@ -742,7 +746,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
         }
     }
     
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return path_length;
 }
@@ -818,8 +822,7 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
     
     int path_length = -1;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     PriorityQueue *nodes_to_visit = queue_create(arena, w*h);
 
@@ -1057,7 +1060,7 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
         }
     }
     
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return path_length;
 }
@@ -1071,8 +1074,7 @@ static float calculate_line_weight(MemoryArena *arena, float* weights, int w, in
 {
     float flight_distance = euclidean_distance(x0, y0, x1, y1);
     
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     VecInt *line_coords = InitVecInt(arena, (int)flight_distance*2);
 
@@ -1116,7 +1118,7 @@ static float calculate_line_weight(MemoryArena *arena, float* weights, int w, in
         if(weight_sum >= HUGE_VALF) break;
     }
 
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return weight_sum*norm;
 }
@@ -1620,8 +1622,7 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
     if (point_status[w*y + x] & BORDER)
     {
-        TempAllocation temp_alloc;
-        StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+        TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
 
         VecInt* reachable_borders = get_nodes_within_distance(&state.temp_arena, border_weights, w, h, x, y, choke_border_distance);
 
@@ -1708,7 +1709,7 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
             }
         }
-        EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+        EndTemporaryAllocation(temp_alloc);
     }
 }
 
@@ -1716,8 +1717,7 @@ static void choke_remove_excess_lines(Choke* choke)
 {
     float min_distance = HUGE_VALF;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
 
     VecFloat *distances = InitVecFloat(&state.temp_arena, choke->lines->size);
 
@@ -1742,7 +1742,7 @@ static void choke_remove_excess_lines(Choke* choke)
         }
     }
 
-    EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     choke->lines = new_lines;
     choke->min_length = min_distance;
@@ -1824,8 +1824,7 @@ static VecChoke* chokes_group(ChokeLines* choke_lines)
     VecChoke *list = InitVecChoke(&state.function_arena, 100);
 
     int line_count = choke_lines->lines->size;
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
     uint8_t *used_indices = (uint8_t*)PushToMemoryArena(&state.temp_arena, line_count*sizeof(uint8_t));
 
     for (int i = 0; i < line_count; ++i)
@@ -1910,7 +1909,7 @@ static VecChoke* chokes_group(ChokeLines* choke_lines)
         list = PushToVecChoke(list, current_choke);
     }
 
-    EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     int i = 0;
     while(i < list->size)
@@ -2199,8 +2198,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
             {
                 uint8_t target_height = heights[key];
                 KeyContainer c = { NULL };
-                TempAllocation temp_alloc;
-                StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+                TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
                 c.keys = InitVecInt(&state.temp_arena, 200);
                 if (flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
                 {
@@ -2240,7 +2238,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 {
                     point_status[c.keys->items[i]] &= ~IN_CURRENT_SET;
                 }
-                EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+                EndTemporaryAllocation(temp_alloc);
 
             }
 
