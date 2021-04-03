@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.86](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.85...v0.0.86) (2021-04-03)
+
 ### [0.0.85](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.84...v0.0.85) (2021-03-27)
 
 * Removed pyastar dependency and the deprecated pathfind_pyastar function completely  ([c310ac4c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c310ac4cfca7e85d499da33822060c567993e145))
