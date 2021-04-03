@@ -1,11 +1,21 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file.
+See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.0.86](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.85...v0.0.86) (2021-04-03)
+
+### Bug Fixes
+
+* Fixing bug when going in and out of the same nydus entrance when
+  pathfinding ([abf444f1](https://github.com/eladyaniv01/SC2MapAnalysis/commit/abf444f1d5a14ae53052df53a3087ca07c524c0b))
 
 ### [0.0.85](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.84...v0.0.85) (2021-03-27)
 
-* Removed pyastar dependency and the deprecated pathfind_pyastar function completely  ([c310ac4c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c310ac4cfca7e85d499da33822060c567993e145))
-* Added support for using nyduses with pathfinding ([636af5ea](https://github.com/eladyaniv01/SC2MapAnalysis/commit/636af5ea8bd233d27e0a5a68699c4390de250614))
+* Removed pyastar dependency and the deprecated pathfind_pyastar function
+  completely  ([c310ac4c](https://github.com/eladyaniv01/SC2MapAnalysis/commit/c310ac4cfca7e85d499da33822060c567993e145))
+* Added support for using nyduses with
+  pathfinding ([636af5ea](https://github.com/eladyaniv01/SC2MapAnalysis/commit/636af5ea8bd233d27e0a5a68699c4390de250614))
 
 ### [0.0.84](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.83...v0.0.84) (2021-02-03)
 

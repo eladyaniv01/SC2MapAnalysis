@@ -65,15 +65,15 @@ in a loop and it happens often enough that we
 need to take care of it somehow.
 This can be accomplished with
 
-TempAllocation alloc;
-StartTemporaryAllocation(&state.function_arena, &alloc);
+TempAllocation alloc = StartTemporaryAllocation(&state.function_arena);
 ...
-EndTemporaryAllocation(&state.function_arena, &alloc);
+EndTemporaryAllocation(alloc);
 
 This way the arena is reset to the state where it was before
 the allocation.
 */
 typedef struct TempAllocation {
+    MemoryArena *arena;
     size_t previously_used;
 } TempAllocation;
 
@@ -184,7 +184,7 @@ static void* PushToMemoryArena(MemoryArena *arena, size_t size)
 
     location = location + HEADER_SIZE;
     arena->used += size + HEADER_SIZE;
-    
+
     memset(location, 0, size);
     return location;
 }
@@ -238,14 +238,19 @@ static void* ReallocInMemoryArena(MemoryArena *arena, uint8_t *current_base, siz
     }
 }
 
-static void StartTemporaryAllocation(MemoryArena *arena, TempAllocation *temp)
+static TempAllocation StartTemporaryAllocation(MemoryArena *arena)
 {
-    temp->previously_used = arena->used;
+    TempAllocation temp_alloc = {
+        .arena = arena,
+        .previously_used = arena->used
+    };
+
+    return temp_alloc;
 }
 
-static void EndTemporaryAllocation(MemoryArena *arena, TempAllocation *temp)
+static void EndTemporaryAllocation(TempAllocation temp)
 {
-    arena->used = temp->previously_used;
+    temp.arena->used = temp.previously_used;
 }
 
 
@@ -545,6 +550,11 @@ static PriorityQueue* queue_create(MemoryArena *arena, int max_size)
     queue->nodes = (Node*) PushToMemoryArena(arena, max_size*sizeof(Node));
     queue->index_map = (int*) PushToMemoryArena(arena, max_size*sizeof(int));
     queue->size = 0;
+
+    for (int i = 0; i < max_size; ++i)
+    {
+        queue->index_map[i] = -1;
+    }
     
     return queue;
 }
@@ -596,8 +606,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     
     int path_length = -1;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     PriorityQueue *nodes_to_visit = queue_create(arena, w*h);
 
@@ -607,7 +616,6 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -738,7 +746,7 @@ static int run_pathfind(MemoryArena *arena, float *weights, int* paths, int w, i
         }
     }
     
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return path_length;
 }
@@ -814,8 +822,7 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
     
     int path_length = -1;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     PriorityQueue *nodes_to_visit = queue_create(arena, w*h);
 
@@ -825,7 +832,6 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -1036,9 +1042,9 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
                     
             if (nydus_count > 0 && closest_nydus.can_enter_nydus)
             {
-                float heuristic_via_nydus = 4*weight_baseline + closest_nydus.distance_heuristic_to_nydus + closest_nydus_to_goal.distance_heuristic_to_nydus;
+                float heuristic_via_nydus = 4*weight_baseline + closest_nydus_to_goal.distance_heuristic_to_nydus;
                 
-                float new_cost = cur_cost + 4*weight_baseline;
+                float new_cost = cur_cost + 4*weights[cur.idx];
                 
                 if (new_cost + 0.03f < costs[closest_nydus.closest_nydus_index])
                 {
@@ -1054,7 +1060,7 @@ static int run_pathfind_with_nydus(MemoryArena *arena, float *weights, int* path
         }
     }
     
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return path_length;
 }
@@ -1068,8 +1074,7 @@ static float calculate_line_weight(MemoryArena *arena, float* weights, int w, in
 {
     float flight_distance = euclidean_distance(x0, y0, x1, y1);
     
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(arena);
 
     VecInt *line_coords = InitVecInt(arena, (int)flight_distance*2);
 
@@ -1113,7 +1118,7 @@ static float calculate_line_weight(MemoryArena *arena, float* weights, int w, in
         if(weight_sum >= HUGE_VALF) break;
     }
 
-    EndTemporaryAllocation(arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     return weight_sum*norm;
 }
@@ -1270,8 +1275,9 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
     {
         int current_index = goal;
         int nydus_index = -1;
+        int nyduses_used = 0;
 
-        VecInt *complete_path = InitVecInt(&state.function_arena, path_length);
+        VecInt *complete_path = InitVecInt(&state.function_arena, path_length + 1);
         complete_path->size = path_length;
         
         for (int i = path_length - 1; i >= 0; --i)
@@ -1281,10 +1287,25 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 if (nydus_positions[j] == current_index)
                 {
                     nydus_index = i;
+                    nyduses_used++;
                 }
             }
             complete_path->items[i] = current_index;
             current_index = paths[current_index];
+        }
+
+        //If we got into a nydus and got out on the other side,
+        //let's add the same nydus node to the path a second time
+        //so it gets handled properly later
+        if (nyduses_used == 1)
+        {
+            complete_path->size++;
+
+            for(int i = path_length; i > nydus_index; --i)
+            {
+                complete_path->items[i] = complete_path->items[i - 1];
+            }
+            path_length++;
         }
 
         if (nydus_index == -1)
@@ -1333,7 +1354,7 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 PyArrayObject *path1 = (PyArrayObject*) PyArray_SimpleNew(2, dims1, NPY_INT32);
                 npy_int32 *path1_data = (npy_int32*)path1->data;
 
-                for (npy_intp i = 0; i <= nydus_index; ++i)
+                for (int i = 0; i <= nydus_index; ++i)
                 {
                     path1_data[2*i] = complete_path->items[i] / w;
                     path1_data[2*i + 1] = complete_path->items[i] % w;
@@ -1344,7 +1365,7 @@ static PyObject* astar_with_nydus(PyObject *self, PyObject *args)
                 PyArrayObject *path2 = (PyArrayObject*) PyArray_SimpleNew(2, dims2, NPY_INT32);
                 npy_int32 *path2_data = (npy_int32*)path2->data;
 
-                for (npy_intp i = nydus_index + 1; i < path_length; ++i)
+                for (int i = nydus_index + 1; i < path_length; ++i)
                 {
                     int index_to_set = i - (nydus_index + 1);
                     path2_data[2*index_to_set] = complete_path->items[i] / w;
@@ -1398,53 +1419,63 @@ typedef struct KeyContainer
     VecInt *keys;
 } KeyContainer;
 
-static int flood_fill_overlord(uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
+static int flood_fill_overlord(MemoryArena *arena, uint8_t *heights, uint8_t *point_status, int grid_width, int grid_height, int x, int y, uint8_t target_height, uint8_t replacement, KeyContainer* current_set)
 {
-    int key = y*grid_width + x;
-    
-    if (point_status[key] & IN_CURRENT_SET) return 1;
+    VecInt *nodes_to_visit = InitVecInt(arena, grid_width*grid_height);
 
-    current_set->keys = PushToVecInt(current_set->keys, key);
-    point_status[key] |= IN_CURRENT_SET;
+    nodes_to_visit = PushToVecInt(nodes_to_visit, y*grid_width + x);
 
-    if (target_height != heights[key])
+    int result = 1;
+
+    while (nodes_to_visit->size > 0)
     {
-        if (target_height < heights[key] + LEVEL_DIFFERENCE)
+        int key = nodes_to_visit->items[nodes_to_visit->size - 1];
+        --nodes_to_visit->size;
+
+        int row = key / grid_width;
+        int col = key % grid_width;
+
+        if (point_status[key] & IN_CURRENT_SET) continue;
+        
+        current_set->keys = PushToVecInt(current_set->keys, key);
+        point_status[key] |= IN_CURRENT_SET;
+
+        if (target_height != heights[key])
         {
-            return 0;
+            if (target_height < heights[key] + LEVEL_DIFFERENCE)
+            {
+                result = 0;
+            }
+            continue;
+        }
+
+        if (replacement)
+        {
+            point_status[key] |= OVERLORD_SPOT;
         }
         else
         {
-            return 1;
+            point_status[key] &= ~OVERLORD_SPOT;
+        }
+
+        if (row > 0)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - grid_width);
+        }
+        if (col > 0)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key - 1);
+        }
+        if (row < grid_height - 1)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + grid_width);
+        }
+        if (col < grid_width - 1)
+        {
+            nodes_to_visit = PushToVecInt(nodes_to_visit, key + 1);
         }
     }
 
-    int result = 1;
-    if (replacement)
-    {
-        point_status[key] |= OVERLORD_SPOT;
-    }
-    else
-    {
-        point_status[key] &= ~OVERLORD_SPOT;
-    }
-
-    if (y > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y - 1, target_height, replacement, current_set);
-    }
-    if (x > 0)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x - 1, y, target_height, replacement, current_set);
-    }
-    if (y < grid_height - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x, y + 1, target_height, replacement, current_set);
-    }
-    if (x < grid_width - 1)
-    {
-        result &= flood_fill_overlord(heights, point_status, grid_width, grid_height, x + 1, y, target_height, replacement, current_set);
-    }
     return result;
 }
 
@@ -1459,7 +1490,6 @@ static VecInt* get_nodes_within_distance(MemoryArena *arena, float* weights, int
     for (int i = 0; i < w*h; ++i)
     {
         costs[i] = HUGE_VALF;
-        nodes_to_visit->index_map[i] = -1;
     }
     
     costs[start] = 0;
@@ -1592,8 +1622,7 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
     if (point_status[w*y + x] & BORDER)
     {
-        TempAllocation temp_alloc;
-        StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+        TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
 
         VecInt* reachable_borders = get_nodes_within_distance(&state.temp_arena, border_weights, w, h, x, y, choke_border_distance);
 
@@ -1680,7 +1709,7 @@ static void chokes_solve(uint8_t *point_status, float* border_weights, uint8_t *
 
             }
         }
-        EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+        EndTemporaryAllocation(temp_alloc);
     }
 }
 
@@ -1688,8 +1717,7 @@ static void choke_remove_excess_lines(Choke* choke)
 {
     float min_distance = HUGE_VALF;
 
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
 
     VecFloat *distances = InitVecFloat(&state.temp_arena, choke->lines->size);
 
@@ -1714,7 +1742,7 @@ static void choke_remove_excess_lines(Choke* choke)
         }
     }
 
-    EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     choke->lines = new_lines;
     choke->min_length = min_distance;
@@ -1796,8 +1824,7 @@ static VecChoke* chokes_group(ChokeLines* choke_lines)
     VecChoke *list = InitVecChoke(&state.function_arena, 100);
 
     int line_count = choke_lines->lines->size;
-    TempAllocation temp_alloc;
-    StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
     uint8_t *used_indices = (uint8_t*)PushToMemoryArena(&state.temp_arena, line_count*sizeof(uint8_t));
 
     for (int i = 0; i < line_count; ++i)
@@ -1882,7 +1909,7 @@ static VecChoke* chokes_group(ChokeLines* choke_lines)
         list = PushToVecChoke(list, current_choke);
     }
 
-    EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+    EndTemporaryAllocation(temp_alloc);
 
     int i = 0;
     while(i < list->size)
@@ -2171,13 +2198,12 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
             {
                 uint8_t target_height = heights[key];
                 KeyContainer c = { NULL };
-                TempAllocation temp_alloc;
-                StartTemporaryAllocation(&state.temp_arena, &temp_alloc);
+                TempAllocation temp_alloc = StartTemporaryAllocation(&state.temp_arena);
                 c.keys = InitVecInt(&state.temp_arena, 200);
-                if (flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
+                if (flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 1, &c) == 1)
                 {
                     float spot[2] = { 0.0f, 0.0f };
-
+                    
                     for(int i = 0; i < c.keys->size; ++i)
                     {
                         point_status[c.keys->items[i]] |= HANDLED_OVERLORD_SPOT;
@@ -2204,7 +2230,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                     }
                     c.keys->size = 0;
 
-                    flood_fill_overlord(heights, point_status, w, h, x, y, target_height, 0, &c);
+                    flood_fill_overlord(&state.temp_arena, heights, point_status, w, h, x, y, target_height, 0, &c);
                 }
 
                
@@ -2212,7 +2238,7 @@ static PyObject* get_map_data(PyObject *self, PyObject *args)
                 {
                     point_status[c.keys->items[i]] &= ~IN_CURRENT_SET;
                 }
-                EndTemporaryAllocation(&state.temp_arena, &temp_alloc);
+                EndTemporaryAllocation(temp_alloc);
 
             }
 
