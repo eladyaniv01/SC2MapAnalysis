@@ -372,9 +372,62 @@ class MapData:
         Warning:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
 
+        See Also:
+            * :meth:`.MapData.add_cost_to_multiple_grids`
+
         """
         return self.pather.add_cost(position=position, radius=radius, arr=grid, weight=weight, safe=safe,
                                     initial_default_weights=initial_default_weights)
+
+    def add_cost_to_multiple_grids(
+        self,
+        position: Tuple[float, float],
+        radius: float,
+        grids: List[ndarray],
+        weight: float = 100,
+        safe: bool = True,
+        initial_default_weights: float = 0,
+    ) -> List[ndarray]:
+        """
+        :rtype: List[numpy.ndarray]
+
+        Like ``add_cost``, will add cost to a `circle-shaped` area with a center ``position`` and radius ``radius``
+        Use this one for performance reasons if adding identical cost to multiple grids, so that the disk is only
+        calculated once.
+
+        Example:
+            >>> air_grid = self.get_clean_air_grid()
+            >>> ground_grid = self.get_pyastar_grid()
+            >>> # commented out for doc test
+            >>> # air_grid, ground_grid = self.add_cost_to_multiple_grids(
+            >>> #    position=self.bot.game_info.map_center, radius=5, grids=[air_grid, ground_grid], weight=10)
+
+        Warning:
+            When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
+
+        Tip:
+            Performance against using `add_cost` for multiple grids, averaged over 1000 iterations
+            For `add_cost` the method was called once per grid
+
+            2 grids `add_cost_to_multiple_grids`: 188.18 µs ± 12.73 ns per loop
+            2 grids `add_cost`                  : 229.95 µs ± 37.53 ns per loop
+
+            3 grids `add_cost_to_multiple_grids`: 199.15 µs ± 21.86 ns per loop
+            3 grids `add_cost`                  : 363.44 µs ± 80.89 ns per loop
+
+            4 grids `add_cost_to_multiple_grids`: 222.34 µs ± 26.79 ns per loop
+            4 grids `add_cost`                  : 488.94 µs ± 87.64 ns per loop
+
+        """
+        return self.pather.add_cost_to_multiple_grids(
+            position=position,
+            radius=radius,
+            arrays=grids,
+            weight=weight,
+            safe=safe,
+            initial_default_weights=initial_default_weights,
+        )
+
 
     """Utility methods"""
 
