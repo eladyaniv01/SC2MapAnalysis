@@ -396,13 +396,10 @@ class MapData:
         calculated once.
 
         Example:
-            >>> MARINE_RANGE: int = 5
             >>> air_grid = self.get_clean_air_grid()
             >>> ground_grid = self.get_pyastar_grid()
-            >>> # start / goal could be any tuple / Point2
-            >>> enemy_marine = self.enemy_units.by_tag(self.enemy_marine_tag)
             >>> air_grid, ground_grid = self.add_cost_to_multiple_grids(
-            >>>     position=enemy_marine.position, radius=MARINE_RANGE, grids=[air_grid, ground_grid], weight=10)
+            >>>     position=self.bot.game_info.map_center, radius=5, grids=[air_grid, ground_grid], weight=10)
 
         Warning:
             When ``safe=False`` the Pather will not adjust illegal values below 1 which could result in a crash`
