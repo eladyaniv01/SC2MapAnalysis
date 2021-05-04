@@ -394,14 +394,60 @@ class MapAnalyzerPather:
             logger.debug(f"No Path found s{start}, g{goal}")
             return None
 
-    @staticmethod
-    def add_cost(position: Tuple[float, float], radius: float, arr: ndarray, weight: float = 100,
-                 safe: bool = True, initial_default_weights: float = 0) -> ndarray:
+    def add_cost(
+        self,
+        position: Tuple[float, float],
+        radius: float,
+        arr: ndarray,
+        weight: float = 100,
+        safe: bool = True,
+        initial_default_weights: float = 0,
+    ) -> ndarray:
         disk = tuple(draw_circle(position, radius, arr.shape))
 
+        arr: ndarray = self._add_disk_to_grid(
+            position, arr, disk, weight, safe, initial_default_weights
+        )
+
+        return arr
+
+    def add_cost_to_multiple_grids(
+        self,
+        position: Tuple[float, float],
+        radius: float,
+        arrays: List[ndarray],
+        weight: float = 100,
+        safe: bool = True,
+        initial_default_weights: float = 0,
+    ) -> List[ndarray]:
+        """
+        Add the same cost to multiple grids, this is so the disk is only calculated once
+        """
+        disk = tuple(draw_circle(position, radius, arrays[0].shape))
+
+        for i, arr in enumerate(arrays):
+            arrays[i] = self._add_disk_to_grid(
+                position, arrays[i], disk, weight, safe, initial_default_weights
+            )
+
+        return arrays
+
+    @staticmethod
+    def _add_disk_to_grid(
+        position: Tuple[float, float],
+        arr: ndarray,
+        disk: Tuple,
+        weight: float = 100,
+        safe: bool = True,
+        initial_default_weights: float = 0,
+    ) -> ndarray:
         # if we don't touch any cell origins due to a small radius, add at least the cell
         # the given position is in
-        if len(disk[0]) == 0 and 0 <= position[0] < arr.shape[0] and 0 <= position[1] < arr.shape[1]:
+        if (
+            len(disk[0]) == 0
+            and 0 <= position[0] < arr.shape[0]
+            and 0 <= position[1] < arr.shape[1]
+        ):
             disk = (int(position[0]), int(position[1]))
 
         if initial_default_weights > 0:
@@ -410,7 +456,8 @@ class MapAnalyzerPather:
         arr[disk] += weight
         if safe and np.any(arr[disk] < 1):
             logger.warning(
-                    "You are attempting to set weights that are below 1. falling back to the minimum (1)")
+                "You are attempting to set weights that are below 1. falling back to the minimum (1)"
+            )
             arr[disk] = np.where(arr[disk] < 1, 1, arr[disk])
 
         return arr
