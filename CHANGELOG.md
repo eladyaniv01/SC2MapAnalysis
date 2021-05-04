@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.87](https://github.com/spudde123/SC2MapAnalysis/compare/v0.0.86...v0.0.87) (2021-05-04)
 
+* Include function add_cost_to_multiple_grids to avoid calculating the same circle for every different grid the user
+wants to add the same cost to
+([6baedc0](https://github.com/eladyaniv01/SC2MapAnalysis/commit/6baedc09ace996d918f78f79dbe0079d2e87bcb5),
+thanks to rasper!)
+
 ### [0.0.86](https://github.com/eladyaniv01/SC2MapAnalysis/compare/v0.0.85...v0.0.86) (2021-04-03)
 
 ### Bug Fixes
