@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 requirements = [  # pragma: no cover
         "wheel",
-        "numpy",
+        "numpy==1.19.2",
         "Cython",
         "burnysc2",
         "matplotlib",
@@ -34,7 +34,7 @@ setup(  # pragma: no cover
         # version=f"{__version__}",
         version="0.0.87",
         install_requires=requirements,
-        setup_requires=["wheel", "numpy"],
+        setup_requires=["wheel", "numpy==1.19.2"],
         cmdclass={"build_ext": build_ext},
         ext_modules=[mapping_module],
         packages=["MapAnalyzer", "MapAnalyzer.cext"],
