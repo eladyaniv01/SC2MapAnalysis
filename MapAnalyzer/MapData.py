@@ -778,7 +778,7 @@ class MapData:
         grid = binary_fill_holes(self.placement_arr).astype(int)
         # for our grid,  mineral walls are considered as a barrier between regions
         for point in self.resource_blockers:
-            grid[int(point[0])][int(point[1])] = 0
+            grid[int(point[1])][int(point[0])] = 0
             for n in point.neighbors4:
                 point_ = Point2((n.rounded[0], n.rounded[1]))
                 if point_[0] < grid.shape[1] and point_[1] < grid.shape[0]:
