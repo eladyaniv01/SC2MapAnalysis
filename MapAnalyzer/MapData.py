@@ -520,22 +520,22 @@ class MapData:
         return arr
 
     @staticmethod
-    def distance(p1: Point2, p2: Point2) -> float64:
+    def distance(p1: Point2, p2: Point2) -> float:
         """
         :rtype: float64
 
         Euclidean distance
         """
-        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2)
+        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
 
     @staticmethod
-    def distance_squared(p1: Point2, p2: Point2) -> float64:
+    def distance_squared(p1: Point2, p2: Point2) -> float:
         """
         :rtype: float64
 
         Euclidean distance squared
         """
-        return (p2[0] - p1[0]) ** 2 + (p2[0] - p1[0]) ** 2
+        return (p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2
 
     @staticmethod
     def closest_node_idx(
