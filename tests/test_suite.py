@@ -100,7 +100,7 @@ class TestSanity:
 
     def test_ramps(self, map_data: MapData) -> None:
         for ramp in map_data.map_ramps:
-            assert (len(ramp.regions) == 2), f"ramp = {ramp}"
+            assert (len(ramp.regions) == 2 or len(ramp.regions) == 3), f"ramp = {ramp}"
 
     def test_chokes(self, map_data: MapData) -> None:
         for choke in map_data.map_chokes:
