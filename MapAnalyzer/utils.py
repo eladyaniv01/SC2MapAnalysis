@@ -65,8 +65,7 @@ def change_destructable_status_in_grid(grid: np.ndarray, unit: Unit, status: int
         h = 4
         x = int(pos[0] - w / 2)
         y = int(pos[1] - h / 2)
-        grid[x:(x + w), (y + 1):(y + h - 1)] = status
-        grid[(x + 1):(x + w - 1), y:(y + h)] = status
+        grid[x:(x + w), y:(y + h)] = status
     elif type_id in destructable_6x2:
         w = 6
         h = 2
