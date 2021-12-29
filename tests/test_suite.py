@@ -100,6 +100,9 @@ class TestSanity:
 
     def test_ramps(self, map_data: MapData) -> None:
         for ramp in map_data.map_ramps:
+            # on some maps the ramp may be hit a region edge and ends up connecting to 3 regions
+            # could think about whether this is desirable or if we should select the 2 main regions
+            # the ramp is connecting
             assert (len(ramp.regions) == 2 or len(ramp.regions) == 3), f"ramp = {ramp}"
 
     def test_chokes(self, map_data: MapData) -> None:

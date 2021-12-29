@@ -62,6 +62,10 @@ def test_destructable_types() -> None:
             handled = True
         elif 'inhibitor' in name:
             handled = True
+        elif "dog" in name:
+            handled = True
+        elif "cleaningbot" in name:
+            handled = True
         elif type_id in rock_types:
             handled = True
 
