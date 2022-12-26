@@ -525,4 +525,4 @@ tqdm== 4.49.0
 # D:\proj\SC2MapAnalysis\.eggs\wheel-0.34.2-py3.7.egg\wheel\__main__.py: 14
 # D:\proj\SC2MapAnalysis\.eggs\wheel-0.34.2-py3.7.egg\wheel\cli\pack.py: 7,8
 # D:\proj\SC2MapAnalysis\.eggs\wheel-0.34.2-py3.7.egg\wheel\wheelfile.py: 14
-wheel== 0.35.1
+wheel== 0.38.1
