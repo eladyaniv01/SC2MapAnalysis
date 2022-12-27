@@ -516,7 +516,7 @@ scipy== 1.5.2
 # D:\proj\SC2MapAnalysis\MapAnalyzer\MapData.py: 7
 # D:\proj\SC2MapAnalysis\MapAnalyzer\__init__.py: 7
 # D:\proj\SC2MapAnalysis\setup.py: 2,5
-setuptools== 50.3.0
+setuptools== 65.5.1
 
 # D:\proj\SC2MapAnalysis\MapAnalyzer\decorators.py: 10,11
 # D:\proj\SC2MapAnalysis\tests\mocksetup.py: 8
